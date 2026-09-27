@@ -1,0 +1,10 @@
+# ==============================================================================
+# EMPEROR SAAS — PRODUCTION CRONTAB CONFIGURATION
+# Run by the www-data or root user: crontab -u www-data -e
+# ==============================================================================
+
+# Laravel Task Scheduler (Every Minute)
+* * * * * cd /var/www/emperor && php artisan schedule:run >> /dev/null 2>&1
+
+# Daily Database & Storage Backup at 3:00 AM Cairo Time
+0 3 * * * /var/www/emperor/deployment/scripts/backup.sh >> /var/www/emperor/storage/logs/backup.log 2>&1

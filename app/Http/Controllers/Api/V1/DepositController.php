@@ -1,0 +1,114 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\StoreDepositRequest;
+use App\Http\Resources\DepositMethodResource;
+use App\Http\Resources\DepositResource;
+use App\Models\DepositRequest;
+use App\Models\PaymentMethod;
+use App\Services\DepositService;
+use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class DepositController extends Controller
+{
+    use ApiResponse;
+
+    public function __construct(
+        protected DepositService $depositService
+    ) {}
+
+    /**
+     * Get active deposit payment methods.
+     */
+    public function methods(): JsonResponse
+    {
+        $methods = PaymentMethod::where('is_active', true)
+            ->where('allow_deposit', true)
+            ->orderBy('sort_order')
+            ->get();
+
+        return $this->successResponse(
+            DepositMethodResource::collection($methods),
+            'تم جلب طرق الإيداع المتاحة بنجاح'
+        );
+    }
+
+    /**
+     * Submit a new deposit request.
+     */
+    public function store(StoreDepositRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $validated = $request->validated();
+        $method = PaymentMethod::findOrFail($validated['payment_method_id']);
+
+        $proofImagePath = null;
+        if ($request->hasFile('proof_image')) {
+            $proofImagePath = $request->file('proof_image')->store('deposit_proofs', 'public');
+        }
+
+        try {
+            $deposit = $this->depositService->submitDeposit(
+                user: $user,
+                method: $method,
+                amount: (float) $validated['amount'],
+                senderAccount: $validated['sender_account'] ?? null,
+                transactionReference: $validated['transaction_reference'] ?? null,
+                proofImage: $proofImagePath
+            );
+
+            return $this->successResponse(
+                new DepositResource($deposit->load('paymentMethod')),
+                'تم إرسال طلب الإيداع بنجاح، سيتم مراجعته وشحن محفظتك خلال دقائق.',
+                Response::HTTP_CREATED
+            );
+        } catch (\Throwable $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Get user deposit requests history.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $query = DepositRequest::where('user_id', $user->id)
+            ->with('paymentMethod')
+            ->select([
+                'id', 'user_id', 'payment_method_id', 'amount', 'fee', 'final_amount',
+                'currency', 'status', 'sender_account', 'transaction_reference',
+                'proof_image', 'reviewer_notes', 'created_at', 'reviewed_at'
+            ]);
+
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        $deposits = $query->latest('id')->paginate(15);
+        $deposits->through(fn($item) => new DepositResource($item));
+
+        return $this->paginatedResponse($deposits, 'تم جلب سجل طلبات الإيداع بنجاح');
+    }
+
+    /**
+     * Get single deposit request details.
+     */
+    public function show(Request $request, int $id): JsonResponse
+    {
+        $deposit = DepositRequest::where('user_id', $request->user()->id)
+            ->with('paymentMethod')
+            ->findOrFail($id);
+
+        return $this->successResponse(
+            new DepositResource($deposit),
+            'تم جلب تفاصيل طلب الإيداع بنجاح'
+        );
+    }
+}

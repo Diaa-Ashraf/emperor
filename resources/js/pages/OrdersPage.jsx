@@ -1,0 +1,150 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { ShoppingBag, Filter, Gamepad2, PlusCircle, RefreshCw } from 'lucide-react';
+import MainLayout from '../layouts/MainLayout';
+import OrderCard from '../components/orders/OrderCard';
+import EmptyState from '../components/ui/EmptyState';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import Pagination from '../components/ui/Pagination';
+import Button from '../components/ui/Button';
+import { ordersApi } from '../api/endpoints';
+
+export default function OrdersPage() {
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [meta, setMeta] = useState(null);
+
+    const fetchOrders = (page = 1, status = 'all') => {
+        setLoading(true);
+        const params = { page };
+        if (status !== 'all') {
+            params.status = status;
+        }
+
+        ordersApi.getOrders(params)
+            .then(res => {
+                if (res?.data?.data) {
+                    setOrders(res.data.data);
+                    setMeta(res.data.meta || { current_page: page, last_page: res.data.last_page || 1, total: res.data.total });
+                } else if (Array.isArray(res?.data)) {
+                    setOrders(res.data);
+                }
+            })
+            .catch(() => {
+                setOrders([]);
+            })
+            .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        fetchOrders(currentPage, statusFilter);
+    }, [currentPage, statusFilter]);
+
+    const filterTabs = [
+        { key: 'all', label: 'جميع الطلبات' },
+        { key: 'processing', label: 'جاري الشحن' },
+        { key: 'completed', label: 'المكتملة' },
+        { key: 'failed', label: 'الملغية والمستردة' },
+    ];
+
+    return (
+        <MainLayout>
+            {/* Header */}
+            <div style={{ marginBottom: '28px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '13px', color: '#8E8E98' }}>
+                    <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>الرئيسية</Link>
+                    <span>/</span>
+                    <span style={{ color: '#CBD5E1' }}>سجل طلبات الشحن</span>
+                </div>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+                    <div>
+                        <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '900', color: '#FFFFFF' }}>
+                            طلباتي وسجل الشحن
+                        </h1>
+                        <p style={{ margin: 0, fontSize: '14px', color: '#9E9EA8' }}>
+                            تابع حالة تنفيذ شحن ألعابك وبطاقاتك الرقمية لحظة بلحظة
+                        </p>
+                    </div>
+
+                    <Link to="/category/games" style={{ textDecoration: 'none' }}>
+                        <Button variant="primary" size="md" icon={Gamepad2}>
+                            شحن لعبة جديدة
+                        </Button>
+                    </Link>
+                </div>
+            </div>
+
+            {/* Filter Tabs Bar */}
+            <div style={{
+                display: 'flex',
+                gap: '8px',
+                overflowX: 'auto',
+                paddingBottom: '8px',
+                marginBottom: '28px',
+            }}>
+                {filterTabs.map((tab) => {
+                    const isActive = statusFilter === tab.key;
+                    return (
+                        <button
+                            key={tab.key}
+                            onClick={() => {
+                                setStatusFilter(tab.key);
+                                setCurrentPage(1);
+                            }}
+                            style={{
+                                padding: '8px 18px',
+                                borderRadius: '12px',
+                                background: isActive
+                                    ? 'linear-gradient(135deg, #F3E5AB 0%, #D4A537 100%)'
+                                    : 'rgba(26, 26, 36, 0.8)',
+                                color: isActive ? '#0D0D0F' : '#CBD5E1',
+                                fontWeight: '700',
+                                fontSize: '14px',
+                                border: isActive ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                                transition: 'all 0.2s',
+                                fontFamily: 'Cairo, sans-serif',
+                            }}
+                        >
+                            {tab.label}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {/* Orders List */}
+            {loading ? (
+                <div style={{ padding: '80px 0' }}>
+                    <LoadingSpinner text="جاري جلب سجل الطلبات..." />
+                </div>
+            ) : orders.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '32px' }}>
+                    {orders.map((order) => (
+                        <OrderCard key={order.id} order={order} />
+                    ))}
+
+                    {meta && meta.last_page > 1 && (
+                        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+                            <Pagination
+                                currentPage={currentPage}
+                                lastPage={meta.last_page}
+                                onPageChange={(p) => setCurrentPage(p)}
+                            />
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <EmptyState
+                    title="لا توجد طلبات شحن حالياً"
+                    description="لم تقم بإجراء أي طلبات شحن بهذا التصنيف حتى الآن."
+                    actionText="تصفح الألعاب واشحن الآن"
+                    onAction={() => window.location.href = '/category/games'}
+                />
+            )}
+        </MainLayout>
+    );
+}

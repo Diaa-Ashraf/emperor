@@ -1,0 +1,421 @@
+// Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import "@tabler/icons-webfont/dist/tabler-icons.min.css";
+
+// 1. Emperor Theme Variables
+$primary: #D4A537;
+$primary-light: #F0C35B;
+$primary-dark: #A67C1E;
+$primary-rgb: 212, 165, 55;
+
+$dark-bg: #0D0D0F;
+$dark-card: #16161A;
+$dark-card-hover: #1C1C22;
+$dark-elevated: #22222A;
+$dark-border: #282834;
+$dark-border-light: #333342;
+
+$text-main: #F3F4F6;
+$text-muted: #9CA3AF;
+
+$body-bg: $dark-bg;
+$body-color: $text-main;
+
+$font-family-sans-serif: 'Cairo', 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+// Bootstrap variable overrides
+$card-bg: $dark-card;
+$card-border-color: $dark-border;
+$card-border-radius: 12px;
+$card-color: $text-main;
+
+$table-bg: $dark-card;
+$table-color: $text-main;
+$table-border-color: $dark-border;
+$table-hover-bg: rgba($primary, 0.05);
+
+$input-bg: $dark-elevated;
+$input-border-color: $dark-border;
+$input-color: $text-main;
+$input-focus-border-color: $primary;
+$input-focus-box-shadow: 0 0 0 0.25rem rgba($primary, 0.2);
+
+$modal-content-bg: $dark-card;
+$modal-content-border-color: $dark-border;
+
+$dropdown-bg: $dark-card;
+$dropdown-border-color: $dark-border;
+$dropdown-link-color: $text-main;
+$dropdown-link-hover-bg: rgba($primary, 0.1);
+$dropdown-link-hover-color: $primary;
+
+// Import Bootstrap functions & framework
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/bootstrap";
+
+// Global Luxury Dark Styling
+body {
+    background-color: $dark-bg;
+    color: $text-main;
+    font-family: $font-family-sans-serif;
+    letter-spacing: -0.01em;
+    overflow-x: hidden;
+}
+
+// Gold accents & glows
+.text-gold {
+    color: $primary !important;
+}
+.bg-gold {
+    background-color: $primary !important;
+    color: #000 !important;
+}
+.border-gold {
+    border-color: $primary !important;
+}
+.gold-glow {
+    box-shadow: 0 0 20px rgba(212, 165, 55, 0.25);
+}
+.gold-gradient-text {
+    background: linear-gradient(135deg, #FFF0B3 0%, #D4A537 50%, #AA7C11 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+// Layout components
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    display: none;
+    z-index: 1040;
+}
+.overlay.show {
+    display: block;
+}
+
+.sidebar {
+    width: 260px;
+    background: $dark-card;
+    border-right: 1px solid $dark-border;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding-top: 70px;
+    z-index: 1040;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: $dark-border;
+        border-radius: 4px;
+    }
+
+    .nav-section-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: rgba($text-muted, 0.7);
+        padding: 16px 20px 6px;
+    }
+
+    .nav-link {
+        color: $text-muted;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        font-weight: 500;
+        gap: 12px;
+        margin: 3px 14px;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+
+        .ti {
+            font-size: 19px;
+            color: $text-muted;
+            transition: all 0.2s ease;
+        }
+
+        &:hover {
+            color: #FFF;
+            background-color: rgba($primary, 0.12);
+            .ti {
+                color: $primary;
+            }
+        }
+
+        &.active {
+            color: #000;
+            background: linear-gradient(135deg, #F0C35B 0%, #D4A537 100%);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(212, 165, 55, 0.3);
+
+            .ti {
+                color: #000;
+            }
+            .badge {
+                background: #000 !important;
+                color: $primary !important;
+            }
+        }
+    }
+
+    .logo-area {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 70px;
+        width: 100%;
+        background: $dark-card;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 20px;
+        color: #FFF;
+        border-bottom: 1px solid $dark-border;
+    }
+}
+
+.sidebar.collapsed {
+    width: 75px;
+
+    .nav-section-title {
+        display: none;
+    }
+    .nav-link {
+        margin: 3px 8px;
+        padding: 10px 16px;
+        justify-content: center;
+    }
+    .nav-text {
+        display: none;
+    }
+    .logo-text {
+        display: none;
+    }
+    .badge {
+        display: none;
+    }
+}
+
+.topbar {
+    height: 70px;
+    margin-left: 260px;
+    background: $dark-card;
+    border-bottom: 1px solid $dark-border;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    backdrop-filter: blur(10px);
+}
+.topbar.full {
+    margin-left: 75px;
+}
+
+.content {
+    margin-left: 260px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: calc(100vh - 70px);
+    padding: 24px;
+    background: $dark-bg;
+}
+.content.full {
+    margin-left: 75px;
+}
+
+// RTL Support
+[dir="rtl"] {
+    .sidebar {
+        left: auto;
+        right: 0;
+        border-right: none;
+        border-left: 1px solid $dark-border;
+
+        .logo-area {
+            left: auto;
+            right: 0;
+        }
+    }
+
+    .topbar {
+        margin-left: 0;
+        margin-right: 260px;
+    }
+    .topbar.full {
+        margin-left: 0;
+        margin-right: 75px;
+    }
+
+    .content {
+        margin-left: 0;
+        margin-right: 260px;
+    }
+    .content.full {
+        margin-left: 0;
+        margin-right: 75px;
+    }
+}
+
+// Mobile Breakpoints
+@media (max-width: 992px) {
+    .sidebar {
+        left: -260px;
+    }
+    [dir="rtl"] .sidebar {
+        left: auto;
+        right: -260px;
+    }
+
+    .sidebar.mobile-show {
+        left: 0;
+    }
+    [dir="rtl"] .sidebar.mobile-show {
+        right: 0;
+    }
+
+    .topbar {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+    }
+    .content {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 16px;
+    }
+}
+
+// Glass Cards & Stat Widgets
+.card {
+    background-color: $dark-card;
+    border: 1px solid $dark-border;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+        border-color: rgba($primary, 0.3);
+    }
+}
+
+.stat-card {
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(circle, rgba(212, 165, 55, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+}
+
+.table {
+    --bs-table-bg: #{$dark-card};
+    --bs-table-hover-bg: #{rgba(212, 165, 55, 0.05)};
+    --bs-table-border-color: #{$dark-border};
+
+    th {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: $text-muted;
+        border-bottom: 1px solid $dark-border;
+        padding: 14px 16px;
+    }
+    td {
+        padding: 14px 16px;
+        vertical-align: middle;
+        font-size: 14px;
+    }
+}
+
+// Buttons
+.btn-primary {
+    background: linear-gradient(135deg, #F0C35B 0%, #D4A537 100%);
+    border: none;
+    color: #000;
+    font-weight: 700;
+    padding: 9px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(212, 165, 55, 0.25);
+    transition: all 0.2s ease;
+
+    &:hover, &:focus, &:active {
+        background: linear-gradient(135deg, #FFE082 0%, #E5B842 100%) !important;
+        color: #000 !important;
+        box-shadow: 0 6px 20px rgba(212, 165, 55, 0.4) !important;
+        transform: translateY(-1px);
+    }
+}
+
+.btn-dark-outline {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid $dark-border;
+    color: $text-main;
+    border-radius: 10px;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba($primary, 0.1);
+        border-color: $primary;
+        color: $primary;
+    }
+}
+
+// Form Controls
+.form-control, .form-select {
+    background-color: $dark-elevated;
+    border: 1px solid $dark-border;
+    color: $text-main;
+    border-radius: 10px;
+    padding: 10px 14px;
+
+    &:focus {
+        background-color: $dark-elevated;
+        border-color: $primary;
+        color: #FFF;
+        box-shadow: 0 0 0 0.25rem rgba(212, 165, 55, 0.15);
+    }
+
+    &::placeholder {
+        color: rgba($text-muted, 0.6);
+    }
+}
+
+// Badges
+.badge-gold {
+    background: rgba(212, 165, 55, 0.15);
+    color: $primary;
+    border: 1px solid rgba(212, 165, 55, 0.3);
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 8px;
+}

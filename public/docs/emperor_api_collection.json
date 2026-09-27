@@ -1,0 +1,343 @@
+{
+  "info": {
+    "_postman_id": "emperor-saas-api-v1",
+    "name": "Emperor API v1 (إمبراطور للشحن الرقمي والتارجت)",
+    "description": "API collection for Emperor SaaS Platform - Digital Card Top-ups, Game Credits, Target Selling, Multi-currency Wallet, and Webhooks.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "apiSecret",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication & 2FA",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"أحمد الإمبراطور\",\n  \"email\": \"ahmed@emperor.vip\",\n  \"password\": \"Password123!\",\n  \"password_confirmation\": \"Password123!\",\n  \"referral_code\": \"VIP999\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ahmed@emperor.vip\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login 2FA Challenge",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1,\n  \"code\": \"123456\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login/2fa"
+          }
+        },
+        {
+          "name": "Verify Phone (Firebase OTP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firebase_id_token\": \"mock_valid_token_2026\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/verify-phone"
+          }
+        },
+        {
+          "name": "Google OAuth Login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"access_token\": \"ya29.google_mock_access_token\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login/google"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Profile & Settings",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{authToken}}"}],
+            "url": "{{baseUrl}}/profile"
+          }
+        },
+        {
+          "name": "Complete Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+201012345678\",\n  \"country\": \"EG\",\n  \"currency\": \"EGP\",\n  \"referral_code\": \"\"\n}"
+            },
+            "url": "{{baseUrl}}/profile/complete"
+          }
+        },
+        {
+          "name": "Enable 2FA (Get QR Code)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{authToken}}"}],
+            "url": "{{baseUrl}}/profile/2fa/enable"
+          }
+        },
+        {
+          "name": "Verify 2FA Activation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"123456\"\n}"
+            },
+            "url": "{{baseUrl}}/profile/2fa/verify"
+          }
+        },
+        {
+          "name": "Update FCM Push Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fcm_token\": \"fcm_device_token_xyz_2026\"\n}"
+            },
+            "url": "{{baseUrl}}/profile/fcm-token"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Wallet & Deposits",
+      "item": [
+        {
+          "name": "Get Balance",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{authToken}}"}],
+            "url": "{{baseUrl}}/wallet/balance"
+          }
+        },
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{authToken}}"}],
+            "url": "{{baseUrl}}/wallet/transactions?page=1&type=deposit"
+          }
+        },
+        {
+          "name": "Get Deposit Methods",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/deposits/methods"
+          }
+        },
+        {
+          "name": "Submit Deposit Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {"key": "method", "value": "vodafone_cash", "type": "text"},
+                {"key": "amount", "value": "500.00", "type": "text"},
+                {"key": "sender_wallet", "value": "01099887766", "type": "text"},
+                {"key": "transaction_ref", "value": "VF-TX-998811", "type": "text"}
+              ]
+            },
+            "url": "{{baseUrl}}/deposits"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Catalog & Orders",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/categories"
+          }
+        },
+        {
+          "name": "List Products in Category",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/products?category=battle-royale-games"
+          }
+        },
+        {
+          "name": "Get Product Detail",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/products/pubg-mobile"
+          }
+        },
+        {
+          "name": "Place Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": 1,\n  \"product_tier_id\": 2,\n  \"quantity\": 1,\n  \"player_id\": \"5123456789\",\n  \"server_id\": \"\",\n  \"account_region\": \"global\"\n}"
+            },
+            "url": "{{baseUrl}}/orders"
+          }
+        },
+        {
+          "name": "Get Order Detail",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{authToken}}"}],
+            "url": "{{baseUrl}}/orders/EMP-ORD-XXXXX"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Target Selling (استلام التارجت)",
+      "item": [
+        {
+          "name": "List Target Apps & Rates",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/target/apps"
+          }
+        },
+        {
+          "name": "Calculate Target Quote",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/target/quote?app_id=1&points=100000"
+          }
+        },
+        {
+          "name": "Submit Target Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}"}
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {"key": "target_rate_id", "value": "1", "type": "text"},
+                {"key": "app_user_id", "value": "LIKE_887766", "type": "text"},
+                {"key": "points_amount", "value": "50000", "type": "text"},
+                {"key": "payout_method", "value": "site_wallet", "type": "text"}
+              ]
+            },
+            "url": "{{baseUrl}}/target/orders"
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. External Merchant API (B2B)",
+      "item": [
+        {
+          "name": "Merchant Check Balance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "X-Api-Key", "value": "{{apiKey}}"},
+              {"key": "X-Api-Secret", "value": "{{apiSecret}}"}
+            ],
+            "url": "{{baseUrl}}/external/balance"
+          }
+        },
+        {
+          "name": "Merchant List Products & Pricing",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "X-Api-Key", "value": "{{apiKey}}"},
+              {"key": "X-Api-Secret", "value": "{{apiSecret}}"}
+            ],
+            "url": "{{baseUrl}}/external/products"
+          }
+        },
+        {
+          "name": "Merchant Create Order (Signed Webhook Delivery)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "X-Api-Key", "value": "{{apiKey}}"},
+              {"key": "X-Api-Secret", "value": "{{apiSecret}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_tier_id\": 1,\n  \"quantity\": 1,\n  \"player_id\": \"987654321\",\n  \"custom_reference\": \"CLIENT-REF-001\"\n}"
+            },
+            "url": "{{baseUrl}}/external/orders"
+          }
+        }
+      ]
+    }
+  ]
+}
