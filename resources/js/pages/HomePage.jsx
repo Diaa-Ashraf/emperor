@@ -23,7 +23,6 @@ import MainLayout from '../layouts/MainLayout';
 import LiveActivityTicker from '../components/home/LiveActivityTicker';
 import QuickRechargeWizard from '../components/home/QuickRechargeWizard';
 import VisualCategoryCards from '../components/home/VisualCategoryCards';
-import FlashDealsSection from '../components/home/FlashDealsSection';
 import LiveTargetMarket from '../components/home/LiveTargetMarket';
 import GoldenTargetBanner from '../components/home/GoldenTargetBanner';
 import CustomerReviewsSection from '../components/home/CustomerReviewsSection';
@@ -215,16 +214,10 @@ export default function HomePage() {
             {/* ═══ 5. INSTANT RECHARGE WIZARD (الشاحن الملكي السريع) ═══ */}
             <QuickRechargeWizard />
 
-            {/* ═══ 6. FLASH DEALS SECTION ═══ */}
-            <FlashDealsSection />
-
-            {/* ═══ 7. LIVE TARGET MARKET (بورصة تسييل وسحب التارجت اللحظية) ═══ */}
-            <LiveTargetMarket />
-
-            {/* ═══ 8. TARGET CALLOUT BANNER ═══ */}
+            {/* ═══ 6. TARGET CALLOUT BANNER (اضغط هنا لسحب راتبك) ═══ */}
             <GoldenTargetBanner />
 
-            {/* ═══ 9. BEST SELLERS SECTION ═══ */}
+            {/* ═══ 7. BEST SELLERS SECTION (الأكثر طلباً ومبيعاً) ═══ */}
             <div className="emperor-entrance" style={{ marginBottom: '56px' }}>
                 <div style={{
                     display: 'flex',
@@ -288,6 +281,9 @@ export default function HomePage() {
                     ))}
                 </div>
             </div>
+
+            {/* ═══ 8. LIVE TARGET MARKET (بورصة تسييل وسحب التارجت اللحظية) ═══ */}
+            <LiveTargetMarket />
 
             {/* ═══ 10. TRUST STATS BAR ═══ */}
             <div className="emperor-entrance emperor-vip-card" style={{

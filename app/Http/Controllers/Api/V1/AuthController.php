@@ -331,16 +331,75 @@ class AuthController extends Controller
     }
 
     /**
-     * Get Google OAuth redirect URL.
+     * Get Google OAuth redirect URL or redirect browser directly.
      */
-    public function getGoogleRedirectUrl(): JsonResponse
+    public function getGoogleRedirectUrl(Request $request)
     {
-        $url = \Laravel\Socialite\Facades\Socialite::driver('google')
-            ->stateless()
-            ->redirect()
-            ->getTargetUrl();
+        $clientId = config('services.google.client_id');
+        $clientSecret = config('services.google.client_secret');
 
-        return $this->successResponse(['url' => $url], 'تم توليد رابط تسجيل الدخول بـ Google');
+        // Check if real Google credentials are configured in .env
+        if (!empty($clientId) && !empty($clientSecret)) {
+            try {
+                $url = \Laravel\Socialite\Facades\Socialite::driver('google')
+                    ->stateless()
+                    ->redirect()
+                    ->getTargetUrl();
+
+                if ($request->expectsJson()) {
+                    return $this->successResponse(['url' => $url], 'تم توليد رابط تسجيل الدخول بـ Google');
+                }
+
+                return redirect()->away($url);
+            } catch (\Exception $e) {
+                if ($request->expectsJson()) {
+                    return $this->errorResponse('حدث خطأ أثناء الاتصال بخدمة Google: ' . $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+                return redirect('/login?error=' . urlencode('حدث خطأ أثناء الاتصال بخدمة Google'));
+            }
+        }
+
+        // Local / Development Simulator (when GOOGLE_CLIENT_ID is not configured yet)
+        $demoEmail = 'google.user@example.com';
+        $demoGoogleId = 'google_demo_1092837465';
+
+        $user = User::where('google_id', $demoGoogleId)
+            ->orWhere('email', $demoEmail)
+            ->first();
+
+        $isNewUser = false;
+        if (!$user) {
+            $isNewUser = true;
+            $user = User::create([
+                'name' => 'مستخدم تجريبي (Google)',
+                'email' => $demoEmail,
+                'google_id' => $demoGoogleId,
+                'password' => Hash::make(Str::random(32)),
+                'role' => UserRole::CUSTOMER,
+                'status' => UserStatus::ACTIVE,
+                'currency' => 'EGP',
+                'email_verified_at' => now(),
+                'api_key' => Str::random(32),
+                'last_login_at' => now(),
+                'last_login_ip' => $request->ip(),
+            ]);
+
+            if (class_exists(\Spatie\Permission\Models\Role::class) && \Spatie\Permission\Models\Role::where('name', 'customer')->exists()) {
+                $user->assignRole('customer');
+            }
+
+            $this->walletService->getOrCreateWallet($user, 'EGP');
+        }
+
+        $token = $user->createToken('Google Demo Web Session')->plainTextToken;
+
+        if ($request->expectsJson()) {
+            return $this->successResponse([
+                'url' => url("/login?oauth_token={$token}" . ($isNewUser ? '&is_new=1' : '')),
+            ], 'تم تسجيل الدخول بالنمط التجريبي لـ Google (يرجى إضافة مفاتيح GOOGLE_CLIENT_ID للتشغيل الفعلي).');
+        }
+
+        return redirect("/login?oauth_token={$token}" . ($isNewUser ? '&is_new=1' : ''));
     }
 
     /**
@@ -355,7 +414,9 @@ class AuthController extends Controller
                 ->orWhere('email', $googleUser->getEmail())
                 ->first();
 
+            $isNewUser = false;
             if (!$user) {
+                $isNewUser = true;
                 $user = User::create([
                     'name' => $googleUser->getName() ?: 'مستخدم Google',
                     'email' => $googleUser->getEmail(),
@@ -378,9 +439,9 @@ class AuthController extends Controller
             $token = $user->createToken('Google Web Session')->plainTextToken;
 
             // Redirect back to SPA with token query param
-            return redirect("/login?oauth_token={$token}");
+            return redirect("/login?oauth_token={$token}" . ($isNewUser ? '&is_new=1' : ''));
         } catch (\Exception $e) {
-            return redirect('/login?error=' . urlencode('فشل تسجيل الدخول عبر Google'));
+            return redirect('/login?error=' . urlencode('فشل تسجيل الدخول عبر Google: يرجى التحقق من إعدادات الحساب.'));
         }
     }
 

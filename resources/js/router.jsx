@@ -26,6 +26,7 @@ const SupportPage = React.lazy(() => import('./pages/SupportPage'));
 const CreatedByPage = React.lazy(() => import('./pages/CreatedByPage'));
 const AccountIssuesPage = React.lazy(() => import('./pages/AccountIssuesPage'));
 const AboutPage = React.lazy(() => import('./pages/AboutPage'));
+const DeveloperApiPage = React.lazy(() => import('./pages/DeveloperApiPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
 // Protected Route Guard
@@ -159,6 +160,10 @@ export function AppRoutes() {
                 <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                <Route path="/developer" element={<ProtectedRoute><DeveloperApiPage /></ProtectedRoute>} />
+                <Route path="/developers/api" element={<ProtectedRoute><DeveloperApiPage /></ProtectedRoute>} />
+                <Route path="/b2b" element={<ProtectedRoute><DeveloperApiPage /></ProtectedRoute>} />
+                <Route path="/api-docs" element={<ProtectedRoute><DeveloperApiPage /></ProtectedRoute>} />
 
                 {/* 404 Fallback */}
                 <Route path="*" element={<NotFoundPage />} />

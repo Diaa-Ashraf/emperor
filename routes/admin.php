@@ -150,5 +150,11 @@ Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admi
 
     // Audit Logs (Phase 5)
     Route::get('/audit-logs', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('audit-logs.index');
+
+    // Notifications & Broadcasts
+    Route::get('/notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/send', [App\Http\Controllers\Admin\NotificationController::class, 'send'])->name('notifications.send');
+    Route::post('/notifications/mark-all-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
+    Route::post('/notifications/{id}/mark-read', [App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('notifications.mark-read');
 });
 

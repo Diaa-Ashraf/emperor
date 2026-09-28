@@ -113,6 +113,11 @@ Route::prefix('v1')->middleware(['locale'])->group(function () {
         Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
         Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
+        // Developer / B2B Integration (B2B API Management)
+        Route::get('/developer/keys', [\App\Http\Controllers\Api\V1\DeveloperApiController::class, 'index']);
+        Route::post('/developer/keys/generate', [\App\Http\Controllers\Api\V1\DeveloperApiController::class, 'generateKeys']);
+        Route::put('/developer/settings', [\App\Http\Controllers\Api\V1\DeveloperApiController::class, 'updateSettings']);
     });
 
     // Track C: External Distributor API (Phase 6)

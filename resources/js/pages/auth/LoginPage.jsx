@@ -40,9 +40,15 @@ export default function LoginPage() {
         const oauthError = queryParams.get('error');
 
         if (oauthToken) {
+            const isNew = queryParams.get('is_new');
             setSession(oauthToken, null);
-            success('تم تسجيل الدخول بنجاح عبر Google');
-            navigate('/', { replace: true });
+            if (isNew) {
+                success('تم إنشاء الحساب عبر Google بنجاح! يرجى استكمال بياناتك');
+                navigate('/complete-profile', { replace: true });
+            } else {
+                success('تم تسجيل الدخول بنجاح عبر Google');
+                navigate('/', { replace: true });
+            }
         } else if (oauthError) {
             toastError(decodeURIComponent(oauthError));
         }

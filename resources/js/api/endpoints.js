@@ -101,6 +101,12 @@ export const bannersApi = {
     getDeals: () => api.get('/deals'),
 };
 
+export const developerApi = {
+    getKeys: () => api.get('/developer/keys'),
+    generateKeys: () => api.post('/developer/keys/generate'),
+    updateSettings: (data) => api.put('/developer/settings', data),
+};
+
 export default {
     auth: authApi,
     profile: profileApi,
@@ -114,4 +120,5 @@ export default {
     notifications: notificationsApi,
     support: supportApi,
     banners: bannersApi,
+    developer: developerApi,
 };

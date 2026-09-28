@@ -55,4 +55,10 @@ return [
         'custom_endpoint' => env('WHATSAPP_CUSTOM_ENDPOINT'),
     ],
 
+    'ka_cards' => [
+        'api_url' => env('KA_CARDS_API_URL', 'https://ka-cards.com/api/client'),
+        'api_token' => env('KA_CARDS_API_TOKEN'),
+        'timeout' => env('KA_CARDS_TIMEOUT', 30),
+    ],
+
 ];

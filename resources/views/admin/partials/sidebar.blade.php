@@ -103,6 +103,10 @@
         </a>
 
         <div class="nav-section-title">إعدادات المنصة والدعم</div>
+        <a href="{{ route('admin.notifications.index') }}" class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
+            <i class="ti ti-bell-ringing"></i>
+            <span class="nav-text">مركز الإشعارات والتعميمات</span>
+        </a>
         <a href="{{ route('admin.banners.index') }}" class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
             <i class="ti ti-photo"></i>
             <span class="nav-text">البانرات والإعلانات</span>

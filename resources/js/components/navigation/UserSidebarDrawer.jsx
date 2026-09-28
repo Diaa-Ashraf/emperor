@@ -22,7 +22,9 @@ import {
     Moon,
     Wallet,
     ArrowUpRight,
-    Crown
+    Crown,
+    Code,
+    Key
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -135,6 +137,14 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
             icon: Share2,
             iconBg: '#D4A537',
             iconColor: '#08080A',
+            authRequired: true
+        },
+        {
+            path: '/developer',
+            label: 'الربط البرمجي للمتاجر (B2B API)',
+            icon: Key,
+            iconBg: '#3B82F6',
+            iconColor: '#FFFFFF',
             authRequired: true
         },
         {
