@@ -1,0 +1,19 @@
+.typing-text {
+    display: inline-block;
+    margin-left: 3px;
+    color: var(--text-primary);
+    opacity: 1;
+    visibility: visible;
+
+}
+
+.typing-cursor {
+    display: inline-block;
+    animation: blink 0.7s step-end infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}

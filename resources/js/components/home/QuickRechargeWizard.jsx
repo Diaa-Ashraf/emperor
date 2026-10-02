@@ -1,11 +1,75 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Zap, CheckCircle2, ShieldCheck, ArrowLeft, ArrowRight, UserCheck, Sparkles, Gamepad2, Gem, MessageCircle, Radio, Crosshair } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function QuickRechargeWizard() {
     const { isRtl } = useLanguage();
+    const { theme } = useTheme();
     const navigate = useNavigate();
+    const isLight = theme === 'light';
+    const subtleBorder = isLight ? 'rgba(24, 24, 27, 0.24)' : 'var(--border-subtle)';
+    const mediumBorder = isLight ? 'rgba(24, 24, 27, 0.34)' : 'var(--border-medium)';
+    const strongBorder = isLight ? 'rgba(154, 114, 16, 0.65)' : 'var(--border-strong)';
+    const accentBorder = isLight ? 'var(--gold-600)' : 'var(--gold-400)';
+
+    // Typing animation
+    const text = "الشاحن الملكي السريع";
+    const [displayText, setDisplayText] = useState("");
+    const sectionRef = useRef(null);
+    const [isVisible, setIsVisible] = useState(false);
+    const [index, setIndex] = useState(0);
+
+    // Observe component visibility
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => setIsVisible(entry.isIntersecting),
+            { threshold: 0.3 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
+
+    // Typing effect runs while visible and not finished
+    useEffect(() => {
+        if (!isVisible) return;
+        if (index < text.length) {
+            const timeout = setTimeout(() => {
+                setIndex(i => i + 1);
+            }, 0.1);
+            return () => clearTimeout(timeout);
+        }
+    }, [isVisible, index]);
+
+    // Update displayed text when index changes
+    useEffect(() => {
+        setDisplayText(text.slice(0, index));
+    }, [index]);
+
+    // Paragraph animation state
+    const subText = "اختر لعبتك أو تطبيقك، أدخل المعرّف، استلم شحنتك في أقل من 30 ثانية بدون انتظار!";
+    const [subDisplay, setSubDisplay] = useState("");
+    const [subIndex, setSubIndex] = useState(0);
+
+    // Sub paragraph typing effect runs after heading finished
+    useEffect(() => {
+        if (!isVisible) return;
+        if (index >= text.length && subIndex < subText.length) {
+            const timeout = setTimeout(() => {
+                setSubIndex(i => i + 1);
+            }, 0.2);
+            return () => clearTimeout(timeout);
+        }
+    }, [isVisible, index, subIndex]);
+
+    // Update displayed sub paragraph text
+    useEffect(() => {
+        setSubDisplay(subText.slice(0, subIndex));
+    }, [subIndex]);
+
 
     const games = [
         {
@@ -102,13 +166,13 @@ export default function QuickRechargeWizard() {
     };
 
     return (
-        <div
+        <div ref={sectionRef}
             className="emperor-entrance emperor-vip-card"
             style={{
                 borderRadius: '24px',
                 padding: 'clamp(16px, 3.5vw, 32px)',
                 marginBottom: '40px',
-                border: '1px solid var(--border-strong)',
+                border: `1px solid ${strongBorder}`,
                 boxShadow: '0 20px 50px rgba(0,0,0,0.6), var(--shadow-gold)',
                 position: 'relative',
                 overflow: 'hidden',
@@ -140,20 +204,23 @@ export default function QuickRechargeWizard() {
                         <Zap size={13} color="var(--gold-400)" />
                         <span>شحن مباشر وفوري بالـ ID</span>
                     </div>
-                    <h2 style={{
-                        fontSize: 'clamp(18px, 3.5vw, 26px)',
-                        fontWeight: '900',
-                        color: 'var(--text-primary)',
-                        margin: 0,
-                    }}>
-                        الشاحن الملكي السريع
+                    <h2
+                        className="typing-text"
+                        style={{
+                            fontSize: 'clamp(18px, 3.5vw, 26px)',
+                            fontWeight: '900',
+                            color: 'var(--text-primary)',
+                            margin: 0,
+                        }}>
+                        {displayText}
+                        <span className="typing-cursor">|</span>
                     </h2>
                     <p style={{
                         margin: '6px 0 0',
                         fontSize: '12.5px',
                         color: 'var(--text-secondary)',
                     }}>
-                        اختر لعبتك أو تطبيقك، أدخل المعرّف، واستلم شحنتك في أقل من 30 ثانية بدون انتظار!
+                        {subDisplay}
                     </p>
                 </div>
 
@@ -164,7 +231,7 @@ export default function QuickRechargeWizard() {
                     padding: '6px 14px',
                     borderRadius: '9999px',
                     background: 'rgba(16, 185, 129, 0.1)',
-                    border: '1px solid rgba(16, 185, 129, 0.25)',
+                    border: `1px solid ${isLight ? 'rgba(5, 150, 105, 0.5)' : 'rgba(16, 185, 129, 0.25)'}`,
                     color: 'var(--success)',
                     fontSize: '11.5px',
                     fontWeight: '800',
@@ -201,7 +268,7 @@ export default function QuickRechargeWizard() {
                                     ? 'var(--gold-metallic)'
                                     : 'var(--bg-card)',
                                 color: isSelected ? '#050507' : 'var(--text-primary)',
-                                border: `1px solid ${isSelected ? 'var(--gold-400)' : 'var(--border-subtle)'}`,
+                                border: `1px solid ${isSelected ? accentBorder : subtleBorder}`,
                                 cursor: 'pointer',
                                 fontWeight: '800',
                                 fontSize: '12.5px',
@@ -227,7 +294,7 @@ export default function QuickRechargeWizard() {
                     {/* Step 1: ID Input Column */}
                     <div style={{
                         background: 'var(--bg-card)',
-                        border: '1px solid var(--border-subtle)',
+                        border: `1px solid ${subtleBorder}`,
                         borderRadius: '18px',
                         padding: 'clamp(14px, 2.5vw, 20px)',
                     }}>
@@ -253,7 +320,7 @@ export default function QuickRechargeWizard() {
                                 style={{
                                     flex: 1,
                                     background: 'var(--bg-surface)',
-                                    border: '1px solid var(--border-medium)',
+                                    border: `1px solid ${mediumBorder}`,
                                     borderRadius: '12px',
                                     padding: '12px 14px',
                                     color: 'var(--text-primary)',
@@ -271,7 +338,7 @@ export default function QuickRechargeWizard() {
                                     padding: '0 16px',
                                     borderRadius: '12px',
                                     background: 'rgba(212, 165, 55, 0.15)',
-                                    border: '1px solid var(--border-strong)',
+                                    border: `1px solid ${strongBorder}`,
                                     color: 'var(--gold-200)',
                                     fontWeight: '800',
                                     fontSize: '12.5px',
@@ -312,7 +379,7 @@ export default function QuickRechargeWizard() {
                     {/* Step 2: Package Selector Column */}
                     <div style={{
                         background: 'var(--bg-card)',
-                        border: '1px solid var(--border-subtle)',
+                        border: `1px solid ${subtleBorder}`,
                         borderRadius: '18px',
                         padding: 'clamp(14px, 2.5vw, 20px)',
                     }}>
@@ -341,17 +408,21 @@ export default function QuickRechargeWizard() {
                                         className="quick-recharge-pkg-card"
                                         style={{
                                             background: isSelected
-                                                ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.18) 0%, rgba(212, 165, 55, 0.06) 100%)'
+                                                ? isLight
+                                                    ? 'linear-gradient(135deg, #FDF3D3 0%, #F8E8B8 100%)'
+                                                    : 'linear-gradient(135deg, rgba(212, 165, 55, 0.18) 0%, rgba(212, 165, 55, 0.06) 100%)'
                                                 : 'var(--bg-surface)',
-                                            border: `1.5px solid ${isSelected ? 'var(--gold-400)' : 'var(--border-subtle)'}`,
-                                            boxShadow: isSelected ? '0 0 16px rgba(212, 165, 55, 0.25)' : 'none',
+                                            border: `1.5px solid ${isSelected ? accentBorder : subtleBorder}`,
+                                            boxShadow: isSelected
+                                                ? `0 0 16px ${isLight ? 'rgba(154, 114, 16, 0.2)' : 'rgba(212, 165, 55, 0.25)'}`
+                                                : 'none',
                                         }}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '6px' }}>
                                             <span style={{
                                                 fontSize: '12.5px',
                                                 fontWeight: '800',
-                                                color: isSelected ? 'var(--gold-100)' : 'var(--text-primary)',
+                                                color: isSelected && isLight ? '#4A3D15' : isSelected ? 'var(--gold-100)' : 'var(--text-primary)',
                                                 lineHeight: 1.3,
                                             }}>
                                                 {pkg.name}
@@ -377,19 +448,19 @@ export default function QuickRechargeWizard() {
                                             alignItems: 'baseline',
                                             justifyContent: 'space-between',
                                             paddingTop: '6px',
-                                            borderTop: `1px solid ${isSelected ? 'rgba(212, 165, 55, 0.25)' : 'rgba(255, 255, 255, 0.05)'}`,
+                                            borderTop: `1px solid ${isSelected ? (isLight ? 'rgba(154, 114, 16, 0.45)' : 'rgba(212, 165, 55, 0.25)') : subtleBorder}`,
                                         }}>
                                             <span style={{
                                                 fontSize: '14.5px',
                                                 fontWeight: '900',
-                                                color: 'var(--gold-300)',
+                                                color: isLight ? 'var(--gold-600)' : 'var(--gold-300)',
                                             }}>
                                                 {pkg.price.toFixed(2)} <span style={{ fontSize: '11px', fontWeight: '700' }}>ج.م</span>
                                             </span>
                                             {isSelected && (
                                                 <span style={{
                                                     fontSize: '10px',
-                                                    color: 'var(--gold-400)',
+                                                    color: isLight ? 'var(--gold-700)' : 'var(--gold-400)',
                                                     fontWeight: '900',
                                                 }}>
                                                     محدد
@@ -404,14 +475,14 @@ export default function QuickRechargeWizard() {
                 </div>
 
                 {/* Final Action / Summary Column */}
-                <div className="quick-recharge-summary">
+                <div className="quick-recharge-summary" style={{ border: `1.5px solid ${mediumBorder}` }}>
                     <div>
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
                             marginBottom: '10px',
-                            borderBottom: '1px solid rgba(212, 165, 55, 0.15)',
+                            borderBottom: `1px solid ${mediumBorder}`,
                             paddingBottom: '8px',
                         }}>
                             <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '700' }}>
@@ -443,7 +514,7 @@ export default function QuickRechargeWizard() {
 
                         <div style={{
                             background: 'rgba(0, 0, 0, 0.4)',
-                            border: '1px solid rgba(212, 165, 55, 0.2)',
+                            border: `1px solid ${isLight ? 'rgba(154, 114, 16, 0.5)' : 'rgba(212, 165, 55, 0.2)'}`,
                             borderRadius: '12px',
                             padding: '10px 14px',
                             display: 'flex',

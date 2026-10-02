@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
-import { HelpCircle, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { HelpCircle, ChevronDown, ChevronUp, MousePointer2 } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
-
+import { useTheme } from '../../contexts/ThemeContext';
+import "../../../css/faqAccordion.css";
 export default function FaqAccordion() {
     const { isRtl } = useLanguage();
+    const { theme } = useTheme();
+    const faqListRef = useRef(null);
+    const questionRefs = useRef([]);
+    const [isListVisible, setIsListVisible] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(-1);
+    const [cursorTop, setCursorTop] = useState(0);
 
     const faqs = [
         {
@@ -28,97 +35,150 @@ export default function FaqAccordion() {
         },
     ];
 
-    const [openIndex, setOpenIndex] = useState(0);
+    const [openIndex, setOpenIndex] = useState(-1);
 
     const toggleFaq = (index) => {
         setOpenIndex(openIndex === index ? -1 : index);
     };
 
-    return (
-        <div className="emperor-entrance" style={{ marginBottom: '56px' }}>
-            <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 32px' }}>
-                <div className="emperor-badge" style={{ margin: '0 auto 12px' }}>
-                    <HelpCircle size={13} color="var(--gold-400)" />
-                    <span>إجابات واضحة ومباشرة</span>
-                </div>
-                <h2 style={{
-                    fontSize: 'clamp(22px, 3.5vw, 28px)',
-                    fontWeight: '900',
-                    color: 'var(--text-primary)',
-                    marginBottom: '8px',
-                }}>
-                    الأسئلة الأكثر شيوعاً
-                </h2>
-                <p style={{
-                    fontSize: '13.5px',
-                    color: 'var(--text-secondary)',
-                    margin: 0,
-                }}>
-                    كل ما تحتاج معرفته عن خدمات الشحن، سحب التارجت، وطرق الدفع
-                </p>
-            </div>
+    useEffect(() => {
+        const faqList = faqListRef.current;
+        if (!faqList || !('IntersectionObserver' in window)) return undefined;
 
-            <div style={{ maxWidth: '820px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {faqs.map((faq, idx) => {
-                    const isOpen = openIndex === idx;
-                    return (
-                        <div
-                            key={idx}
-                            style={{
-                                background: isOpen
-                                    ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.08) 0%, rgba(17, 17, 24, 0.95) 100%)'
-                                    : 'var(--bg-card)',
-                                border: `1px solid ${isOpen ? 'var(--gold-400)' : 'var(--border-subtle)'}`,
-                                borderRadius: '18px',
-                                overflow: 'hidden',
-                                transition: 'all 0.3s ease',
-                                boxShadow: isOpen ? 'var(--shadow-gold)' : 'none',
-                            }}
-                        >
-                            <button
-                                onClick={() => toggleFaq(idx)}
+        const observer = new IntersectionObserver(([entry]) => {
+            setIsListVisible(entry.isIntersecting);
+        }, { threshold: 0.12 });
+
+        observer.observe(faqList);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+
+    useEffect(() => {
+        const sequenceLength = Math.min(5, questionRefs.current.length);
+        if (!isListVisible || openIndex !== -1 || sequenceLength === 0) {
+            setActiveIndex(-1);
+            return undefined;
+        }
+
+        let index = 0;
+        setActiveIndex(index);
+        const intervalId = window.setInterval(() => {
+            index = (index + 1) % sequenceLength;
+            setActiveIndex(index);
+        }, 2000);
+
+        return () => {
+            window.clearInterval(intervalId);
+        };
+    }, [isListVisible, openIndex]);
+
+    useEffect(() => {
+        const list = faqListRef.current;
+        const question = questionRefs.current[activeIndex];
+        if (!list || !question || activeIndex < 0) return;
+
+        const listBounds = list.getBoundingClientRect();
+        const questionBounds = question.getBoundingClientRect();
+        setCursorTop(questionBounds.top - listBounds.top + questionBounds.height / 2);
+    }, [activeIndex]);
+
+
+    return (
+        <>
+            <div className="emperor-entrance" style={{ marginBottom: '56px' }}>
+                <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 32px' }}>
+                    <div className="emperor-badge" style={{ margin: '0 auto 12px' }}>
+                        <HelpCircle size={13} color="var(--gold-400)" />
+                        <span>إجابات واضحة ومباشرة</span>
+                    </div>
+                    <h2 style={{
+                        fontSize: 'clamp(22px, 3.5vw, 28px)',
+                        fontWeight: '900',
+                        color: theme === 'light' ? 'var(--gold-700)' : 'var(--text-primary)',
+                        marginBottom: '8px',
+                    }}>
+                        الأسئلة الأكثر شيوعاً
+                    </h2>
+                    <p style={{
+                        fontSize: '13.5px',
+                        color: 'var(--text-secondary)',
+                        margin: 0,
+                    }}>
+                        كل ما تحتاج معرفته عن خدمات الشحن، سحب التارجت، وطرق الدفع
+                    </p>
+                </div>
+                <div ref={faqListRef} className="faq-list" style={{ maxWidth: '820px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {faqs.map((faq, idx) => {
+                        const isOpen = openIndex === idx;
+                        return (
+                            <div
+                                key={idx}
+                                ref={(element) => { questionRefs.current[idx] = element; }}
+                                className={`faq-question${activeIndex === idx ? ' faq-question--pointed' : ''}`}
                                 style={{
-                                    width: '100%',
-                                    padding: '18px 20px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    gap: '12px',
-                                    background: 'transparent',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    textAlign: isRtl ? 'right' : 'left',
-                                    color: isOpen ? 'var(--gold-100)' : 'var(--text-primary)',
-                                    fontFamily: 'var(--font-cairo)',
-                                    fontSize: '14.5px',
-                                    fontWeight: '800',
+                                    background: isOpen
+                                        ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.08) 0%, rgba(17, 17, 24, 0.95) 100%)'
+                                        : 'var(--bg-card)',
+                                    border: `1px solid ${isOpen ? 'var(--gold-400)' : 'var(--border-subtle)'}`,
+                                    borderRadius: '18px',
+                                    overflow: 'hidden',
+                                    transition: 'all 0.3s ease',
+                                    boxShadow: isOpen ? 'var(--shadow-gold)' : 'none',
                                 }}
                             >
-                                <span>{faq.q}</span>
-                                {isOpen ? (
-                                    <ChevronUp size={18} color="var(--gold-400)" style={{ flexShrink: 0 }} />
-                                ) : (
-                                    <ChevronDown size={18} color="var(--text-muted)" style={{ flexShrink: 0 }} />
-                                )}
-                            </button>
+                                <button
+                                    onClick={() => toggleFaq(idx)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '18px 20px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        gap: '12px',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        textAlign: isRtl ? 'right' : 'left',
+                                        color: isOpen ? 'var(--gold-100)' : 'var(--text-primary)',
+                                        fontFamily: 'var(--font-cairo)',
+                                        fontSize: '14.5px',
+                                        fontWeight: '800',
+                                    }}
+                                >
+                                    <span className="faq-question-text">{faq.q}</span>
+                                    {isOpen ? (
+                                        <ChevronUp size={18} color="var(--gold-400)" style={{ flexShrink: 0 }} />
+                                    ) : (
+                                        <ChevronDown size={18} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+                                    )}
+                                </button>
 
-                            {isOpen && (
-                                <div style={{
-                                    padding: '0 20px 20px',
-                                    color: 'var(--text-secondary)',
-                                    fontSize: '13.5px',
-                                    lineHeight: '1.8',
-                                    borderTop: '1px solid rgba(212, 165, 55, 0.1)',
-                                    paddingTop: '14px',
-                                    animation: 'fadeInUp 0.3s ease',
-                                }}>
-                                    {faq.a}
-                                </div>
-                            )}
+                                {isOpen && (
+                                    <div style={{
+                                        padding: '0 20px 20px',
+                                        color: 'var(--text-secondary)',
+                                        fontSize: '13.5px',
+                                        lineHeight: '1.8',
+                                        borderTop: '1px solid rgba(212, 165, 55, 0.1)',
+                                        paddingTop: '14px',
+                                        animation: 'fadeInUp 0.3s ease',
+                                    }}>
+                                        {faq.a}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                    {activeIndex >= 0 && (
+                        <div className="faq-scroll-cursor" style={{ top: `${cursorTop}px` }} aria-hidden="true">
+                            <MousePointer2 size={19} strokeWidth={2.5} />
                         </div>
-                    );
-                })}
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }

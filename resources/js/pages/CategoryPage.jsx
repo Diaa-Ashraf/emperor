@@ -8,6 +8,7 @@ import Select from '../components/ui/Select';
 import EmptyState from '../components/ui/EmptyState';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { catalogApi } from '../api/endpoints';
+import VideoBackground from '../components/home/VideoBackground';
 
 export default function CategoryPage() {
     const params = useParams();
@@ -44,7 +45,7 @@ export default function CategoryPage() {
                     }
                 }
             })
-            .catch(() => {});
+            .catch(() => { });
     }, [slug]);
 
     // Fetch products whenever selectedCategory or slug changes
@@ -200,6 +201,7 @@ export default function CategoryPage() {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: '16px',
+
             }}>
                 <div style={{ flex: '1 1 280px', maxWidth: '400px' }}>
                     <Input
@@ -228,6 +230,7 @@ export default function CategoryPage() {
                                 outline: 'none',
                                 fontFamily: 'Cairo, sans-serif',
                                 cursor: 'pointer',
+
                             }}
                         >
                             <option value="sort_order">الترتيب الافتراضي</option>
@@ -238,27 +241,29 @@ export default function CategoryPage() {
             </div>
 
             {/* Products Grid */}
-            {loading ? (
-                <div style={{ padding: '60px 0' }}>
-                    <LoadingSpinner text="جاري تحميل المنتجات والأسعار..." />
-                </div>
-            ) : filteredProducts.length > 0 ? (
-                <div className="responsive-grid-products">
-                    {filteredProducts.map((product) => (
-                        <ProductCard key={product.id} product={product} />
-                    ))}
-                </div>
-            ) : (
-                <EmptyState
-                    title="لم يتم العثور على منتجات"
-                    description={searchQuery ? `لا توجد نتائج مطابقة لـ "${searchQuery}"` : 'لا توجد منتجات متاحة في هذا القسم حالياً'}
-                    actionText="تصفح جميع المنتجات"
-                    onAction={() => {
-                        setSearchQuery('');
-                        setSelectedCategory(null);
-                    }}
-                />
-            )}
+            <VideoBackground>
+                {loading ? (
+                    <div style={{ padding: '60px 0' }}>
+                        <LoadingSpinner text="جاري تحميل المنتجات والأسعار..." />
+                    </div>
+                ) : filteredProducts.length > 0 ? (
+                    <div className="responsive-grid-products">
+                        {filteredProducts.map((product) => (
+                            <ProductCard key={product.id} product={product} />
+                        ))}
+                    </div>
+                ) : (
+                    <EmptyState
+                        title="لم يتم العثور على منتجات"
+                        description={searchQuery ? `لا توجد نتائج مطابقة لـ "${searchQuery}"` : 'لا توجد منتجات متاحة في هذا القسم حالياً'}
+                        actionText="تصفح جميع المنتجات"
+                        onAction={() => {
+                            setSearchQuery('');
+                            setSelectedCategory(null);
+                        }}
+                    />
+                )}
+            </VideoBackground>
         </MainLayout>
     );
 }

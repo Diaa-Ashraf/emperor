@@ -1,9 +1,11 @@
 import React from 'react';
 import { Star, CheckCircle, MessageSquareQuote, ShieldCheck } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function CustomerReviewsSection() {
     const { isRtl } = useLanguage();
+    const { theme } = useTheme();
 
     const reviews = [
         {
@@ -48,13 +50,15 @@ export default function CustomerReviewsSection() {
         <div className="emperor-entrance" style={{ marginBottom: '56px' }}>
             <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 32px' }}>
                 <div className="emperor-badge" style={{ margin: '0 auto 12px' }}>
-                    <MessageSquareQuote size={13} color="var(--gold-400)" />
-                    <span>تجارب حقيقية موثقة ⭐️</span>
+                    <MessageSquareQuote size={13} color={theme === 'light' ? 'var(--gold-700)' : 'var(--gold-400)'} />
+                    <span style={{ color: theme === 'light' ? 'var(--gold-700)' : undefined }}>
+                        تجارب حقيقية موثقة ⭐️
+                    </span>
                 </div>
                 <h2 style={{
                     fontSize: 'clamp(22px, 3.5vw, 28px)',
                     fontWeight: '900',
-                    color: 'var(--text-primary)',
+                    color: theme === 'light' ? 'var(--gold-700)' : 'var(--text-primary)',
                     marginBottom: '8px',
                 }}>
                     ماذا يقول عملاؤنا وتجارنا؟

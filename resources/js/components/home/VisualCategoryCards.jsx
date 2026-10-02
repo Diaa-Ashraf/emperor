@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Smartphone, Gamepad2, Zap, Tv, Layers, Target, TrendingUp } from 'lucide-react';
 import { catalogApi } from '../../api/endpoints';
 import { useLanguage } from '../../contexts/LanguageContext';
-
+import "../../../css/visualCategory.css";
 export default function VisualCategoryCards() {
     const { isRtl } = useLanguage();
     const [categories, setCategories] = useState([]);
@@ -113,11 +113,13 @@ export default function VisualCategoryCards() {
                 </div>
             </div>
 
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
-                gap: '16px',
-            }}>
+            <div
+                className="visual-container"
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
+                    gap: '16px',
+                }}>
                 {displayCategories.map((cat, i) => (
                     <CategoryCard key={cat.id || i} cat={cat} isRtl={isRtl} index={i} />
                 ))}
@@ -128,16 +130,37 @@ export default function VisualCategoryCards() {
 
 function CategoryCard({ cat, isRtl, index }) {
     const [hovered, setHovered] = useState(false);
-
+    const [isVisible, setIsVisible] = useState(false);
+    const sectionRef = React.useRef(null);
     const rawImg = cat.banner_url || cat.icon_url || cat.artwork;
     const imageUrl = rawImg && typeof rawImg === 'string' && rawImg.includes('/storage/')
         ? ('/storage/' + rawImg.split('/storage/')[1])
         : rawImg;
     const categoryLink = cat.customLink || `/category/${cat.slug || cat.id}`;
+    useEffect(() => {
+        const card = sectionRef.current;
+        if (!card) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsVisible(entry.isIntersecting);
+            },
+            {
+                threshold: 0.3,
+            }
+        );
+
+        observer.observe(card);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
 
     return (
         <Link
             to={categoryLink}
+            ref={sectionRef}
             style={{
                 textDecoration: 'none',
                 position: 'relative',
@@ -149,14 +172,14 @@ function CategoryCard({ cat, isRtl, index }) {
                 boxShadow: hovered
                     ? '0 12px 35px rgba(0,0,0,0.8), 0 0 25px rgba(212,165,55,0.2)'
                     : cat.isTarget
-                    ? '0 8px 30px rgba(0,0,0,0.7), 0 0 15px rgba(212,165,55,0.1)'
-                    : '0 6px 20px rgba(0,0,0,0.5)',
+                        ? '0 8px 30px rgba(0,0,0,0.7), 0 0 15px rgba(212,165,55,0.1)'
+                        : '0 6px 20px rgba(0,0,0,0.5)',
                 transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
-                transform: hovered ? 'translateY(-6px)' : 'translateY(0)',
                 minHeight: '260px',
                 background: '#0B0B0F',
+                animationDelay: `${index * 0.25}s`,
             }}
-            className={`emperor-entrance emperor-entrance-delay-${(index % 4) + 1}`}
+            className={`category-ad ${isVisible ? "ad-card--visible" : ""}`}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
@@ -205,8 +228,9 @@ function CategoryCard({ cat, isRtl, index }) {
                             style={{
                                 position: 'relative',
                                 zIndex: 2,
-                                maxWidth: '78%',
-                                maxHeight: '78%',
+                                maxWidth: '60%',
+                                maxHeight: '60%',
+                                marginTop: '45px',
                                 width: 'auto',
                                 height: 'auto',
                                 objectFit: 'contain',
@@ -312,8 +336,8 @@ function CategoryCard({ cat, isRtl, index }) {
                     background: cat.isTarget
                         ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
                         : hovered
-                        ? 'rgba(212, 165, 55, 0.15)'
-                        : 'rgba(212, 165, 55, 0.05)',
+                            ? 'rgba(212, 165, 55, 0.15)'
+                            : 'rgba(212, 165, 55, 0.05)',
                     border: `1px solid ${cat.isTarget ? '#D4A537' : hovered ? '#D4A537' : 'rgba(212, 165, 55, 0.2)'}`,
                     color: cat.isTarget ? '#000000' : '#F5D061',
                     fontSize: '13px',

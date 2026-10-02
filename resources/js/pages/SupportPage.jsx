@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Headphones,
     MessageCircle,
@@ -15,17 +15,30 @@ import {
     HelpCircle,
     ExternalLink,
     Sparkles,
+    MousePointer2,
 } from 'lucide-react';
 import { supportApi } from '../api/endpoints';
 import { useToast } from '../contexts/ToastContext';
 import Button from '../components/ui/Button';
+import VideoBackground from "../components/home/VideoBackground";
+import "../../css/faqAccordion.css";
+import "../../css/supportPage.css";
+
 
 export default function SupportPage() {
     const { addToast } = useToast();
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [copiedIndex, setCopiedIndex] = useState(null);
-    const [openFaq, setOpenFaq] = useState(0); // Index of opened FAQ
+    const [openFaq, setOpenFaq] = useState(null); // Index of opened FAQ
+    // animation 
+    const faqListRef = useRef(null);
+    const questionRefs = useRef([]);
+    const [isListVisible, setIsListVisible] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(-1);
+    const [cursorTop, setCursorTop] = useState(0);
+
+
 
     useEffect(() => {
         const fetchContacts = async () => {
@@ -137,69 +150,117 @@ export default function SupportPage() {
         return val.startsWith('http') ? val : `https://${val}`;
     };
 
+    useEffect(() => {
+        const faqList = faqListRef.current;
+        if (!faqList || !('IntersectionObserver' in window)) return undefined;
+
+        const observer = new IntersectionObserver(([entry]) => {
+            setIsListVisible(entry.isIntersecting);
+        }, { threshold: 0.12 });
+
+        observer.observe(faqList);
+        return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const sequenceLength = Math.min(5, questionRefs.current.length);
+        if (!isListVisible || openFaq !== null || sequenceLength === 0) {
+            setActiveIndex(-1);
+            return undefined;
+        }
+
+        let index = 0;
+        setActiveIndex(index);
+        const intervalId = window.setInterval(() => {
+            index = (index + 1) % sequenceLength;
+            setActiveIndex(index);
+        }, 2000);
+
+        return () => window.clearInterval(intervalId);
+    }, [isListVisible, openFaq]);
+
+    useEffect(() => {
+        const list = faqListRef.current;
+        const question = questionRefs.current[activeIndex];
+        if (!list || !question || activeIndex < 0) return;
+
+        const listBounds = list.getBoundingClientRect();
+        const questionBounds = question.getBoundingClientRect();
+        setCursorTop(questionBounds.top - listBounds.top + questionBounds.height / 2);
+    }, [activeIndex]);
+
+
+
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '24px 16px 80px' }}>
             {/* Hero Header */}
-            <div style={{
-                background: 'linear-gradient(135deg, rgba(28, 28, 38, 0.95) 0%, rgba(18, 18, 24, 0.95) 100%)',
-                border: '1px solid rgba(212, 165, 55, 0.25)',
-                borderRadius: '24px',
-                padding: '36px 30px',
-                marginBottom: '32px',
-                textAlign: 'center',
-                position: 'relative',
-                overflow: 'hidden',
-                boxShadow: '0 12px 30px rgba(0, 0, 0, 0.4)',
-            }}>
-                <div style={{
-                    width: '64px',
-                    height: '64px',
-                    borderRadius: '20px',
-                    background: 'linear-gradient(135deg, rgba(212, 165, 55, 0.25) 0%, rgba(212, 165, 55, 0.08) 100%)',
-                    border: '1px solid rgba(212, 165, 55, 0.4)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#D4A537',
-                    margin: '0 auto 18px',
-                    boxShadow: '0 0 25px rgba(212, 165, 55, 0.2)',
-                }}>
-                    <Headphones size={32} />
+            <VideoBackground>
+                <div
+                    className='hero-header'
+                    style={{
+                        background: 'linear-gradient(135deg, rgba(28, 28, 38, 0.95) 0%, rgb(18 18 24 / 56%) 100%)',
+                        border: '1px solid rgba(212, 165, 55, 0.25)',
+                        borderRadius: '24px',
+                        padding: '36px 30px',
+                        marginBottom: '32px',
+                        textAlign: 'center',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        boxShadow: '0 12px 30px rgba(0, 0, 0, 0.4)',
+                        marginTop: "30px"
+                    }}>
+                    <div
+                        style={{
+                            width: '64px',
+                            height: '64px',
+                            borderRadius: '20px',
+                            background: 'linear-gradient(135deg, rgba(212, 165, 55, 0.25) 0%, rgba(212, 165, 55, 0.08) 100%)',
+                            border: '1px solid rgba(212, 165, 55, 0.4)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#D4A537',
+                            margin: '0 auto 18px',
+                            boxShadow: '0 0 25px rgba(212, 165, 55, 0.2)',
+                        }}>
+                        <Headphones size={32} />
+                    </div>
+
+                    <h1 style={{ margin: '0 0 10px', fontSize: '26px', fontWeight: '900', color: '#FFFFFF' }}>
+                        مركز الدعم الفني وخدمة العملاء
+                    </h1>
+
+                    <p style={{ margin: '0 auto 24px', fontSize: '15px', color: '#9E9EA8', maxWidth: '600px', lineHeight: '1.6' }}>
+                        فريق دعم منصة إمبراطور متواجد لخدمتكم على مدار 24 ساعة، للإجابة عن استفساراتكم وحل أي مشكلة في أسرع وقت.
+                    </p>
+
+                    {/* Trust Badges */}
+                    <div
+                        className="trust-badges"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexWrap: 'wrap',
+                            gap: '20px',
+                            paddingTop: '16px',
+                            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                        }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#4ADE80', fontSize: '13px', fontWeight: '700' }}>
+                            <Clock size={16} />
+                            <span>متاح 24/7 طوال الأسبوع</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#D4A537', fontSize: '13px', fontWeight: '700' }}>
+                            <Zap size={16} />
+                            <span>متوسط سرعة الرد: أقل من دقيقة</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#38BDF8', fontSize: '13px', fontWeight: '700' }}>
+                            <ShieldCheck size={16} />
+                            <span>دعم فني معتمد ومباشر</span>
+                        </div>
+                    </div>
                 </div>
-
-                <h1 style={{ margin: '0 0 10px', fontSize: '26px', fontWeight: '900', color: '#FFFFFF' }}>
-                    مركز الدعم الفني وخدمة العملاء
-                </h1>
-
-                <p style={{ margin: '0 auto 24px', fontSize: '15px', color: '#9E9EA8', maxWidth: '600px', lineHeight: '1.6' }}>
-                    فريق دعم منصة إمبراطور متواجد لخدمتكم على مدار 24 ساعة، للإجابة عن استفساراتكم وحل أي مشكلة في أسرع وقت.
-                </p>
-
-                {/* Trust Badges */}
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexWrap: 'wrap',
-                    gap: '20px',
-                    paddingTop: '16px',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#4ADE80', fontSize: '13px', fontWeight: '700' }}>
-                        <Clock size={16} />
-                        <span>متاح 24/7 طوال الأسبوع</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#D4A537', fontSize: '13px', fontWeight: '700' }}>
-                        <Zap size={16} />
-                        <span>متوسط سرعة الرد: أقل من دقيقة</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#38BDF8', fontSize: '13px', fontWeight: '700' }}>
-                        <ShieldCheck size={16} />
-                        <span>دعم فني معتمد ومباشر</span>
-                    </div>
-                </div>
-            </div>
-
+            </VideoBackground>
             {/* Support Contacts Grid */}
             <div style={{ marginBottom: '40px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
@@ -375,20 +436,31 @@ export default function SupportPage() {
                         </p>
                     </div>
                 </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {/* faq */}
+                <div
+                    ref={faqListRef}
+                    className="faq-list"
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px',
+                        position: 'relative',
+                    }}>
                     {faqs.map((faq, idx) => {
                         const isOpen = openFaq === idx;
 
                         return (
                             <div
                                 key={idx}
+                                ref={(element) => { questionRefs.current[idx] = element; }}
+                                className={`faq-question${activeIndex === idx ? ' faq-question--pointed' : ''}`}
                                 style={{
                                     borderRadius: '14px',
                                     border: `1px solid ${isOpen ? 'rgba(212, 165, 55, 0.3)' : 'rgba(255, 255, 255, 0.06)'}`,
                                     background: isOpen ? 'rgba(30, 30, 42, 0.9)' : 'rgba(13, 13, 16, 0.5)',
                                     overflow: 'hidden',
                                     transition: 'all 0.2s ease',
+
                                 }}
                             >
                                 <button
@@ -409,7 +481,7 @@ export default function SupportPage() {
                                         fontFamily: 'Cairo, sans-serif',
                                     }}
                                 >
-                                    <span>{faq.q}</span>
+                                    <span className="faq-question-text">{faq.q}</span>
                                     {isOpen ? <ChevronUp size={18} color="#D4A537" /> : <ChevronDown size={18} color="#8E8E98" />}
                                 </button>
 
@@ -428,8 +500,14 @@ export default function SupportPage() {
                             </div>
                         );
                     })}
+                    {activeIndex >= 0 && (
+                        <div className="faq-scroll-cursor" style={{ top: `${cursorTop}px` }} aria-hidden="true">
+                            <MousePointer2 size={19} strokeWidth={2.5} />
+                        </div>
+                    )}
+
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

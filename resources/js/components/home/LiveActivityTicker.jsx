@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Zap, ShieldCheck, TrendingUp, Sparkles, Clock, CheckCircle } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function LiveActivityTicker() {
     const { isRtl } = useLanguage();
+    const { theme } = useTheme();
 
     const activities = [
         { id: 1, type: 'order', text: 'مستخدم من الجيزة شحن 60 شدة ببجي (60 UC) فورياً', time: 'منذ 4 ثوانٍ', icon: Zap, color: 'var(--gold-400)' },
@@ -104,7 +106,7 @@ export default function LiveActivityTicker() {
                 <span style={{
                     fontSize: '12px',
                     fontWeight: '700',
-                    color: 'var(--text-primary)',
+                    color: theme === 'light' ? '#F4F4F5' : 'var(--text-primary)',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',

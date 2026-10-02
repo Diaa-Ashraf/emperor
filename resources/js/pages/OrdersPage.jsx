@@ -8,7 +8,7 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Pagination from '../components/ui/Pagination';
 import Button from '../components/ui/Button';
 import { ordersApi } from '../api/endpoints';
-
+import VideoBackground from "../components/home/VideoBackground";
 export default function OrdersPage() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -84,6 +84,7 @@ export default function OrdersPage() {
                 overflowX: 'auto',
                 paddingBottom: '8px',
                 marginBottom: '28px',
+                flexWrap: 'wrap',
             }}>
                 {filterTabs.map((tab) => {
                     const isActive = statusFilter === tab.key;
@@ -117,34 +118,36 @@ export default function OrdersPage() {
             </div>
 
             {/* Orders List */}
-            {loading ? (
-                <div style={{ padding: '80px 0' }}>
-                    <LoadingSpinner text="جاري جلب سجل الطلبات..." />
-                </div>
-            ) : orders.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '32px' }}>
-                    {orders.map((order) => (
-                        <OrderCard key={order.id} order={order} />
-                    ))}
+            <VideoBackground>
+                {loading ? (
+                    <div style={{ padding: '80px 0' }}>
+                        <LoadingSpinner text="جاري جلب سجل الطلبات..." />
+                    </div>
+                ) : orders.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '32px' }}>
+                        {orders.map((order) => (
+                            <OrderCard key={order.id} order={order} />
+                        ))}
 
-                    {meta && meta.last_page > 1 && (
-                        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
-                            <Pagination
-                                currentPage={currentPage}
-                                lastPage={meta.last_page}
-                                onPageChange={(p) => setCurrentPage(p)}
-                            />
-                        </div>
-                    )}
-                </div>
-            ) : (
-                <EmptyState
-                    title="لا توجد طلبات شحن حالياً"
-                    description="لم تقم بإجراء أي طلبات شحن بهذا التصنيف حتى الآن."
-                    actionText="تصفح الألعاب واشحن الآن"
-                    onAction={() => window.location.href = '/category/games'}
-                />
-            )}
+                        {meta && meta.last_page > 1 && (
+                            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+                                <Pagination
+                                    currentPage={currentPage}
+                                    lastPage={meta.last_page}
+                                    onPageChange={(p) => setCurrentPage(p)}
+                                />
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <EmptyState
+                        title="لا توجد طلبات شحن حالياً"
+                        description="لم تقم بإجراء أي طلبات شحن بهذا التصنيف حتى الآن."
+                        actionText="تصفح الألعاب واشحن الآن"
+                        onAction={() => window.location.href = '/category/games'}
+                    />
+                )}
+            </VideoBackground>
         </MainLayout>
     );
 }

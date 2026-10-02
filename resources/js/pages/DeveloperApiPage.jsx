@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { developerApi } from '../api/endpoints';
-
+import "../../css/developerApi.css";
 export default function DeveloperApiPage() {
     const { user } = useAuth();
     const { addToast } = useToast();
@@ -166,15 +166,17 @@ export default function DeveloperApiPage() {
             ) : activeTab === 'keys' ? (
                 /* Tab 1: API Keys & IP Settings */
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
-                    
+
                     {/* Card 1: API Key & Secret */}
-                    <div style={{
-                        background: '#111827',
-                        border: '1px solid rgba(212, 165, 55, 0.25)',
-                        borderRadius: '16px',
-                        padding: '24px',
-                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4)'
-                    }}>
+                    <div
+                        className="card-one"
+                        style={{
+                            background: '#111827',
+                            border: '1px solid rgba(212, 165, 55, 0.25)',
+                            borderRadius: '16px',
+                            padding: '24px',
+                            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4)'
+                        }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                             <span style={{ fontSize: '20px' }}>🛡️</span>
                             <h2 style={{ fontSize: '18px', fontWeight: '700', color: '#f3f4f6', margin: 0 }}>
@@ -295,13 +297,15 @@ export default function DeveloperApiPage() {
                     </div>
 
                     {/* Card 2: Allowed IPs & Webhooks */}
-                    <div style={{
-                        background: '#111827',
-                        border: '1px solid rgba(212, 165, 55, 0.25)',
-                        borderRadius: '16px',
-                        padding: '24px',
-                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4)'
-                    }}>
+                    <div
+                        className="card-two"
+                        style={{
+                            background: '#111827',
+                            border: '1px solid rgba(212, 165, 55, 0.25)',
+                            borderRadius: '16px',
+                            padding: '24px',
+                            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4)'
+                        }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                             <span style={{ fontSize: '20px' }}>🔒</span>
                             <h2 style={{ fontSize: '18px', fontWeight: '700', color: '#f3f4f6', margin: 0 }}>
@@ -343,6 +347,7 @@ export default function DeveloperApiPage() {
                                     رابط الاستقبال اللحظي (Webhook Callback URL):
                                 </label>
                                 <input
+                                    className="Webhook-input"
                                     type="url"
                                     value={webhookUrl}
                                     onChange={(e) => setWebhookUrl(e.target.value)}
@@ -410,7 +415,7 @@ export default function DeveloperApiPage() {
                             <span style={{ color: '#94a3b8', fontSize: '13px' }}>- الاستعلام عن رصيد المحفظة الحالي</span>
                         </div>
                         <pre style={{ background: '#0f172a', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: '#38bdf8' }}>
-{`curl -X GET "${window.location.origin}/api/v1/external/balance" \\
+                            {`curl -X GET "${window.location.origin}/api/v1/external/balance" \\
   -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
   -H "X-API-Secret: YOUR_API_SECRET"`}
                         </pre>
@@ -424,7 +429,7 @@ export default function DeveloperApiPage() {
                             <span style={{ color: '#94a3b8', fontSize: '13px' }}>- جلب قائمة المنتجات والأسعار الخاصة بك</span>
                         </div>
                         <pre style={{ background: '#0f172a', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: '#38bdf8' }}>
-{`curl -X GET "${window.location.origin}/api/v1/external/products" \\
+                            {`curl -X GET "${window.location.origin}/api/v1/external/products" \\
   -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
   -H "X-API-Secret: YOUR_API_SECRET"`}
                         </pre>
@@ -438,7 +443,7 @@ export default function DeveloperApiPage() {
                             <span style={{ color: '#94a3b8', fontSize: '13px' }}>- إنشاء وتنفيذ طلب شحن مباشر</span>
                         </div>
                         <pre style={{ background: '#0f172a', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: '#4ade80' }}>
-{`curl -X POST "${window.location.origin}/api/v1/external/orders" \\
+                            {`curl -X POST "${window.location.origin}/api/v1/external/orders" \\
   -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
   -H "X-API-Secret: YOUR_API_SECRET" \\
   -H "Content-Type: application/json" \\
@@ -460,7 +465,7 @@ export default function DeveloperApiPage() {
                             <span style={{ color: '#94a3b8', fontSize: '13px' }}>- الاستعلام عن حالة الطلب والأكواد</span>
                         </div>
                         <pre style={{ background: '#0f172a', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: '#38bdf8' }}>
-{`curl -X GET "${window.location.origin}/api/v1/external/orders/EMP-12345" \\
+                            {`curl -X GET "${window.location.origin}/api/v1/external/orders/EMP-12345" \\
   -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
   -H "X-API-Secret: YOUR_API_SECRET"`}
                         </pre>

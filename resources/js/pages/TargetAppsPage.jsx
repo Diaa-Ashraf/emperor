@@ -7,7 +7,7 @@ import EmptyState from '../components/ui/EmptyState';
 import { targetApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
 import { TargetAppIconRenderer } from '../components/target/TargetAppIcons';
-
+import VideoBackground from '../components/home/VideoBackground';
 export default function TargetAppsPage() {
     const { isRtl } = useLanguage();
     const navigate = useNavigate();
@@ -170,106 +170,107 @@ export default function TargetAppsPage() {
                             <span>استلام فوري كاش بأعلى سعر صرف</span>
                         </div>
                     </div>
-
-                    {loading ? (
-                        <div style={{ padding: '70px 0' }}>
-                            <LoadingSpinner text="جاري تحميل التطبيقات وأسعار الصرف من قاعدة البيانات..." />
-                        </div>
-                    ) : apps.length === 0 ? (
-                        <EmptyState
-                            title="لا توجد تطبيقات تارجت حالياً"
-                            description="لم يتم تفعيل أو إضافة أي تطبيقات بيع تارجت في لوحة التحكم بعد"
-                            actionText="تحديث الصفحة"
-                            onAction={() => window.location.reload()}
-                        />
-                    ) : (
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(135px, 1fr))',
-                            gap: '24px 16px',
-                            justifyItems: 'center',
-                        }}>
-                            {apps.map((app) => (
-                                <Link
-                                    key={app.id}
-                                    to={`/target-orders/new?app_id=${app.id}&app_name=${encodeURIComponent(app.name)}`}
-                                    style={{
-                                        textDecoration: 'none',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        textAlign: 'center',
-                                        width: '100%',
-                                        maxWidth: '150px',
-                                        padding: '4px 6px',
-                                        transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        const iconBox = e.currentTarget.querySelector('.app-icon-frame');
-                                        if (iconBox) {
-                                            iconBox.style.transform = 'translateY(-6px) scale(1.04)';
-                                            iconBox.style.borderColor = '#FFE082';
-                                            iconBox.style.boxShadow = '0 14px 32px rgba(212, 165, 55, 0.45)';
-                                        }
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        const iconBox = e.currentTarget.querySelector('.app-icon-frame');
-                                        if (iconBox) {
-                                            iconBox.style.transform = 'translateY(0) scale(1)';
-                                            iconBox.style.borderColor = 'rgba(229, 195, 120, 0.85)';
-                                            iconBox.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.65)';
-                                        }
-                                    }}
-                                >
-                                    {/* ── App Icon Frame with Distinct Golden Bezel ── */}
-                                    <div
-                                        className="app-icon-frame"
+                    <VideoBackground>
+                        {loading ? (
+                            <div style={{ padding: '70px 0' }}>
+                                <LoadingSpinner text="جاري تحميل التطبيقات وأسعار الصرف من قاعدة البيانات..." />
+                            </div>
+                        ) : apps.length === 0 ? (
+                            <EmptyState
+                                title="لا توجد تطبيقات تارجت حالياً"
+                                description="لم يتم تفعيل أو إضافة أي تطبيقات بيع تارجت في لوحة التحكم بعد"
+                                actionText="تحديث الصفحة"
+                                onAction={() => window.location.reload()}
+                            />
+                        ) : (
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(135px, 1fr))',
+                                gap: '24px 16px',
+                                justifyItems: 'center',
+                            }}>
+                                {apps.map((app) => (
+                                    <Link
+                                        key={app.id}
+                                        to={`/target-orders/new?app_id=${app.id}&app_name=${encodeURIComponent(app.name)}`}
                                         style={{
-                                            width: '94px',
-                                            height: '94px',
-                                            borderRadius: '24px',
-                                            border: '2.5px solid rgba(229, 195, 120, 0.85)',
-                                            background: '#0E0E14',
-                                            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.65)',
-                                            overflow: 'hidden',
+                                            textDecoration: 'none',
                                             display: 'flex',
+                                            flexDirection: 'column',
                                             alignItems: 'center',
-                                            justifyContent: 'center',
-                                            transition: 'all 0.28s cubic-bezier(0.16, 1, 0.3, 1)',
-                                            cursor: 'pointer',
-                                            position: 'relative',
+                                            textAlign: 'center',
+                                            width: '100%',
+                                            maxWidth: '150px',
+                                            padding: '4px 6px',
+                                            transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            const iconBox = e.currentTarget.querySelector('.app-icon-frame');
+                                            if (iconBox) {
+                                                iconBox.style.transform = 'translateY(-6px) scale(1.04)';
+                                                iconBox.style.borderColor = '#FFE082';
+                                                iconBox.style.boxShadow = '0 14px 32px rgba(212, 165, 55, 0.45)';
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            const iconBox = e.currentTarget.querySelector('.app-icon-frame');
+                                            if (iconBox) {
+                                                iconBox.style.transform = 'translateY(0) scale(1)';
+                                                iconBox.style.borderColor = 'rgba(229, 195, 120, 0.85)';
+                                                iconBox.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.65)';
+                                            }
                                         }}
                                     >
-                                        <TargetAppIconRenderer app={app} size={94} />
-                                    </div>
+                                        {/* ── App Icon Frame with Distinct Golden Bezel ── */}
+                                        <div
+                                            className="app-icon-frame"
+                                            style={{
+                                                width: '94px',
+                                                height: '94px',
+                                                borderRadius: '24px',
+                                                border: '2.5px solid rgba(229, 195, 120, 0.85)',
+                                                background: '#0E0E14',
+                                                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.65)',
+                                                overflow: 'hidden',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                transition: 'all 0.28s cubic-bezier(0.16, 1, 0.3, 1)',
+                                                cursor: 'pointer',
+                                                position: 'relative',
+                                            }}
+                                        >
+                                            <TargetAppIconRenderer app={app} size={94} />
+                                        </div>
 
-                                    {/* ── App Name in Crisp White ── */}
-                                    <div style={{
-                                        fontSize: '14.5px',
-                                        fontWeight: '800',
-                                        color: '#FFFFFF',
-                                        marginTop: '10px',
-                                        marginBottom: '4px',
-                                        lineHeight: '1.3',
-                                        letterSpacing: '-0.2px',
-                                    }}>
-                                        {app.name}
-                                    </div>
+                                        {/* ── App Name in Crisp White ── */}
+                                        <div style={{
+                                            fontSize: '14.5px',
+                                            fontWeight: '800',
+                                            color: '#FFFFFF',
+                                            marginTop: '10px',
+                                            marginBottom: '4px',
+                                            lineHeight: '1.3',
+                                            letterSpacing: '-0.2px',
+                                        }}>
+                                            {app.name}
+                                        </div>
 
-                                    {/* ── Rate / Price Text in Radiant Gold (from Database) ── */}
-                                    <div style={{
-                                        fontSize: '13px',
-                                        fontWeight: '800',
-                                        color: '#E5C378',
-                                        letterSpacing: '-0.2px',
-                                        textShadow: '0 1px 3px rgba(0, 0, 0, 0.6)',
-                                    }}>
-                                        {app.rate_text || `${app.rate_per_unit || 48} EGP / دولار`}
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    )}
+                                        {/* ── Rate / Price Text in Radiant Gold (from Database) ── */}
+                                        <div style={{
+                                            fontSize: '13px',
+                                            fontWeight: '800',
+                                            color: '#E5C378',
+                                            letterSpacing: '-0.2px',
+                                            textShadow: '0 1px 3px rgba(0, 0, 0, 0.6)',
+                                        }}>
+                                            {app.rate_text || `${app.rate_per_unit || 48} EGP / دولار`}
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </VideoBackground>
                 </div>
             </div>
         </MainLayout>

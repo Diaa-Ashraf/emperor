@@ -13,16 +13,16 @@ export default function StatsCard({ icon: Icon, title, value, unit, color = '#D4
             boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3)',
             transition: 'all 0.25s ease',
         }}
-        onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = color;
-            e.currentTarget.style.transform = 'translateY(-2px)';
-        }}
-        onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-            e.currentTarget.style.transform = 'translateY(0)';
-        }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = color;
+                e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                e.currentTarget.style.transform = 'translateY(0)';
+            }}
         >
-            <div style={{
+            <div className="referral-stats-icon-container" style={{
                 width: '54px',
                 height: '54px',
                 borderRadius: '16px',
@@ -33,7 +33,7 @@ export default function StatsCard({ icon: Icon, title, value, unit, color = '#D4
                 justifyContent: 'center',
                 flexShrink: 0,
             }}>
-                <Icon size={26} />
+                <Icon size={26} className="referral-stats-icon" />
             </div>
 
             <div>

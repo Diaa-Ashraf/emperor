@@ -20,6 +20,7 @@ export default function EmptyState({
                 background: 'rgba(255, 255, 255, 0.02)',
                 borderRadius: '16px',
                 border: '1px dashed rgba(255, 255, 255, 0.1)',
+                height: "64%",
                 ...style,
             }}
         >
@@ -43,7 +44,7 @@ export default function EmptyState({
                 {title}
             </h4>
             {description && (
-                <p style={{ margin: '0 0 20px', fontSize: '14px', color: '#8E8E98', maxWidth: '360px', lineHeight: '1.5' }}>
+                <p style={{ margin: '0 0 20px', fontSize: '14px', color: 'rgb(30 30 33 / 98%)', maxWidth: '360px', lineHeight: '1.5', fontWeight: "bold" }}>
                     {description}
                 </p>
             )}

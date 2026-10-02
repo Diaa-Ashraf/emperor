@@ -24,12 +24,30 @@ class SecurityHeadersMiddleware
 
         // Content Security Policy for modern SPA + fonts + assets
         if (!$response->headers->has('Content-Security-Policy')) {
-            $csp = "default-src 'self'; "
-                . "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://*.firebaseio.com; "
-                . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            $viteDevServerSource = '';
+
+            if (app()->environment('local') && is_file(public_path('hot'))) {
+                $viteUrl = parse_url(trim(file_get_contents(public_path('hot'))));
+                $viteHost = trim($viteUrl['host'] ?? '', '[]');
+
+                if (in_array($viteHost, ['localhost', '127.0.0.1'], true)) {
+                    $viteHost = str_contains($viteHost, ':') ? "[{$viteHost}]" : $viteHost;
+                    $vitePort = isset($viteUrl['port']) ? ":{$viteUrl['port']}" : '';
+                    $viteScheme = in_array($viteUrl['scheme'] ?? '', ['http', 'https'], true)
+                        ? $viteUrl['scheme']
+                        : 'http';
+
+                    $viteDevServerSource = " {$viteScheme}://{$viteHost}{$vitePort}";
+                }
+            }
+
+           $csp = "default-src 'self'; "
+                . "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://*.firebaseio.com{$viteDevServerSource}; "
+                . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com{$viteDevServerSource}; "
                 . "font-src 'self' https://fonts.gstatic.com data:; "
                 . "img-src 'self' data: blob: https:; "
                 . "connect-src 'self' http: https: ws: wss:; "
+                . "media-src 'self' blob:{$viteDevServerSource}; "
                 . "frame-src 'self' https://accounts.google.com https://*.firebaseapp.com;";
 
             $response->headers->set('Content-Security-Policy', $csp);

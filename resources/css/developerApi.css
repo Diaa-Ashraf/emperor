@@ -1,0 +1,25 @@
+@media(max-width: 320px) {
+
+    .card-one,
+    .card-two {
+        max-width: 277px !important;
+        width: 100% !important;
+    }
+
+    .card-one input[readonly],
+    .card-two textarea::placeholder,
+    .card-two input::placeholder {
+        min-width: 0;
+        font-size: 10px !important;
+        padding-inline: 8px !important;
+    }
+}
+
+@media(max-width: 420px) {
+
+    .card-one,
+    .card-two {
+        max-width: 300px !important;
+        width: 100% !important;
+    }
+}

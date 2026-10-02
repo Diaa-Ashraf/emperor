@@ -24,7 +24,7 @@ import Pagination from '../components/ui/Pagination';
 import { referralsApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-
+import VideoBackground from '../components/home/VideoBackground';
 export default function ReferralsPage() {
     const { user } = useAuth();
     const { success } = useToast();
@@ -47,7 +47,7 @@ export default function ReferralsPage() {
                     setStats(res.data);
                 }
             })
-            .catch(() => {})
+            .catch(() => { })
             .finally(() => setLoadingStats(false));
     }, []);
 
@@ -229,7 +229,7 @@ export default function ReferralsPage() {
                             justifyContent: 'space-between',
                             gap: '12px',
                         }}>
-                            <div>
+                            <div className="referralCode">
                                 <span style={{ fontSize: '11px', color: '#8E8E98', display: 'block', marginBottom: '2px' }}>
                                     كود الدعوة الخاص بك:
                                 </span>
@@ -244,6 +244,7 @@ export default function ReferralsPage() {
                             </div>
 
                             <Button
+                                className='copy-button'
                                 variant="outline"
                                 size="sm"
                                 icon={copiedCode ? Check : Copy}
@@ -343,35 +344,36 @@ export default function ReferralsPage() {
                         قائمة الأصدقاء المسجلين من خلالك
                     </h3>
                 </div>
+                <VideoBackground>
+                    {loadingUsers ? (
+                        <div style={{ padding: '60px 0' }}>
+                            <LoadingSpinner text="جاري جلب قائمة المدعوين..." />
+                        </div>
+                    ) : invitedUsers.length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            {invitedUsers.map((invUser) => (
+                                <InvitedUserItem key={invUser.id} invitedUser={invUser} />
+                            ))}
 
-                {loadingUsers ? (
-                    <div style={{ padding: '60px 0' }}>
-                        <LoadingSpinner text="جاري جلب قائمة المدعوين..." />
-                    </div>
-                ) : invitedUsers.length > 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {invitedUsers.map((invUser) => (
-                            <InvitedUserItem key={invUser.id} invitedUser={invUser} />
-                        ))}
-
-                        {meta && meta.last_page > 1 && (
-                            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
-                                <Pagination
-                                    currentPage={currentPage}
-                                    lastPage={meta.last_page}
-                                    onPageChange={(p) => setCurrentPage(p)}
-                                />
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <EmptyState
-                        title="لم تقم بدعوة أي أصدقاء بعد"
-                        description="ابدأ بمشاركة كود دعوتك الآن واربح عمولات غير محدودة على كل عملية إيداع وشحن!"
-                        actionText="نسخ رابط الدعوة"
-                        onAction={handleCopyLink}
-                    />
-                )}
+                            {meta && meta.last_page > 1 && (
+                                <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        lastPage={meta.last_page}
+                                        onPageChange={(p) => setCurrentPage(p)}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <EmptyState
+                            title="لم تقم بدعوة أي أصدقاء بعد"
+                            description="ابدأ بمشاركة كود دعوتك الآن واربح عمولات غير محدودة على كل عملية إيداع وشحن!"
+                            actionText="نسخ رابط الدعوة"
+                            onAction={handleCopyLink}
+                        />
+                    )}
+                </VideoBackground>
             </div>
         </MainLayout>
     );

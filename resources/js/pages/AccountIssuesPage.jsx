@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MessageCircle, Send, CheckCircle2, ShieldAlert, ArrowLeft, ArrowRight, UserCheck } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
@@ -8,6 +8,63 @@ import { useLanguage } from '../contexts/LanguageContext';
 export default function AccountIssuesPage() {
     const { user, isAuthenticated } = useAuth();
     const { isRtl } = useLanguage();
+
+
+
+    // Typing animation
+    const text = "مشاكل الحساب";
+    const [displayText, setDisplayText] = useState("");
+    const sectionRef = useRef(null);
+    const [isVisible, setIsVisible] = useState(false);
+    const [index, setIndex] = useState(0);
+    // Observe component visibility
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => setIsVisible(entry.isIntersecting),
+            { threshold: 0.3 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
+
+    // Typing effect runs while visible and not finished
+    useEffect(() => {
+        if (!isVisible) return;
+        if (index < text.length) {
+            const timeout = setTimeout(() => {
+                setIndex(i => i + 1);
+            }, 0.1);
+            return () => clearTimeout(timeout);
+        }
+    }, [isVisible, index]);
+
+    // Update displayed text when index changes
+    useEffect(() => {
+        setDisplayText(text.slice(0, index));
+    }, [index]);
+
+    // Paragraph animation state
+    const subText = "اختر مشكلة الحساب، وسنجهز رسالة واضحة ومباشرة لإرسالها لإدارة المنصة عبر واتساب.";
+    const [subDisplay, setSubDisplay] = useState("");
+    const [subIndex, setSubIndex] = useState(0);
+
+    // Sub paragraph typing effect runs after heading finished
+    useEffect(() => {
+        if (!isVisible) return;
+        if (index >= text.length && subIndex < subText.length) {
+            const timeout = setTimeout(() => {
+                setSubIndex(i => i + 1);
+            }, 0.2);
+            return () => clearTimeout(timeout);
+        }
+    }, [isVisible, index, subIndex]);
+
+    // Update displayed sub paragraph text
+    useEffect(() => {
+        setSubDisplay(subText.slice(0, subIndex));
+    }, [subIndex]);
 
     const issueTypes = [
         'تسجيل الدخول',
@@ -114,21 +171,25 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                             </div>
                         </div>
 
-                        <h1 style={{
-                            fontSize: '24px',
-                            fontWeight: '900',
-                            color: '#FFFFFF',
-                            margin: '0 0 8px',
-                        }}>
-                            مشاكل الحساب
+                        <h1
+                            ref={sectionRef}
+                            style={{
+                                fontSize: '24px',
+                                fontWeight: '900',
+                                color: '#FFFFFF',
+                                margin: '0 0 8px',
+                            }}>
+                            {displayText}
                         </h1>
-                        <p style={{
-                            color: '#9E9EA8',
-                            fontSize: '13.5px',
-                            margin: '0 0 24px',
-                            lineHeight: '1.6',
-                        }}>
-                            اختر مشكلة الحساب، وسنجهز رسالة واضحة ومباشرة لإرسالها لإدارة المنصة عبر واتساب.
+                        <p
+                            ref={sectionRef}
+                            style={{
+                                color: '#9E9EA8',
+                                fontSize: '13.5px',
+                                margin: '0 0 24px',
+                                lineHeight: '1.6',
+                            }}>
+                            {subDisplay}
                         </p>
 
                         {/* Issue Type Chips */}

@@ -20,6 +20,7 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Pagination from '../components/ui/Pagination';
 import { walletApi, depositsApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
+import VideoBackground from "../components/home/VideoBackground";
 
 export default function WalletPage() {
     const { user } = useAuth();
@@ -41,7 +42,7 @@ export default function WalletPage() {
                     setBalanceData(res.data);
                 }
             })
-            .catch(() => {})
+            .catch(() => { })
             .finally(() => setLoadingBalance(false));
     };
 
@@ -232,7 +233,7 @@ export default function WalletPage() {
                 </div>
 
                 {/* Filter Pills */}
-                <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+                <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px', flexWrap: 'wrap' }}>
                     {filterTabs.map((tab) => {
                         const isActive = filterType === tab.key;
                         return (
@@ -266,34 +267,36 @@ export default function WalletPage() {
             </div>
 
             {/* Transactions List */}
-            {loadingTransactions ? (
-                <div style={{ padding: '60px 0' }}>
-                    <LoadingSpinner text="جاري تحميل سجل المعاملات..." />
-                </div>
-            ) : transactions.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
-                    {transactions.map((tx) => (
-                        <TransactionItem key={tx.id} transaction={tx} />
-                    ))}
+            <VideoBackground>
+                {loadingTransactions ? (
+                    <div style={{ padding: '60px 0' }}>
+                        <LoadingSpinner text="جاري تحميل سجل المعاملات..." />
+                    </div>
+                ) : transactions.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
+                        {transactions.map((tx) => (
+                            <TransactionItem key={tx.id} transaction={tx} />
+                        ))}
 
-                    {meta && meta.last_page > 1 && (
-                        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
-                            <Pagination
-                                currentPage={currentPage}
-                                lastPage={meta.last_page}
-                                onPageChange={(p) => setCurrentPage(p)}
-                            />
-                        </div>
-                    )}
-                </div>
-            ) : (
-                <EmptyState
-                    title="لا توجد حركات في هذا السجل"
-                    description="لم يتم تسجيل أي عمليات من هذا النوع على محفظتك حتى الآن."
-                    actionText="شحن رصيد جديد"
-                    onAction={() => window.location.href = '/deposit'}
-                />
-            )}
+                        {meta && meta.last_page > 1 && (
+                            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+                                <Pagination
+                                    currentPage={currentPage}
+                                    lastPage={meta.last_page}
+                                    onPageChange={(p) => setCurrentPage(p)}
+                                />
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <EmptyState
+                        title="لا توجد حركات في هذا السجل"
+                        description="لم يتم تسجيل أي عمليات من هذا النوع على محفظتك حتى الآن."
+                        actionText="شحن رصيد جديد"
+                        onAction={() => window.location.href = '/deposit'}
+                    />
+                )}
+            </VideoBackground>
         </MainLayout>
     );
 }

@@ -21,6 +21,7 @@ import {
     Globe,
     Info
 } from 'lucide-react';
+import "../../css/depositePage.css";
 import MainLayout from '../layouts/MainLayout';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { depositsApi } from '../api/endpoints';
@@ -1004,12 +1005,14 @@ export default function DepositPage() {
                                 </div>
 
                                 {/* Two Side-By-Side Inputs (Matches Screenshot 3) */}
-                                <div style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: '1fr 1fr',
-                                    gap: '12px',
-                                    marginBottom: '20px',
-                                }}>
+                                <div
+                                    className="flexible-grid"
+                                    style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: '1fr 1fr',
+                                        gap: '12px',
+                                        marginBottom: '20px',
+                                    }}>
                                     {/* رقم المحفظة */}
                                     <div>
                                         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
@@ -1026,6 +1029,7 @@ export default function DepositPage() {
                                             borderRadius: '14px',
                                             overflow: 'hidden',
                                         }}>
+
                                             <input
                                                 type="text"
                                                 value={senderWallet}

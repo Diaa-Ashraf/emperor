@@ -1,19 +1,39 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Globe, Phone, MessageCircle, Mail, Code, ExternalLink, ShieldCheck, Sparkles, Award } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 import { useLanguage } from '../contexts/LanguageContext';
-
+import "../../css/visualCategory.css";
 export default function CreatedByPage() {
     const { isRtl } = useLanguage();
+    const projectsSectionRef = useRef(null);
+    const [areProjectsVisible, setAreProjectsVisible] = useState(false);
+
+    useEffect(() => {
+        const section = projectsSectionRef.current;
+        if (!section) return undefined;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setAreProjectsVisible(true);
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.1 }
+        );
+
+        observer.observe(section);
+        return () => observer.disconnect();
+    }, []);
 
     // Company & Developer Info (Editable / Configurable / Nullable fields)
     const companyInfo = {
-        name: 'DIGI TECH SOLUTIONS',
+        name: 'stackway',
         tagline: 'تطوير المنصات الرقمية والتطبيقات الحديثة',
-        website: 'https://digitech.me',
+        website: 'https://portfolio.stackway.cloud/',
         description: 'نحن شركة برمجة نصمم ونبني منتجات رقمية احترافية. منصة إمبراطور أحد أعمالنا التي تعكس اهتمامنا بأدق التفاصيل والسرعة وسهولة الاستخدام.',
-        logoUrl: '/images/artwork/digitech_logo.png', // Nullable
+        logoUrl: 'https://portfolio.stackway.cloud/images/logo-company.png', // Nullable
     };
 
     const teamMembers = [
@@ -21,9 +41,9 @@ export default function CreatedByPage() {
             name: 'ضياء الشافعي (Diaa Elshafey)',
             role: 'Lead Architect & Full-Stack Developer',
             bio: 'مهندس برمجيات متخصص في بناء معمارية المنصات عالية الأداء وأنظمة الربط المالي والـ API.',
-            avatar: null, // Nullable
-            phone: '+201000000000', // Nullable
-            whatsapp: 'https://wa.me/201000000000', // Nullable
+            avatar: '/images/WhatsAppImage.jpeg',
+            phone: '+201202325201', // Nullable
+            whatsapp: 'https://wa.me/201202325201', // Nullable
             email: 'diaa@example.com', // Nullable
             social: {
                 github: 'https://github.com',
@@ -32,18 +52,33 @@ export default function CreatedByPage() {
             }
         },
         {
-            name: 'فريق هندسة وتطوير النظم',
-            role: 'Systems & Mobile Apps Team',
-            bio: 'نخبة من المطورين المتخصصين في واجهات المستخدم، أمن البيانات، وتكامل بوابات الدفع الدولية.',
+            name: 'رشا محمود (Rasha Mahmoud)',
+            role: 'Front-End Developer',
+            bio: 'أهتم بتطوير المنصات وتحسين تجربة المستخدم، مع التركيز على تقديم خدمات رقمية سهلة وموثوقة.',
             avatar: null,
-            phone: null,
-            whatsapp: 'https://wa.me/201000000000',
-            email: 'support@digitech.me',
+            phone: '201090178749',
+            whatsapp: 'https://wa.me/201090178749',
+            email: 'webStore20261@outlook.com',
             social: {
-                website: 'https://digitech.me'
+                Linkedin: 'https://www.linkedin.com/in/rasha-mahmoud-4045553a5/',
+                website: 'https://webstore-ruddy-seven.vercel.app/',
+                email: 'webStore20261@outlook.com'
             }
         }
     ];
+
+    const ourProjects = [
+        {
+            Kunuz: 'https://kunuz.stackway.cloud/',
+            TowerTop: 'https://towertop-eg.com/',
+            HossamMansour: 'https://team-hm.com/login',
+            HossamMansourWebsite: 'https://hossammansour.com/ar/',
+            ssdds: 'https://ssdds.org',
+            tawhid: 'https://altawhid.stackway.cloud',
+            regaest: 'https://regalest.stackway.cloud'
+        }
+
+    ]
 
     return (
         <MainLayout>
@@ -102,7 +137,7 @@ export default function CreatedByPage() {
                         justifyContent: 'center',
                         boxShadow: '0 8px 30px rgba(212, 165, 55, 0.25)',
                     }}>
-                        <Code size={46} color="var(--gold-300)" strokeWidth={2.2} />
+                        <img src={companyInfo.logoUrl} alt={companyInfo.name} style={{ width: '94px', height: '86px', borderRadius: "16px" }} />
                     </div>
 
                     <h2 style={{
@@ -303,6 +338,72 @@ export default function CreatedByPage() {
                                             <span>إيميل</span>
                                         </a>
                                     )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                {/* Our Projects Section */}
+                <div ref={projectsSectionRef}>
+                    <h3 style={{
+                        fontSize: '18px',
+                        fontWeight: '900',
+                        color: '#FFFFFF',
+                        marginBottom: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                    }}>
+                        <span style={{ color: 'var(--gold-400)' }}>•</span>
+                        <span>أعمالنا ومشاريعنا السابقة</span>
+                    </h3>
+
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
+                        gap: '20px',
+                    }}>
+                        {ourProjects.map((project, idx) => (
+                            <div
+                                key={idx}
+                                style={{
+                                    background: '#121218',
+                                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                                }}
+                            >
+                                <div style={{ padding: '24px' }}
+                                    className="emperor-card"
+                                >
+                                    {Object.entries(project).map(([name, url], index) => (
+                                        <a
+                                            key={index}
+                                            className={`category-ad${areProjectsVisible ? ' ad-card--visible' : ''}`}
+                                            href={url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                animationDelay: `${index * 0.25}s`,
+                                                display: 'flex',
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                gap: '8px',
+                                                padding: '10px 16px',
+                                                borderRadius: '8px',
+                                                background: 'rgba(212, 165, 55, 0.08)',
+                                                border: '1px solid rgba(212, 165, 55, 0.3)',
+                                                color: 'var(--gold-200)',
+                                                fontSize: '16px',
+                                                fontWeight: '700',
+                                                textDecoration: 'none',
+                                                marginBottom: '12px',
+                                                transition: 'all 0.2s ease',
+                                            }}
+                                        >
+                                            <ExternalLink size={13} />
+                                            <span>{name}</span>
+                                        </a>
+                                    ))}
                                 </div>
                             </div>
                         ))}

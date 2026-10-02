@@ -67,7 +67,7 @@ export default function MainLayout({ children, showBanner = true }) {
                 if (res.data?.data?.unread_count !== undefined) {
                     setUnreadNotifications(res.data.data.unread_count);
                 }
-            } catch (err) {}
+            } catch (err) { }
         };
 
         fetchCount();
@@ -232,13 +232,13 @@ export default function MainLayout({ children, showBanner = true }) {
                                             background: active
                                                 ? 'rgba(212, 165, 55, 0.12)'
                                                 : link.isSpecial
-                                                ? 'rgba(212, 165, 55, 0.06)'
-                                                : 'transparent',
+                                                    ? 'rgba(212, 165, 55, 0.06)'
+                                                    : 'transparent',
                                             border: active
                                                 ? '1px solid rgba(212, 165, 55, 0.35)'
                                                 : link.isSpecial
-                                                ? '1px solid rgba(212, 165, 55, 0.2)'
-                                                : '1px solid transparent',
+                                                    ? '1px solid rgba(212, 165, 55, 0.2)'
+                                                    : '1px solid transparent',
                                             transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                                             position: 'relative',
                                             whiteSpace: 'nowrap',

@@ -32,11 +32,13 @@ import BestSellerCard from '../components/products/BestSellerCard';
 import { catalogApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function HomePage() {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
     const { t, isRtl } = useLanguage();
+    const { theme } = useTheme();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [searchFocused, setSearchFocused] = useState(false);
@@ -243,7 +245,7 @@ export default function HomePage() {
                                 margin: 0,
                                 fontSize: 'clamp(18px, 3vw, 24px)',
                                 fontWeight: '900',
-                                color: 'var(--text-primary)',
+                                color: theme === 'light' ? '#F4F4F5' : 'var(--text-primary)',
                                 letterSpacing: '-0.3px',
                             }}>
                                 الأكثر طلباً ومبيعاً
@@ -295,7 +297,13 @@ export default function HomePage() {
                 textAlign: 'center',
                 marginBottom: '44px',
             }}>
-                <TrustStat value="+50,000" label="مستخدم وتاجر نشط" icon={Users} color="var(--gold-400)" />
+                <TrustStat
+                    value="+50,000"
+                    label="مستخدم وتاجر نشط"
+                    icon={Users}
+                    color={theme === 'light' ? 'var(--gold-700)' : 'var(--gold-400)'}
+                    labelColor={theme === 'light' ? 'var(--text-secondary)' : 'var(--text-muted)'}
+                />
                 <TrustStat value="+250,000" label="طلب شحن مكتمل" icon={ShoppingBag} color="var(--text-primary)" />
                 <TrustStat value="99.9%" label="معدل نجاح المعاملات" icon={CheckCircle2} color="var(--success)" />
                 <TrustStat value="18 ثانية" label="متوسط سرعة التنفيذ" icon={Clock} color="var(--gold-100)" />
@@ -314,7 +322,7 @@ export default function HomePage() {
 }
 
 /* ── Trust Stat Component ── */
-function TrustStat({ value, label, icon: Icon, color }) {
+function TrustStat({ value, label, icon: Icon, color, labelColor = 'var(--text-muted)' }) {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
             <div style={{
@@ -340,7 +348,7 @@ function TrustStat({ value, label, icon: Icon, color }) {
             </span>
             <span style={{
                 fontSize: '12px',
-                color: 'var(--text-muted)',
+                color: labelColor,
                 fontWeight: '600',
             }}>
                 {label}

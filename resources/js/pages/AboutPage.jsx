@@ -1,11 +1,16 @@
-import React from 'react';
+
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Zap, Users, Award, Lock, Headphones, Globe, CheckCircle2, ArrowLeft, ArrowRight } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 import { useLanguage } from '../contexts/LanguageContext';
+// import React, { useState, useEffect, useRef } from 'react';
+import "../../css/visualCategory.css";
+
 
 export default function AboutPage() {
     const { isRtl } = useLanguage();
+    const pageRef = useRef(null);
 
     const stats = [
         { value: '+50,000', label: 'عميل وتاجر معتمد' },
@@ -37,9 +42,27 @@ export default function AboutPage() {
         },
     ];
 
+    useEffect(() => {
+        const cards = pageRef.current?.querySelectorAll('.category-ad');
+        if (!cards?.length) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    entry.target.classList.toggle('ad-card--visible', entry.isIntersecting);
+                });
+            },
+            { threshold: 0.3 }
+        );
+
+        cards.forEach((card) => observer.observe(card));
+        return () => observer.disconnect();
+    }, []);
+
+
     return (
         <MainLayout>
-            <div style={{ maxWidth: '1080px', margin: '0 auto', paddingBottom: '40px' }}>
+            <div ref={pageRef} style={{ maxWidth: '1080px', margin: '0 auto', paddingBottom: '40px' }}>
                 {/* Header Title */}
                 <div style={{ textAlign: 'center', marginBottom: '40px' }}>
                     <span style={{
@@ -73,12 +96,13 @@ export default function AboutPage() {
                 </div>
 
                 {/* Stats Grid */}
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
-                    gap: '16px',
-                    marginBottom: '48px',
-                }}>
+                <div
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
+                        gap: '16px',
+                        marginBottom: '48px',
+                    }}>
                     {stats.map((s, idx) => (
                         <div
                             key={idx}
@@ -130,21 +154,25 @@ export default function AboutPage() {
                         <span>ركائز التميز في إمبراطور</span>
                     </h2>
 
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
-                        gap: '24px',
-                    }}>
+                    <div
+                        className="visual-container"
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
+                            gap: '24px',
+                        }}>
                         {pillars.map((p, idx) => {
                             const Icon = p.icon;
                             return (
                                 <div
                                     key={idx}
+                                    className="category-ad"
                                     style={{
                                         background: 'rgba(255, 255, 255, 0.02)',
                                         border: '1px solid rgba(255, 255, 255, 0.06)',
                                         borderRadius: '18px',
                                         padding: '22px',
+                                        animationDelay: `${idx * 0.25}s`,
                                     }}
                                 >
                                     <div style={{

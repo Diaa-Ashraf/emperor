@@ -21,6 +21,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import { settingsApi } from '../api/endpoints';
 import { requestNotificationPermission } from '../services/firebaseMessaging';
+import Button from '../components/ui/Button';
+
 
 export default function SettingsPage() {
     const { user, logout } = useAuth();
@@ -135,7 +137,7 @@ export default function SettingsPage() {
                 <Button
                     variant="primary"
                     onClick={handleSave}
-                    isLoading={saving}
+                    loading={saving}
                     style={{ minWidth: '150px' }}
                 >
                     <Save size={16} />
