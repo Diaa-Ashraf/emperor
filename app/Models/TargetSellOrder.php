@@ -17,6 +17,7 @@ class TargetSellOrder extends Model
 
     protected $fillable = [
         'public_id',
+        'verification_code',
         'user_id',
         'product_id',
         'app_user_id',
@@ -33,6 +34,10 @@ class TargetSellOrder extends Model
         'proof_image',
         'user_notes',
         'status',
+        'auto_verified',
+        'verification_method',
+        'ocr_result',
+        'ocr_confidence',
         'reviewer_id',
         'reviewer_notes',
         'reviewed_at',
@@ -46,6 +51,9 @@ class TargetSellOrder extends Model
             'gross_amount' => 'decimal:2',
             'fee' => 'decimal:2',
             'net_payout' => 'decimal:2',
+            'auto_verified' => 'boolean',
+            'ocr_result' => 'array',
+            'ocr_confidence' => 'decimal:2',
             'payout_details' => 'array',
             'status' => TargetOrderStatus::class,
             'reviewed_at' => 'datetime',

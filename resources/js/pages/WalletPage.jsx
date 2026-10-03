@@ -211,6 +211,61 @@ export default function WalletPage() {
                 </div>
             </div>
 
+            {/* Multi-Currency Balances Cards */}
+            {balanceData?.wallets && balanceData.wallets.length > 0 && (
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                    gap: '16px',
+                    marginBottom: '32px',
+                }}>
+                    {balanceData.wallets.map((w) => (
+                        <div key={w.currency} style={{
+                            background: '#12131A',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            borderRadius: '16px',
+                            padding: '18px 20px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                        }}>
+                            <div>
+                                <span style={{ fontSize: '12px', color: '#8E8E98', display: 'block', marginBottom: '4px' }}>
+                                    رصيد {w.currency === 'EGP' ? 'الجنيه المصري' : (w.currency === 'USD' ? 'الدولار الأمريكي' : 'الريال السعودي')}
+                                </span>
+                                <div style={{ fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>
+                                    {Number(w.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    <span style={{ fontSize: '13px', color: '#D4A537', marginRight: '6px' }}>{w.currency}</span>
+                                </div>
+                            </div>
+                            <div style={{
+                                width: '38px',
+                                height: '38px',
+                                borderRadius: '10px',
+                                background: 'rgba(212, 165, 55, 0.1)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#D4A537',
+                                fontWeight: '900',
+                                fontSize: '14px',
+                            }}>
+                                {w.currency}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Currency Converter Section */}
+            <CurrencyConverter
+                userWallets={balanceData?.wallets || []}
+                onConverted={() => {
+                    fetchBalance();
+                    fetchTransactions(1, filterType);
+                }}
+            />
+
             {/* Transactions Section Header & Tabs */}
             <div style={{
                 display: 'flex',

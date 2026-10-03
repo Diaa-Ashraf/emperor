@@ -81,8 +81,11 @@ Route::prefix('v1')->middleware(['locale'])->group(function () {
         Route::get('/profile/2fa/recovery-codes', [ProfileController::class, 'recoveryCodes']);
         Route::post('/profile/fcm-token', [ProfileController::class, 'updateFcmToken']);
 
-        // Wallet & Ledger (1.7)
+        // Wallet & Ledger & Multi-Currency (1.7)
         Route::get('/wallet/balance', [WalletController::class, 'balance']);
+        Route::get('/wallet/rates', [WalletController::class, 'rates']);
+        Route::post('/wallet/preview-conversion', [WalletController::class, 'previewConversion']);
+        Route::post('/wallet/convert', [WalletController::class, 'convert']);
         Route::get('/wallet/transactions', [WalletController::class, 'transactions']);
 
         // Deposit Requests (1.8)

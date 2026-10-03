@@ -6,17 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\WalletResource;
 use App\Http\Resources\WalletTransactionResource;
 use App\Models\WalletTransaction;
+use App\Services\ExchangeRateService;
+use App\Services\MultiCurrencyWalletService;
 use App\Services\WalletService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class WalletController extends Controller
 {
     use ApiResponse;
 
     public function __construct(
-        protected WalletService $walletService
+        protected WalletService $walletService,
+        protected MultiCurrencyWalletService $multiCurrencyService,
+        protected ExchangeRateService $exchangeRateService
     ) {}
 
     /**
@@ -28,26 +33,91 @@ class WalletController extends Controller
         $currency = $user->currency ?? 'EGP';
         $wallet = $this->walletService->getOrCreateWallet($user, $currency);
 
-        // Approximate USD rate for conversion display
-        $exchangeRatesToUsd = [
-            'EGP' => 1 / 50.0, // 50 EGP = 1 USD
-            'SAR' => 1 / 3.75, // 3.75 SAR = 1 USD
-            'SYP' => 1 / 14000.0,
-            'USD' => 1.0,
-        ];
-
-        $rate = $exchangeRatesToUsd[$currency] ?? 1.0;
-        $balanceUsd = round((float) $wallet->balance * $rate, 2);
+        $walletsSummary = $this->multiCurrencyService->getUserWallets($user);
 
         return $this->successResponse([
             'currency' => $currency,
             'balance' => (float) $wallet->balance,
-            'balance_usd' => $balanceUsd,
             'frozen_balance' => (float) $wallet->frozen_balance,
-            'available_balance' => (float) $wallet->available_balance,
+            'available_balance' => (float) max(0, $wallet->balance - $wallet->frozen_balance),
             'is_locked' => (bool) $wallet->is_locked,
-            'wallets' => WalletResource::collection($user->wallets),
+            'wallets' => $walletsSummary,
         ], 'تم جلب رصيد المحفظة بنجاح');
+    }
+
+    /**
+     * Get available exchange rates.
+     */
+    public function rates(): JsonResponse
+    {
+        $rates = $this->exchangeRateService->getActiveRates();
+        return $this->successResponse($rates, 'تم جلب أسعار الصرف بنجاح');
+    }
+
+    /**
+     * Preview currency conversion calculation.
+     */
+    public function previewConversion(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'from_currency' => 'required|string|size:3',
+            'to_currency' => 'required|string|size:3|different:from_currency',
+            'amount' => 'required|numeric|min:0.01',
+        ], [
+            'from_currency.required' => 'يرجى تحديد عملة المصدر',
+            'to_currency.required' => 'يرجى تحديد العملة المحول إليها',
+            'to_currency.different' => 'لا يمكن التحويل لنفس العملة',
+            'amount.required' => 'يرجى تحديد المبلغ المراد تحويله',
+            'amount.min' => 'المبلغ يجب أن يكون أكبر من 0',
+        ]);
+
+        try {
+            $preview = $this->exchangeRateService->calculateConversion(
+                fromCurrency: $validated['from_currency'],
+                toCurrency: $validated['to_currency'],
+                amount: (float) $validated['amount']
+            );
+
+            return $this->successResponse($preview, 'تم حساب التحويل بنجاح');
+        } catch (\Throwable $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Convert currency within user's wallet.
+     */
+    public function convert(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'from_currency' => 'required|string|size:3',
+            'to_currency' => 'required|string|size:3|different:from_currency',
+            'amount' => 'required|numeric|min:0.01',
+        ], [
+            'from_currency.required' => 'يرجى تحديد عملة المصدر',
+            'to_currency.required' => 'يرجى تحديد العملة المحول إليها',
+            'to_currency.different' => 'لا يمكن التحويل لنفس العملة',
+            'amount.required' => 'يرجى تحديد المبلغ المراد تحويله',
+            'amount.min' => 'المبلغ يجب أن يكون أكبر من 0',
+        ]);
+
+        $user = $request->user();
+
+        try {
+            $result = $this->multiCurrencyService->convertCurrency(
+                user: $user,
+                fromCurrency: $validated['from_currency'],
+                toCurrency: $validated['to_currency'],
+                amount: (float) $validated['amount']
+            );
+
+            return $this->successResponse(
+                $result,
+                "تم تحويل {$validated['amount']} {$validated['from_currency']} إلى {$validated['to_currency']} بنجاح!"
+            );
+        } catch (\Throwable $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
     }
 
     /**

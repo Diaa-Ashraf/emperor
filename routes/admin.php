@@ -13,9 +13,10 @@ use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admin.')->group(function () {
-    // Main Dashboard
+    // Main Dashboard & Analytics Reports
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
 
     // Categories (2.3)
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -151,10 +152,19 @@ Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admi
     // Audit Logs (Phase 5)
     Route::get('/audit-logs', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('audit-logs.index');
 
-    // Notifications & Broadcasts
+    // Exchange Rates (Multi-Currency)
+    Route::get('/exchange-rates', [App\Http\Controllers\Admin\ExchangeRateController::class, 'index'])->name('exchange-rates.index');
+    Route::post('/exchange-rates', [App\Http\Controllers\Admin\ExchangeRateController::class, 'store'])->name('exchange-rates.store');
+    Route::post('/exchange-rates/{id}/toggle', [App\Http\Controllers\Admin\ExchangeRateController::class, 'toggle'])->name('exchange-rates.toggle');
+
+    // Notifications & Smart Marketing Campaigns
     Route::get('/notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/send', [App\Http\Controllers\Admin\NotificationController::class, 'send'])->name('notifications.send');
     Route::post('/notifications/mark-all-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
     Route::post('/notifications/{id}/mark-read', [App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('notifications.mark-read');
+    Route::get('/notifications-scheduled', [App\Http\Controllers\Admin\ScheduledNotificationController::class, 'index'])->name('notifications.scheduled.index');
+    Route::post('/notifications-scheduled', [App\Http\Controllers\Admin\ScheduledNotificationController::class, 'store'])->name('notifications.scheduled.store');
+    Route::post('/notifications-scheduled/{id}/send-now', [App\Http\Controllers\Admin\ScheduledNotificationController::class, 'sendNow'])->name('notifications.scheduled.send-now');
+    Route::delete('/notifications-scheduled/{id}', [App\Http\Controllers\Admin\ScheduledNotificationController::class, 'destroy'])->name('notifications.scheduled.destroy');
 });
 

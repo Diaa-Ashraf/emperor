@@ -69,24 +69,26 @@ export default function TargetOrderDetailPage() {
             case 'approved':
             case 'paid':
                 return {
-                    label: 'معتمد ومحول بنجاح',
+                    label: order?.auto_verified ? '⚡ تم التحقق التلقائي والإيداع الفوري' : 'معتمد ومحول بنجاح',
                     icon: CheckCircle2,
                     color: '#22C55E',
-                    desc: 'تم التحقق من استلام التارجت في الوكالة بنجاح، وتم تحويل كامل المبلغ المستحق إلى محفظتك.',
+                    desc: order?.auto_verified
+                        ? `تم اعتماد طلبك وإيداع المبلغ فوراً في المحفظة بواسطة ${order.verification_method === 'trust_level' ? 'نظام الثقة الفوري' : 'الفحص الذكي للصورة (OCR)'} بدون انتظار!`
+                        : 'تم التحقق من استلام التارجت في الوكالة بنجاح، وتم تحويل كامل المبلغ المستحق إلى محفظتك.',
                 };
             case 'rejected':
                 return {
                     label: 'مرفوض',
                     icon: XCircle,
                     color: '#EF4444',
-                    desc: order.reviewer_notes || 'تم رفض طلب بيع التارجت. يرجى التأكد من صحة البيانات أو التواصل مع خدمة العملاء.',
+                    desc: order?.reviewer_notes || 'تم رفض طلب بيع التارجت. يرجى التأكد من صحة البيانات أو التواصل مع خدمة العملاء.',
                 };
             default:
                 return {
                     label: 'قيد المراجعة والتحقق',
                     icon: Clock,
                     color: '#F5D061',
-                    desc: 'يقوم المشرف الآن بمطابقة التحويل المستلم على حساب الوكالة وسيتم الإيداع فوراً.',
+                    desc: 'يقوم النظام والمشرف بمطابقة كود التحويل والتحقق من العملية وسيتم إيداع الرصيد فوراً.',
                 };
         }
     };
@@ -148,13 +150,32 @@ export default function TargetOrderDetailPage() {
                 {/* Status Card */}
                 <div style={{
                     background: '#0D0D12',
-                    border: '1px solid #D4A537',
+                    border: `1px solid ${order.auto_verified ? '#22C55E' : '#D4A537'}`,
                     borderRadius: '24px',
                     padding: '28px 24px',
                     textAlign: 'center',
                     marginBottom: '20px',
                     boxShadow: '0 12px 40px rgba(0, 0, 0, 0.8)',
+                    position: 'relative',
+                    overflow: 'hidden',
                 }}>
+                    {order.auto_verified && (
+                        <div style={{
+                            position: 'absolute',
+                            top: '12px',
+                            left: '12px',
+                            background: 'rgba(34, 197, 94, 0.2)',
+                            color: '#4ADE80',
+                            border: '1px solid #22C55E',
+                            padding: '4px 10px',
+                            borderRadius: '12px',
+                            fontSize: '11px',
+                            fontWeight: '800',
+                        }}>
+                            ⚡ تحقق تلقائي فوري
+                        </div>
+                    )}
+
                     <div style={{
                         width: '64px',
                         height: '64px',
@@ -171,7 +192,7 @@ export default function TargetOrderDetailPage() {
                     </div>
 
                     <div style={{ fontSize: '12px', color: '#9E9EA8', marginBottom: '4px' }}>
-                        طلب رقم #{order.id}
+                        طلب رقم #{order.id} {order.public_id ? `(${order.public_id})` : ''}
                     </div>
 
                     <h2 style={{ margin: '0 0 8px', fontSize: '20px', fontWeight: '900', color: '#FFFFFF' }}>
@@ -182,6 +203,45 @@ export default function TargetOrderDetailPage() {
                         {statusInfo.desc}
                     </p>
                 </div>
+
+                {/* Verification Code Box (if present) */}
+                {order.verification_code && (
+                    <div style={{
+                        background: 'rgba(212, 165, 55, 0.08)',
+                        border: '1px dashed #D4A537',
+                        borderRadius: '16px',
+                        padding: '16px 20px',
+                        marginBottom: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                    }}>
+                        <div>
+                            <span style={{ fontSize: '12px', color: '#8E8E98', display: 'block' }}>كود التحقق الخاص بهذه العملية</span>
+                            <span style={{ fontSize: '18px', fontWeight: '900', color: '#D4A537', fontFamily: 'monospace', letterSpacing: '1px' }}>
+                                {order.verification_code}
+                            </span>
+                        </div>
+                        <button
+                            onClick={() => {
+                                navigator.clipboard.writeText(order.verification_code);
+                                alert('تم نسخ كود التحقق!');
+                            }}
+                            style={{
+                                background: 'rgba(212, 165, 55, 0.2)',
+                                border: '1px solid #D4A537',
+                                color: '#FFFFFF',
+                                padding: '6px 14px',
+                                borderRadius: '8px',
+                                fontSize: '12px',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            نسخ الكود
+                        </button>
+                    </div>
+                )}
 
                 {/* Order Details Breakdown */}
                 <div style={{

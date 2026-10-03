@@ -8,18 +8,30 @@ use App\Models\Product;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
     use ApiResponse;
 
     /**
-     * Get products list (filtered by category, type, or search).
+     * Get products list (filtered by category, category slug, type, or search).
      */
     public function index(Request $request): JsonResponse
     {
+        $catId = $request->input('category_id');
+        $catSlug = $request->input('category_slug');
+        $type = $request->input('type');
+        $search = trim((string) $request->input('search'));
+        $perPage = (int) ($request->input('limit') ?: $request->input('per_page') ?: 24);
+        $perPage = max(1, min($perPage, 100));
+        $page = (int) ($request->input('page') ?: 1);
+
         $query = Product::where('is_active', true)
-            ->with(['category', 'activeTiers'])
+            ->with([
+                'category:id,name,slug,type',
+                'activeTiers:id,product_id,name,price_egp,price_usd,is_active,sort_order'
+            ])
             ->select([
                 'id', 'category_id', 'name', 'slug', 'description', 'image',
                 'type', 'player_id_label', 'player_id_validation_regex',
@@ -28,25 +40,34 @@ class ProductController extends Controller
                 'sort_order'
             ]);
 
-        if ($catId = $request->input('category_id')) {
+        if ($catId) {
             $query->where('category_id', $catId);
+        } elseif ($catSlug && $catSlug !== 'all') {
+            $query->whereHas('category', function ($q) use ($catSlug) {
+                $q->where('slug', $catSlug);
+            });
         }
 
-        if ($type = $request->input('type')) {
+        if ($type && $type !== 'all') {
             $query->where('type', $type);
         }
 
-        if ($search = $request->input('search')) {
+        if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('slug', 'like', "%{$search}%");
             });
         }
 
-        $perPage = (int) ($request->input('limit') ?: $request->input('per_page') ?: 20);
-        $perPage = max(1, min($perPage, 100));
-
-        $products = $query->orderBy('sort_order', 'asc')->paginate($perPage);
+        // Cache default requests without search for 15 minutes for blazing fast speed
+        if ($search === '') {
+            $cacheKey = "api_products_list_c{$catId}_cs{$catSlug}_t{$type}_p{$page}_l{$perPage}";
+            $products = Cache::remember($cacheKey, 900, function () use ($query, $perPage) {
+                return $query->orderBy('sort_order', 'asc')->paginate($perPage);
+            });
+        } else {
+            $products = $query->orderBy('sort_order', 'asc')->paginate($perPage);
+        }
 
         return $this->paginatedResponse(
             $products,
@@ -59,13 +80,19 @@ class ProductController extends Controller
      */
     public function show(string|int $id): JsonResponse
     {
-        $query = Product::where('is_active', true)->with(['category', 'activeTiers']);
+        $cacheKey = "api_product_detail_{$id}";
+        $product = Cache::remember($cacheKey, 900, function () use ($id) {
+            $query = Product::where('is_active', true)->with([
+                'category:id,name,slug,type',
+                'activeTiers:id,product_id,name,price_egp,price_usd,is_active,sort_order'
+            ]);
 
-        if (is_numeric($id)) {
-            $product = $query->where('id', $id)->firstOrFail();
-        } else {
-            $product = $query->where('slug', $id)->firstOrFail();
-        }
+            if (is_numeric($id)) {
+                return $query->where('id', $id)->firstOrFail();
+            }
+
+            return $query->where('slug', $id)->firstOrFail();
+        });
 
         return $this->successResponse(
             new ProductResource($product),

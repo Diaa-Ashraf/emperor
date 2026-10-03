@@ -19,6 +19,11 @@
             <i class="ti ti-layout-dashboard"></i>
             <span class="nav-text">لوحة التحكم</span>
         </a>
+        <a href="{{ route('admin.reports.index') }}" class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+            <i class="ti ti-chart-pie"></i>
+            <span class="nav-text">التقارير والإحصائيات</span>
+            <span class="badge rounded-pill bg-warning text-dark ms-auto font-monospace" style="font-size: 10px;">PRO</span>
+        </a>
 
         <div class="nav-section-title">المتجر والمنتجات</div>
         <a href="{{ route('admin.categories.index') }}" class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
@@ -73,6 +78,10 @@
             <i class="ti ti-credit-card"></i>
             <span class="nav-text">طرق الدفع والحسابات</span>
         </a>
+        <a href="{{ route('admin.exchange-rates.index') }}" class="nav-link {{ request()->routeIs('admin.exchange-rates.*') ? 'active' : '' }}">
+            <i class="ti ti-arrows-exchange"></i>
+            <span class="nav-text">أسعار الصرف (العملات)</span>
+        </a>
 
         <div class="nav-section-title">المزودين والمصادر</div>
         <a href="{{ route('admin.providers.index') }}" class="nav-link {{ request()->routeIs('admin.providers.*') ? 'active' : '' }}">
@@ -102,8 +111,12 @@
             <span class="nav-text">الإحالات والتسويق</span>
         </a>
 
-        <div class="nav-section-title">إعدادات المنصة والدعم</div>
-        <a href="{{ route('admin.notifications.index') }}" class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
+        <div class="nav-section-title">إعدادات المنصة والتسويق</div>
+        <a href="{{ route('admin.notifications.scheduled.index') }}" class="nav-link {{ request()->routeIs('admin.notifications.scheduled.*') ? 'active' : '' }}">
+            <i class="ti ti-speakerphone"></i>
+            <span class="nav-text">الحملات والتسويق الذكي</span>
+        </a>
+        <a href="{{ route('admin.notifications.index') }}" class="nav-link {{ request()->routeIs('admin.notifications.index') ? 'active' : '' }}">
             <i class="ti ti-bell-ringing"></i>
             <span class="nav-text">مركز الإشعارات والتعميمات</span>
         </a>

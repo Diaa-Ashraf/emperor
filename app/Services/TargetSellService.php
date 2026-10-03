@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTOs\TargetQuoteDTO;
 use App\Enums\TargetOrderStatus;
+use App\Enums\TargetVerificationMethod;
 use App\Enums\WalletTxType;
 use App\Models\Product;
 use App\Models\Setting;
@@ -11,12 +12,14 @@ use App\Models\TargetRate;
 use App\Models\TargetSellOrder;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
+use Illuminate\Support\Str;
 
 class TargetSellService
 {
     public function __construct(
-        protected WalletService $walletService
+        protected WalletService $walletService,
+        protected TrustLevelService $trustLevelService,
+        protected OcrVerificationService $ocrService
     ) {}
 
     /**
@@ -56,7 +59,19 @@ class TargetSellService
     }
 
     /**
-     * Submit a target sell order.
+     * Generate unique verification code (e.g. EMP-7K9A).
+     */
+    public function generateVerificationCode(): string
+    {
+        do {
+            $code = 'EMP-' . strtoupper(Str::random(4));
+        } while (TargetSellOrder::where('verification_code', $code)->exists());
+
+        return $code;
+    }
+
+    /**
+     * Submit a target sell order with intelligent auto-verification.
      */
     public function submitOrder(
         User $user,
@@ -68,10 +83,12 @@ class TargetSellService
         ?string $userNotes = null
     ): TargetSellOrder {
         $quote = $this->calculateQuote($product, $points);
+        $verificationCode = $this->generateVerificationCode();
 
-        return TargetSellOrder::create([
+        $order = TargetSellOrder::create([
             'user_id' => $user->id,
             'product_id' => $product->id,
+            'verification_code' => $verificationCode,
             'app_user_id' => $appUserId,
             'app_username' => $appUsername,
             'agency_id' => $quote->agencyId,
@@ -85,11 +102,94 @@ class TargetSellService
             'proof_image' => $proofImage,
             'user_notes' => $userNotes,
             'status' => TargetOrderStatus::PENDING,
+            'auto_verified' => false,
+            'verification_method' => TargetVerificationMethod::MANUAL->value,
         ]);
+
+        // Attempt Auto-Verification
+        $this->attemptAutoVerification($order, $user, $proofImage);
+
+        return $order->fresh();
     }
 
     /**
-     * Approve and pay target sell order to user's wallet.
+     * Attempt automatic verification via Trust Level or OCR.
+     */
+    protected function attemptAutoVerification(TargetSellOrder $order, User $user, ?string $proofImage): void
+    {
+        // 1. Trust Level Instant Approval
+        if ($this->trustLevelService->canAutoApproveByTrust($user, (float) $order->net_payout)) {
+            $this->executeAutoApproval(
+                order: $order,
+                method: TargetVerificationMethod::TRUST_LEVEL,
+                notes: 'تمت الموافقة الفورية بناءً على مستوى ثقة المستخدم (' . ($user->trust_level?->label() ?? 'موثوق') . ')'
+            );
+            return;
+        }
+
+        // 2. OCR Verification from Proof Screenshot
+        if ($proofImage) {
+            $ocrResult = $this->ocrService->verifyProofImage(
+                relativeImagePath: $proofImage,
+                verificationCode: $order->verification_code,
+                targetPoints: $order->target_points
+            );
+
+            $order->update([
+                'ocr_result' => $ocrResult,
+                'ocr_confidence' => $ocrResult['confidence'] ?? 0,
+            ]);
+
+            if ($ocrResult['success'] === true) {
+                $this->executeAutoApproval(
+                    order: $order,
+                    method: TargetVerificationMethod::OCR,
+                    notes: "تم التحقق التلقائي وقراءة كود التحويل ({$order->verification_code}) بنجاح بدقة {$ocrResult['confidence']}%"
+                );
+                return;
+            } else {
+                $order->update([
+                    'status' => TargetOrderStatus::IN_REVIEW,
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Execute auto approval, credit wallet, and update trust stats.
+     */
+    protected function executeAutoApproval(
+        TargetSellOrder $order,
+        TargetVerificationMethod $method,
+        string $notes
+    ): void {
+        DB::transaction(function () use ($order, $method, $notes) {
+            $order->update([
+                'status' => TargetOrderStatus::PAID,
+                'auto_verified' => true,
+                'verification_method' => $method->value,
+                'reviewer_notes' => $notes,
+                'reviewed_at' => now(),
+            ]);
+
+            $this->walletService->credit(
+                user: $order->user,
+                amount: (float) $order->net_payout,
+                type: WalletTxType::TARGET_PAYOUT,
+                description: "مستحقات بيع تارجت تلقائية للطلب {$order->public_id} ({$order->product->name})",
+                currency: $order->currency,
+                referenceType: TargetSellOrder::class,
+                referenceId: $order->id
+            );
+
+            $this->trustLevelService->recordSuccessfulOrder($order->user);
+        });
+
+        event(new \App\Events\TargetOrderPaid($order));
+    }
+
+    /**
+     * Approve and pay target sell order manually by admin.
      */
     public function approveAndPay(TargetSellOrder $order, User $reviewer, ?string $notes = null): void
     {
@@ -114,6 +214,8 @@ class TargetSellService
                 referenceType: TargetSellOrder::class,
                 referenceId: $order->id
             );
+
+            $this->trustLevelService->recordSuccessfulOrder($order->user);
         });
 
         event(new \App\Events\TargetOrderPaid($order));
@@ -130,6 +232,8 @@ class TargetSellService
             'reviewer_notes' => $reason,
             'reviewed_at' => now(),
         ]);
+
+        $this->trustLevelService->recordRejectedOrder($order->user);
 
         event(new \App\Events\TargetOrderRejected($order, $reason));
     }

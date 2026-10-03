@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Search, Filter, ArrowRight, Grid, SlidersHorizontal, Gamepad2, Layers } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 import ProductCard from '../components/products/ProductCard';
 import Input from '../components/ui/Input';
-import Select from '../components/ui/Select';
 import EmptyState from '../components/ui/EmptyState';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { catalogApi } from '../api/endpoints';
 import VideoBackground from '../components/home/VideoBackground';
+
+// In-memory module cache for categories
+let categoriesCache = null;
 
 export default function CategoryPage() {
     const params = useParams();
@@ -22,50 +24,63 @@ export default function CategoryPage() {
         }
     }, [slug, navigate]);
 
-    const [categories, setCategories] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [categories, setCategories] = useState(categoriesCache || []);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
     const [sortBy, setSortBy] = useState('sort_order');
     const [filterType, setFilterType] = useState('all');
 
-    // Fetch categories on mount
+    // Debounce search input for high performance
     useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+        }, 250);
+        return () => clearTimeout(handler);
+    }, [searchQuery]);
+
+    // Fetch categories on mount or use cache
+    useEffect(() => {
+        if (categoriesCache && categoriesCache.length > 0) {
+            setCategories(categoriesCache);
+            return;
+        }
+
         catalogApi.getCategories()
             .then(res => {
                 if (res?.data) {
                     const cats = Array.isArray(res.data) ? res.data : res.data.data || [];
+                    categoriesCache = cats;
                     setCategories(cats);
-                    if (slug && slug !== 'all') {
-                        const matched = cats.find(c => c.slug === slug || String(c.id) === String(slug));
-                        setSelectedCategory(matched || null);
-                    } else {
-                        setSelectedCategory(null);
-                    }
                 }
             })
             .catch(() => { });
-    }, [slug]);
+    }, []);
 
-    // Fetch products whenever selectedCategory or slug changes
+    const selectedCategory = useMemo(() => {
+        if (!slug || slug === 'all') return null;
+        return categories.find(c => c.slug === slug || String(c.id) === String(slug)) || null;
+    }, [slug, categories]);
+
+    // Fetch products in parallel / direct query
     useEffect(() => {
         setLoading(true);
-        const params = {};
+        const queryParams = {};
 
         if (slug && slug !== 'all') {
-            params.category_id = selectedCategory?.id;
+            queryParams.category_slug = slug;
         }
 
-        if (searchQuery.trim()) {
-            params.search = searchQuery.trim();
+        if (debouncedSearch.trim()) {
+            queryParams.search = debouncedSearch.trim();
         }
 
         if (filterType !== 'all') {
-            params.type = filterType;
+            queryParams.type = filterType;
         }
 
-        catalogApi.getProducts(params)
+        catalogApi.getProducts(queryParams)
             .then(res => {
                 if (res?.data?.data) {
                     setProducts(res.data.data);
@@ -76,18 +91,20 @@ export default function CategoryPage() {
                 }
             })
             .catch(() => {
-                console.error('Products API error:', error);
                 setProducts([]);
             })
             .finally(() => setLoading(false));
-    }, [slug, selectedCategory, searchQuery, filterType]);
-    // Filter & Sort products in memory
-    const filteredProducts = [...products].sort((a, b) => {
-        if (sortBy === 'name') {
-            return a.name.localeCompare(b.name, 'ar');
-        }
-        return (a.sort_order || 0) - (b.sort_order || 0);
-    });
+    }, [slug, debouncedSearch, filterType]);
+
+    // Filter & Sort products in memory using useMemo
+    const filteredProducts = useMemo(() => {
+        return [...products].sort((a, b) => {
+            if (sortBy === 'name') {
+                return (a.name || '').localeCompare(b.name || '', 'ar');
+            }
+            return (a.sort_order || 0) - (b.sort_order || 0);
+        });
+    }, [products, sortBy]);
 
     const categoryTitle = selectedCategory ? selectedCategory.name : 'جميع المنتجات والألعاب';
 
@@ -148,7 +165,7 @@ export default function CategoryPage() {
                     </Link>
 
                     {categories.map((cat) => {
-                        const isActive = slug === cat.slug || String(selectedCategory?.id) === String(cat.id);
+                        const isActive = slug === cat.slug || String(slug) === String(cat.id);
                         return (
                             <Link
                                 key={cat.id}
@@ -177,6 +194,8 @@ export default function CategoryPage() {
                                             ? ('/storage/' + cat.icon_url.split('/storage/')[1])
                                             : cat.icon_url}
                                         alt=""
+                                        loading="lazy"
+                                        decoding="async"
                                         style={{ width: '18px', height: '18px', objectFit: 'contain', borderRadius: '4px' }}
                                     />
                                 ) : (
@@ -201,7 +220,6 @@ export default function CategoryPage() {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: '16px',
-
             }}>
                 <div style={{ flex: '1 1 280px', maxWidth: '400px' }}>
                     <Input
@@ -230,7 +248,6 @@ export default function CategoryPage() {
                                 outline: 'none',
                                 fontFamily: 'Cairo, sans-serif',
                                 cursor: 'pointer',
-
                             }}
                         >
                             <option value="sort_order">الترتيب الافتراضي</option>
@@ -255,11 +272,10 @@ export default function CategoryPage() {
                 ) : (
                     <EmptyState
                         title="لم يتم العثور على منتجات"
-                        description={searchQuery ? `لا توجد نتائج مطابقة لـ "${searchQuery}"` : 'لا توجد منتجات متاحة في هذا القسم حالياً'}
+                        description={debouncedSearch ? `لا توجد نتائج مطابقة لـ "${debouncedSearch}"` : 'لا توجد منتجات متاحة في هذا القسم حالياً'}
                         actionText="تصفح جميع المنتجات"
                         onAction={() => {
                             setSearchQuery('');
-                            setSelectedCategory(null);
                         }}
                     />
                 )}
