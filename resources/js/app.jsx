@@ -7,21 +7,24 @@ import { ToastProvider } from './contexts/ToastContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import AppRoutes from './router';
 import ScrollToTop from './components/utils/ScrollToTop';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 
 function App() {
     return (
-        <ThemeProvider>
-            <LanguageProvider>
-                <AuthProvider>
-                    <ToastProvider>
-                        <BrowserRouter>
-                            <ScrollToTop />
-                            <AppRoutes />
-                        </BrowserRouter>
-                    </ToastProvider>
-                </AuthProvider>
-            </LanguageProvider>
-        </ThemeProvider>
+        <ErrorBoundary>
+            <ThemeProvider>
+                <LanguageProvider>
+                    <AuthProvider>
+                        <ToastProvider>
+                            <BrowserRouter>
+                                <ScrollToTop />
+                                <AppRoutes />
+                            </BrowserRouter>
+                        </ToastProvider>
+                    </AuthProvider>
+                </LanguageProvider>
+            </ThemeProvider>
+        </ErrorBoundary>
     );
 }
 

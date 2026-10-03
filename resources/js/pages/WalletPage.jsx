@@ -20,6 +20,7 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Pagination from '../components/ui/Pagination';
 import { walletApi, depositsApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
+import CurrencyConverter from '../components/wallet/CurrencyConverter';
 
 export default function WalletPage() {
     const { user } = useAuth();
