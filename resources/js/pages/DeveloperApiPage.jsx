@@ -91,15 +91,17 @@ export default function DeveloperApiPage() {
     };
 
     return (
-        <div style={{
+        <div className="developer-api-page" style={{
             maxWidth: '1100px',
+            width: '100%',
+            boxSizing: 'border-box',
             margin: '0 auto',
             padding: '30px 20px 80px',
             color: '#f3f4f6',
             fontFamily: 'inherit'
         }}>
             {/* Header */}
-            <div style={{
+            <div className="developer-api-header" style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -121,7 +123,7 @@ export default function DeveloperApiPage() {
                     </p>
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div className="developer-api-tabs" style={{ display: 'flex', gap: '10px' }}>
                     <button
                         onClick={() => setActiveTab('keys')}
                         style={{
@@ -165,7 +167,7 @@ export default function DeveloperApiPage() {
                 </div>
             ) : activeTab === 'keys' ? (
                 /* Tab 1: API Keys & IP Settings */
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+                <div className="developer-api-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
 
                     {/* Card 1: API Key & Secret */}
                     <div
@@ -393,7 +395,7 @@ export default function DeveloperApiPage() {
                 </div>
             ) : (
                 /* Tab 2: Interactive API Documentation */
-                <div style={{
+                <div className="developer-api-docs" style={{
                     background: '#111827',
                     border: '1px solid rgba(212, 165, 55, 0.25)',
                     borderRadius: '16px',
@@ -403,13 +405,13 @@ export default function DeveloperApiPage() {
                     <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#D4A537', marginBottom: '10px' }}>
                         📖 دليل نقاط الاتصال (API Reference)
                     </h2>
-                    <p style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '24px' }}>
-                        الرابط الأساسي لجميع طلبات الموزعين: <code style={{ color: '#fff', background: '#1f2937', padding: '3px 8px', borderRadius: '6px' }}>{window.location.origin}/api/v1/external</code>
+                    <p className="developer-api-base-url" style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '24px' }}>
+                        الرابط الأساسي لجميع طلبات الموزعين: <code className="developer-api-base-url-value" style={{ color: '#fff', background: '#1f2937', padding: '3px 8px', borderRadius: '6px' }}>{window.location.origin}/api/v1/external</code>
                     </p>
 
                     {/* Endpoint 1: Balance */}
-                    <div style={{ background: '#1e293b', borderRadius: '12px', padding: '18px', marginBottom: '18px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div className="developer-api-endpoint" style={{ background: '#1e293b', borderRadius: '12px', padding: '18px', marginBottom: '18px' }}>
+                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                             <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>GET</span>
                             <code style={{ fontSize: '15px', color: '#f8fafc', fontWeight: '700' }}>/balance</code>
                             <span style={{ color: '#94a3b8', fontSize: '13px' }}>- الاستعلام عن رصيد المحفظة الحالي</span>
@@ -422,8 +424,8 @@ export default function DeveloperApiPage() {
                     </div>
 
                     {/* Endpoint 2: Products */}
-                    <div style={{ background: '#1e293b', borderRadius: '12px', padding: '18px', marginBottom: '18px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div className="developer-api-endpoint" style={{ background: '#1e293b', borderRadius: '12px', padding: '18px', marginBottom: '18px' }}>
+                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                             <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>GET</span>
                             <code style={{ fontSize: '15px', color: '#f8fafc', fontWeight: '700' }}>/products</code>
                             <span style={{ color: '#94a3b8', fontSize: '13px' }}>- جلب قائمة المنتجات والأسعار الخاصة بك</span>
@@ -436,8 +438,8 @@ export default function DeveloperApiPage() {
                     </div>
 
                     {/* Endpoint 3: Create Order */}
-                    <div style={{ background: '#1e293b', borderRadius: '12px', padding: '18px', marginBottom: '18px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div className="developer-api-endpoint" style={{ background: '#1e293b', borderRadius: '12px', padding: '18px', marginBottom: '18px' }}>
+                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                             <span style={{ background: '#16a34a', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>POST</span>
                             <code style={{ fontSize: '15px', color: '#f8fafc', fontWeight: '700' }}>/orders</code>
                             <span style={{ color: '#94a3b8', fontSize: '13px' }}>- إنشاء وتنفيذ طلب شحن مباشر</span>
@@ -458,8 +460,8 @@ export default function DeveloperApiPage() {
                     </div>
 
                     {/* Endpoint 4: Check Order */}
-                    <div style={{ background: '#1e293b', borderRadius: '12px', padding: '18px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div className="developer-api-endpoint" style={{ background: '#1e293b', borderRadius: '12px', padding: '18px' }}>
+                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                             <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>GET</span>
                             <code style={{ fontSize: '15px', color: '#f8fafc', fontWeight: '700' }}>/orders/{'{id}'}</code>
                             <span style={{ color: '#94a3b8', fontSize: '13px' }}>- الاستعلام عن حالة الطلب والأكواد</span>

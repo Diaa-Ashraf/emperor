@@ -22,8 +22,8 @@
 @section('content')
     <!-- Status Filter Tabs -->
     <div class="card p-2 mb-4">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-            <div class="btn-group" role="group">
+        <div class="deposit-filter-toolbar d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="btn-group deposit-status-filters" role="group">
                 <a href="{{ route('admin.deposits.index') }}" class="btn {{ !request('status') ? 'btn-primary' : 'btn-dark-outline' }} fs-7 fw-semibold">
                     الكل ({{ $counts['all'] }})
                 </a>
@@ -39,7 +39,7 @@
             </div>
 
             <!-- Search Form -->
-            <form method="GET" action="{{ route('admin.deposits.index') }}" class="d-flex gap-2">
+            <form method="GET" action="{{ route('admin.deposits.index') }}" class="deposit-search-form d-flex gap-2">
                 @if(request('status'))
                     <input type="hidden" name="status" value="{{ request('status') }}">
                 @endif

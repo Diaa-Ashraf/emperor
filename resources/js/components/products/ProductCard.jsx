@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Zap, ChevronLeft, ShieldCheck, Sparkles } from 'lucide-react';
 import Button from '../ui/Button';
 import { TargetAppIconRenderer } from '../target/TargetAppIcons';
-
+import "../../../css/productCard.css"; // Import the CSS file for ProductCard
 export default function ProductCard({ product }) {
     if (!product) return null;
 
@@ -26,7 +26,9 @@ export default function ProductCard({ product }) {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            height: '100%',
+            height: '95%',
+            borderRadius: "16px",
+            marginTop: "7px",
         }}>
             {/* Top Media / Banner */}
             <div style={{
@@ -38,6 +40,8 @@ export default function ProductCard({ product }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '10px',
+                borderRadius: "16px",
+
             }}>
                 {imageSrc ? (
                     <img
@@ -112,8 +116,16 @@ export default function ProductCard({ product }) {
             </div>
 
             {/* Content Body */}
-            <div style={{ padding: 'clamp(12px, 2.5vw, 16px)', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
-                <div>
+            <div style={{
+                padding: 'clamp(12px, 2.5vw, 16px)',
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 1, justifyContent: 'space-between',
+                backgroundColor: "rgba(9, 7, 0, 0.75)",
+                borderRadius: "16px",
+
+            }}>
+                <div className='product-card'>
                     <h4 style={{
                         margin: '0 0 6px',
                         fontSize: 'clamp(14px, 2.5vw, 16px)',
@@ -148,6 +160,7 @@ export default function ProductCard({ product }) {
                     justifyContent: 'space-between',
                     gap: '6px',
                     flexWrap: 'wrap',
+
                 }}>
                     <div>
                         <span style={{ fontSize: '10.5px', color: '#7E7E8E', display: 'block', fontWeight: '500' }}>

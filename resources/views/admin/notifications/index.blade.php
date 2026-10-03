@@ -39,7 +39,7 @@
                     <!-- Target Audience -->
                     <div class="mb-3">
                         <label class="form-label text-white fw-semibold">الجمهور المستهدف</label>
-                        <div class="d-flex gap-3">
+                        <div class="notification-audience-options d-flex gap-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="target" id="targetAll" value="all" checked onchange="toggleUserSelect(false)">
                                 <label class="form-check-label text-white" for="targetAll">
@@ -58,7 +58,7 @@
                     <!-- User Select (if specific) -->
                     <div class="mb-3 d-none" id="userSelectWrapper">
                         <label for="user_id" class="form-label text-white fw-semibold">اختر المستخدم</label>
-                        <select name="user_id" id="user_id" class="form-select bg-dark text-white border-secondary">
+                        <select name="user_id" id="user_id" class="form-select notification-user-select bg-dark text-white border-secondary">
                             <option value="">-- اختر المستخدم --</option>
                             @foreach(\App\Models\User::orderBy('name')->take(100)->get() as $u)
                                 <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->phone ?? $u->email }})</option>
@@ -97,15 +97,15 @@
     <!-- Notification Log / History -->
     <div class="col-lg-7">
         <div class="card border-0 shadow-sm" style="background: var(--bg-card, #12131a); border-radius: 16px;">
-            <div class="card-header bg-transparent border-bottom border-secondary py-3 d-flex justify-content-between align-items-center">
-                <h5 class="card-title fw-bold mb-0 text-white d-flex align-items-center gap-2">
+            <div class="notification-history-header card-header bg-transparent border-bottom border-secondary py-3 d-flex justify-content-between align-items-center">
+                <h5 class="notification-history-title card-title fw-bold mb-0 text-white d-flex align-items-center gap-2">
                     <i class="ti ti-history text-gold fs-4"></i>
                     سجل الإشعارات المرسلة
                 </h5>
-                <div class="d-flex align-items-center gap-2">
+                <div class="notification-history-actions d-flex align-items-center gap-2">
                     <form action="{{ route('admin.notifications.mark-all-read') }}" method="POST" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-1">
+                        <button type="submit" class="notification-mark-read btn btn-sm btn-outline-warning d-flex align-items-center gap-1">
                             <i class="ti ti-checks"></i>
                             <span>تحديد الكل كمقروء</span>
                         </button>

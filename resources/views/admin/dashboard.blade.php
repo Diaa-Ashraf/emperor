@@ -179,7 +179,7 @@
                     </h6>
                     <a href="{{ route('admin.orders.index') }}" class="btn btn-sm btn-dark-outline">عرض الكل</a>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive dashboard-table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
@@ -232,7 +232,7 @@
                     </h6>
                     <a href="{{ route('admin.targets.index') }}" class="btn btn-sm btn-dark-outline">عرض الكل</a>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive dashboard-table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>

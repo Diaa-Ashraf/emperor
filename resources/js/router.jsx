@@ -137,14 +137,15 @@ export function AppRoutes() {
                 <Route path="/wallet/deposit" element={<ProtectedRoute><DepositPage /></ProtectedRoute>} />
                 <Route path="/wallet/add-balance" element={<ProtectedRoute><DepositPage /></ProtectedRoute>} />
                 <Route path="/deposits/:id" element={<ProtectedRoute><DepositDetailPage /></ProtectedRoute>} />
-                
+                {/*  */}
                 {/* Orders */}
                 <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
                 <Route path="/orders/:id" element={<ProtectedRoute><OrderDetailPage /></ProtectedRoute>} />
-                
+
                 {/* Target Orders */}
                 <Route path="/target-orders" element={<ProtectedRoute><TargetOrdersPage /></ProtectedRoute>} />
                 <Route path="/target/orders" element={<ProtectedRoute><TargetOrdersPage /></ProtectedRoute>} />
+                {/*  */}
                 <Route path="/target-orders/new" element={<ProtectedRoute><TargetOrderPage /></ProtectedRoute>} />
                 <Route path="/target/orders/new" element={<ProtectedRoute><TargetOrderPage /></ProtectedRoute>} />
                 <Route path="/target/sell/new" element={<ProtectedRoute><TargetOrderPage /></ProtectedRoute>} />
@@ -154,7 +155,7 @@ export function AppRoutes() {
                 <Route path="/target/orders/:id" element={<ProtectedRoute><TargetOrderDetailPage /></ProtectedRoute>} />
                 <Route path="/target/sell/:id" element={<ProtectedRoute><TargetOrderDetailPage /></ProtectedRoute>} />
                 <Route path="/target-sell/:id" element={<ProtectedRoute><TargetOrderDetailPage /></ProtectedRoute>} />
-                
+
                 {/* User & Settings */}
                 <Route path="/referrals" element={<ProtectedRoute><ReferralsPage /></ProtectedRoute>} />
                 <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />

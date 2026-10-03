@@ -217,9 +217,9 @@ export default function ReferralsPage() {
                     </div>
 
                     {/* Right: Copy Boxes */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div className="referral-copy-stack" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         {/* Referral Code Box */}
-                        <div style={{
+                        <div className="referral-copy-box referral-code-box" style={{
                             background: 'rgba(18, 18, 24, 0.8)',
                             border: '1px solid rgba(212, 165, 55, 0.3)',
                             borderRadius: '16px',
@@ -229,11 +229,11 @@ export default function ReferralsPage() {
                             justifyContent: 'space-between',
                             gap: '12px',
                         }}>
-                            <div className="referralCode">
-                                <span style={{ fontSize: '11px', color: '#8E8E98', display: 'block', marginBottom: '2px' }}>
+                            <div className="referralCode referral-code-content">
+                                <span className="referral-copy-label" style={{ fontSize: '11px', color: '#8E8E98', display: 'block', marginBottom: '2px' }}>
                                     كود الدعوة الخاص بك:
                                 </span>
-                                <strong style={{
+                                <strong className="referral-code-value" style={{
                                     fontSize: '22px',
                                     color: '#D4A537',
                                     letterSpacing: '2px',
@@ -244,7 +244,7 @@ export default function ReferralsPage() {
                             </div>
 
                             <Button
-                                className='copy-button'
+                                className='copy-button referral-copy-button'
                                 variant="outline"
                                 size="sm"
                                 icon={copiedCode ? Check : Copy}
@@ -255,7 +255,7 @@ export default function ReferralsPage() {
                         </div>
 
                         {/* Referral Link Box */}
-                        <div style={{
+                        <div className="referral-copy-box referral-link-box" style={{
                             background: 'rgba(18, 18, 24, 0.8)',
                             border: '1px solid rgba(255, 255, 255, 0.1)',
                             borderRadius: '16px',
@@ -265,11 +265,11 @@ export default function ReferralsPage() {
                             justifyContent: 'space-between',
                             gap: '12px',
                         }}>
-                            <div style={{ flex: 1, overflow: 'hidden' }}>
-                                <span style={{ fontSize: '11px', color: '#8E8E98', display: 'block', marginBottom: '2px' }}>
+                            <div className="referral-link-content" style={{ flex: 1, overflow: 'hidden' }}>
+                                <span className="referral-copy-label" style={{ fontSize: '11px', color: '#8E8E98', display: 'block', marginBottom: '2px' }}>
                                     رابط الدعوة المباشر:
                                 </span>
-                                <span style={{
+                                <span className="referral-link-value" style={{
                                     fontSize: '13px',
                                     color: '#CBD5E1',
                                     display: 'block',
@@ -284,6 +284,7 @@ export default function ReferralsPage() {
                             </div>
 
                             <Button
+                                className="referral-copy-button"
                                 variant="outline"
                                 size="sm"
                                 icon={copiedLink ? Check : Copy}

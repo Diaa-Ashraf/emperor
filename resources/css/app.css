@@ -443,6 +443,58 @@ body {
     }
 }
 
+@media (max-width: 767.98px) {
+    .referral-copy-box {
+        align-items: stretch !important;
+        flex-direction: column;
+        padding: 12px 14px !important;
+        gap: 10px !important;
+        min-width: 0;
+    }
+
+    .referral-code-content,
+    .referral-link-content {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .referral-copy-label {
+        font-size: 12px !important;
+    }
+
+    .referral-code-value {
+        display: block;
+        font-size: 19px !important;
+        overflow-wrap: anywhere;
+        letter-spacing: 1px !important;
+    }
+
+    .referral-link-value {
+        font-size: 12px !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .referral-copy-button {
+        align-self: flex-start;
+        max-width: 100%;
+        white-space: nowrap;
+        font-size: 12px !important;
+        width: auto !important;
+    }
+}
+
+@media (max-width: 399.98px) {
+    .referral-code-value {
+        font-size: 17px !important;
+    }
+
+    .referral-copy-button {
+        font-size: 11px !important;
+        padding: 6px 9px !important;
+    }
+}
 
 
 /* ── Gold Gradient Text ── */
@@ -1086,24 +1138,70 @@ body {
    RESPONSIVE GRID & UTILITY CLASSES
    ═══════════════════════════════════════════════════════════════ */
 
-/* Product Cards Grid: 4 cols desktop, 3 cols tablet, 2 cols mobile */
+/* Product Cards Grid: 5 cols large screens, adapting down for smaller screens */
 .responsive-grid-products {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap: 28px;
     width: 100%;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1199.98px) {
     .responsive-grid-products {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 991.98px) {
+    .responsive-grid-products {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .responsive-grid-products {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 10px;
+        row-gap: 20px;
     }
 }
 
 @media (max-width: 330px) {
     .responsive-grid-products {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.target-apps-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 24px 16px;
+    justify-items: center;
+}
+
+@media (max-width: 1199.98px) {
+    .target-apps-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 991.98px) {
+    .target-apps-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .target-apps-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px 10px;
+    }
+}
+
+@media (max-width: 330px) {
+    .target-apps-grid {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 

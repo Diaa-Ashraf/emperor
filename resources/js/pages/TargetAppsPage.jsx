@@ -183,12 +183,7 @@ export default function TargetAppsPage() {
                                 onAction={() => window.location.reload()}
                             />
                         ) : (
-                            <div style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fill, minmax(135px, 1fr))',
-                                gap: '24px 16px',
-                                justifyItems: 'center',
-                            }}>
+                            <div className="target-apps-grid">
                                 {apps.map((app) => (
                                     <Link
                                         key={app.id}

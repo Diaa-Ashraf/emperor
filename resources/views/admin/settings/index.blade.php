@@ -3,18 +3,19 @@
 @section('title', 'إعدادات المنصة وطرق الدفع')
 
 @section('header')
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div class="settings-page-heading d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
         <div>
-            <h3 class="fw-black text-white mb-1 d-flex align-items-center gap-2">
+            <h3 class="settings-page-title fw-black text-white mb-1 d-flex align-items-center gap-2">
                 <i class="ti ti-settings text-gold"></i>
                 <span>الإعدادات العامة للمنصة وطرق الدفع</span>
             </h3>
-            <p class="text-muted mb-0 fs-6">التحكم في بيانات المنصة، أرقام الدعم، معرفات وكالة التارجت، وحسابات الاستقبال.</p>
+            <p class="settings-page-description text-muted mb-0 fs-6">التحكم في بيانات المنصة، أرقام الدعم، معرفات وكالة التارجت، وحسابات الاستقبال.</p>
         </div>
     </div>
 @endsection
 
 @section('content')
+    <div class="settings-page-content">
     <div class="row g-4">
         <!-- Main Settings Column -->
         <div class="col-12 col-xl-7">
@@ -154,5 +155,6 @@
                 </div>
             @endforeach
         </div>
+    </div>
     </div>
 @endsection

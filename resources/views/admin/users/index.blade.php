@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <select name="role" class="form-select">
+                <select name="role" class="form-select users-filter-select">
                     <option value="">-- كل الرتب / الأدوار --</option>
                     @foreach($roles as $role)
                         <option value="{{ $role->value }}" {{ request('role') === $role->value ? 'selected' : '' }}>
@@ -42,7 +42,7 @@
                 </select>
             </div>
             <div class="col-6 col-md-2">
-                <select name="status" class="form-select">
+                <select name="status" class="form-select users-filter-select">
                     <option value="">-- كل الحالات --</option>
                     @foreach($statuses as $status)
                         <option value="{{ $status->value }}" {{ request('status') === $status->value ? 'selected' : '' }}>

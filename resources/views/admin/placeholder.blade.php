@@ -3,13 +3,13 @@
 @section('title', $title)
 
 @section('header')
-    <div class="d-flex align-items-center justify-content-between">
+    <div class="placeholder-page-heading d-flex align-items-center justify-content-between">
         <div>
-            <h3 class="fw-bold text-white mb-1 d-flex align-items-center gap-2">
+            <h3 class="placeholder-page-title fw-bold text-white mb-1 d-flex align-items-center gap-2">
                 <i class="ti {{ $icon }} text-gold"></i>
                 <span>{{ $title }}</span>
             </h3>
-            <p class="text-muted mb-0">{{ $description ?: 'سيتم تفعيل كامل أدوات هذا القسم في المرحلة القادمة.' }}</p>
+            <p class="placeholder-page-description text-muted mb-0">{{ $description ?: 'سيتم تفعيل كامل أدوات هذا القسم في المرحلة القادمة.' }}</p>
         </div>
         <a href="{{ route('admin.dashboard') }}" class="btn btn-dark-outline">
             &larr; العودة للوحة التحكم

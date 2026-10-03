@@ -9,7 +9,7 @@ import Pagination from '../components/ui/Pagination';
 import Button from '../components/ui/Button';
 import { targetApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
-
+import VideoBackground from '../components/home/VideoBackground';
 export default function TargetOrdersPage() {
     const { isRtl } = useLanguage();
     const navigate = useNavigate();
@@ -142,119 +142,121 @@ export default function TargetOrdersPage() {
             </div>
 
             {/* Orders List */}
-            {loading ? (
-                <div style={{ padding: '80px 0' }}>
-                    <LoadingSpinner text="جاري جلب سجل مبيعات التارجت..." />
-                </div>
-            ) : orders.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '32px' }}>
-                    {orders.map((order) => {
-                        const statusConfig = getStatusConfig(order.status);
-                        const netPayout = Number(order.net_payout || 0).toLocaleString('en-US', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        });
+            <VideoBackground>
+                {loading ? (
+                    <div style={{ padding: '80px 0' }}>
+                        <LoadingSpinner text="جاري جلب سجل مبيعات التارجت..." />
+                    </div>
+                ) : orders.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '32px' }}>
+                        {orders.map((order) => {
+                            const statusConfig = getStatusConfig(order.status);
+                            const netPayout = Number(order.net_payout || 0).toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            });
 
-                        return (
-                            <Link
-                                key={order.id}
-                                to={`/target/orders/${order.id}`}
-                                style={{
-                                    background: '#0B0B0F',
-                                    border: '1px solid rgba(212, 165, 55, 0.3)',
-                                    borderRadius: '18px',
-                                    padding: '18px 22px',
-                                    display: 'flex',
-                                    flexWrap: 'wrap',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    gap: '16px',
-                                    textDecoration: 'none',
-                                    transition: 'all 0.2s ease',
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.borderColor = '#F5D061';
-                                    e.currentTarget.style.transform = 'translateY(-2px)';
-                                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(212, 165, 55, 0.15)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.3)';
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = 'none';
-                                }}
-                            >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                    <div style={{
-                                        width: '48px',
-                                        height: '48px',
-                                        borderRadius: '14px',
-                                        background: 'rgba(212, 165, 55, 0.12)',
+                            return (
+                                <Link
+                                    key={order.id}
+                                    to={`/target/orders/${order.id}`}
+                                    style={{
+                                        background: '#0B0B0F',
                                         border: '1px solid rgba(212, 165, 55, 0.3)',
-                                        color: '#F5D061',
+                                        borderRadius: '18px',
+                                        padding: '18px 22px',
                                         display: 'flex',
+                                        flexWrap: 'wrap',
                                         alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: '20px',
-                                        flexShrink: 0,
-                                    }}>
-                                        <Smartphone size={20} color="#F5D061" />
+                                        justifyContent: 'space-between',
+                                        gap: '16px',
+                                        textDecoration: 'none',
+                                        transition: 'all 0.2s ease',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.borderColor = '#F5D061';
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(212, 165, 55, 0.15)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.3)';
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = 'none';
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                        <div style={{
+                                            width: '48px',
+                                            height: '48px',
+                                            borderRadius: '14px',
+                                            background: 'rgba(212, 165, 55, 0.12)',
+                                            border: '1px solid rgba(212, 165, 55, 0.3)',
+                                            color: '#F5D061',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '20px',
+                                            flexShrink: 0,
+                                        }}>
+                                            <Smartphone size={20} color="#F5D061" />
+                                        </div>
+
+                                        <div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                                <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: '#FFFFFF' }}>
+                                                    {order.product?.name || 'بيع تارجت'}
+                                                </h4>
+                                                <span style={{ fontSize: '12px', color: '#F5D061', fontWeight: '700' }}>
+                                                    #{order.id}
+                                                </span>
+                                            </div>
+                                            <div style={{ fontSize: '12px', color: '#8E8E98' }}>
+                                                {new Date(order.created_at).toLocaleDateString('ar-EG', {
+                                                    year: 'numeric',
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                })}
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                            <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: '#FFFFFF' }}>
-                                                {order.product?.name || 'بيع تارجت'}
-                                            </h4>
-                                            <span style={{ fontSize: '12px', color: '#F5D061', fontWeight: '700' }}>
-                                                #{order.id}
-                                            </span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                        <div style={{ textAlign: 'left' }}>
+                                            <div style={{ fontSize: '11px', color: '#8E8E98', marginBottom: '2px' }}>
+                                                الصافي المستحق
+                                            </div>
+                                            <div style={{ fontSize: '16px', fontWeight: '900', color: '#22C55E' }}>
+                                                {netPayout} EGP
+                                            </div>
                                         </div>
-                                        <div style={{ fontSize: '12px', color: '#8E8E98' }}>
-                                            {new Date(order.created_at).toLocaleDateString('ar-EG', {
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                    <div style={{ textAlign: 'left' }}>
-                                        <div style={{ fontSize: '11px', color: '#8E8E98', marginBottom: '2px' }}>
-                                            الصافي المستحق
-                                        </div>
-                                        <div style={{ fontSize: '16px', fontWeight: '900', color: '#22C55E' }}>
-                                            {netPayout} EGP
+                                        <div style={{
+                                            padding: '6px 14px',
+                                            borderRadius: '12px',
+                                            fontSize: '12px',
+                                            fontWeight: '800',
+                                            background: `${statusConfig.color}15`,
+                                            color: statusConfig.color,
+                                            border: `1px solid ${statusConfig.color}40`,
+                                        }}>
+                                            {statusConfig.label}
                                         </div>
                                     </div>
-
-                                    <div style={{
-                                        padding: '6px 14px',
-                                        borderRadius: '12px',
-                                        fontSize: '12px',
-                                        fontWeight: '800',
-                                        background: `${statusConfig.color}15`,
-                                        color: statusConfig.color,
-                                        border: `1px solid ${statusConfig.color}40`,
-                                    }}>
-                                        {statusConfig.label}
-                                    </div>
-                                </div>
-                            </Link>
-                        );
-                    })}
-                </div>
-            ) : (
-                <EmptyState
-                    title="لا توجد طلبات سابقة"
-                    description="لم تقم بإنشاء أي طلبات بيع تارجت بعد. اختر تطبيقك الآن وابدأ التحويل."
-                    actionText="بدء بيع تارجت"
-                    onAction={() => navigate('/target/apps')}
-                />
-            )}
+                                </Link>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <EmptyState
+                        title="لا توجد طلبات سابقة"
+                        description="لم تقم بإنشاء أي طلبات بيع تارجت بعد. اختر تطبيقك الآن وابدأ التحويل."
+                        actionText="بدء بيع تارجت"
+                        onAction={() => navigate('/target/apps')}
+                    />
+                )}
+            </VideoBackground>
         </MainLayout>
     );
 }

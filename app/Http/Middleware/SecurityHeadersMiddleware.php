@@ -44,7 +44,7 @@ class SecurityHeadersMiddleware
            $csp = "default-src 'self'; "
                 . "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://*.firebaseio.com{$viteDevServerSource}; "
                 . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com{$viteDevServerSource}; "
-                . "font-src 'self' https://fonts.gstatic.com data:; "
+                . "font-src 'self' https://fonts.gstatic.com data:{$viteDevServerSource}; "
                 . "img-src 'self' data: blob: https:; "
                 . "connect-src 'self' http: https: ws: wss:; "
                 . "media-src 'self' blob:{$viteDevServerSource}; "

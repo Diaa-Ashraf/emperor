@@ -7,9 +7,11 @@
     <div class="col-12">
         <div class="card mb-4 border-0 shadow-sm">
             <div class="card-header bg-transparent border-0 d-flex flex-wrap justify-content-between align-items-center gap-3 py-3">
-                <div>
-                    <h5 class="card-title fw-bold mb-0 text-white"><i class="ti ti-shopping-cart text-warning me-2"></i> سجل طلبات الشحن والعمليات</h5>
-                    <small class="text-muted">متابعة كافة طلبات شحن الألعاب والبطاقات، حالة التنفيذ، وإعادة المحاولة</small>
+                <div class="placeholder-page-heading d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="placeholder-page-title card-title fw-bold mb-0 text-white"><i class="ti ti-shopping-cart text-warning me-2"></i> سجل طلبات الشحن والعمليات</h5>
+                        <small class="placeholder-page-description text-muted">متابعة كافة طلبات شحن الألعاب والبطاقات، حالة التنفيذ، وإعادة المحاولة</small>
+                    </div>
                 </div>
             </div>
 

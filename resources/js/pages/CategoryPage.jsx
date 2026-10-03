@@ -76,11 +76,11 @@ export default function CategoryPage() {
                 }
             })
             .catch(() => {
+                console.error('Products API error:', error);
                 setProducts([]);
             })
             .finally(() => setLoading(false));
     }, [slug, selectedCategory, searchQuery, filterType]);
-
     // Filter & Sort products in memory
     const filteredProducts = [...products].sort((a, b) => {
         if (sortBy === 'name') {

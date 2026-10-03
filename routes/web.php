@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/admin/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/admin/password', [PasswordController::class, 'update'])->name('password.update');
     Route::delete('/admin/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/admin/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
@@ -21,5 +23,4 @@ Route::middleware(['auth'])->group(function () {
 // React SPA catch-all for all client-side routing
 Route::get('/{any?}', function () {
     return view('spa');
-})->where('any', '^(?!admin|api|storage).*$')->name('spa');
-
+})->where('any', '^(?!admin(?:/|$)|api(?:/|$)|storage(?:/|$)).*$')->name('spa');
