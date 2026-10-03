@@ -83,19 +83,72 @@ class KaCardsCatalogAdapter implements CatalogSourceAdapter
                 if (is_array($items)) {
                     foreach ($items as $item) {
                         $externalId = $item['id'] ?? $item['product_id'] ?? null;
-                        $name = $item['name'] ?? $item['title'] ?? 'منتج رقمي ' . $externalId;
+                        $name = $item['name'] ?? $item['title'] ?? 'باقة رقمية ' . $externalId;
                         $price = (float) ($item['price'] ?? 0.0);
-                        $slug = 'ka-' . ($externalId ?: Str::slug($name));
+                        $categoryName = trim($item['category_name'] ?? 'بطاقات وألعاب رقمية');
+                        $categoryImg = $item['category_img'] ?? null;
+                        $parentId = $item['parent_id'] ?? null;
+                        $fields = $item['fields'] ?? [];
+                        $params = $item['params'] ?? [];
+                        $isAvailable = (bool) ($item['available'] ?? true);
 
-                        $product = Product::firstOrNew(['slug' => $slug]);
+                        // 1. Find or create Category based on KA-Cards category
+                        $categorySlug = Str::slug($categoryName) ?: ('ka-cat-' . ($parentId ?: 'general'));
+                        $category = Category::firstOrNew(['slug' => $categorySlug]);
+                        $isNewCat = !$category->exists;
+
+                        $category->fill([
+                            'name' => $categoryName,
+                            'type' => 'games',
+                            'description' => 'قسم ' . $categoryName . ' من مزود KA-Cards',
+                            'image' => $categoryImg ?: $category->image,
+                            'is_active' => true,
+                        ]);
+                        $category->save();
+
+                        if ($isNewCat) {
+                            $categoriesCreated++;
+                        } else {
+                            $categoriesUpdated++;
+                        }
+
+                        // 2. Determine field requirements from KA-Cards fields schema
+                        $playerIdLabel = 'معرف اللاعب (Player ID)';
+                        $hasServerId = false;
+                        $serverIdLabel = null;
+                        $serverOptions = null;
+
+                        foreach ($fields as $field) {
+                            $key = strtolower($field['key'] ?? '');
+                            $label = $field['label'] ?? '';
+                            if (str_contains($key, 'player') || str_contains($key, 'user') || str_contains($key, 'id')) {
+                                $playerIdLabel = $label ?: $playerIdLabel;
+                            } elseif (str_contains($key, 'server') || str_contains($key, 'zone')) {
+                                $hasServerId = true;
+                                $serverIdLabel = $label ?: 'رقم السيرفر (Server / Zone ID)';
+                                if (!empty($field['options'])) {
+                                    $serverOptions = $field['options'];
+                                }
+                            }
+                        }
+
+                        // 3. Find or create Product
+                        $productSlug = 'ka-' . ($externalId ?: Str::slug($name));
+                        $product = Product::firstOrNew(['slug' => $productSlug]);
                         $isNewProd = !$product->exists;
 
                         $product->fill([
                             'category_id' => $category->id,
+                            'external_product_id' => (string) $externalId,
                             'name' => $name,
-                            'type' => 'direct_topup',
-                            'description' => $item['description'] ?? null,
-                            'is_active' => true,
+                            'type' => 'player_id',
+                            'description' => $item['description'] ?? "باقة {$name} المعتمدة",
+                            'image' => $categoryImg ?: $product->image,
+                            'player_id_label' => $playerIdLabel,
+                            'has_server_id' => $hasServerId,
+                            'server_id_label' => $serverIdLabel,
+                            'server_options' => $serverOptions,
+                            'is_active' => $isAvailable,
                         ]);
                         $product->save();
 
@@ -105,8 +158,8 @@ class KaCardsCatalogAdapter implements CatalogSourceAdapter
                             $productsUpdated++;
                         }
 
-                        // Product Tier
-                        $tierSku = 'KA-TIER-' . ($externalId ?: $product->id);
+                        // 4. Product Tier
+                        $tierSku = 'KA-' . ($externalId ?: $product->id);
                         $tier = ProductTier::firstOrNew([
                             'product_id' => $product->id,
                             'sku' => $tierSku,
@@ -115,9 +168,17 @@ class KaCardsCatalogAdapter implements CatalogSourceAdapter
 
                         $tier->fill([
                             'name' => $name,
-                            'cost_price' => $price,
-                            'selling_price' => round($price * 1.15, 2), // Standard default margin
-                            'is_active' => true,
+                            'source_cost' => $price,
+                            'cost_currency' => $item['currency'] ?? 'USD',
+                            'final_price' => round($price * 1.15, 2), // Standard default profit margin
+                            'is_active' => $isAvailable,
+                            'metadata' => [
+                                'ka_product_id' => $externalId,
+                                'ka_parent_id' => $parentId,
+                                'ka_product_type' => $item['product_type'] ?? 'package',
+                                'fields' => $fields,
+                                'params' => $params,
+                            ],
                             'sort_order' => 1,
                         ]);
                         $tier->save();

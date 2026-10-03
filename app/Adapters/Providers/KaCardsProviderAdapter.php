@@ -135,9 +135,12 @@ class KaCardsProviderAdapter implements ProviderAdapter
      */
     public function getBalance(): array
     {
+        $profile = $this->service->getProfile();
+
         return [
-            'balance' => 0.00,
-            'currency' => 'USD',
+            'balance' => (float) ($profile['balance'] ?? 0.00),
+            'currency' => (string) ($profile['currency'] ?? 'USD'),
+            'email' => (string) ($profile['email'] ?? ''),
         ];
     }
 }

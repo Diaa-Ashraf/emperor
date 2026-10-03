@@ -4,6 +4,8 @@ import { Zap, CheckCircle2, ShieldCheck, ArrowLeft, ArrowRight, UserCheck, Spark
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
+import { catalogApi } from '../../api/endpoints';
+
 export default function QuickRechargeWizard() {
     const { isRtl } = useLanguage();
     const { theme } = useTheme();
@@ -70,8 +72,7 @@ export default function QuickRechargeWizard() {
         setSubDisplay(subText.slice(0, subIndex));
     }, [subIndex]);
 
-
-    const games = [
+    const defaultGames = [
         {
             id: 'pubg',
             name: 'ببجي موبايل (PUBG)',
@@ -136,18 +137,70 @@ export default function QuickRechargeWizard() {
         },
     ];
 
-    const [selectedGameId, setSelectedGameId] = useState(games[0].id);
+    const [games, setGames] = useState(defaultGames);
+    const [selectedGameId, setSelectedGameId] = useState(defaultGames[0].id);
     const [playerId, setPlayerId] = useState('');
-    const [selectedPackageId, setSelectedPackageId] = useState(games[0].packages[0].id);
+    const [selectedPackageId, setSelectedPackageId] = useState(defaultGames[0].packages[0]?.id || '');
     const [isVerifying, setIsVerifying] = useState(false);
     const [verifiedPlayerName, setVerifiedPlayerName] = useState(null);
 
-    const activeGame = games.find((g) => g.id === selectedGameId) || games[0];
-    const activePackage = activeGame.packages.find((p) => p.id === selectedPackageId) || activeGame.packages[0];
+    // Fetch dynamic products from Database / API
+    useEffect(() => {
+        let isMounted = true;
+        catalogApi.getProducts({ limit: 50 })
+            .then((res) => {
+                if (!isMounted) return;
+                const items = res?.data?.data || [];
+                if (Array.isArray(items) && items.length > 0) {
+                    const dynamicGames = items.map((prod) => {
+                        const tiers = prod.active_tiers || prod.activeTiers || [];
+                        return {
+                            id: prod.slug || String(prod.id),
+                            productId: prod.id,
+                            slug: prod.slug,
+                            name: prod.name,
+                            icon: Gamepad2,
+                            imageUrl: prod.image,
+                            idLabel: prod.player_id_label || 'معرّف اللاعب (Player ID)',
+                            placeholder: 'أدخل معرّف الحساب...',
+                            packages: tiers.length > 0
+                                ? tiers.map((tier, idx) => ({
+                                    id: String(tier.id),
+                                    tierId: tier.id,
+                                    name: tier.name,
+                                    price: Number(tier.final_price || tier.selling_price || 0),
+                                    popular: idx === 1,
+                                }))
+                                : [{ id: 'std', name: 'شحن مباشر', price: Number(prod.price || 0) }],
+                        };
+                    });
+
+                    if (dynamicGames.length > 0) {
+                        setGames(dynamicGames);
+                        setSelectedGameId(dynamicGames[0].id);
+                        if (dynamicGames[0].packages?.[0]) {
+                            setSelectedPackageId(dynamicGames[0].packages[0].id);
+                        }
+                    }
+                }
+            })
+            .catch(() => {
+                // Fallback to default games list on connection error
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    const activeGame = games.find((g) => g.id === selectedGameId) || games[0] || defaultGames[0];
+    const activePackage = activeGame?.packages?.find((p) => p.id === selectedPackageId) || activeGame?.packages?.[0] || {};
 
     const handleGameChange = (game) => {
         setSelectedGameId(game.id);
-        setSelectedPackageId(game.packages[0].id);
+        if (game.packages?.[0]) {
+            setSelectedPackageId(game.packages[0].id);
+        }
         setVerifiedPlayerName(null);
     };
 
@@ -156,13 +209,16 @@ export default function QuickRechargeWizard() {
         setIsVerifying(true);
         setTimeout(() => {
             setIsVerifying(false);
-            setVerifiedPlayerName(`VerifiedPlayer_${playerId.slice(-4)}`);
+            setVerifiedPlayerName(`Verified_${playerId.slice(-4)}`);
         }, 600);
     };
 
     const handleInstantCheckout = () => {
-        // Direct to products or category
-        navigate(`/category/games?quick_game=${selectedGameId}&pid=${encodeURIComponent(playerId)}`);
+        if (activeGame?.slug) {
+            navigate(`/product/${activeGame.slug}?tier=${selectedPackageId}&pid=${encodeURIComponent(playerId)}`);
+        } else {
+            navigate(`/category/games?quick_game=${selectedGameId}&pid=${encodeURIComponent(playerId)}`);
+        }
     };
 
     return (

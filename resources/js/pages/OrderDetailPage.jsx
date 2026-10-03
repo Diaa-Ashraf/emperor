@@ -21,7 +21,6 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
 import { ordersApi } from '../api/endpoints';
 import { useToast } from '../contexts/ToastContext';
-import VideoBackground from "../../components/home/VideoBackground";
 
 export default function OrderDetailPage() {
     const { id } = useParams();
