@@ -36,7 +36,7 @@ class DepositService
         $fee = $method->calculateFee($amount);
         $finalAmount = $amount - $fee;
 
-        return DepositRequest::create([
+        $deposit = DepositRequest::create([
             'user_id' => $user->id,
             'payment_method_id' => $method->id,
             'amount' => $amount,
@@ -48,6 +48,46 @@ class DepositService
             'proof_image' => $proofImage,
             'status' => DepositStatus::PENDING,
         ]);
+
+        // 1. Create in-app notification for User
+        try {
+            $user->notifications()->create([
+                'id' => (string) \Illuminate\Support\Str::uuid(),
+                'type' => 'deposit_submitted',
+                'data' => json_encode([
+                    'title' => 'تم استلام طلب شحن الرصيد',
+                    'body' => "طلب إيداع رقم #{$deposit->id} بمبلغ {$amount} {$method->currency} قيد المراجعة.",
+                    'link' => "/deposits/{$deposit->id}",
+                    'deposit_id' => $deposit->id,
+                ]),
+            ]);
+        } catch (\Throwable $e) {
+            // Ignore notification errors
+        }
+
+        // 2. Create in-app notification for Admins
+        try {
+            $admins = User::where('role', \App\Enums\UserRole::ADMIN)
+                ->orWhere('role', 'admin')
+                ->get();
+
+            foreach ($admins as $admin) {
+                $admin->notifications()->create([
+                    'id' => (string) \Illuminate\Support\Str::uuid(),
+                    'type' => 'admin_deposit_alert',
+                    'data' => json_encode([
+                        'title' => 'طلب إيداع جديد يحتاج مراجعة',
+                        'body' => "طلب إيداع #{$deposit->id} من {$user->name} بمبلغ {$amount} {$method->currency} عبر {$method->name}",
+                        'link' => "/admin/deposits/{$deposit->id}",
+                        'deposit_id' => $deposit->id,
+                    ]),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            // Ignore notification errors
+        }
+
+        return $deposit;
     }
 
     /**

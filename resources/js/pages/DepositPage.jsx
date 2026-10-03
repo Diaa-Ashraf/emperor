@@ -48,6 +48,18 @@ export default function DepositPage() {
     const [copied, setCopied] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [submittedDeposit, setSubmittedDeposit] = useState(null);
+    const [dbMethods, setDbMethods] = useState([]);
+
+    useEffect(() => {
+        depositsApi.getMethods()
+            .then(res => {
+                const data = res?.data || res;
+                if (Array.isArray(data)) {
+                    setDbMethods(data);
+                }
+            })
+            .catch(() => {});
+    }, []);
 
     const getMethodIcon = (id, size = 28) => {
         if (id?.includes('usdt') || id?.includes('binance') || id?.includes('crypto')) {
@@ -228,32 +240,42 @@ export default function DepositPage() {
         setSubmitting(true);
         try {
             const formData = new FormData();
-            formData.append('method', selectedMethod.code || 'manual');
+            
+            // Match with DB payment method if possible
+            const matchedDbMethod = dbMethods.find(m => m.code === selectedMethod?.code || m.id === selectedMethod?.id);
+            if (matchedDbMethod) {
+                formData.append('payment_method_id', matchedDbMethod.id);
+            }
+            formData.append('method', selectedMethod?.code || 'vodafone_cash');
             formData.append('amount', String(numAmount));
-            if (senderWallet.trim()) formData.append('sender_account', senderWallet.trim());
-            if (transactionRef.trim()) formData.append('transaction_ref', transactionRef.trim());
-            if (proofImage) formData.append('proof_image', proofImage);
+            if (senderWallet.trim()) {
+                formData.append('sender_account', senderWallet.trim());
+                formData.append('sender_wallet', senderWallet.trim());
+            }
+            if (transactionRef.trim()) {
+                formData.append('transaction_reference', transactionRef.trim());
+                formData.append('transaction_ref', transactionRef.trim());
+            }
+            if (proofImage) {
+                formData.append('proof_image', proofImage);
+            }
 
             const res = await depositsApi.submitDeposit(formData);
+            const data = res?.data || res;
 
-            if (res?.data) {
-                setSubmittedDeposit(res.data);
+            if (data?.id) {
+                setSubmittedDeposit(data);
                 success('تم تقديم طلب الإيداع بنجاح! سيتم مراجعة الإيصال وإيداع الرصيد فوراً');
             } else {
                 setSubmittedDeposit({
-                    id: Math.floor(100000 + Math.random() * 900000),
+                    id: data?.id || Math.floor(100000 + Math.random() * 900000),
                     amount: numAmount,
-                    currency: selectedMethod.currency || 'EGP',
+                    currency: selectedMethod?.currency || 'EGP',
                 });
                 success('تم استلام طلب الإيداع بنجاح!');
             }
         } catch (err) {
-            setSubmittedDeposit({
-                id: Math.floor(100000 + Math.random() * 900000),
-                amount: numAmount,
-                currency: selectedMethod.currency || 'EGP',
-            });
-            success('تم استلام طلب الإيداع بنجاح');
+            toastError(err?.message || 'تعذر إرسال طلب الإيداع، يرجى المحاولة مجدداً');
         } finally {
             setSubmitting(false);
         }

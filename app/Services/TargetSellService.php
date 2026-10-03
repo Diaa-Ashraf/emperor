@@ -109,6 +109,37 @@ class TargetSellService
         // Attempt Auto-Verification
         $this->attemptAutoVerification($order, $user, $proofImage);
 
+        // 1. Create in-app notification for User
+        try {
+            $user->notifications()->create([
+                'id' => (string) \Illuminate\Support\Str::uuid(),
+                'type' => 'target_order_submitted',
+                'data' => json_encode([
+                    'title' => 'تم استلام طلب بيع التارجت',
+                    'body' => "طلب بيع تارجت رقم #{$order->id} بقيمة {$order->net_payout} {$order->currency} تم تسجيله بنجاح.",
+                    'link' => "/target-orders/{$order->id}",
+                    'order_id' => $order->id,
+                ]),
+            ]);
+        } catch (\Throwable $e) {}
+
+        // 2. Create in-app notification for Admins
+        try {
+            $admins = User::where('role', \App\Enums\UserRole::ADMIN)->orWhere('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                $admin->notifications()->create([
+                    'id' => (string) \Illuminate\Support\Str::uuid(),
+                    'type' => 'admin_target_order_alert',
+                    'data' => json_encode([
+                        'title' => 'طلب بيع تارجت جديد',
+                        'body' => "طلب سحب تارجت #{$order->id} من {$user->name} بقيمة {$order->net_payout} {$order->currency}",
+                        'link' => "/admin/targets/{$order->id}",
+                        'order_id' => $order->id,
+                    ]),
+                ]);
+            }
+        } catch (\Throwable $e) {}
+
         return $order->fresh();
     }
 

@@ -74,6 +74,37 @@ class OrderService
             // 3. Mark processing
             $order->update(['status' => OrderStatus::PROCESSING]);
 
+            // 4. In-App Notification for User
+            try {
+                $user->notifications()->create([
+                    'id' => (string) \Illuminate\Support\Str::uuid(),
+                    'type' => 'order_created',
+                    'data' => json_encode([
+                        'title' => 'تم إنشاء طلب الشحن بنجاح',
+                        'body' => "طلبك رقم {$order->public_id} ({$product->name} - {$tier->name}) قيد المعالجة الآن.",
+                        'link' => "/orders/{$order->id}",
+                        'order_id' => $order->id,
+                    ]),
+                ]);
+            } catch (\Throwable $e) {}
+
+            // 5. In-App Notification for Admins
+            try {
+                $admins = User::where('role', \App\Enums\UserRole::ADMIN)->orWhere('role', 'admin')->get();
+                foreach ($admins as $admin) {
+                    $admin->notifications()->create([
+                        'id' => (string) \Illuminate\Support\Str::uuid(),
+                        'type' => 'admin_new_order_alert',
+                        'data' => json_encode([
+                            'title' => 'طلب شحن جديد',
+                            'body' => "طلب جديد {$order->public_id} من {$user->name} بقيمة {$order->total_amount} {$order->currency}",
+                            'link' => "/admin/orders/{$order->id}",
+                            'order_id' => $order->id,
+                        ]),
+                    ]);
+                }
+            } catch (\Throwable $e) {}
+
             return $order;
         });
     }

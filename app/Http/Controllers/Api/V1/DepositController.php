@@ -45,20 +45,42 @@ class DepositController extends Controller
     {
         $user = $request->user();
         $validated = $request->validated();
-        $method = PaymentMethod::findOrFail($validated['payment_method_id']);
+
+        $methodId = $validated['payment_method_id'] ?? null;
+        $methodCode = $validated['method'] ?? null;
+
+        $method = null;
+        if ($methodId) {
+            $method = PaymentMethod::find($methodId);
+        }
+        if (!$method && $methodCode) {
+            $method = PaymentMethod::where('code', $methodCode)
+                ->orWhere('name', 'like', "%{$methodCode}%")
+                ->first();
+        }
+        if (!$method) {
+            $method = PaymentMethod::where('is_active', true)->first();
+        }
+
+        if (!$method) {
+            return $this->errorResponse('طريقة الدفع المحددة غير متوفرة حالياً.', Response::HTTP_BAD_REQUEST);
+        }
 
         $proofImagePath = null;
         if ($request->hasFile('proof_image')) {
             $proofImagePath = $request->file('proof_image')->store('deposit_proofs', 'public');
         }
 
+        $senderAccount = $validated['sender_account'] ?? $validated['sender_wallet'] ?? null;
+        $txRef = $validated['transaction_reference'] ?? $validated['transaction_ref'] ?? null;
+
         try {
             $deposit = $this->depositService->submitDeposit(
                 user: $user,
                 method: $method,
                 amount: (float) $validated['amount'],
-                senderAccount: $validated['sender_account'] ?? null,
-                transactionReference: $validated['transaction_reference'] ?? null,
+                senderAccount: $senderAccount,
+                transactionReference: $txRef,
                 proofImage: $proofImagePath
             );
 
