@@ -3,12 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { Zap, CheckCircle2, ShieldCheck, ArrowLeft, ArrowRight, UserCheck, Sparkles, Gamepad2, Gem, MessageCircle, Radio, Crosshair } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 
 import { catalogApi } from '../../api/endpoints';
 
 export default function QuickRechargeWizard() {
     const { isRtl } = useLanguage();
     const { theme } = useTheme();
+    const { isAuthenticated } = useAuth();
+    const { error: toastError } = useToast();
     const navigate = useNavigate();
     const isLight = theme === 'light';
     const subtleBorder = isLight ? 'rgba(24, 24, 27, 0.24)' : 'var(--border-subtle)';
@@ -214,11 +218,17 @@ export default function QuickRechargeWizard() {
     };
 
     const handleInstantCheckout = () => {
-        if (activeGame?.slug) {
-            navigate(`/product/${activeGame.slug}?tier=${selectedPackageId}&pid=${encodeURIComponent(playerId)}`);
-        } else {
-            navigate(`/category/games?quick_game=${selectedGameId}&pid=${encodeURIComponent(playerId)}`);
+        const targetUrl = activeGame?.slug
+            ? `/product/${activeGame.slug}?tier=${selectedPackageId}&pid=${encodeURIComponent(playerId)}`
+            : `/category/games?quick_game=${selectedGameId}&pid=${encodeURIComponent(playerId)}`;
+
+        if (!isAuthenticated) {
+            toastError('يرجى تسجيل الدخول أولاً لإتمام عملية الشحن الفوري');
+            navigate('/login', { state: { from: { pathname: targetUrl } } });
+            return;
         }
+
+        navigate(targetUrl);
     };
 
     return (

@@ -147,18 +147,7 @@ export default function TargetOrderPage() {
                 success('تم تقديم طلب بيع التارجت بنجاح!');
             }
         } catch (err) {
-            if (err?.response?.data?.message) {
-                toastError(err.response.data.message);
-            } else if (err?.message) {
-                toastError(err.message);
-            } else {
-                // Fallback success simulation if offline
-                setSubmittedOrder({
-                    id: Math.floor(100000 + Math.random() * 900000),
-                    net_payout: netEgp,
-                });
-                success('تم استلام الطلب بنجاح');
-            }
+            toastError(err?.message || err?.response?.data?.message || 'حدث خطأ أثناء تقديم الطلب، يرجى المحاولة مرة أخرى');
         } finally {
             setSubmitting(false);
         }
