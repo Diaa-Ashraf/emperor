@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRightLeft, CheckCircle2, AlertCircle, RefreshCw, Coins } from 'lucide-react';
 import Button from '../ui/Button';
-import axios from 'axios';
+import { walletApi } from '../../api/endpoints';
 
-export default function CurrencyConverter({ userWallets, onConverted }) {
+export default function CurrencyConverter({ userWallets = [], onConverted }) {
     const [fromCurrency, setFromCurrency] = useState('EGP');
     const [toCurrency, setToCurrency] = useState('USD');
     const [amount, setAmount] = useState('');
@@ -14,24 +14,17 @@ export default function CurrencyConverter({ userWallets, onConverted }) {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    const token = localStorage.getItem('token');
-    const authHeaders = {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-        }
-    };
-
     // Fetch Rates
     const fetchRates = async () => {
         setLoadingRates(true);
         try {
-            const res = await axios.get('/api/v1/wallet/rates', authHeaders);
-            if (res.data?.status === 'success') {
-                setRates(res.data.data || []);
+            const res = await walletApi.getRates();
+            const data = res?.data || res;
+            if (Array.isArray(data)) {
+                setRates(data);
             }
         } catch (e) {
-            // Ignore silently
+            // Silently ignore
         } finally {
             setLoadingRates(false);
         }
@@ -50,19 +43,20 @@ export default function CurrencyConverter({ userWallets, onConverted }) {
 
         const timer = setTimeout(async () => {
             try {
-                const res = await axios.post('/api/v1/wallet/preview-conversion', {
+                const res = await walletApi.previewConversion({
                     from_currency: fromCurrency,
                     to_currency: toCurrency,
                     amount: Number(amount)
-                }, authHeaders);
+                });
 
-                if (res.data?.status === 'success') {
-                    setPreview(res.data.data);
+                const data = res?.data || res;
+                if (data && (data.final_amount !== undefined || data.rate !== undefined)) {
+                    setPreview(data);
                     setErrorMessage('');
                 }
             } catch (err) {
                 setPreview(null);
-                setErrorMessage(err.response?.data?.message || 'تعذر حساب سعر التحويل');
+                setErrorMessage(err?.message || 'تعذر حساب سعر التحويل');
             }
         }, 300);
 
@@ -87,29 +81,27 @@ export default function CurrencyConverter({ userWallets, onConverted }) {
 
         setConverting(true);
         try {
-            const res = await axios.post('/api/v1/wallet/convert', {
+            const res = await walletApi.convertCurrency({
                 from_currency: fromCurrency,
                 to_currency: toCurrency,
                 amount: Number(amount)
-            }, authHeaders);
+            });
 
-            if (res.data?.status === 'success') {
-                setSuccessMessage(res.data.message || 'تم تحويل العملة بنجاح!');
-                setAmount('');
-                setPreview(null);
-                if (onConverted) {
-                    onConverted();
-                }
+            setSuccessMessage(res?.message || 'تم تحويل العملة بنجاح!');
+            setAmount('');
+            setPreview(null);
+            if (onConverted) {
+                onConverted();
             }
         } catch (err) {
-            setErrorMessage(err.response?.data?.message || 'حدث خطأ أثناء تحويل العملة');
+            setErrorMessage(err?.message || 'حدث خطأ أثناء تحويل العملة');
         } finally {
             setConverting(false);
         }
     };
 
-    const currentFromWallet = userWallets?.find(w => w.currency === fromCurrency);
-    const availableFromBalance = currentFromWallet?.available_balance ?? 0;
+    const currentFromWallet = Array.isArray(userWallets) ? userWallets.find(w => w?.currency === fromCurrency) : null;
+    const availableFromBalance = Number(currentFromWallet?.available_balance ?? currentFromWallet?.balance ?? 0);
 
     return (
         <div style={{
@@ -208,7 +200,7 @@ export default function CurrencyConverter({ userWallets, onConverted }) {
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '12px' }}>
                             <span style={{ color: '#8E8E98' }}>تحويل من</span>
                             <span style={{ color: '#D4A537', fontWeight: '600' }}>
-                                المتاح: {availableFromBalance.toFixed(2)} {fromCurrency}
+                                المتاح: {Number(availableFromBalance || 0).toFixed(2)} {fromCurrency}
                             </span>
                         </div>
                         <div style={{ display: 'flex', gap: '8px' }}>
@@ -293,7 +285,7 @@ export default function CurrencyConverter({ userWallets, onConverted }) {
                                 fontWeight: '700',
                                 color: preview ? '#4ADE80' : '#8E8E98',
                             }}>
-                                {preview ? preview.final_amount.toFixed(2) : '0.00'}
+                                {preview ? Number(preview.final_amount || 0).toFixed(2) : '0.00'}
                             </div>
                             <select
                                 value={toCurrency}

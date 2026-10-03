@@ -20,7 +20,6 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Pagination from '../components/ui/Pagination';
 import { walletApi, depositsApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
-import VideoBackground from "../components/home/VideoBackground";
 
 export default function WalletPage() {
     const { user } = useAuth();
@@ -38,8 +37,9 @@ export default function WalletPage() {
         setLoadingBalance(true);
         walletApi.getBalance()
             .then(res => {
-                if (res?.data) {
-                    setBalanceData(res.data);
+                const data = res?.data || res;
+                if (data) {
+                    setBalanceData(data);
                 }
             })
             .catch(() => { })
@@ -56,11 +56,14 @@ export default function WalletPage() {
 
         walletApi.getTransactions(params)
             .then(res => {
-                if (res?.data?.data) {
-                    setTransactions(res.data.data);
-                    setMeta(res.data.meta || { current_page: page, last_page: res.data.last_page || 1, total: res.data.total });
-                } else if (Array.isArray(res?.data)) {
-                    setTransactions(res.data);
+                const resData = res?.data || res;
+                if (resData?.data && Array.isArray(resData.data)) {
+                    setTransactions(resData.data);
+                    setMeta(resData.meta || { current_page: page, last_page: resData.last_page || 1, total: resData.total });
+                } else if (Array.isArray(resData)) {
+                    setTransactions(resData);
+                } else {
+                    setTransactions([]);
                 }
             })
             .catch(() => {
@@ -77,13 +80,14 @@ export default function WalletPage() {
         fetchTransactions(currentPage, filterType);
     }, [currentPage, filterType]);
 
-    const formattedBalance = Number(balanceData?.balance ?? user?.wallet_balance ?? 0).toLocaleString('en-US', {
+    const rawBal = balanceData?.balance ?? user?.wallet?.balance ?? user?.wallet_balance ?? 0;
+    const formattedBalance = Number(rawBal || 0).toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
     const currency = balanceData?.currency || user?.currency || 'EGP';
     const currencyLabel = currency === 'EGP' ? 'ج.م' : currency;
-    const usdBalance = Number(balanceData?.balance_usd ?? 0).toFixed(2);
+    const usdBalance = Number(balanceData?.balance_usd ?? (rawBal && currency === 'EGP' ? (rawBal / 50) : 0)).toFixed(2);
 
     const filterTabs = [
         { key: 'all', label: 'الكل' },
@@ -322,36 +326,34 @@ export default function WalletPage() {
             </div>
 
             {/* Transactions List */}
-            <VideoBackground>
-                {loadingTransactions ? (
-                    <div style={{ padding: '60px 0' }}>
-                        <LoadingSpinner text="جاري تحميل سجل المعاملات..." />
-                    </div>
-                ) : transactions.length > 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
-                        {transactions.map((tx) => (
-                            <TransactionItem key={tx.id} transaction={tx} />
-                        ))}
+            {loadingTransactions ? (
+                <div style={{ padding: '60px 0' }}>
+                    <LoadingSpinner text="جاري تحميل سجل المعاملات..." />
+                </div>
+            ) : transactions && transactions.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
+                    {transactions.map((tx) => (
+                        <TransactionItem key={tx.id} transaction={tx} />
+                    ))}
 
-                        {meta && meta.last_page > 1 && (
-                            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
-                                <Pagination
-                                    currentPage={currentPage}
-                                    lastPage={meta.last_page}
-                                    onPageChange={(p) => setCurrentPage(p)}
-                                />
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <EmptyState
-                        title="لا توجد حركات في هذا السجل"
-                        description="لم يتم تسجيل أي عمليات من هذا النوع على محفظتك حتى الآن."
-                        actionText="شحن رصيد جديد"
-                        onAction={() => window.location.href = '/deposit'}
-                    />
-                )}
-            </VideoBackground>
+                    {meta && meta.last_page > 1 && (
+                        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+                            <Pagination
+                                currentPage={currentPage}
+                                lastPage={meta.last_page}
+                                onPageChange={(p) => setCurrentPage(p)}
+                            />
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <EmptyState
+                    title="لا توجد حركات في هذا السجل"
+                    description="لم يتم تسجيل أي عمليات من هذا النوع على محفظتك حتى الآن."
+                    actionText="شحن رصيد جديد"
+                    onAction={() => window.location.href = '/deposit'}
+                />
+            )}
         </MainLayout>
     );
 }

@@ -31,6 +31,9 @@ export const profileApi = {
 
 export const walletApi = {
     getBalance: () => api.get('/wallet/balance'),
+    getRates: () => api.get('/wallet/rates'),
+    previewConversion: (data) => api.post('/wallet/preview-conversion', data),
+    convertCurrency: (data) => api.post('/wallet/convert', data),
     getTransactions: (params = {}) => api.get('/wallet/transactions', { params }),
 };
 
