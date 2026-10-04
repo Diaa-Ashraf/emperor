@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 import VisualCategoryCards from '../components/home/VisualCategoryCards';
+import BestSellersSection from '../components/home/BestSellersSection';
 import LiveTargetMarket from '../components/home/LiveTargetMarket';
 import GoldenTargetBanner from '../components/home/GoldenTargetBanner';
 import FaqAccordion from '../components/home/FaqAccordion';
@@ -199,7 +200,10 @@ export default function HomePage() {
             {/* ═══ 2. CATEGORY CARDS (أقسام المتجر الحقيقية من الداتا بيز) ═══ */}
             <VisualCategoryCards />
 
-            {/* ═══ 3. TARGET CALLOUT BANNER (سحب واستبدال التارجت) ═══ */}
+            {/* ═══ 3. BEST SELLERS (الأكثر مبيعاً وشهرة) 🔥 ═══ */}
+            <BestSellersSection />
+
+            {/* ═══ 4. TARGET CALLOUT BANNER (سحب واستبدال التارجت) ═══ */}
             <GoldenTargetBanner />
 
             {/* ═══ 4. PRODUCTS & BEST SELLERS SECTION (المنتجات من الداتا بيز) ═══ */}
