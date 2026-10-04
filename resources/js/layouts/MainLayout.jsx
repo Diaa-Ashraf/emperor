@@ -33,6 +33,7 @@ import { useToast } from '../contexts/ToastContext';
 import { notificationsApi } from '../api/endpoints';
 import { onForegroundMessage } from '../services/firebaseMessaging';
 import UserSidebarDrawer from '../components/navigation/UserSidebarDrawer';
+import SupportContactModal from '../components/support/SupportContactModal';
 import HomeBannerSlider from '../components/home/HomeBannerSlider';
 import PromotionalPopup from '../components/ui/PromotionalPopup';
 import { playNotificationSound } from '../utils/soundHelper';
@@ -46,8 +47,16 @@ export default function MainLayout({ children, showBanner = true }) {
     const navigate = useNavigate();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [supportModalOpen, setSupportModalOpen] = useState(false);
     const [unreadNotifications, setUnreadNotifications] = useState(0);
     const [headerScrolled, setHeaderScrolled] = useState(false);
+
+    // Global listener for opening support modal from anywhere
+    useEffect(() => {
+        const handleOpenSupport = () => setSupportModalOpen(true);
+        window.addEventListener('emperor:open-support-modal', handleOpenSupport);
+        return () => window.removeEventListener('emperor:open-support-modal', handleOpenSupport);
+    }, []);
 
     // Track scroll for header glass effect
     useEffect(() => {
@@ -169,7 +178,7 @@ export default function MainLayout({ children, showBanner = true }) {
 
     const desktopNavLinks = [
         { to: '/', label: 'الرئيسية', icon: Home },
-        { to: '/support', label: 'خدمة العملاء', icon: Headphones },
+        { to: '#support', label: 'خدمة العملاء', icon: Headphones, isModalTrigger: true },
         { to: '/category/apps', label: 'تطبيقات البث', icon: Smartphone },
         {
             to: '/target/apps',
@@ -277,8 +286,46 @@ export default function MainLayout({ children, showBanner = true }) {
                         >
                             {desktopNavLinks.map((link) => {
                                 if (link.authRequired && !isAuthenticated) return null;
-                                const active = isActive(link.to);
+                                const active = !link.isModalTrigger && isActive(link.to);
                                 const isExtra = link.to === '/orders' || link.to === '/account-issues' || link.to === '/deposit';
+
+                                if (link.isModalTrigger) {
+                                    return (
+                                        <button
+                                            key={link.label}
+                                            type="button"
+                                            onClick={() => setSupportModalOpen(true)}
+                                            className="nav-link-item"
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '5px',
+                                                padding: '7px 11px',
+                                                borderRadius: '12px',
+                                                border: '1px solid transparent',
+                                                background: 'transparent',
+                                                fontSize: '13px',
+                                                fontWeight: '700',
+                                                color: '#D1D1DB',
+                                                cursor: 'pointer',
+                                                fontFamily: 'inherit',
+                                                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.color = '#F5D061';
+                                                e.currentTarget.style.background = 'rgba(212, 165, 55, 0.08)';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.color = '#D1D1DB';
+                                                e.currentTarget.style.background = 'transparent';
+                                            }}
+                                        >
+                                            <link.icon size={14} color="#A0A0B0" />
+                                            <span>{link.label}</span>
+                                        </button>
+                                    );
+                                }
 
                                 return (
                                     <Link
@@ -630,6 +677,12 @@ export default function MainLayout({ children, showBanner = true }) {
             <UserSidebarDrawer
                 isOpen={drawerOpen}
                 onClose={() => setDrawerOpen(false)}
+            />
+
+            {/* Support Contact Modal (WhatsApp & Live Help) */}
+            <SupportContactModal
+                isOpen={supportModalOpen}
+                onClose={() => setSupportModalOpen(false)}
             />
 
             {/* Promotional Popup Modal (Active if a popup banner is created) */}

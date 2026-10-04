@@ -561,7 +561,13 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             <Link
                                 key={item.label}
                                 to={item.path}
-                                onClick={onClose}
+                                onClick={(e) => {
+                                    onClose();
+                                    if (item.path === '/support') {
+                                        e.preventDefault();
+                                        window.dispatchEvent(new CustomEvent('emperor:open-support-modal'));
+                                    }
+                                }}
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
