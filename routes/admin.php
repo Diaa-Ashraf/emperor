@@ -37,6 +37,7 @@ Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admi
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
     Route::post('/products/{id}/toggle-active', [ProductController::class, 'toggleActive'])->name('products.toggle-active');
+    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::get('/products/{id}/providers', [ProductController::class, 'providerMapping'])->name('products.provider-mapping');
     Route::post('/products/{id}/providers', [ProductController::class, 'updateProviderMapping'])->name('products.update-provider-mapping');
 

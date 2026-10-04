@@ -126,18 +126,27 @@
                                         @endif
                                     </td>
                                     <td class="text-end pe-3">
-                                        <a href="{{ route('admin.products.provider-mapping', $product->id) }}" class="btn btn-sm btn-outline-warning" title="ربط المزودين والأولويات">
-                                            <i class="ti ti-server"></i> المزودين
-                                        </a>
-                                        <form action="{{ route('admin.products.toggle-active', $product->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm {{ $product->is_active ? 'btn-outline-danger' : 'btn-outline-success' }}" title="تبديل الحالة">
-                                                <i class="ti {{ $product->is_active ? 'ti-eye-off' : 'ti-eye' }}"></i>
-                                            </button>
-                                        </form>
-                                        <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-sm btn-outline-info" title="تعديل المنتج والباقات">
-                                            <i class="ti ti-edit"></i>
-                                        </a>
+                                        <div class="d-flex justify-content-end gap-1">
+                                            <a href="{{ route('admin.products.provider-mapping', $product->id) }}" class="btn btn-sm btn-outline-warning" title="ربط المزودين والأولويات">
+                                                <i class="ti ti-server"></i> المزودين
+                                            </a>
+                                            <form action="{{ route('admin.products.toggle-active', $product->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm {{ $product->is_active ? 'btn-outline-secondary' : 'btn-outline-success' }}" title="{{ $product->is_active ? 'تعطيل المنتج' : 'تفعيل المنتج' }}">
+                                                    <i class="ti {{ $product->is_active ? 'ti-eye-off' : 'ti-eye' }}"></i>
+                                                </button>
+                                            </form>
+                                            <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-sm btn-outline-info" title="تعديل المنتج والباقات">
+                                                <i class="ti ti-edit"></i>
+                                            </a>
+                                            <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف المنتج «{{ $product->name }}» وكافة باقاته نهائياً؟');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="حذف المنتج نهائياً">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

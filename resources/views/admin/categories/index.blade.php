@@ -115,15 +115,24 @@
                                         @endif
                                     </td>
                                     <td class="text-end pe-3">
-                                        <form action="{{ route('admin.categories.toggle-active', $category->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm {{ $category->is_active ? 'btn-outline-danger' : 'btn-outline-success' }}" title="تبديل الحالة">
-                                                <i class="ti {{ $category->is_active ? 'ti-eye-off' : 'ti-eye' }}"></i>
-                                            </button>
-                                        </form>
-                                        <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-outline-info">
-                                            <i class="ti ti-edit"></i>
-                                        </a>
+                                        <div class="d-flex justify-content-end gap-1">
+                                            <form action="{{ route('admin.categories.toggle-active', $category->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm {{ $category->is_active ? 'btn-outline-secondary' : 'btn-outline-success' }}" title="تبديل الحالة">
+                                                    <i class="ti {{ $category->is_active ? 'ti-eye-off' : 'ti-eye' }}"></i>
+                                                </button>
+                                            </form>
+                                            <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-outline-info" title="تعديل القسم">
+                                                <i class="ti ti-edit"></i>
+                                            </a>
+                                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف القسم «{{ $category->name }}» نهائياً؟');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="حذف القسم">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

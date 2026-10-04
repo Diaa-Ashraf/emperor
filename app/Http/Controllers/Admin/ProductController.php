@@ -247,7 +247,26 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $product->update(['is_active' => !$product->is_active]);
 
+        \Illuminate\Support\Facades\Cache::flush();
+
         $status = $product->is_active ? 'تفعيل' : 'تعطيل';
         return back()->with('success', "تم {$status} المنتج بنجاح.");
     }
+
+    public function destroy(int $id): RedirectResponse
+    {
+        $product = Product::findOrFail($id);
+
+        DB::transaction(function () use ($product) {
+            $product->tiers()->delete();
+            $product->delete();
+        });
+
+        \Illuminate\Support\Facades\Cache::flush();
+
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'تم حذف المنتج وباقاته بنجاح.');
+    }
 }
+
