@@ -146,6 +146,7 @@ export default function CategoryPage() {
                 >
                     <Link
                         to="/category/all"
+                        preventScrollReset={true}
                         style={{
                             padding: '8px 18px',
                             borderRadius: '12px',
@@ -170,6 +171,7 @@ export default function CategoryPage() {
                             <Link
                                 key={cat.id}
                                 to={`/category/${cat.slug || cat.id}`}
+                                preventScrollReset={true}
                                 style={{
                                     padding: '8px 18px',
                                     borderRadius: '12px',

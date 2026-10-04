@@ -69,11 +69,13 @@ export default function VisualCategoryCards() {
                 if (data && data.length > 0) {
                     // Prepend Target Selling category so it's always visible with categories
                     const hasTarget = data.some(c => c.slug === 'target' || c.slug === 'target-apps' || c.isTarget);
-                    if (!hasTarget) {
-                        setCategories([targetCategoryCard, ...data]);
-                    } else {
-                        setCategories(data);
-                    }
+                    const hasApps = data.some(c => c.slug === 'apps');
+                    const visibleCategories = data.filter(c => c.slug !== 'target' && c.slug !== 'target-apps');
+                    setCategories([
+                        ...(hasTarget ? [] : [targetCategoryCard]),
+                        ...visibleCategories,
+                        ...(hasApps ? [] : [fallbackCategories.find(c => c.slug === 'apps')]),
+                    ]);
                 } else {
                     setCategories(fallbackCategories);
                 }

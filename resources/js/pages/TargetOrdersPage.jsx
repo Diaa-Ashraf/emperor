@@ -117,7 +117,7 @@ export default function TargetOrdersPage() {
                         </p>
                     </div>
 
-                    <Link to="/target/apps" style={{ textDecoration: 'none' }}>
+                    <Link to="/target/apps" preventScrollReset={true} style={{ textDecoration: 'none' }}>
                         <button
                             style={{
                                 display: 'inline-flex',

@@ -42,6 +42,7 @@ export default function TargetAppsPage() {
                 }}>
                     <Link
                         to="/target/orders"
+                        preventScrollReset={true}
                         style={{
                             display: 'inline-flex',
                             alignItems: 'center',

@@ -693,6 +693,261 @@ export function DefaultGameIcon({ size = 80 }) {
     );
 }
 
+export function YohoIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="yohoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#1E1B4B" />
+                    <stop offset="100%" stopColor="#0F172A" />
+                </linearGradient>
+                <linearGradient id="yohoGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#4ADE80" />
+                    <stop offset="100%" stopColor="#16A34A" />
+                </linearGradient>
+                <linearGradient id="yohoRed" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#F87171" />
+                    <stop offset="100%" stopColor="#DC2626" />
+                </linearGradient>
+                <linearGradient id="yohoGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FDE047" />
+                    <stop offset="100%" stopColor="#CA8A04" />
+                </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#yohoBg)" />
+            {/* Green and Red Characters */}
+            <circle cx="36" cy="42" r="18" fill="url(#yohoGreen)" />
+            <circle cx="32" cy="38" r="3" fill="#000" />
+            <circle cx="42" cy="38" r="3" fill="#000" />
+            <path d="M32 46 Q37 52 42 46" stroke="#000" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            
+            <circle cx="64" cy="42" r="18" fill="url(#yohoRed)" />
+            <circle cx="60" cy="38" r="3" fill="#FFF" />
+            <circle cx="70" cy="38" r="3" fill="#FFF" />
+            <path d="M60 46 Q65 52 70 46" stroke="#FFF" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            
+            {/* YOHO Gold Banner */}
+            <rect x="18" y="66" width="64" height="20" rx="6" fill="#111827" stroke="url(#yohoGold)" strokeWidth="2" />
+            <text x="50" y="80" textAnchor="middle" fill="url(#yohoGold)" fontSize="13" fontWeight="900" fontFamily="Arial Black, sans-serif" letterSpacing="1.5">
+                ★ YOHO ★
+            </text>
+        </svg>
+    );
+}
+
+export function HaahlanIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="haahlanBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#7E22CE" />
+                    <stop offset="100%" stopColor="#3B0764" />
+                </linearGradient>
+                <linearGradient id="haahlanCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#38BDF8" />
+                    <stop offset="100%" stopColor="#0284C7" />
+                </linearGradient>
+                <linearGradient id="haahlanGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FDE047" />
+                    <stop offset="100%" stopColor="#EAB308" />
+                </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#haahlanBg)" />
+            {/* Smile Character */}
+            <circle cx="50" cy="40" r="22" fill="url(#haahlanCyan)" />
+            <circle cx="42" cy="34" r="3" fill="#FFF" />
+            <circle cx="58" cy="34" r="3" fill="#FFF" />
+            <path d="M40 44 Q50 54 60 44" stroke="#FFF" strokeWidth="3" fill="none" strokeLinecap="round" />
+            <text x="32" y="24" fill="url(#haahlanGold)" fontSize="14" fontWeight="900">Ya</text>
+            {/* Banner */}
+            <rect x="14" y="66" width="72" height="20" rx="6" fill="#18181B" stroke="url(#haahlanGold)" strokeWidth="2" />
+            <text x="50" y="80" textAnchor="middle" fill="url(#haahlanGold)" fontSize="11" fontWeight="900" fontFamily="Arial Black, sans-serif" letterSpacing="1">
+                ★ HAAHLAN ★
+            </text>
+        </svg>
+    );
+}
+
+export function FunUpIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="funBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#0369A1" />
+                    <stop offset="100%" stopColor="#082F49" />
+                </linearGradient>
+                <linearGradient id="funCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#38BDF8" />
+                    <stop offset="100%" stopColor="#0284C7" />
+                </linearGradient>
+                <linearGradient id="funYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FACC15" />
+                    <stop offset="100%" stopColor="#EAB308" />
+                </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#funBg)" />
+            {/* Crown */}
+            <path d="M40 22 L45 28 L50 18 L55 28 L60 22 L58 32 L42 32 Z" fill="url(#funYellow)" />
+            <text x="50" y="44" textAnchor="middle" fill="url(#funCyan)" fontSize="20" fontWeight="900" fontFamily="Arial Black, sans-serif">
+                Fun
+            </text>
+            <text x="50" y="60" textAnchor="middle" fill="url(#funYellow)" fontSize="16" fontWeight="900" fontFamily="Arial Black, sans-serif">
+                UP
+            </text>
+            <rect x="18" y="68" width="64" height="18" rx="5" fill="#0C4A6E" stroke="url(#funYellow)" strokeWidth="1.5" />
+            <text x="50" y="81" textAnchor="middle" fill="url(#funYellow)" fontSize="10" fontWeight="900" letterSpacing="1">
+                ★ FunUP ★
+            </text>
+        </svg>
+    );
+}
+
+export function MajlisIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="majBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#1C1917" />
+                    <stop offset="100%" stopColor="#0C0A09" />
+                </linearGradient>
+                <linearGradient id="majGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FDE047" />
+                    <stop offset="50%" stopColor="#D4A537" />
+                    <stop offset="100%" stopColor="#A16207" />
+                </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#majBg)" />
+            {/* Arabic Diwan / Luxury Crown Pattern */}
+            <circle cx="50" cy="42" r="26" fill="none" stroke="url(#majGold)" strokeWidth="2.5" strokeDasharray="4 2" />
+            <path d="M30 46 L38 30 L50 42 L62 30 L70 46 L50 56 Z" fill="url(#majGold)" opacity="0.9" />
+            <circle cx="50" cy="24" r="3" fill="#FFF" />
+            <text x="50" y="78" textAnchor="middle" fill="url(#majGold)" fontSize="18" fontWeight="900" fontFamily="system-ui, sans-serif">
+                مجلس
+            </text>
+        </svg>
+    );
+}
+
+export function YabiIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="yabiBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#581C87" />
+                    <stop offset="100%" stopColor="#1E1B4B" />
+                </linearGradient>
+                <linearGradient id="yabiPink" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#F43F5E" />
+                    <stop offset="100%" stopColor="#BE123C" />
+                </linearGradient>
+                <linearGradient id="yabiGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FDE047" />
+                    <stop offset="100%" stopColor="#CA8A04" />
+                </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#yabiBg)" />
+            <rect x="20" y="16" width="60" height="50" rx="14" fill="#000" stroke="url(#yabiPink)" strokeWidth="2.5" />
+            <text x="50" y="48" textAnchor="middle" fill="url(#yabiPink)" fontSize="20" fontWeight="900" fontFamily="Arial Black, sans-serif">
+                Yabi
+            </text>
+            <rect x="18" y="70" width="64" height="18" rx="5" fill="#18181B" stroke="url(#yabiGold)" strokeWidth="1.5" />
+            <text x="50" y="83" textAnchor="middle" fill="url(#yabiGold)" fontSize="10" fontWeight="900" letterSpacing="1">
+                ★ هايو / YABI ★
+            </text>
+        </svg>
+    );
+}
+
+export function YoYoIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="yoyoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#F59E0B" />
+                    <stop offset="100%" stopColor="#B45309" />
+                </linearGradient>
+                <linearGradient id="yoyoWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FFFFFF" />
+                    <stop offset="100%" stopColor="#E2E8F0" />
+                </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#yoyoBg)" />
+            <circle cx="50" cy="40" r="24" fill="#1E293B" />
+            <circle cx="50" cy="40" r="14" fill="url(#yoyoBg)" />
+            <circle cx="50" cy="40" r="5" fill="#FFFFFF" />
+            <text x="50" y="80" textAnchor="middle" fill="url(#yoyoWhite)" fontSize="16" fontWeight="900" fontFamily="Arial Black, sans-serif">
+                YoYo
+            </text>
+        </svg>
+    );
+}
+
+export function HyaChatIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="hyaBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#4338CA" />
+                    <stop offset="100%" stopColor="#312E81" />
+                </linearGradient>
+                <linearGradient id="hyaPink" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#EC4899" />
+                    <stop offset="100%" stopColor="#DB2777" />
+                </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#hyaBg)" />
+            <path d="M30 26 C20 26 16 34 16 44 C16 54 24 60 32 62 L28 72 L42 64 C44 64 46 64 48 64 C58 64 64 56 64 44 C64 32 56 26 48 26 Z" fill="url(#hyaPink)" />
+            <path d="M52 38 C62 38 68 44 68 52 C68 58 62 64 56 65 L59 73 L49 67 C48 67 46 67 45 67 C42 67 36 65 36 58" fill="#38BDF8" opacity="0.8" />
+            <text x="50" y="84" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="900" fontFamily="system-ui, sans-serif">
+                هيا شات
+            </text>
+        </svg>
+    );
+}
+
+export function SoulChillIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="soulBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#047857" />
+                    <stop offset="100%" stopColor="#064E3B" />
+                </linearGradient>
+                <linearGradient id="soulPlanet" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#34D399" />
+                    <stop offset="100%" stopColor="#059669" />
+                </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#soulBg)" />
+            <circle cx="50" cy="40" r="18" fill="url(#soulPlanet)" />
+            <ellipse cx="50" cy="40" rx="30" ry="8" fill="none" stroke="#A7F3D0" strokeWidth="2.5" transform="rotate(-15 50 40)" />
+            <text x="50" y="78" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="900" fontFamily="Arial Black, sans-serif">
+                SoulChill
+            </text>
+        </svg>
+    );
+}
+
+export function WePlayIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="wpBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#E11D48" />
+                    <stop offset="100%" stopColor="#9F1239" />
+                </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#wpBg)" />
+            <circle cx="38" cy="38" r="8" fill="#FACC15" />
+            <circle cx="62" cy="38" r="8" fill="#38BDF8" />
+            <circle cx="50" cy="54" r="8" fill="#4ADE80" />
+            <text x="50" y="80" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="900" fontFamily="Arial Black, sans-serif">
+                WePlay
+            </text>
+        </svg>
+    );
+}
+
 /**
  * Universal resolver for target app icons.
  * If app has custom uploaded image, uses that; otherwise falls back to the high-res 3D icon by name.
@@ -726,22 +981,31 @@ export function TargetAppIconRenderer({ app, size = 84 }) {
     const n = (app?.name || '').toLowerCase();
     const en = (app?.enName || app?.slug || '').toLowerCase();
 
-    // Games
-    if (n.includes('ببجي') || en.includes('pubg')) return <PubgIcon size={size} />;
+    // Voice & Chat Apps (KA CARD benchmark)
+    if (n.includes('يوهو') || en.includes('yoho')) return <YohoIcon size={size} />;
+    if (n.includes('هلين') || en.includes('haahlan')) return <HaahlanIcon size={size} />;
+    if (n.includes('فان') || en.includes('funup')) return <FunUpIcon size={size} />;
+    if (n.includes('مجلس') || en.includes('majlis')) return <MajlisIcon size={size} />;
+    if (n.includes('هايو') || en.includes('yabi')) return <YabiIcon size={size} />;
+    if (n.includes('يويو') || en.includes('yoyo')) return <YoYoIcon size={size} />;
+    if (n.includes('هيا') || en.includes('hya')) return <HyaChatIcon size={size} />;
+    if (n.includes('سول') || en.includes('soul')) return <SoulChillIcon size={size} />;
+    if (n.includes('ويبلاي') || en.includes('weplay')) return <WePlayIcon size={size} />;
+    if (n.includes('زينا') || en.includes('zina')) return <ZinaLiveIcon size={size} />;
+    if (n.includes('زفا') || en.includes('zafa')) return <ZafaLiveIcon size={size} />;
     if (n.includes('بولا') || en.includes('pola')) return <PolaLiveIcon size={size} />;
-    if (n.includes('فاير') || en.includes('free fire')) return <FreeFireIcon size={size} />;
 
-    // Voice & Target Apps
+    // Other Target & Game Apps
+    if (n.includes('ببجي') || en.includes('pubg')) return <PubgIcon size={size} />;
+    if (n.includes('فاير') || en.includes('free fire')) return <FreeFireIcon size={size} />;
     if (n.includes('بارتي') || en.includes('party')) return <PartyStarIcon size={size} />;
     if (n.includes('بوتا') || en.includes('bouta')) return <BoutaLiveIcon size={size} />;
     if (n.includes('تامي') || en.includes('tami')) return <TamiIcon size={size} />;
     if (n.includes('جانكو') || en.includes('janko')) return <JankoIcon size={size} />;
-    if (n.includes('زفا') || en.includes('zafa')) return <ZafaLiveIcon size={size} />;
     if (n.includes('صدف') || en.includes('sodfa')) return <SodfaIcon size={size} />;
     if (n.includes('شباب') || en.includes('shabab')) return <ShababChatIcon size={size} />;
     if (n.includes('سولو') || en.includes('solo')) return <SoloStarIcon size={size} />;
     if (n.includes('ماتش') || en.includes('match')) return <SoMatchIcon size={size} />;
-    if (n.includes('زينا') || en.includes('zina')) return <ZinaLiveIcon size={size} />;
     if (n.includes('فلا') || en.includes('falla')) return <FallaIcon size={size} />;
     if (n.includes('بيجو') || en.includes('bigo')) return <BigoLiveIcon size={size} />;
 

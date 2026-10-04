@@ -94,10 +94,16 @@ class KaCardsCatalogAdapter implements CatalogSourceAdapter
 
                         // 1. Find or create Category based on KA-Cards category
                         $categorySlug = Str::slug($categoryName) ?: ('ka-cat-' . ($parentId ?: 'general'));
-                        $category = Category::firstOrNew(['slug' => $categorySlug]);
+                        $isAppCategory = $this->isAppCategory($categoryName, $name);
+                        $category = Category::firstOrNew(['slug' => $isAppCategory ? 'apps' : $categorySlug]);
                         $isNewCat = !$category->exists;
 
-                        $category->fill([
+                        $category->fill($isAppCategory ? [
+                            'name' => 'قسم التطبيقات',
+                            'type' => 'voice_apps',
+                            'description' => 'شحن تطبيقات البث والشات من مزود KA-Cards',
+                            'is_active' => true,
+                        ] : [
                             'name' => $categoryName,
                             'type' => 'games',
                             'description' => 'قسم ' . $categoryName . ' من مزود KA-Cards',
@@ -226,5 +232,23 @@ class KaCardsCatalogAdapter implements CatalogSourceAdapter
     {
         $products = $this->service->getProducts();
         return !empty($products);
+    }
+
+    protected function isAppCategory(string $categoryName, string $productName): bool
+    {
+        $value = mb_strtolower($categoryName . ' ' . $productName);
+
+        foreach ([
+            'pola', 'yomo', 'yomi', 'yoho', 'yooho', 'bigo', 'funup', 'fun up',
+            'haahlan', 'hahaln', 'yabi', 'zafa', 'zina', 'tami', 'janko',
+            'shabab chat', 'مجلس', 'زينا', 'فان اب', 'فان أب', 'هالين', 'يوهو',
+            'يوبي', 'بولا', 'بيجو', 'يا بي', 'زفا', 'تامي', 'جانكو', 'شباب شات',
+        ] as $appName) {
+            if (mb_strpos($value, mb_strtolower($appName)) !== false) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

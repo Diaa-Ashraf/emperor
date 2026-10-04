@@ -30,7 +30,7 @@ class ProductController extends Controller
         $query = Product::where('is_active', true)
             ->with([
                 'category:id,name,slug,type',
-                'activeTiers:id,product_id,name,price_egp,price_usd,is_active,sort_order'
+                'activeTiers'
             ])
             ->select([
                 'id', 'category_id', 'name', 'slug', 'description', 'image',
@@ -84,7 +84,7 @@ class ProductController extends Controller
         $product = Cache::remember($cacheKey, 900, function () use ($id) {
             $query = Product::where('is_active', true)->with([
                 'category:id,name,slug,type',
-                'activeTiers:id,product_id,name,price_egp,price_usd,is_active,sort_order'
+                'activeTiers'
             ]);
 
             if (is_numeric($id)) {

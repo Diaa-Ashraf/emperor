@@ -46,10 +46,10 @@ export default function HomePage() {
     const [loadingProducts, setLoadingProducts] = useState(true);
 
     useEffect(() => {
-        catalogApi.getProducts({ limit: 12, per_page: 12 })
+        catalogApi.getProducts({ limit: 100, per_page: 100 })
             .then(res => {
-                if (res?.data?.data) setProducts(res.data.data);
-                else if (Array.isArray(res?.data)) setProducts(res.data);
+                const items = res?.data?.data || (Array.isArray(res?.data) ? res.data : []);
+                setProducts(items.filter(item => item.type !== 'target'));
             })
             .catch(() => {})
             .finally(() => setLoadingProducts(false));

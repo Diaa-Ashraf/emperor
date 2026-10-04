@@ -25,7 +25,23 @@ class KaCardsProviderAdapter implements ProviderAdapter
      */
     public function executeOrder(OrderRequestDTO $orderDto): ProviderOrderResultDTO
     {
-        $productId = (int) ($orderDto->productTierId ?: $orderDto->productId);
+        // Resolve the external KA-Cards product ID
+        $tier = $orderDto->productTierId ? \App\Models\ProductTier::with('product')->find($orderDto->productTierId) : null;
+        $product = $orderDto->productId ? \App\Models\Product::find($orderDto->productId) : $tier?->product;
+
+        $externalProductId = null;
+        if ($orderDto->productTierId) {
+            $pp = \App\Models\ProductProvider::where('product_tier_id', $orderDto->productTierId)
+                ->whereHas('provider', fn($q) => $q->where('driver', 'ka_cards_api'))
+                ->first();
+            $externalProductId = $pp?->provider_sku ?: ($tier?->metadata['ka_product_id'] ?? null);
+        }
+
+        if (!$externalProductId) {
+            $externalProductId = $product?->external_product_id ?: ($orderDto->productTierId ?: $orderDto->productId);
+        }
+
+        $productId = (int) $externalProductId;
         $orderUuid = 'EMP-' . Str::uuid()->toString();
 
         $params = [];
