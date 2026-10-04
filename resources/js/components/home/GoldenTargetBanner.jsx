@@ -1,129 +1,97 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Headphones, Zap, ArrowLeft, ArrowRight, DollarSign, Sparkles, TrendingUp, Crown } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function GoldenTargetBanner() {
-    const { t, isRtl } = useLanguage();
+    const { isRtl } = useLanguage();
     const [hovered, setHovered] = useState(false);
 
     return (
-        <div
-            className="emperor-entrance emperor-vip-card emperor-shimmer"
-            style={{
-                borderRadius: '24px',
-                padding: 'clamp(20px, 4vw, 36px) clamp(16px, 3.5vw, 32px)',
-                marginBottom: '40px',
-                display: 'flex',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '24px',
-                position: 'relative',
-                overflow: 'hidden',
-            }}
-        >
-            {/* Ambient Gold Radial Flare */}
-            <div style={{
-                position: 'absolute',
-                top: '-100px',
-                [isRtl ? 'right' : 'left']: '-100px',
-                width: '320px',
-                height: '320px',
-                borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(212, 165, 55, 0.18) 0%, transparent 70%)',
-                pointerEvents: 'none',
-            }} />
-            <div style={{
-                position: 'absolute',
-                bottom: '-80px',
-                [isRtl ? 'left' : 'right']: '-80px',
-                width: '240px',
-                height: '240px',
-                borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(212, 165, 55, 0.10) 0%, transparent 70%)',
-                pointerEvents: 'none',
-            }} />
-
-            {/* Left Content */}
-            <div style={{ maxWidth: '580px', zIndex: 2 }}>
-                <div className="emperor-badge" style={{ marginBottom: '16px' }}>
-                    <Crown size={13} />
-                    <span>خدمة سحب الراتب وتسييل التارجت المعتمدة</span>
-                </div>
-
-                <h2 style={{
-                    margin: '0 0 14px',
-                    fontSize: 'clamp(20px, 3.5vw, 30px)',
-                    fontWeight: '900',
-                    color: 'var(--text-primary)',
-                    lineHeight: '1.3',
-                    letterSpacing: '-0.5px',
-                }}>
-                    {t('targetTitle')}
-                </h2>
-
-                <p style={{
-                    margin: '0 0 20px',
-                    fontSize: 'clamp(12.5px, 2vw, 14px)',
-                    color: 'var(--text-secondary)',
-                    lineHeight: '1.75',
-                    maxWidth: '500px',
-                }}>
-                    {t('targetDesc')}. نحول لك كاش فوري على فودافون كاش، إنستاباي، الحساب البنكي، أو محفظتك الرقمية في أقل من 5 دقائق!
-                </p>
-
-                {/* Trust Badges */}
-                <div style={{
+        <div style={{
+            maxWidth: '680px',
+            margin: '0 auto 44px',
+            width: '100%',
+        }}>
+            <Link
+                to="/target/apps"
+                style={{
+                    textDecoration: 'none',
                     display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '14px',
-                    fontSize: '12px',
-                    color: 'var(--text-gold)',
-                    fontWeight: '700',
-                }}>
-                    {[
-                        { icon: ShieldCheck, text: 'ضمان وأمان 100%' },
-                        { icon: Zap, text: 'تحويل كاش فوري' },
-                        { icon: Headphones, text: 'دعم فني 24/7' },
-                    ].map(({ icon: Icon, text }) => (
-                        <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <Icon size={15} color="var(--gold-400)" />
-                            <span>{text}</span>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Right: CTA */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', zIndex: 2, width: '100%', maxWidth: '340px' }}>
-                <Link
-                    to="/target/sell"
-                    className="emperor-btn-primary emperor-pulse"
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    width: '100%',
+                }}
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
+            >
+                {/* ── Luxury Poster Frame ── */}
+                <div
                     style={{
-                        padding: 'clamp(12px, 2.5vw, 16px) clamp(18px, 3vw, 28px)',
-                        fontSize: 'clamp(13.5px, 2.8vw, 15.5px)',
-                        borderRadius: '16px',
+                        position: 'relative',
                         width: '100%',
-                        boxSizing: 'border-box',
+                        height: 'clamp(200px, 28vw, 310px)',
+                        borderRadius: '24px',
+                        overflow: 'hidden',
+                        background: '#0B0B0F',
+                        border: `1.8px solid ${hovered ? '#F5D061' : 'rgba(212, 165, 55, 0.45)'}`,
+                        boxShadow: hovered
+                            ? '0 16px 45px rgba(0, 0, 0, 0.9), 0 0 35px rgba(212, 165, 55, 0.35)'
+                            : '0 10px 30px rgba(0, 0, 0, 0.75), 0 0 20px rgba(212, 165, 55, 0.15)',
+                        transform: hovered ? 'translateY(-6px) scale(1.015)' : 'translateY(0) scale(1)',
+                        transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
                     }}
-                    onMouseEnter={() => setHovered(true)}
-                    onMouseLeave={() => setHovered(false)}
                 >
-                    <DollarSign size={22} strokeWidth={2.5} />
-                    <span>{t('targetSelling')} — بيع تارجت الآن</span>
-                    {isRtl ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
-                </Link>
+                    <img
+                        src="/images/artwork/hero_banner.jpg"
+                        alt="اضغط هنا لسحب راتبك - بيع تارجت"
+                        loading="lazy"
+                        onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = '/images/artwork/cat_target.jpg';
+                        }}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            objectPosition: 'center',
+                            display: 'block',
+                            transform: hovered ? 'scale(1.05)' : 'scale(1)',
+                            transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                        }}
+                    />
 
-                <span style={{
-                    fontSize: '12px',
-                    color: 'var(--text-muted)',
-                    textAlign: 'center',
-                    fontWeight: '600',
-                }}>
-                    أعلى سعر رسمي معتمد
-                </span>
-            </div>
+                    {/* Shimmer Light Beam Effect */}
+                    <div
+                        style={{
+                            position: 'absolute',
+                            inset: 0,
+                            background: hovered
+                                ? 'linear-gradient(90deg, transparent, rgba(245, 208, 97, 0.15), transparent)'
+                                : 'transparent',
+                            transition: 'all 0.3s ease',
+                            pointerEvents: 'none',
+                        }}
+                    />
+                </div>
+
+                {/* ── Subtitle Below Card (Matches Reference Screenshot) ── */}
+                <h3
+                    style={{
+                        margin: '14px 0 0',
+                        fontSize: 'clamp(16px, 2.2vw, 18px)',
+                        fontWeight: '800',
+                        color: hovered ? '#F5D061' : '#FFFFFF',
+                        textAlign: 'center',
+                        lineHeight: '1.4',
+                        letterSpacing: '-0.2px',
+                        transition: 'color 0.25s ease, transform 0.25s ease',
+                        transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+                    }}
+                >
+                    بيع تارجت
+                </h3>
+            </Link>
         </div>
     );
 }
