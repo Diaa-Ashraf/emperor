@@ -43,18 +43,18 @@ Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admi
     Route::get('/products/{id}/providers', [ProductController::class, 'providerMapping'])->name('products.provider-mapping');
     Route::post('/products/{id}/providers', [ProductController::class, 'updateProviderMapping'])->name('products.update-provider-mapping');
 
-    // Vouchers & Pricing Placeholders (to be completed in next phases)
-    Route::get('/vouchers', [PlaceholderAdminController::class, 'index'])
-        ->defaults('title', 'مخزون الأكواد الرقمية')
-        ->defaults('icon', 'ti-ticket')
-        ->defaults('description', 'إدارة واستيراد الأكواد والقسائم الرقمية الجاهزة للتسليم الفوري')
-        ->name('vouchers.index');
+    // Vouchers (Digital Codes Inventory)
+    Route::get('/vouchers', [\App\Http\Controllers\Admin\VoucherController::class, 'index'])->name('vouchers.index');
+    Route::post('/vouchers', [\App\Http\Controllers\Admin\VoucherController::class, 'store'])->name('vouchers.store');
+    Route::delete('/vouchers/{id}', [\App\Http\Controllers\Admin\VoucherController::class, 'destroy'])->name('vouchers.destroy');
+    Route::post('/vouchers/bulk-delete', [\App\Http\Controllers\Admin\VoucherController::class, 'bulkDestroy'])->name('vouchers.bulk-destroy');
 
-    Route::get('/pricing', [PlaceholderAdminController::class, 'index'])
-        ->defaults('title', 'قواعد وهوامش التسعير')
-        ->defaults('icon', 'ti-coin')
-        ->defaults('description', 'تحديد هوامش الربح المئوية، الثابتة، وأسعار الموزعين وعملاء API')
-        ->name('pricing.index');
+    // Pricing Rules & Strategies
+    Route::get('/pricing', [\App\Http\Controllers\Admin\PricingRuleController::class, 'index'])->name('pricing.index');
+    Route::post('/pricing', [\App\Http\Controllers\Admin\PricingRuleController::class, 'store'])->name('pricing.store');
+    Route::post('/pricing/{id}/toggle-active', [\App\Http\Controllers\Admin\PricingRuleController::class, 'toggleActive'])->name('pricing.toggle-active');
+    Route::delete('/pricing/{id}', [\App\Http\Controllers\Admin\PricingRuleController::class, 'destroy'])->name('pricing.destroy');
+    Route::post('/pricing/recalculate', [\App\Http\Controllers\Admin\PricingRuleController::class, 'recalculate'])->name('pricing.recalculate');
 
     // Orders Management (2.5)
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
