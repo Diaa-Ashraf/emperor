@@ -43,9 +43,28 @@ class ProductController extends Controller
         if ($catId) {
             $query->where('category_id', $catId);
         } elseif ($catSlug && $catSlug !== 'all') {
-            $query->whereHas('category', function ($q) use ($catSlug) {
-                $q->where('slug', $catSlug);
-            });
+            $typeAliases = [
+                'games' => 'games',
+                'apps' => 'voice_apps',
+                'voice_apps' => 'voice_apps',
+                'cards' => 'cards',
+                'telecom' => 'telecom',
+                'target' => 'target',
+            ];
+
+            if (isset($typeAliases[$catSlug])) {
+                $categoryType = $typeAliases[$catSlug];
+                $query->where(function ($q) use ($catSlug, $categoryType) {
+                    $q->whereHas('category', function ($cq) use ($catSlug, $categoryType) {
+                        $cq->where('slug', $catSlug)
+                           ->orWhere('type', $categoryType);
+                    });
+                });
+            } else {
+                $query->whereHas('category', function ($q) use ($catSlug) {
+                    $q->where('slug', $catSlug);
+                });
+            }
         }
 
         if ($type && $type !== 'all') {
@@ -59,10 +78,10 @@ class ProductController extends Controller
             });
         }
 
-        // Cache default requests without search for 15 minutes for blazing fast speed
+        // Cache default requests without search for 5 minutes
         if ($search === '') {
-            $cacheKey = "api_products_list_c{$catId}_cs{$catSlug}_t{$type}_p{$page}_l{$perPage}";
-            $products = Cache::remember($cacheKey, 900, function () use ($query, $perPage) {
+            $cacheKey = "api_products_list_v2_c{$catId}_cs{$catSlug}_t{$type}_p{$page}_l{$perPage}";
+            $products = Cache::remember($cacheKey, 300, function () use ($query, $perPage) {
                 return $query->orderBy('sort_order', 'asc')->paginate($perPage);
             });
         } else {

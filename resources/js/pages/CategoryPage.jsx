@@ -10,13 +10,47 @@ import { catalogApi } from '../api/endpoints';
 import VideoBackground from '../components/home/VideoBackground';
 import { formatImageUrl } from '../utils/imageHelper';
 
+const TYPE_CONFIG = {
+    games: {
+        type: 'games',
+        title: 'شحن الألعاب والبطاقات',
+        description: 'اختر لعبتك المفضلة أو باقتك للشحن الفوري بأسعار الجملة والتسليم التلقائي',
+    },
+    apps: {
+        type: 'voice_apps',
+        title: 'تطبيقات البث والشات الصوتي',
+        description: 'شحن العملات والكوينز لبرامج البث الصوتي وتطبيقات التعارف والشات',
+    },
+    voice_apps: {
+        type: 'voice_apps',
+        title: 'تطبيقات البث والشات الصوتي',
+        description: 'شحن العملات والكوينز لبرامج البث الصوتي وتطبيقات التعارف والشات',
+    },
+    cards: {
+        type: 'cards',
+        title: 'البطاقات الرقمية والاشتراكات',
+        description: 'بطاقات الهدايا، شحن الاشتراكات، والأكواد الرقمية المباشرة',
+    },
+    telecom: {
+        type: 'telecom',
+        title: 'شحن شبكات الاتصالات',
+        description: 'رصيد وكروت شحن باقات الهواتف والإنترنت لجميع الشبكات',
+    },
+    all: {
+        type: null,
+        title: 'جميع المنتجات والألعاب',
+        description: 'تصفح كل الخدمات والألعاب والبطاقات الرقمية المتاحة على المنصة',
+    },
+};
+
 // In-memory module cache for categories
 let categoriesCache = null;
 
 export default function CategoryPage() {
     const params = useParams();
     const navigate = useNavigate();
-    const slug = params.slug || params.id;
+    const rawSlug = params.slug || params.id || 'all';
+    const slug = rawSlug.toLowerCase();
 
     // Redirect to target apps if target slug is accessed
     useEffect(() => {
@@ -59,10 +93,25 @@ export default function CategoryPage() {
             .catch(() => { });
     }, []);
 
+    // Check if slug is a Type container (e.g. 'games', 'apps', 'cards')
+    const typeInfo = TYPE_CONFIG[slug] || null;
+
     const selectedCategory = useMemo(() => {
-        if (!slug || slug === 'all') return null;
-        return categories.find(c => c.slug === slug || String(c.id) === String(slug)) || null;
-    }, [slug, categories]);
+        if (typeInfo || !slug || slug === 'all') return null;
+        return categories.find(c => c.slug?.toLowerCase() === slug || String(c.id) === String(slug)) || null;
+    }, [slug, categories, typeInfo]);
+
+    // Determine active type to filter visible categories tabs
+    const currentActiveType = useMemo(() => {
+        if (typeInfo) return typeInfo.type;
+        if (selectedCategory) return selectedCategory.type;
+        return null;
+    }, [typeInfo, selectedCategory]);
+
+    const visibleCategories = useMemo(() => {
+        if (!currentActiveType) return categories;
+        return categories.filter(c => c.type === currentActiveType);
+    }, [categories, currentActiveType]);
 
     // Fetch products in parallel / direct query
     useEffect(() => {
@@ -107,7 +156,19 @@ export default function CategoryPage() {
         });
     }, [products, sortBy]);
 
-    const categoryTitle = selectedCategory ? selectedCategory.name : 'جميع المنتجات والألعاب';
+    const categoryTitle = selectedCategory 
+        ? selectedCategory.name 
+        : (typeInfo?.title || 'جميع المنتجات والألعاب');
+
+    const categoryDescription = selectedCategory
+        ? (selectedCategory.description || 'اختر باقتك المفضلة للشحن الفوري بأسعار الجملة')
+        : (typeInfo?.description || 'اختر لعبتك المفضلة أو باقتك للشحن الفوري بأسعار الجملة');
+
+    const allTabLink = currentActiveType && currentActiveType !== 'all'
+        ? (currentActiveType === 'voice_apps' ? '/category/apps' : `/category/${currentActiveType}`)
+        : '/category/all';
+
+    const isAllTabActive = !selectedCategory;
 
     return (
         <MainLayout>
@@ -125,14 +186,14 @@ export default function CategoryPage() {
                             {categoryTitle}
                         </h1>
                         <p style={{ margin: 0, fontSize: '14px', color: '#9E9EA8' }}>
-                            {selectedCategory?.description || 'اختر لعبتك المفضلة أو باقتك للشحن الفوري بأسعار الجملة'}
+                            {categoryDescription}
                         </p>
                     </div>
                 </div>
             </div>
 
             {/* Categories Filter Tabs */}
-            {categories.length > 0 && (
+            {visibleCategories.length > 0 && (
                 <div
                     className="no-scrollbar"
                     style={{
@@ -146,28 +207,28 @@ export default function CategoryPage() {
                     }}
                 >
                     <Link
-                        to="/category/all"
+                        to={allTabLink}
                         preventScrollReset={true}
                         style={{
                             padding: '8px 18px',
                             borderRadius: '12px',
-                            background: !slug || slug === 'all'
+                            background: isAllTabActive
                                 ? 'linear-gradient(135deg, #F3E5AB 0%, #D4A537 100%)'
                                 : '#1E1E28',
-                            color: !slug || slug === 'all' ? '#0D0D0F' : '#E2E8F0',
+                            color: isAllTabActive ? '#0D0D0F' : '#E2E8F0',
                             fontWeight: '700',
                             fontSize: '14px',
                             textDecoration: 'none',
                             whiteSpace: 'nowrap',
-                            border: !slug || slug === 'all' ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+                            border: isAllTabActive ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
                             transition: 'all 0.2s',
                         }}
                     >
                         الكل
                     </Link>
 
-                    {categories.map((cat) => {
-                        const isActive = slug === cat.slug || String(slug) === String(cat.id);
+                    {visibleCategories.map((cat) => {
+                        const isActive = selectedCategory?.id === cat.id || slug === cat.slug?.toLowerCase();
                         return (
                             <Link
                                 key={cat.id}
