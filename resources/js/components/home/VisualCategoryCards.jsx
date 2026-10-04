@@ -293,7 +293,7 @@ function CategoryCard({ cat, isRtl, index }) {
                     gap: '6px',
                     transition: 'all 0.3s ease',
                 }}>
-                    <span>{isTarget ? 'سحب التارجت الآن' : 'تصفح الباقات والأسعار'}</span>
+                    <span>دخول</span>
                     {isRtl ? <ChevronLeft size={15} /> : <ChevronRight size={15} />}
                 </div>
             </div>

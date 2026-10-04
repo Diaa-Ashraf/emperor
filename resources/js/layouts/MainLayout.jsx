@@ -168,7 +168,7 @@ export default function MainLayout({ children, showBanner = true }) {
 
     const desktopNavLinks = [
         { to: '/', label: 'الرئيسية', icon: Home },
-        { to: '/category/games', label: 'الألعاب والبطاقات', icon: Gamepad2 },
+        { to: '/support', label: 'خدمة العملاء', icon: Headphones },
         { to: '/category/apps', label: 'تطبيقات البث', icon: Smartphone },
         {
             to: '/target/apps',

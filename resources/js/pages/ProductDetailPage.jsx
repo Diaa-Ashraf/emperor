@@ -511,9 +511,32 @@ export default function ProductDetailPage() {
                                     <Minus size={16} />
                                 </button>
 
-                                <span style={{ fontSize: '16px', fontWeight: '800', color: '#FFFFFF', minWidth: '24px', textAlign: 'center' }}>
-                                    {quantity}
-                                </span>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="9999"
+                                    value={quantity}
+                                    onChange={(e) => {
+                                        const val = parseInt(e.target.value, 10);
+                                        if (isNaN(val) || val <= 0) {
+                                            setQuantity(1);
+                                        } else {
+                                            setQuantity(Math.min(9999, val));
+                                        }
+                                    }}
+                                    style={{
+                                        width: '54px',
+                                        fontSize: '16px',
+                                        fontWeight: '800',
+                                        color: '#FFFFFF',
+                                        textAlign: 'center',
+                                        background: 'rgba(0, 0, 0, 0.4)',
+                                        border: '1px solid rgba(212, 165, 55, 0.3)',
+                                        borderRadius: '8px',
+                                        padding: '4px 0',
+                                        outline: 'none',
+                                    }}
+                                />
 
                                 <button
                                     type="button"

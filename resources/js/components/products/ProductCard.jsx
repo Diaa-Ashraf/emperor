@@ -78,27 +78,7 @@ export default function ProductCard({ product }) {
                     </div>
                 )}
 
-                {/* Top Instant Badge */}
-                <div style={{
-                    position: 'absolute',
-                    top: '8px',
-                    right: '8px',
-                    background: 'rgba(11, 11, 14, 0.88)',
-                    backdropFilter: 'blur(8px)',
-                    border: '1px solid rgba(212, 165, 55, 0.45)',
-                    color: '#D4A537',
-                    padding: '2px 7px',
-                    borderRadius: '7px',
-                    fontSize: '10.5px',
-                    fontWeight: '800',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-                }}>
-                    <Zap size={11} color="#D4A537" />
-                    <span>تسليم فوري</span>
-                </div>
+
 
                 {/* Category tag */}
                 {product.category?.name && (

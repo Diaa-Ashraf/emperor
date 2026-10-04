@@ -9,12 +9,9 @@ import {
 } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 import VisualCategoryCards from '../components/home/VisualCategoryCards';
-import BestSellersSection from '../components/home/BestSellersSection';
-import LiveTargetMarket from '../components/home/LiveTargetMarket';
 import GoldenTargetBanner from '../components/home/GoldenTargetBanner';
 import FaqAccordion from '../components/home/FaqAccordion';
 import CommunityTelegramBanner from '../components/home/CommunityTelegramBanner';
-import BestSellerCard from '../components/products/BestSellerCard';
 import { catalogApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -197,89 +194,16 @@ export default function HomePage() {
                 )}
             </div>
 
-            {/* ═══ 2. CATEGORY CARDS (أقسام المتجر الحقيقية من الداتا بيز) ═══ */}
+            {/* ═══ 2. CATEGORY CARDS (أقسام المتجر) ═══ */}
             <VisualCategoryCards />
 
-            {/* ═══ 3. BEST SELLERS (الأكثر طلباً ورواجاً) ═══ */}
-            <BestSellersSection />
-
-            {/* ═══ 4. TARGET CALLOUT BANNER (سحب واستبدال التارجت) ═══ */}
+            {/* ═══ 3. TARGET CALLOUT BANNER (سحب واستبدال التارجت) ═══ */}
             <GoldenTargetBanner />
 
-            {/* ═══ 4. PRODUCTS & BEST SELLERS SECTION (المنتجات من الداتا بيز) ═══ */}
-            {filteredItems.length > 0 && (
-                <div className="emperor-entrance" style={{ marginBottom: '56px' }}>
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginBottom: '24px',
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '12px',
-                                background: 'rgba(212, 165, 55, 0.10)',
-                                border: '1px solid var(--border-medium)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                                <Star size={20} color="var(--gold-400)" fill="var(--gold-400)" />
-                            </div>
-                            <div>
-                                <h2 style={{
-                                    margin: 0,
-                                    fontSize: 'clamp(18px, 3vw, 24px)',
-                                    fontWeight: '900',
-                                    color: theme === 'light' ? '#F4F4F5' : 'var(--text-primary)',
-                                    letterSpacing: '-0.3px',
-                                }}>
-                                    المنتجات المتاحة للشحن
-                                </h2>
-                                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                                    شحن رسمي وفوري بأفضل الأسعار
-                                </span>
-                            </div>
-                        </div>
-
-                        <Link
-                            to="/category/all"
-                            className="emperor-btn-ghost"
-                            style={{
-                                padding: '7px 16px',
-                                fontSize: '12px',
-                                borderRadius: '9999px',
-                            }}
-                        >
-                            <span>{t('viewAll')}</span>
-                            {isRtl ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-                        </Link>
-                    </div>
-
-                    {/* Product Grid */}
-                    <div className="responsive-grid-products">
-                        {filteredItems.map((item, i) => (
-                            <div
-                                key={item.id}
-                                className="emperor-entrance"
-                                style={{ animationDelay: `${i * 0.05}s` }}
-                            >
-                                <BestSellerCard item={item} />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* ═══ 5. LIVE TARGET MARKET (يظهر فقط في حال وجود تطبيقات تارجت في الداتا بيز) ═══ */}
-            <LiveTargetMarket />
-
-            {/* ═══ 6. FAQ ACCORDION (الأسئلة الشائعة) ═══ */}
+            {/* ═══ 4. FAQ ACCORDION (الأسئلة الشائعة) ═══ */}
             <FaqAccordion />
 
-            {/* ═══ 7. TELEGRAM / WHATSAPP COMMUNITY BANNER ═══ */}
+            {/* ═══ 5. TELEGRAM / WHATSAPP COMMUNITY BANNER ═══ */}
             <CommunityTelegramBanner />
         </MainLayout>
     );

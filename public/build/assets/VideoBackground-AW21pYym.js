@@ -1,0 +1,1 @@
+import{j as e}from"./app-CckFyjvt.js";function a({children:s,className:o=""}){return e.jsxs("div",{className:`emperor-static-hero-bg ${o}`,children:[e.jsx("div",{className:"emperor-bg-glow"}),e.jsx("div",{className:"video-content",children:s})]})}export{a as V};

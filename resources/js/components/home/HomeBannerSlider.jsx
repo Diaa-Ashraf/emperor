@@ -105,7 +105,8 @@ export default function HomeBannerSlider() {
             className="emperor-global-banner-container"
             style={{
                 position: 'relative',
-                marginBottom: '26px',
+                maxWidth: '1120px',
+                margin: '0 auto 26px',
                 width: '100%',
             }}
             onMouseEnter={() => setIsHovered(true)}

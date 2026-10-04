@@ -1,27 +1,20 @@
-.video-background {
+.emperor-static-hero-bg {
     position: relative;
     overflow: hidden;
     isolation: isolate;
-    margin-bottom: 30px;
-    border-radius: 16px;
+    margin-bottom: 24px;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #101018 0%, #08080C 100%);
+    border: 1px solid rgba(212, 165, 55, 0.18);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
-.video-background>video,
-.video-overlay {
+.emperor-bg-glow {
     position: absolute;
     inset: 0;
-}
-
-.video-background video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 0;
-}
-
-.video-overlay {
-    z-index: 1;
+    background: radial-gradient(circle at 50% -20%, rgba(212, 165, 55, 0.12) 0%, transparent 70%);
     pointer-events: none;
+    z-index: 1;
 }
 
 .video-content {
