@@ -40,14 +40,16 @@ export default function HomeBannerSlider() {
             .then(res => {
                 const list = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
                 if (list.length > 0) {
-                    const loaded = list.map((b, idx) => {
+                    const loaded = list.map((b) => {
                         const isExt = b.link && (b.link.startsWith('http://') || b.link.startsWith('https://'));
                         const rawImg = b.image_url || b.image;
-                        let cleanImg = defaultBanners[idx % defaultBanners.length].image;
-                        if (rawImg) {
-                            cleanImg = typeof rawImg === 'string' && rawImg.includes('/storage/')
-                                ? ('/storage/' + rawImg.split('/storage/')[1])
-                                : rawImg;
+                        let cleanImg = '/images/banners/banner_vodafone_cash.jpg';
+                        if (rawImg && typeof rawImg === 'string') {
+                            if (rawImg.startsWith('http://') || rawImg.startsWith('https://') || rawImg.startsWith('/')) {
+                                cleanImg = rawImg;
+                            } else {
+                                cleanImg = '/storage/' + rawImg;
+                            }
                         }
                         return {
                             id: b.id,
@@ -58,14 +60,8 @@ export default function HomeBannerSlider() {
                         };
                     });
 
-                    // Put user's custom uploaded banners first, followed by default slides
-                    const combined = [...loaded];
-                    defaultBanners.forEach(def => {
-                        if (!combined.some(c => c.link === def.link)) {
-                            combined.push(def);
-                        }
-                    });
-                    setBanners(combined);
+                    // Fully dynamic: use only active banners configured in dashboard
+                    setBanners(loaded);
                 } else {
                     setBanners(defaultBanners);
                 }

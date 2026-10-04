@@ -17,6 +17,12 @@ class BannerResource extends JsonResource
             if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
                 return $path;
             }
+            if (str_starts_with($path, '/images/') || str_starts_with($path, 'images/')) {
+                return '/' . ltrim($path, '/');
+            }
+            if (str_starts_with($path, '/storage/') || str_starts_with($path, 'storage/')) {
+                return '/' . ltrim($path, '/');
+            }
             return '/storage/' . ltrim($path, '/');
         };
 
