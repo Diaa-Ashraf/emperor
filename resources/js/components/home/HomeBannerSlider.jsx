@@ -15,9 +15,9 @@ export default function HomeBannerSlider() {
         {
             id: 'def-1',
             title: 'انضم إلى مجتمعنا على واتساب',
-            link: 'https://whatsapp.com/channel/0029VbDgien6RGJJnl8WYV0Q',
+            link: 'https://whatsapp.com/channel/0029Vb97YHSB4hdZjFJysw14',
             isExternal: true,
-            image: '/images/banner_whatsapp.jpg',
+            image: '/images/banners/whatsapp_channel_banner.jpg',
         },
         {
             id: 'def-2',
