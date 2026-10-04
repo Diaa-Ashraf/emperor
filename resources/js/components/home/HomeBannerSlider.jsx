@@ -349,16 +349,17 @@ export default function HomeBannerSlider() {
                     }
                 }
 
-                /* Ken Burns Slow Cinematic Zoom on Image */
+                /* Continuous Smooth Breathing Zoom In & Out */
                 .emperor-slider-kenburns {
-                    animation: kenBurnsZoom 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+                    animation: continuousBannerZoom 4.5s ease-in-out infinite alternate;
+                    will-change: transform;
                 }
-                @keyframes kenBurnsZoom {
+                @keyframes continuousBannerZoom {
                     0% {
                         transform: scale(1);
                     }
                     100% {
-                        transform: scale(1.05);
+                        transform: scale(1.055);
                     }
                 }
 
