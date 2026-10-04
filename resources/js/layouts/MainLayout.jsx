@@ -117,8 +117,21 @@ export default function MainLayout({ children, showBanner = true }) {
         // Immediate initial check
         syncNotifications();
 
-        // 3-second ultra-responsive live sync loop
-        const interval = setInterval(syncNotifications, 3000);
+        // Throttled visibility-aware polling (every 15s when tab is active)
+        const interval = setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                syncNotifications();
+            }
+        }, 15000);
+
+        const handleVisibilityOrFocus = () => {
+            if (document.visibilityState === 'visible') {
+                syncNotifications();
+            }
+        };
+
+        window.addEventListener('focus', handleVisibilityOrFocus);
+        document.addEventListener('visibilitychange', handleVisibilityOrFocus);
 
         // Firebase Push Foreground Listener
         let unsubscribe = null;
@@ -135,6 +148,8 @@ export default function MainLayout({ children, showBanner = true }) {
         return () => {
             isMounted = false;
             clearInterval(interval);
+            window.removeEventListener('focus', handleVisibilityOrFocus);
+            document.removeEventListener('visibilitychange', handleVisibilityOrFocus);
             if (typeof unsubscribe === 'function') unsubscribe();
         };
     }, [isAuthenticated, addToast]);

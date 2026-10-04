@@ -12,20 +12,31 @@ export default function VideoBackground({ children }) {
 
         const observer = new IntersectionObserver(
             ([entry]) => {
-                if (entry.isIntersecting) {
-                    video.play();
-                    observer.disconnect();
-                    video.currentTime = 0;
+                if (entry.isIntersecting && document.visibilityState === 'visible') {
+                    video.play().catch(() => {});
+                } else {
+                    video.pause();
                 }
             },
-            {
-                threshold: 0.3,
-            }
+            { threshold: 0.1 }
         );
 
         observer.observe(video);
 
-        return () => observer.disconnect();
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') {
+                video.pause();
+            } else {
+                video.play().catch(() => {});
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            observer.disconnect();
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
     }, []);
     return (
         <div className="video-background">

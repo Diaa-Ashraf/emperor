@@ -57,33 +57,10 @@ export default function FaqAccordion() {
     }, []);
 
     useEffect(() => {
-        const sequenceLength = Math.min(5, questionRefs.current.length);
-        if (!isListVisible || openIndex !== -1 || sequenceLength === 0) {
+        if (!isListVisible || openIndex !== -1) {
             setActiveIndex(-1);
-            return undefined;
         }
-
-        let index = 0;
-        setActiveIndex(index);
-        const intervalId = window.setInterval(() => {
-            index = (index + 1) % sequenceLength;
-            setActiveIndex(index);
-        }, 2000);
-
-        return () => {
-            window.clearInterval(intervalId);
-        };
     }, [isListVisible, openIndex]);
-
-    useEffect(() => {
-        const list = faqListRef.current;
-        const question = questionRefs.current[activeIndex];
-        if (!list || !question || activeIndex < 0) return;
-
-        const listBounds = list.getBoundingClientRect();
-        const questionBounds = question.getBoundingClientRect();
-        setCursorTop(questionBounds.top - listBounds.top + questionBounds.height / 2);
-    }, [activeIndex]);
 
 
     return (

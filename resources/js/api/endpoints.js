@@ -50,10 +50,39 @@ export const depositsApi = {
     getDeposit: (id) => api.get(`/deposits/${id}`),
 };
 
+// In-memory cache & in-flight promise map for ultra-fast UI transitions
+const memoryCache = new Map();
+const inFlightRequests = new Map();
+
+function cachedGet(url, params = {}, ttlMs = 30000) {
+    const key = url + JSON.stringify(params);
+    const cached = memoryCache.get(key);
+    if (cached && Date.now() - cached.timestamp < ttlMs) {
+        return Promise.resolve(cached.data);
+    }
+    if (inFlightRequests.has(key)) {
+        return inFlightRequests.get(key);
+    }
+
+    const promise = api.get(url, { params })
+        .then((response) => {
+            memoryCache.set(key, { data: response, timestamp: Date.now() });
+            inFlightRequests.delete(key);
+            return response;
+        })
+        .catch((err) => {
+            inFlightRequests.delete(key);
+            throw err;
+        });
+
+    inFlightRequests.set(key, promise);
+    return promise;
+}
+
 export const catalogApi = {
-    getCategories: () => api.get('/categories'),
-    getProducts: (params = {}) => api.get('/products', { params }),
-    getProduct: (id) => api.get(`/products/${id}`),
+    getCategories: () => cachedGet('/categories', {}, 60000),
+    getProducts: (params = {}) => cachedGet('/products', params, 30000),
+    getProduct: (id) => cachedGet(`/products/${id}`, {}, 30000),
 };
 
 export const ordersApi = {
