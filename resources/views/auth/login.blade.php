@@ -30,7 +30,7 @@
                 <span class="input-group-text bg-dark border-secondary text-gold">
                     <i class="ti ti-mail"></i>
                 </span>
-                <input id="email" class="form-control" type="email" name="email" value="{{ old('email', 'admin@emperor.com') }}" required autofocus autocomplete="username" placeholder="name@example.com" />
+                <input id="email" class="form-control" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="name@example.com" />
             </div>
         </div>
 
@@ -61,15 +61,10 @@
         </div>
 
         <!-- Submit Button -->
-        <div class="d-grid mb-3">
+        <div class="d-grid">
             <button type="submit" class="btn btn-primary btn-lg fw-bold py-2 fs-6">
                 تسجيل الدخول &larr;
             </button>
-        </div>
-
-        <!-- Default Credentials Hint for local development -->
-        <div class="p-2 rounded bg-dark border border-secondary text-center text-muted fs-8">
-            <span class="text-gold fw-bold">حساب الإدارة الافتراضي:</span> admin@emperor.com / Admin@123456
         </div>
     </form>
 </x-guest-layout>
