@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, ShoppingCart } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { TargetAppIconRenderer } from '../target/TargetAppIcons';
+import { formatImageUrl } from '../../utils/imageHelper';
 
 export default function BestSellerCard({ item }) {
     const { t, isRtl } = useLanguage();
@@ -10,7 +11,7 @@ export default function BestSellerCard({ item }) {
 
     if (!item) return null;
 
-    const imageSrc = item.image_url || item.image;
+    const imageSrc = formatImageUrl(item.image_url || item.image);
     const tiers = item.tiers || item.active_tiers || [];
     let minPrice = item.price_egp || null;
 

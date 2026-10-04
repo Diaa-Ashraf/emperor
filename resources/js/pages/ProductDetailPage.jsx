@@ -21,6 +21,7 @@ import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
 import OrderConfirmModal from '../components/products/OrderConfirmModal';
+import { formatImageUrl } from '../utils/imageHelper';
 import { catalogApi, ordersApi, walletApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -209,11 +210,12 @@ export default function ProductDetailPage() {
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}>
-                        {product.image_url || product.image ? (
+                        {formatImageUrl(product.image_url || product.image) ? (
                             <img
-                                src={product.image_url || product.image}
+                                src={formatImageUrl(product.image_url || product.image)}
                                 alt={product.name}
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
                             />
                         ) : (
                             <Package size={64} color="#D4A537" />

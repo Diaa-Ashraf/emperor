@@ -4,17 +4,20 @@ import { Zap, ChevronLeft, ShieldCheck, Sparkles } from 'lucide-react';
 import Button from '../ui/Button';
 import { TargetAppIconRenderer } from '../target/TargetAppIcons';
 import "../../../css/productCard.css"; // Import the CSS file for ProductCard
+import { formatImageUrl } from '../../utils/imageHelper';
+
 export default function ProductCard({ product }) {
     if (!product) return null;
 
-    const imageSrc = product.image_url || product.image;
+    const imageSrc = formatImageUrl(product.image_url || product.image);
+    const [imgError, setImgError] = React.useState(false);
 
     // Calculate starting price from active tiers
     const tiers = product.active_tiers || product.activeTiers || product.tiers || [];
     let minPrice = null;
 
     if (tiers.length > 0) {
-        minPrice = Math.min(...tiers.map(t => Number(t.price_egp || t.price || 0)));
+        minPrice = Math.min(...tiers.map(t => Number(t.final_price || t.price_egp || t.price || 0)));
     }
 
     const formattedPrice = minPrice
@@ -41,14 +44,14 @@ export default function ProductCard({ product }) {
                 justifyContent: 'center',
                 padding: '10px',
                 borderRadius: "16px",
-
             }}>
-                {imageSrc ? (
+                {imageSrc && !imgError ? (
                     <img
                         src={imageSrc}
                         alt={product.name}
                         loading="lazy"
                         decoding="async"
+                        onError={() => setImgError(true)}
                         style={{
                             width: '100%',
                             height: '100%',

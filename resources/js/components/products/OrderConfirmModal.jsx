@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck, AlertCircle, Wallet, CheckCircle2, Zap, ArrowLeft, PlusCircle, Gamepad2 } from 'lucide-react';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
+import { formatImageUrl } from '../../utils/imageHelper';
 
 export default function OrderConfirmModal({
     isOpen,
@@ -58,15 +59,18 @@ export default function OrderConfirmModal({
                         justifyContent: 'center',
                         fontSize: '24px',
                     }}>
-                        {product.image_url || product.image ? (
-                            <img
-                                src={product.image_url || product.image}
-                                alt={product.name}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            />
-                        ) : (
-                            <Gamepad2 size={24} color="#D4A537" />
-                        )}
+                        {(() => {
+                            const imgSrc = formatImageUrl(product.image_url || product.image);
+                            return imgSrc ? (
+                                <img
+                                    src={imgSrc}
+                                    alt={product.name}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                            ) : (
+                                <Gamepad2 size={24} color="#D4A537" />
+                            );
+                        })()}
                     </div>
                     <div style={{ flex: 1 }}>
                         <h4 style={{ margin: '0 0 2px', fontSize: '15px', fontWeight: '800', color: '#FFFFFF' }}>

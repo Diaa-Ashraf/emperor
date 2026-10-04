@@ -8,6 +8,7 @@ import EmptyState from '../components/ui/EmptyState';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { catalogApi } from '../api/endpoints';
 import VideoBackground from '../components/home/VideoBackground';
+import { formatImageUrl } from '../utils/imageHelper';
 
 // In-memory module cache for categories
 let categoriesCache = null;
@@ -190,19 +191,20 @@ export default function CategoryPage() {
                                     transition: 'all 0.2s',
                                 }}
                             >
-                                {cat.icon_url ? (
-                                    <img
-                                        src={typeof cat.icon_url === 'string' && cat.icon_url.includes('/storage/')
-                                            ? ('/storage/' + cat.icon_url.split('/storage/')[1])
-                                            : cat.icon_url}
-                                        alt=""
-                                        loading="lazy"
-                                        decoding="async"
-                                        style={{ width: '18px', height: '18px', objectFit: 'contain', borderRadius: '4px' }}
-                                    />
-                                ) : (
-                                    <Layers size={16} />
-                                )}
+                                {(() => {
+                                    const iconSrc = formatImageUrl(cat.icon_url || cat.icon);
+                                    return iconSrc ? (
+                                        <img
+                                            src={iconSrc}
+                                            alt=""
+                                            loading="lazy"
+                                            decoding="async"
+                                            style={{ width: '18px', height: '18px', objectFit: 'contain', borderRadius: '4px' }}
+                                        />
+                                    ) : (
+                                        <Layers size={16} />
+                                    );
+                                })()}
                                 <span>{cat.name}</span>
                             </Link>
                         );

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { DollarSign, Sparkles, ChevronLeft, ArrowLeft, ShieldCheck, Zap, Smartphone } from 'lucide-react';
 import Button from '../ui/Button';
+import { formatImageUrl } from '../../utils/imageHelper';
 
 export default function AppCard({ app }) {
     if (!app) return null;
@@ -43,17 +44,20 @@ export default function AppCard({ app }) {
                 justifyContent: 'center',
                 overflow: 'hidden',
             }}>
-                {app.image_url ? (
-                    <img
-                        src={app.image_url}
-                        alt={app.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Smartphone size={40} color="#38BDF8" strokeWidth={1.8} />
-                    </div>
-                )}
+                {(() => {
+                    const imgSrc = formatImageUrl(app.image_url || app.image);
+                    return imgSrc ? (
+                        <img
+                            src={imgSrc}
+                            alt={app.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                    ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Smartphone size={40} color="#38BDF8" strokeWidth={1.8} />
+                        </div>
+                    );
+                })()}
 
                 {/* Instant Cash Badge */}
                 <div style={{

@@ -25,6 +25,38 @@ class Category extends Model
         'metadata',
     ];
 
+    protected $appends = ['icon_url', 'banner_url'];
+
+    public function getIconUrlAttribute(): ?string
+    {
+        if (!$this->icon) return null;
+        if (str_starts_with($this->icon, 'http://') || str_starts_with($this->icon, 'https://') || str_starts_with($this->icon, 'data:')) {
+            return $this->icon;
+        }
+        if (str_starts_with($this->icon, '/storage/')) {
+            return $this->icon;
+        }
+        if (str_starts_with($this->icon, 'storage/')) {
+            return '/' . $this->icon;
+        }
+        return \Illuminate\Support\Facades\Storage::url($this->icon);
+    }
+
+    public function getBannerUrlAttribute(): ?string
+    {
+        if (!$this->banner) return null;
+        if (str_starts_with($this->banner, 'http://') || str_starts_with($this->banner, 'https://') || str_starts_with($this->banner, 'data:')) {
+            return $this->banner;
+        }
+        if (str_starts_with($this->banner, '/storage/')) {
+            return $this->banner;
+        }
+        if (str_starts_with($this->banner, 'storage/')) {
+            return '/' . $this->banner;
+        }
+        return \Illuminate\Support\Facades\Storage::url($this->banner);
+    }
+
     protected function casts(): array
     {
         return [
