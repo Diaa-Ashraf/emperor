@@ -91,7 +91,7 @@ class ProviderController extends Controller
     {
         $provider = Provider::findOrFail($id);
         $adapter = $this->providerManager->resolveAdapter($provider->driver, $provider->config ?? []);
-        $balanceInfo = $adapter->checkBalance();
+        $balanceInfo = method_exists($adapter, 'getBalance') ? $adapter->getBalance() : (method_exists($adapter, 'checkBalance') ? $adapter->checkBalance() : ['balance' => $provider->balance, 'currency' => $provider->balance_currency]);
 
         if (isset($balanceInfo['balance'])) {
             $provider->update(['balance' => $balanceInfo['balance']]);
