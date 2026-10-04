@@ -3,21 +3,20 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
     Zap,
     ShieldCheck,
-    ArrowRight,
-    HelpCircle,
-    Check,
-    Wallet,
-    Info,
-    AlertCircle,
+    Lock,
+    User,
+    ChevronDown,
     Plus,
     Minus,
-    ShoppingCart,
-    Package
+    X,
+    Check,
+    Layers,
+    Info,
+    Globe,
+    Server,
+    Sparkles
 } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
-import Input from '../components/ui/Input';
-import Select from '../components/ui/Select';
-import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
 import OrderConfirmModal from '../components/products/OrderConfirmModal';
@@ -25,6 +24,7 @@ import { formatImageUrl } from '../utils/imageHelper';
 import { catalogApi, ordersApi, walletApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import '../../css/kaProductRecharge.css';
 
 export default function ProductDetailPage() {
     const { id } = useParams();
@@ -41,6 +41,7 @@ export default function ProductDetailPage() {
     const [accountRegion, setAccountRegion] = useState('');
     const [walletBalance, setWalletBalance] = useState(0);
 
+    const [showPackageGrid, setShowPackageGrid] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
@@ -105,7 +106,7 @@ export default function ProductDetailPage() {
     const tiers = product.tiers || product.active_tiers || [];
 
     const handleQuantityChange = (delta) => {
-        setQuantity(prev => Math.max(1, Math.min(100, prev + delta)));
+        setQuantity(prev => Math.max(1, Math.min(9999, prev + delta)));
     };
 
     const handlePreSubmit = (e) => {
@@ -176,11 +177,14 @@ export default function ProductDetailPage() {
     const unitPrice = Number(selectedTier?.price_egp || selectedTier?.price || 0);
     const totalPrice = unitPrice * quantity;
     const formattedTotal = totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const approxUsd = (totalPrice / 50.5).toFixed(2);
+
+    const productImage = formatImageUrl(product.image_url || product.image);
 
     return (
         <MainLayout>
             {/* Breadcrumb */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontSize: '13px', color: '#8E8E98' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', fontSize: '13px', color: '#8E8E98' }}>
                 <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>الرئيسية</Link>
                 <span>/</span>
                 <Link to="/category/games" style={{ color: '#D4A537', textDecoration: 'none' }}>الألعاب والمنتجات</Link>
@@ -188,407 +192,300 @@ export default function ProductDetailPage() {
                 <span style={{ color: '#CBD5E1' }}>{product.name}</span>
             </div>
 
-            {/* Layout Grid */}
-            <div className="responsive-grid-2col">
-                {/* Left / Info Column */}
-                <div style={{
-                    background: 'rgba(26, 26, 36, 0.8)',
-                    border: '1px solid rgba(212, 165, 55, 0.25)',
-                    borderRadius: '24px',
-                    padding: 'clamp(16px, 3vw, 28px)',
-                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
-                }}>
-                    {/* Media Header */}
-                    <div style={{
-                        width: '100%',
-                        height: '200px',
-                        borderRadius: '16px',
-                        background: '#12121A',
-                        overflow: 'hidden',
-                        marginBottom: '20px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}>
-                        {formatImageUrl(product.image_url || product.image) ? (
-                            <img
-                                src={formatImageUrl(product.image_url || product.image)}
-                                alt={product.name}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                            />
-                        ) : (
-                            <Package size={64} color="#D4A537" />
-                        )}
+            {/* KA-Cards Style Luxury Recharge Card */}
+            <div className="ka-recharge-wrapper">
+                <div className="ka-recharge-card">
+                    {/* Top Close / Return Button */}
+                    <button
+                        type="button"
+                        className="ka-card-close-btn"
+                        onClick={() => navigate(-1)}
+                        title="إغلاق / رجوع"
+                    >
+                        <X size={18} />
+                    </button>
+
+                    {/* Top Emperor Crest Badge */}
+                    <div className="ka-card-badge-crest">
+                        <Sparkles size={13} />
+                        <span>EMPEROR VIP</span>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                        <span style={{
-                            fontSize: '12px',
-                            fontWeight: '700',
-                            background: 'rgba(212, 165, 55, 0.15)',
-                            color: '#D4A537',
-                            padding: '3px 10px',
-                            borderRadius: '8px',
-                            border: '1px solid rgba(212, 165, 55, 0.3)',
-                        }}>
-                            {product.category_name || 'ألعاب إلكترونية'}
-                        </span>
-
-                        <span style={{
-                            fontSize: '12px',
-                            fontWeight: '700',
-                            background: 'rgba(34, 197, 94, 0.15)',
-                            color: '#4ADE80',
-                            padding: '3px 10px',
-                            borderRadius: '8px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                        }}>
-                            <Zap size={13} />
-                            تنفيذ فوري وتلقائي
-                        </span>
-                    </div>
-
-                    <h1 style={{ margin: '0 0 12px', fontSize: '24px', fontWeight: '900', color: '#FFFFFF' }}>
-                        {product.name}
-                    </h1>
-
-                    <p style={{ margin: '0 0 24px', fontSize: '14px', color: '#9E9EA8', lineHeight: '1.6' }}>
-                        {product.description || 'شحن رسمي ومباشر داخل حساب اللعبة مع تأكيد فوري وسرعة فائقة.'}
-                    </p>
-
-                    {/* Notice Box */}
-                    <div style={{
-                        background: 'rgba(212, 165, 55, 0.08)',
-                        border: '1px solid rgba(212, 165, 55, 0.25)',
-                        borderRadius: '14px',
-                        padding: '16px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '8px',
-                        fontSize: '13px',
-                        color: '#E2E8F0',
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#D4A537', fontWeight: '700' }}>
-                            <ShieldCheck size={18} />
-                            <span>ضمان إمبراطور المعتمد:</span>
+                    {/* Circular Avatar & Header */}
+                    <div className="ka-avatar-container">
+                        <div className="ka-avatar-circle">
+                            {productImage ? (
+                                <img
+                                    src={productImage}
+                                    alt={product.name}
+                                    onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                    }}
+                                />
+                            ) : (
+                                <div style={{ color: '#D4A537', fontWeight: '900', fontSize: '28px' }}>
+                                    {product.name.charAt(0)}
+                                </div>
+                            )}
                         </div>
-                        <ul style={{ margin: 0, paddingRight: '20px', lineHeight: '1.7', color: '#CBD5E1' }}>
-                            <li>تأكد من إدخال رقم المعرّف (ID) بشكل صحيح.</li>
-                            <li>يتم إرسال الشحن مباشرة إلى حسابك في غضون ثوانٍ.</li>
-                            <li>في حال حدوث أي خطأ سيتم استرداد المبلغ إلى محفظتك فوراً.</li>
-                        </ul>
-                    </div>
-                </div>
 
-                {/* Right / Order Form Column */}
-                <form onSubmit={handlePreSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    {/* Step 1: Select Tier */}
-                    <div style={{
-                        background: 'rgba(26, 26, 36, 0.8)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                        borderRadius: '24px',
-                        padding: 'clamp(16px, 3vw, 24px)',
-                        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
-                            <div style={{
-                                width: '28px',
-                                height: '28px',
-                                borderRadius: '50%',
-                                background: '#D4A537',
-                                color: '#0D0D0F',
-                                fontWeight: '800',
-                                fontSize: '14px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                                1
+                        <h1 className="ka-product-title">
+                            {product.name}
+                        </h1>
+
+                        <div>
+                            <span className="ka-status-badge">
+                                متاح للتنفيذ الفوري
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Form Start */}
+                    <form onSubmit={handlePreSubmit}>
+                        {/* Package Selection Bar (نظام الباقات) */}
+                        <div
+                            className="ka-package-selector-bar"
+                            onClick={() => setShowPackageGrid(prev => !prev)}
+                            title="انقر لعرض / إخفاء باقات الشحن"
+                        >
+                            <div className="ka-package-name">
+                                <Layers size={18} color="#D4A537" />
+                                <span>{selectedTier ? selectedTier.name : 'اختر باقة الشحن المطلوبة'}</span>
                             </div>
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#FFFFFF' }}>
-                                اختر باقة الشحن المطلوبة
-                            </h3>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                {selectedTier && (
+                                    <span className="ka-package-price">
+                                        {Number(selectedTier.price_egp || selectedTier.price || 0).toFixed(2)} EGP
+                                    </span>
+                                )}
+                                <ChevronDown
+                                    size={18}
+                                    color="#CBD5E1"
+                                    style={{
+                                        transform: showPackageGrid ? 'rotate(180deg)' : 'rotate(0deg)',
+                                        transition: 'transform 0.2s',
+                                    }}
+                                />
+                            </div>
                         </div>
 
-                        {tiers.length > 0 ? (
-                            <div style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 125px), 1fr))',
-                                gap: '10px',
-                            }}>
-                                {tiers.map((t) => {
-                                    const isSelected = selectedTier?.id === t.id;
-                                    const price = Number(t.price_egp || t.price || 0).toLocaleString('en-US', {
+                        {/* Interactive Packages Grid (نظام الباقات) */}
+                        {showPackageGrid && tiers.length > 0 && (
+                            <div className="ka-packages-grid">
+                                {tiers.map((tier) => {
+                                    const isSelected = selectedTier?.id === tier.id;
+                                    const price = Number(tier.price_egp || tier.price || 0).toLocaleString('en-US', {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2,
                                     });
 
                                     return (
                                         <div
-                                            key={t.id}
-                                            onClick={() => setSelectedTier(t)}
-                                            style={{
-                                                background: isSelected
-                                                    ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.2) 0%, rgba(170, 124, 17, 0.25) 100%)'
-                                                    : 'rgba(18, 18, 24, 0.7)',
-                                                border: `2px solid ${isSelected ? '#D4A537' : 'rgba(255, 255, 255, 0.1)'}`,
-                                                borderRadius: '16px',
-                                                padding: '14px 12px',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s ease',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                justifyContent: 'space-between',
-                                                position: 'relative',
-                                            }}
+                                            key={tier.id}
+                                            className={`ka-tier-pill ${isSelected ? 'selected' : ''}`}
+                                            onClick={() => setSelectedTier(tier)}
                                         >
-                                            {isSelected && (
-                                                <div style={{
-                                                    position: 'absolute',
-                                                    top: '8px',
-                                                    left: '8px',
-                                                    width: '18px',
-                                                    height: '18px',
-                                                    borderRadius: '50%',
-                                                    background: '#D4A537',
-                                                    color: '#0D0D0F',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                }}>
-                                                    <Check size={12} strokeWidth={3} />
-                                                </div>
-                                            )}
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                <span className="ka-tier-pill-title">
+                                                    {tier.name}
+                                                </span>
+                                                {isSelected && (
+                                                    <span style={{ color: '#D4A537' }}>
+                                                        <Check size={14} strokeWidth={3} />
+                                                    </span>
+                                                )}
+                                            </div>
 
-                                            <span style={{
-                                                fontSize: '14px',
-                                                fontWeight: '700',
-                                                color: isSelected ? '#FFFFFF' : '#CBD5E1',
-                                                marginBottom: '8px',
-                                            }}>
-                                                {t.name}
-                                            </span>
-
-                                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
-                                                <strong style={{ fontSize: '15px', color: '#D4A537' }}>
-                                                    {price}
-                                                </strong>
-                                                <span style={{ fontSize: '11px', color: '#D4A537' }}>ج.م</span>
+                                            <div className="ka-tier-pill-price">
+                                                {price} <small style={{ fontSize: '10px' }}>EGP</small>
                                             </div>
                                         </div>
                                     );
                                 })}
                             </div>
-                        ) : (
-                            <p style={{ color: '#8E8E98', fontSize: '14px' }}>لا توجد باقات متاحة حالياً لهذا المنتج.</p>
                         )}
 
                         {errors.tier && (
-                            <span style={{ fontSize: '12px', color: '#EF4444', fontWeight: '600', marginTop: '8px', display: 'block' }}>
+                            <div style={{ color: '#EF4444', fontSize: '12px', fontWeight: '700', marginBottom: '12px' }}>
                                 {errors.tier}
-                            </span>
-                        )}
-                    </div>
-
-                    {/* Step 2: Player Information */}
-                    <div style={{
-                        background: 'rgba(26, 26, 36, 0.8)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                        borderRadius: '24px',
-                        padding: 'clamp(16px, 3vw, 24px)',
-                        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
-                            <div style={{
-                                width: '28px',
-                                height: '28px',
-                                borderRadius: '50%',
-                                background: '#D4A537',
-                                color: '#0D0D0F',
-                                fontWeight: '800',
-                                fontSize: '14px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                                2
                             </div>
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#FFFFFF' }}>
-                                بيانات الحساب واللاعب
-                            </h3>
+                        )}
+
+                        {/* Metric Boxes: Total + Quantity */}
+                        <div className="ka-metrics-row">
+                            {/* Box 1: Total Price */}
+                            <div className="ka-metric-box">
+                                <span className="ka-metric-label">الإجمالي المطلوب</span>
+                                <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                                    <span className="ka-total-val">{formattedTotal}</span>
+                                    <span className="ka-total-currency">EGP</span>
+                                </div>
+                                <span className="ka-total-usd">~ ${approxUsd} USD</span>
+                            </div>
+
+                            {/* Box 2: Quantity */}
+                            <div className="ka-metric-box">
+                                <span className="ka-metric-label">الكمية</span>
+                                <div className="ka-qty-input-wrap">
+                                    <button
+                                        type="button"
+                                        className="ka-qty-btn"
+                                        onClick={() => handleQuantityChange(-1)}
+                                    >
+                                        <Minus size={14} />
+                                    </button>
+
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="9999"
+                                        value={quantity}
+                                        onChange={(e) => {
+                                            const val = parseInt(e.target.value, 10);
+                                            if (isNaN(val) || val <= 0) {
+                                                setQuantity(1);
+                                            } else {
+                                                setQuantity(Math.min(9999, val));
+                                            }
+                                        }}
+                                        className="ka-qty-num-input"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        className="ka-qty-btn"
+                                        onClick={() => handleQuantityChange(1)}
+                                    >
+                                        <Plus size={14} />
+                                    </button>
+                                </div>
+                                <span className="ka-qty-limit-hint">1 — 9,999</span>
+                            </div>
                         </div>
 
-                        {/* Player ID Field */}
-                        <Input
-                            label={product.player_id_label || 'معرف الحساب / Player ID'}
-                            type="text"
-                            value={playerId}
-                            onChange={(e) => {
-                                setPlayerId(e.target.value);
-                                if (errors.playerId) setErrors(prev => ({ ...prev, playerId: null }));
-                            }}
-                            placeholder="مثال: 5123456789"
-                            error={errors.playerId}
-                            helperText="ادخل الآيدي الخاص بحسابك في اللعبة بدقة لتنفيذ الشحن فوراً"
-                            required
-                        />
+                        {/* User ID Card (معرف المستخدم) */}
+                        <div className="ka-user-input-card">
+                            <label className="ka-input-title">
+                                <User size={16} color="#D4A537" />
+                                <span>{product.player_id_label || 'معرف المستخدم (Player ID)'}</span>
+                            </label>
 
-                        {/* Server / Zone ID if needed */}
-                        {product.has_server_id && (
-                            <Input
-                                label={product.server_id_label || 'Zone ID / السيرفر'}
-                                type="text"
-                                value={serverId}
-                                onChange={(e) => {
-                                    setServerId(e.target.value);
-                                    if (errors.serverId) setErrors(prev => ({ ...prev, serverId: null }));
-                                }}
-                                placeholder="مثال: (1234)"
-                                error={errors.serverId}
-                                required
-                            />
-                        )}
-
-                        {/* Account Region if needed */}
-                        {product.requires_account_region && (
-                            <Select
-                                label="منطقة / دولة الحساب"
-                                value={accountRegion}
-                                onChange={(e) => {
-                                    setAccountRegion(e.target.value);
-                                    if (errors.accountRegion) setErrors(prev => ({ ...prev, accountRegion: null }));
-                                }}
-                                options={[
-                                    { value: '', label: 'اختر المنطقة' },
-                                    ...(product.region_options || [
-                                        { value: 'ME', label: 'الشرق الأوسط (Middle East)' },
-                                        { value: 'EU', label: 'أوروبا (Europe)' },
-                                        { value: 'GLOBAL', label: 'عالمي (Global)' },
-                                    ])
-                                ]}
-                                error={errors.accountRegion}
-                                required
-                            />
-                        )}
-                    </div>
-
-                    {/* Step 3: Quantity & Summary */}
-                    <div style={{
-                        background: 'linear-gradient(135deg, rgba(28, 28, 38, 0.95) 0%, rgba(18, 18, 24, 0.98) 100%)',
-                        border: '1px solid rgba(212, 165, 55, 0.35)',
-                        borderRadius: '24px',
-                        padding: 'clamp(16px, 3vw, 24px)',
-                        boxShadow: '0 15px 40px rgba(0, 0, 0, 0.5)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '18px',
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: '15px', fontWeight: '700', color: '#E2E8F0' }}>الكمية المطلوبة:</span>
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                background: '#121218',
-                                border: '1px solid rgba(255, 255, 255, 0.12)',
-                                borderRadius: '12px',
-                                padding: '4px 8px',
-                            }}>
-                                <button
-                                    type="button"
-                                    onClick={() => handleQuantityChange(-1)}
-                                    style={{
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: '#CBD5E1',
-                                        cursor: 'pointer',
-                                        padding: '4px 8px',
-                                    }}
-                                >
-                                    <Minus size={16} />
-                                </button>
-
+                            <div className="ka-input-field-wrap">
+                                <span className="ka-field-icon">
+                                    <User size={18} />
+                                </span>
                                 <input
-                                    type="number"
-                                    min="1"
-                                    max="9999"
-                                    value={quantity}
+                                    type="text"
+                                    required
+                                    value={playerId}
                                     onChange={(e) => {
-                                        const val = parseInt(e.target.value, 10);
-                                        if (isNaN(val) || val <= 0) {
-                                            setQuantity(1);
-                                        } else {
-                                            setQuantity(Math.min(9999, val));
-                                        }
+                                        setPlayerId(e.target.value);
+                                        if (errors.playerId) setErrors(prev => ({ ...prev, playerId: null }));
                                     }}
-                                    style={{
-                                        width: '54px',
-                                        fontSize: '16px',
-                                        fontWeight: '800',
-                                        color: '#FFFFFF',
-                                        textAlign: 'center',
-                                        background: 'rgba(0, 0, 0, 0.4)',
-                                        border: '1px solid rgba(212, 165, 55, 0.3)',
-                                        borderRadius: '8px',
-                                        padding: '4px 0',
-                                        outline: 'none',
-                                    }}
+                                    placeholder={product.player_id_label ? `أدخل ${product.player_id_label}` : 'مثال: 5123456789'}
+                                    className="ka-text-input"
                                 />
-
-                                <button
-                                    type="button"
-                                    onClick={() => handleQuantityChange(1)}
-                                    style={{
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: '#CBD5E1',
-                                        cursor: 'pointer',
-                                        padding: '4px 8px',
-                                    }}
-                                >
-                                    <Plus size={16} />
-                                </button>
                             </div>
+
+                            {errors.playerId && (
+                                <span style={{ color: '#EF4444', fontSize: '12px', fontWeight: '700', marginTop: '6px', display: 'block' }}>
+                                    {errors.playerId}
+                                </span>
+                            )}
+
+                            {/* Optional Server / Zone ID */}
+                            {product.has_server_id && (
+                                <div style={{ marginTop: '14px' }}>
+                                    <label className="ka-input-title">
+                                        <Server size={16} color="#D4A537" />
+                                        <span>{product.server_id_label || 'Zone ID / رقم السيرفر'}</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={serverId}
+                                        onChange={(e) => {
+                                            setServerId(e.target.value);
+                                            if (errors.serverId) setErrors(prev => ({ ...prev, serverId: null }));
+                                        }}
+                                        placeholder="مثال: 1234"
+                                        className="ka-text-input"
+                                    />
+                                    {errors.serverId && (
+                                        <span style={{ color: '#EF4444', fontSize: '12px', fontWeight: '700', marginTop: '6px', display: 'block' }}>
+                                            {errors.serverId}
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Optional Account Region */}
+                            {product.requires_account_region && (
+                                <div style={{ marginTop: '14px' }}>
+                                    <label className="ka-input-title">
+                                        <Globe size={16} color="#D4A537" />
+                                        <span>منطقة / سيرفر الحساب</span>
+                                    </label>
+                                    <select
+                                        value={accountRegion}
+                                        onChange={(e) => {
+                                            setAccountRegion(e.target.value);
+                                            if (errors.accountRegion) setErrors(prev => ({ ...prev, accountRegion: null }));
+                                        }}
+                                        className="ka-text-input"
+                                        style={{ background: '#0D0C09' }}
+                                    >
+                                        <option value="">اختر المنطقة</option>
+                                        <option value="ME">الشرق الأوسط (Middle East)</option>
+                                        <option value="EU">أوروبا (Europe)</option>
+                                        <option value="GLOBAL">عالمي (Global)</option>
+                                    </select>
+                                    {errors.accountRegion && (
+                                        <span style={{ color: '#EF4444', fontSize: '12px', fontWeight: '700', marginTop: '6px', display: 'block' }}>
+                                            {errors.accountRegion}
+                                        </span>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
-                        {/* Total Row */}
-                        <div style={{
-                            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                            paddingTop: '16px',
-                            display: 'flex',
-                            alignItems: 'baseline',
-                            justifyContent: 'space-between',
-                        }}>
-                            <div>
-                                <span style={{ fontSize: '13px', color: '#8E8E98', display: 'block' }}>إجمالي المبلغ المطلوب</span>
-                                <span style={{ fontSize: '12px', color: '#D4A537' }}>خصم مباشر من المحفظة</span>
-                            </div>
+                        {/* Actions Row: Buy + Cancel */}
+                        <div className="ka-actions-row">
+                            <button
+                                type="submit"
+                                className="ka-buy-btn"
+                            >
+                                <Lock size={18} />
+                                <span>شراء ({formattedTotal} EGP)</span>
+                            </button>
 
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                <span style={{ fontSize: '28px', fontWeight: '900', color: '#FFFFFF', letterSpacing: '-0.5px' }}>
-                                    {formattedTotal}
-                                </span>
-                                <span style={{ fontSize: '16px', fontWeight: '800', color: '#D4A537' }}>
-                                    ج.م
-                                </span>
-                            </div>
+                            <button
+                                type="button"
+                                className="ka-cancel-btn"
+                                onClick={() => navigate(-1)}
+                            >
+                                إلغاء
+                            </button>
                         </div>
+                    </form>
 
-                        {/* Submit Button */}
-                        <Button
-                            type="submit"
-                            variant="primary"
-                            size="lg"
-                            icon={ShoppingCart}
-                            style={{ width: '100%', fontSize: '17px', padding: '14px' }}
-                        >
-                            شحن الآن ({formattedTotal} ج.م)
-                        </Button>
+                    {/* Trust & Guarantee Mini Footer */}
+                    <div style={{
+                        marginTop: '22px',
+                        paddingTop: '16px',
+                        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        fontSize: '12px',
+                        color: '#9CA3AF',
+                    }}>
+                        <ShieldCheck size={16} color="#D4A537" />
+                        <span>ضمان إمبراطور المعتمد: شحن فوري وآمن 100% داخل حساب اللعبة</span>
                     </div>
-                </form>
+                </div>
             </div>
 
             {/* Confirmation Modal */}

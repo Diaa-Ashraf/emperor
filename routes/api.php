@@ -120,6 +120,7 @@ Route::prefix('v1')->middleware(['locale'])->group(function () {
 
         // Developer / B2B Integration (B2B API Management)
         Route::get('/developer/keys', [\App\Http\Controllers\Api\V1\DeveloperApiController::class, 'index']);
+        Route::post('/developer/request-access', [\App\Http\Controllers\Api\V1\DeveloperApiController::class, 'requestAccess']);
         Route::post('/developer/keys/generate', [\App\Http\Controllers\Api\V1\DeveloperApiController::class, 'generateKeys']);
         Route::put('/developer/settings', [\App\Http\Controllers\Api\V1\DeveloperApiController::class, 'updateSettings']);
     });

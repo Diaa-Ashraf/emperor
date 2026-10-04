@@ -136,6 +136,7 @@ export const bannersApi = {
 
 export const developerApi = {
     getKeys: () => api.get('/developer/keys'),
+    requestAccess: (data = {}) => api.post('/developer/request-access', data),
     generateKeys: () => api.post('/developer/keys/generate'),
     updateSettings: (data) => api.put('/developer/settings', data),
 };

@@ -64,18 +64,80 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="p-2 bg-dark rounded border border-secondary">
-                            <span class="text-muted small d-block">طلبات الـ API المنفذة</span>
-                            <span class="fw-bold text-info fs-5 font-monospace">{{ $stats['total_api_orders'] }}</span>
+                        <div class="p-2 bg-dark rounded border {{ ($stats['pending_requests'] ?? 0) > 0 ? 'border-warning shadow-sm' : 'border-secondary' }}">
+                            <span class="text-muted small d-block">طلبات التفعيل المعلقة</span>
+                            <span class="fw-bold {{ ($stats['pending_requests'] ?? 0) > 0 ? 'text-warning' : 'text-muted' }} fs-5 font-monospace">
+                                {{ $stats['pending_requests'] ?? 0 }}
+                            </span>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="p-2 bg-dark rounded border border-secondary">
-                            <span class="text-muted small d-block">إجمالي حجم التداول المكتمل</span>
+                            <span class="text-muted small d-block">حجم التداول المكتمل</span>
                             <span class="fw-bold text-white fs-5 font-monospace">{{ number_format($stats['total_api_revenue'], 2) }} EGP</span>
                         </div>
                     </div>
                 </div>
+
+                <!-- Pending Requests Alert & Table -->
+                @if(isset($pendingRequests) && $pendingRequests->count() > 0)
+                <div class="mt-4 p-3 bg-dark rounded border border-warning">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-warning text-dark px-2 py-1 fs-6">جديد</span>
+                            <h6 class="fw-bold mb-0 text-warning"><i class="ti ti-bell-ringing me-1"></i> طلبات تفعيل الربط البرمجي المعلقة ({{ $pendingRequests->count() }})</h6>
+                        </div>
+                        <small class="text-muted">مطلوب مراجعة صاحب المنصة والموافقة عليها</small>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm table-dark align-middle mb-0">
+                            <thead>
+                                <tr class="text-muted small">
+                                    <th>اسم العميل / المتجر</th>
+                                    <th>بيانات التواصل</th>
+                                    <th>ملاحظات / رابط المتجر</th>
+                                    <th>تاريخ الطلب</th>
+                                    <th class="text-end">الإجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($pendingRequests as $req)
+                                <tr>
+                                    <td class="fw-bold text-white">{{ $req->name }}</td>
+                                    <td>
+                                        <small class="d-block font-monospace text-muted">{{ $req->email }}</small>
+                                        @if($req->phone)<small class="d-block font-monospace text-warning">{{ $req->phone }}</small>@endif
+                                    </td>
+                                    <td>
+                                        <small class="text-light">{{ $req->api_access_notes ?: 'لا توجد ملاحظات إضافية' }}</small>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ $req->api_access_requested_at ? $req->api_access_requested_at->diffForHumans() : 'حديثاً' }}</small>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm">
+                                            <form action="{{ route('admin.api-clients.approve', $req->id) }}" method="POST" class="d-inline" onsubmit="return confirm('هل أنت متأكد من تفعيل صلاحية الـ API لهذا العميل؟');">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success fw-bold">
+                                                    <i class="ti ti-check me-1"></i> تفعيل فوري
+                                                </button>
+                                            </form>
+                                            <form action="{{ route('admin.api-clients.reject', $req->id) }}" method="POST" class="d-inline" onsubmit="return confirm('هل أنت متأكد من رفض هذا الطلب؟');">
+                                                @csrf
+                                                <button type="submit" class="btn btn-outline-danger">
+                                                    <i class="ti ti-x me-1"></i> رفض
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @endif
 
                 <!-- Search & Filters -->
                 <form action="{{ route('admin.api-clients.index') }}" method="GET" class="row g-3 align-items-center mt-2">

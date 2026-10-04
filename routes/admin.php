@@ -74,6 +74,7 @@ Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admi
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
     Route::post('/users/{id}/toggle-ban', [UserController::class, 'toggleBan'])->name('users.toggle-ban');
+    Route::post('/users/{id}/toggle-api-access', [UserController::class, 'toggleApiAccess'])->name('users.toggle-api-access');
     Route::post('/users/{id}/adjust-balance', [UserController::class, 'adjustBalance'])->name('users.adjust-balance');
 
     // Deposits Management (Phase 1)
@@ -134,6 +135,8 @@ Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admi
     Route::get('/api-clients', [App\Http\Controllers\Admin\ApiClientController::class, 'index'])->name('api-clients.index');
     Route::get('/api-clients/create', [App\Http\Controllers\Admin\ApiClientController::class, 'create'])->name('api-clients.create');
     Route::post('/api-clients', [App\Http\Controllers\Admin\ApiClientController::class, 'store'])->name('api-clients.store');
+    Route::post('/api-clients/{id}/approve', [App\Http\Controllers\Admin\ApiClientController::class, 'approve'])->name('api-clients.approve');
+    Route::post('/api-clients/{id}/reject', [App\Http\Controllers\Admin\ApiClientController::class, 'reject'])->name('api-clients.reject');
     Route::get('/api-clients/{id}/edit', [App\Http\Controllers\Admin\ApiClientController::class, 'edit'])->name('api-clients.edit');
     Route::put('/api-clients/{id}', [App\Http\Controllers\Admin\ApiClientController::class, 'update'])->name('api-clients.update');
     Route::post('/api-clients/{id}/toggle-active', [App\Http\Controllers\Admin\ApiClientController::class, 'toggleActive'])->name('api-clients.toggle-active');

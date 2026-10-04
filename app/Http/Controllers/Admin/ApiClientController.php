@@ -30,16 +30,27 @@ class ApiClientController extends Controller
     ) {}
 
     /**
-     * Display a listing of API clients.
+     * Display a listing of API clients and pending activation requests.
      */
     public function index(Request $request): View
     {
+        $pendingRequests = User::select([
+            'id', 'name', 'email', 'phone', 'api_access_status', 
+            'api_access_requested_at', 'api_access_notes', 'created_at'
+        ])
+        ->where('api_access_status', 'pending')
+        ->latest('api_access_requested_at')
+        ->get();
+
         $query = User::select([
-            'id', 'name', 'email', 'phone', 'role', 'status', 
+            'id', 'name', 'email', 'phone', 'role', 'status', 'api_access_status',
             'api_key', 'api_rate_limit', 'webhook_url', 'api_ip_whitelist',
             'created_at', 'updated_at'
         ])
-        ->where('role', UserRole::API_CLIENT)
+        ->where(function ($q) {
+            $q->where('role', UserRole::API_CLIENT)
+              ->orWhere('api_access_status', 'active');
+        })
         ->with(['wallet:id,user_id,balance,currency'])
         ->withCount(['orders' => function ($q) {
             $q->where('channel', 'api');
@@ -61,13 +72,57 @@ class ApiClientController extends Controller
         $clients = $query->latest('id')->paginate(15)->withQueryString();
 
         $stats = [
-            'total_clients' => User::where('role', UserRole::API_CLIENT)->count(),
-            'active_clients' => User::where('role', UserRole::API_CLIENT)->where('status', UserStatus::ACTIVE)->count(),
+            'total_clients' => User::where('role', UserRole::API_CLIENT)->orWhere('api_access_status', 'active')->count(),
+            'active_clients' => User::where(fn($q) => $q->where('role', UserRole::API_CLIENT)->orWhere('api_access_status', 'active'))->where('status', UserStatus::ACTIVE)->count(),
+            'pending_requests' => $pendingRequests->count(),
             'total_api_orders' => \App\Models\Order::where('channel', 'api')->count(),
             'total_api_revenue' => (float) \App\Models\Order::where('channel', 'api')->where('status', 'completed')->sum('total_amount'),
         ];
 
-        return view('admin.api-clients.index', compact('clients', 'stats'));
+        return view('admin.api-clients.index', compact('clients', 'stats', 'pendingRequests'));
+    }
+
+    /**
+     * Approve user API integration request.
+     */
+    public function approve(int $id): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+
+        if (empty($user->api_key)) {
+            $credentials = User::generateApiCredentials();
+            $user->api_key = $credentials['api_key'];
+            $user->api_secret = $credentials['hashed_secret'];
+        }
+
+        if (!$user->isAdmin()) {
+            $user->role = UserRole::API_CLIENT;
+        }
+
+        $user->api_access_status = 'active';
+        $user->api_access_approved_at = now();
+        $user->save();
+
+        // Ensure wallet exists
+        Wallet::firstOrCreate(
+            ['user_id' => $user->id],
+            ['balance' => 0.00, 'currency' => 'EGP', 'is_locked' => false]
+        );
+
+        return back()->with('success', "تمت الموافقة وتفعيل الربط البرمجي للعميل ({$user->name}) بنجاح.");
+    }
+
+    /**
+     * Reject user API integration request.
+     */
+    public function reject(int $id): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+        $user->update([
+            'api_access_status' => 'rejected',
+        ]);
+
+        return back()->with('success', "تم رفض طلب الربط البرمجي للعميل ({$user->name}).");
     }
 
     /**

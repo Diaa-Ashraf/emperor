@@ -45,6 +45,10 @@ class User extends Authenticatable
         'api_ip_whitelist',
         'webhook_url',
         'api_rate_limit',
+        'api_access_status',
+        'api_access_requested_at',
+        'api_access_approved_at',
+        'api_access_notes',
         'fcm_token',
         'preferences',
         'last_login_at',
@@ -76,6 +80,8 @@ class User extends Authenticatable
             'status' => UserStatus::class,
             'api_ip_whitelist' => 'array',
             'preferences' => 'array',
+            'api_access_requested_at' => 'datetime',
+            'api_access_approved_at' => 'datetime',
         ];
     }
 
@@ -106,6 +112,19 @@ class User extends Authenticatable
     public function isApiClient(): bool
     {
         return $this->role === UserRole::API_CLIENT || (is_string($this->role) && $this->role === 'api_client') || ($this->role instanceof UserRole && $this->role->value === 'api_client');
+    }
+
+    public function hasApiAccess(): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        if (!$this->isActive()) {
+            return false;
+        }
+
+        return $this->api_access_status === 'active' || $this->isApiClient();
     }
 
     public function isActive(): bool

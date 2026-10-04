@@ -140,4 +140,38 @@ class UserController extends Controller
             return back()->with('error', 'فشل في تعديل الرصيد: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Toggle B2B API access for a user.
+     */
+    public function toggleApiAccess(int $id): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->api_access_status === 'active') {
+            $user->update([
+                'api_access_status' => 'inactive',
+            ]);
+            $msg = 'تم تعطيل صلاحية الربط البرمجي (B2B API) للمستخدم بنجاح.';
+        } else {
+            if (empty($user->api_key)) {
+                $credentials = User::generateApiCredentials();
+                $user->api_key = $credentials['api_key'];
+                $user->api_secret = $credentials['hashed_secret'];
+            }
+
+            if (!$user->isAdmin()) {
+                $user->role = UserRole::API_CLIENT;
+            }
+
+            $user->update([
+                'api_access_status' => 'active',
+                'api_access_approved_at' => now(),
+            ]);
+
+            $msg = 'تم تفعيل صلاحية الربط البرمجي (B2B API) للمستخدم بنجاح.';
+        }
+
+        return back()->with('success', $msg);
+    }
 }

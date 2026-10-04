@@ -20,11 +20,36 @@
                     <span class="badge bg-secondary-subtle text-light">
                         {{ $user->role?->label() }}
                     </span>
+                    <span>•</span>
+                    @if($user->hasApiAccess())
+                    <span class="badge bg-warning-subtle text-warning border border-warning">
+                        <i class="ti ti-api-app me-1"></i> الربط البرمجي مفعل
+                    </span>
+                    @elseif($user->api_access_status === 'pending')
+                    <span class="badge bg-info-subtle text-info border border-info">
+                        <i class="ti ti-clock me-1"></i> بانتظار تفعيل الـ API
+                    </span>
+                    @else
+                    <span class="badge bg-dark text-muted border border-secondary">
+                        الربط البرمجي غير مفعل
+                    </span>
+                    @endif
                 </div>
             </div>
         </div>
 
         <div class="d-flex align-items-center gap-2">
+            <!-- Toggle API Access -->
+            @if(!$user->isAdmin())
+                <form method="POST" action="{{ route('admin.users.toggle-api-access', $user->id) }}" onsubmit="return confirm('هل أنت متأكد من تغيير صلاحية الربط البرمجي (B2B API) لهذا المستخدم؟')">
+                    @csrf
+                    <button type="submit" class="btn {{ $user->hasApiAccess() ? 'btn-outline-warning' : 'btn-warning text-dark' }} fw-bold d-flex align-items-center gap-1">
+                        <i class="ti ti-api-app"></i>
+                        <span>{{ $user->hasApiAccess() ? 'تعطيل الـ API' : 'تفعيل الـ API' }}</span>
+                    </button>
+                </form>
+            @endif
+
             <!-- Adjust Balance Modal Trigger -->
             <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#adjustBalanceModal">
                 <i class="ti ti-wallet"></i>

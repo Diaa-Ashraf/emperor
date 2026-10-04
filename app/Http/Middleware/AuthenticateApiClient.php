@@ -28,16 +28,14 @@ class AuthenticateApiClient
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        $client = User::where('api_key', $apiKey)
-            ->where('role', UserRole::API_CLIENT)
-            ->first();
+        $client = User::where('api_key', $apiKey)->first();
 
-        if (!$client) {
+        if (!$client || !$client->hasApiAccess()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'مفتاح الـ API (API Key) غير صالح أو الحساب غير مسجل كعميل API.',
-                'code' => 'INVALID_API_KEY',
-            ], Response::HTTP_UNAUTHORIZED);
+                'message' => 'مفتاح الـ API غير صالح أو أن صلاحية الربط البرمجي (B2B API) غير مفعّلة لحسابك من قبل إدارة المنصة.',
+                'code' => 'API_ACCESS_DISABLED',
+            ], Response::HTTP_FORBIDDEN);
         }
 
         // Verify Secret Hash
@@ -53,7 +51,7 @@ class AuthenticateApiClient
         if ($client->status !== UserStatus::ACTIVE) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'حساب الـ API هذا معطل أو موقوف مؤقتاً.',
+                'message' => 'حساب الـ API هذا معطل أو موقوف مؤقتاً من قِبل الإدارة.',
                 'code' => 'ACCOUNT_SUSPENDED',
             ], Response::HTTP_FORBIDDEN);
         }
