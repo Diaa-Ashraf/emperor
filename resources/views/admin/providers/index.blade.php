@@ -55,8 +55,16 @@
                                 </td>
                                 <td><span class="badge bg-secondary font-monospace">{{ $provider->driver }}</span></td>
                                 <td>
-                                    <div class="fw-bold text-warning font-monospace">
-                                        {{ number_format((float) $provider->balance, 2) }} {{ $provider->balance_currency }}
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="fw-bold text-warning font-monospace" id="provider-balance-{{ $provider->id }}">
+                                            {{ number_format((float) $provider->balance, 2) }} {{ $provider->balance_currency }}
+                                        </div>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-warning p-1 px-2 check-balance-btn" 
+                                                onclick="checkProviderBalance({{ $provider->id }}, this)" 
+                                                title="فحص الرصيد وتحديثه من مزود الخدمة مباشرة">
+                                            <i class="ti ti-refresh"></i> <span class="d-none d-lg-inline fs-8">فحص</span>
+                                        </button>
                                     </div>
                                 </td>
                                 <td>
@@ -80,15 +88,23 @@
                                     @endif
                                 </td>
                                 <td class="text-end pe-3">
-                                    <form action="{{ route('admin.providers.toggle-active', $provider->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm {{ $provider->is_active ? 'btn-outline-danger' : 'btn-outline-success' }}" title="تبديل الحالة">
-                                            <i class="ti {{ $provider->is_active ? 'ti-ban' : 'ti-check' }}"></i>
+                                    <div class="d-flex align-items-center justify-content-end gap-1">
+                                        <button type="button" 
+                                                class="btn btn-sm btn-warning fw-bold check-balance-btn" 
+                                                onclick="checkProviderBalance({{ $provider->id }}, this)" 
+                                                title="فحص الرصيد الفعلي">
+                                            <i class="ti ti-wallet"></i> فحص الرصيد
                                         </button>
-                                    </form>
-                                    <a href="{{ route('admin.providers.edit', $provider->id) }}" class="btn btn-sm btn-outline-info">
-                                        <i class="ti ti-edit"></i> تعديل
-                                    </a>
+                                        <form action="{{ route('admin.providers.toggle-active', $provider->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm {{ $provider->is_active ? 'btn-outline-danger' : 'btn-outline-success' }}" title="تبديل الحالة">
+                                                <i class="ti {{ $provider->is_active ? 'ti-ban' : 'ti-check' }}"></i>
+                                            </button>
+                                        </form>
+                                        <a href="{{ route('admin.providers.edit', $provider->id) }}" class="btn btn-sm btn-outline-info">
+                                            <i class="ti ti-edit"></i> تعديل
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             @empty
@@ -112,4 +128,43 @@
         </div>
     </div>
 </div>
+
+<script>
+function checkProviderBalance(providerId, btn) {
+    const originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader animate-spin"></i> جاري الفحص...';
+
+    fetch(`/admin/providers/${providerId}/balance`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+
+        if (data.status === 'success' || data.balance !== undefined) {
+            const balanceEl = document.getElementById(`provider-balance-${providerId}`);
+            if (balanceEl) {
+                balanceEl.innerHTML = `${parseFloat(data.balance).toFixed(2)} ${data.currency || 'USD'}`;
+                balanceEl.classList.add('text-success');
+                setTimeout(() => balanceEl.classList.remove('text-success'), 3000);
+            }
+            alert(`✅ ${data.message || 'تم فحص الرصيد بنجاح!'}\nالرصيد المحدث: ${data.balance} ${data.currency || 'USD'}`);
+        } else {
+            alert(`⚠️ تنبيه: ${data.message || 'تعذر جلب الرصيد من المزود'}`);
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+        alert('❌ حدث خطأ أثناء الاتصال بمزود الخدمة.');
+        console.error(err);
+    });
+}
+</script>
 @endsection

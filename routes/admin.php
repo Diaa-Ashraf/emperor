@@ -83,11 +83,10 @@ Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admi
     Route::post('/deposits/{id}/reject', [DepositController::class, 'reject'])->name('deposits.reject');
 
     // Financial & Payment Methods
-    Route::get('/withdrawals', [PlaceholderAdminController::class, 'index'])
-        ->defaults('title', 'طلبات سحب الرصيد')
-        ->defaults('icon', 'ti-cash-banknote')
-        ->defaults('description', 'إدارة طلبات سحب الأرباح والمستحقات للحسابات الخارجية')
-        ->name('withdrawals.index');
+    Route::get('/withdrawals', [\App\Http\Controllers\Admin\WithdrawalController::class, 'index'])->name('withdrawals.index');
+    Route::get('/withdrawals/{id}', [\App\Http\Controllers\Admin\WithdrawalController::class, 'show'])->name('withdrawals.show');
+    Route::post('/withdrawals/{id}/approve', [\App\Http\Controllers\Admin\WithdrawalController::class, 'approve'])->name('withdrawals.approve');
+    Route::post('/withdrawals/{id}/reject', [\App\Http\Controllers\Admin\WithdrawalController::class, 'reject'])->name('withdrawals.reject');
 
     Route::get('/payment-methods', [PlaceholderAdminController::class, 'index'])
         ->defaults('title', 'طرق الدفع والحسابات')

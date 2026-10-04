@@ -13,7 +13,8 @@ use InvalidArgumentException;
 class WithdrawalService
 {
     public function __construct(
-        protected WalletService $walletService
+        protected WalletService $walletService,
+        protected ?NotificationService $notificationService = null
     ) {}
 
     /**
@@ -73,6 +74,23 @@ class WithdrawalService
             'reviewer_notes' => $notes,
             'reviewed_at' => now(),
         ]);
+
+        if ($this->notificationService && $request->user) {
+            try {
+                $this->notificationService->notify(
+                    $request->user,
+                    new \App\DTOs\NotificationPayloadDTO(
+                        title: '🎉 تم تحويل مستحقات سحب الرصيد بنجاح!',
+                        body: "تم تنفيذ طلب السحب #{$request->id} بنجاح وتحويل صافي مبلغ {$request->final_amount} {$request->currency} إلى حسابك ({$request->recipient_account}).",
+                        type: 'withdrawal_completed',
+                        link: '/targets',
+                        data: ['withdrawal_id' => $request->id, 'amount' => (float) $request->final_amount]
+                    )
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Failed sending withdrawal completed notification: " . $e->getMessage());
+            }
+        }
     }
 
     /**
@@ -102,5 +120,22 @@ class WithdrawalService
                 referenceId: $request->id
             );
         });
+
+        if ($this->notificationService && $request->user) {
+            try {
+                $this->notificationService->notify(
+                    $request->user,
+                    new \App\DTOs\NotificationPayloadDTO(
+                        title: '⚠️ تم رفض طلب سحب الرصيد',
+                        body: "تم رفض طلب سحب الرصيد #{$request->id} (السبب: {$reason}). وتم إرجاع كامل المبلغ ({$request->amount} {$request->currency}) إلى محفظتك.",
+                        type: 'withdrawal_rejected',
+                        link: '/targets',
+                        data: ['withdrawal_id' => $request->id, 'reason' => $reason]
+                    )
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Failed sending withdrawal rejected notification: " . $e->getMessage());
+            }
+        }
     }
 }
