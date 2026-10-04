@@ -44,16 +44,49 @@ export default function NotificationItem({ notification, onMarkAsRead }) {
         || rawData.notes 
         || '';
 
-    const link = notification.link 
-        || rawData.link 
-        || rawData.action_url 
-        || rawData.url 
-        || null;
+    // Resolve valid link safely
+    const resolveLink = (raw) => {
+        if (!raw || typeof raw !== 'string') return null;
+        const trimmed = raw.trim();
+        if (!trimmed || trimmed.length < 2 || trimmed.includes(' ')) return null;
 
-    const imageUrl = notification.image_url 
-        || rawData.image_url 
-        || rawData.image 
-        || null;
+        if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('//')) {
+            return { type: 'external', url: trimmed };
+        }
+
+        if (trimmed.startsWith('/admin')) {
+            return { type: 'admin', url: trimmed };
+        }
+
+        if (trimmed.startsWith('/')) {
+            return { type: 'internal', url: trimmed };
+        }
+
+        const knownRoutes = ['deposit', 'wallet', 'orders', 'profile', 'target-apps', 'target-orders', 'support', 'referrals', 'settings', 'developer', 'products', 'categories'];
+        const firstSeg = trimmed.split('/')[0].split('?')[0];
+        if (knownRoutes.includes(firstSeg)) {
+            return { type: 'internal', url: '/' + trimmed };
+        }
+
+        return null;
+    };
+
+    const linkInfo = resolveLink(notification.link || rawData.link || rawData.action_url || rawData.url);
+
+    // Resolve valid image safely
+    const resolveImage = (raw) => {
+        if (!raw || typeof raw !== 'string') return null;
+        const trimmed = raw.trim();
+        if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('/storage/') || trimmed.startsWith('data:image/')) {
+            return trimmed;
+        }
+        if (trimmed.startsWith('storage/')) {
+            return '/' + trimmed;
+        }
+        return null;
+    };
+
+    const imageUrl = resolveImage(notification.image_url || rawData.image_url || rawData.image);
 
     // Get notification type configuration & badge
     const getTypeConfig = () => {
@@ -160,10 +193,14 @@ export default function NotificationItem({ notification, onMarkAsRead }) {
             onMarkAsRead(notification.id);
         }
 
-        if (link && !link.startsWith('http') && !link.startsWith('//')) {
-            navigate(link);
-        } else if (link) {
-            window.open(link, '_blank');
+        if (linkInfo) {
+            if (linkInfo.type === 'internal') {
+                navigate(linkInfo.url);
+            } else if (linkInfo.type === 'admin') {
+                window.location.href = linkInfo.url;
+            } else if (linkInfo.type === 'external') {
+                window.open(linkInfo.url, '_blank', 'noopener,noreferrer');
+            }
         }
     };
 
@@ -204,7 +241,7 @@ export default function NotificationItem({ notification, onMarkAsRead }) {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '14px',
-                cursor: link ? 'pointer' : 'default',
+                cursor: linkInfo ? 'pointer' : 'default',
                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                 position: 'relative',
                 boxShadow: isUnread ? '0 8px 30px rgba(212, 165, 55, 0.08)' : '0 4px 15px rgba(0, 0, 0, 0.2)',
@@ -389,7 +426,7 @@ export default function NotificationItem({ notification, onMarkAsRead }) {
             )}
 
             {/* Bottom Action Link CTA if available */}
-            {link && (
+            {linkInfo && (
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
