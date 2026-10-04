@@ -66,14 +66,14 @@ export default function BestSellersSection() {
                         width: '46px',
                         height: '46px',
                         borderRadius: '14px',
-                        background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(212, 165, 55, 0.2) 100%)',
+                        background: 'linear-gradient(135deg, rgba(212, 165, 55, 0.2) 0%, rgba(212, 165, 55, 0.05) 100%)',
                         border: '1px solid rgba(212, 165, 55, 0.4)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 0 20px rgba(239, 68, 68, 0.2)',
+                        boxShadow: '0 0 20px rgba(212, 165, 55, 0.15)',
                     }}>
-                        <Flame size={24} color="#F59E0B" fill="#F59E0B" />
+                        <Sparkles size={22} color="var(--gold-400)" />
                     </div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -84,7 +84,7 @@ export default function BestSellersSection() {
                                 color: '#FFFFFF',
                                 letterSpacing: '-0.3px',
                             }}>
-                                الأكثر مبيعاً وشهرة 🔥
+                                الأكثر طلباً ورواجاً
                             </h2>
                             <span style={{
                                 background: 'linear-gradient(135deg, #D4A537 0%, #AA7C11 100%)',
@@ -155,9 +155,9 @@ export default function BestSellersSection() {
                         }
 
                         const rankColors = [
-                            { badge: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)', text: '#000', label: 'الأول مبيعاً 👑' },
-                            { badge: 'linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%)', text: '#1E1B4B', label: '#2 الأكثر طلباً' },
-                            { badge: 'linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%)', text: '#451A03', label: '#3 الأكثر طلباً' },
+                            { badge: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)', text: '#000', label: 'الأعلى طلباً' },
+                            { badge: 'linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%)', text: '#1E1B4B', label: '#2 الأكثر مبيعاً' },
+                            { badge: 'linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%)', text: '#451A03', label: '#3 الأكثر مبيعاً' },
                         ];
                         const rankInfo = rankColors[idx] || { badge: 'rgba(255, 255, 255, 0.12)', text: '#FFF', label: `#${idx + 1} رائج` };
 
@@ -205,7 +205,7 @@ export default function BestSellersSection() {
                                     alignItems: 'center',
                                     gap: '4px',
                                 }}>
-                                    {idx === 0 && <Trophy size={12} />}
+                                    {idx === 0 ? <Trophy size={12} /> : <Star size={12} />}
                                     <span>{rankInfo.label}</span>
                                 </div>
 
@@ -254,21 +254,26 @@ export default function BestSellersSection() {
                                             }}
                                             onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
                                             onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                            onError={(e) => {
+                                                e.currentTarget.style.display = 'none';
+                                                if (e.currentTarget.nextSibling) {
+                                                    e.currentTarget.nextSibling.style.display = 'flex';
+                                                }
+                                            }}
                                         />
-                                    ) : (
-                                        <div style={{
-                                            width: '60px',
-                                            height: '60px',
-                                            borderRadius: '16px',
-                                            background: 'rgba(212, 165, 55, 0.1)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: '#D4A537',
-                                        }}>
-                                            <Package size={30} />
-                                        </div>
-                                    )}
+                                    ) : null}
+                                    <div style={{
+                                        display: img ? 'none' : 'flex',
+                                        width: '60px',
+                                        height: '60px',
+                                        borderRadius: '16px',
+                                        background: 'rgba(212, 165, 55, 0.1)',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: '#D4A537',
+                                    }}>
+                                        <Package size={30} />
+                                    </div>
 
                                     {/* Bottom gradient fade */}
                                     <div style={{

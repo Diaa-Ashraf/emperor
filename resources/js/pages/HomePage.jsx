@@ -200,7 +200,7 @@ export default function HomePage() {
             {/* ═══ 2. CATEGORY CARDS (أقسام المتجر الحقيقية من الداتا بيز) ═══ */}
             <VisualCategoryCards />
 
-            {/* ═══ 3. BEST SELLERS (الأكثر مبيعاً وشهرة) 🔥 ═══ */}
+            {/* ═══ 3. BEST SELLERS (الأكثر طلباً ورواجاً) ═══ */}
             <BestSellersSection />
 
             {/* ═══ 4. TARGET CALLOUT BANNER (سحب واستبدال التارجت) ═══ */}
