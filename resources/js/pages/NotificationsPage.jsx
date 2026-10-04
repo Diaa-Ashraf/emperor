@@ -73,6 +73,20 @@ export default function NotificationsPage() {
     useEffect(() => {
         fetchNotifications(page, filter);
         fetchUnreadCount();
+
+        const handleLiveNotification = (e) => {
+            const newNotif = e.detail;
+            if (!newNotif) return;
+
+            setNotifications((prev) => {
+                if (prev.some((n) => n.id === newNotif.id)) return prev;
+                return [newNotif, ...prev];
+            });
+            setUnreadCount((prev) => prev + 1);
+        };
+
+        window.addEventListener('emperor:new-notification', handleLiveNotification);
+        return () => window.removeEventListener('emperor:new-notification', handleLiveNotification);
     }, [page, filter, fetchNotifications, fetchUnreadCount]);
 
     // Handle marking single notification as read

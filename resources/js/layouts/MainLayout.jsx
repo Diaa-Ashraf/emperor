@@ -34,6 +34,7 @@ import { onForegroundMessage } from '../services/firebaseMessaging';
 import UserSidebarDrawer from '../components/navigation/UserSidebarDrawer';
 import HomeBannerSlider from '../components/home/HomeBannerSlider';
 import PromotionalPopup from '../components/ui/PromotionalPopup';
+import { playNotificationSound } from '../utils/soundHelper';
 
 export default function MainLayout({ children, showBanner = true }) {
     const { user, isAuthenticated } = useAuth();
@@ -54,40 +55,87 @@ export default function MainLayout({ children, showBanner = true }) {
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
-    // Fetch unread notifications count
+    // Real-Time Notification & Live Sync Listener
     useEffect(() => {
         if (!isAuthenticated) {
             setUnreadNotifications(0);
             return;
         }
 
-        const fetchCount = async () => {
+        let isMounted = true;
+        let lastTimestamp = new Date().toISOString();
+        let previousCount = null;
+        let isInitialLoad = true;
+
+        const syncNotifications = async () => {
             try {
-                const res = await notificationsApi.getUnreadCount();
-                if (res.data?.data?.unread_count !== undefined) {
-                    setUnreadNotifications(res.data.data.unread_count);
+                const res = await notificationsApi.checkLatest({ after: lastTimestamp });
+                if (!isMounted || !res?.data?.data) return;
+
+                const { unread_count, notifications: newItems, server_time } = res.data.data;
+
+                if (server_time) {
+                    lastTimestamp = server_time;
                 }
-            } catch (err) { }
+
+                if (typeof unread_count === 'number') {
+                    setUnreadNotifications(unread_count);
+
+                    // Check if new notifications arrived (skip audio on initial page load)
+                    if (!isInitialLoad) {
+                        const countIncreased = previousCount !== null && unread_count > previousCount;
+                        const hasNewItems = Array.isArray(newItems) && newItems.length > 0;
+
+                        if (countIncreased || hasNewItems) {
+                            // 1. Play real-time notification sound chime
+                            playNotificationSound('default');
+
+                            // 2. Display pop-up toasts for incoming notifications
+                            if (hasNewItems) {
+                                newItems.forEach((n) => {
+                                    const title = n.title || 'إشعار جديد';
+                                    const body = n.body ? ` - ${n.body}` : '';
+                                    addToast(`${title}${body}`, 'info');
+
+                                    // 3. Dispatch window event for live subscribers (like NotificationsPage)
+                                    window.dispatchEvent(new CustomEvent('emperor:new-notification', { detail: n }));
+                                });
+                            }
+                        }
+                    }
+
+                    previousCount = unread_count;
+                }
+                isInitialLoad = false;
+            } catch (err) {
+                // Silently retry on next tick
+            }
         };
 
-        fetchCount();
-        const interval = setInterval(fetchCount, 30000);
+        // Immediate initial check
+        syncNotifications();
 
+        // 4-second ultra-responsive live sync loop
+        const interval = setInterval(syncNotifications, 4000);
+
+        // Firebase Push Foreground Listener
         let unsubscribe = null;
         onForegroundMessage((payload) => {
             const title = payload.notification?.title || payload.data?.title || 'إشعار جديد';
             const body = payload.notification?.body || payload.data?.body || '';
+            playNotificationSound('default');
             addToast(`${title}: ${body}`, 'info');
-            fetchCount();
+            syncNotifications();
         }).then((unsub) => {
             unsubscribe = unsub;
         });
 
         return () => {
+            isMounted = false;
             clearInterval(interval);
             if (typeof unsubscribe === 'function') unsubscribe();
         };
-    }, [isAuthenticated, location.pathname]);
+    }, [isAuthenticated]);
 
     const isActive = (path) => {
         if (path === '/' && location.pathname === '/') return true;

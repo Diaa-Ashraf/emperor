@@ -114,6 +114,7 @@ Route::prefix('v1')->middleware(['locale'])->group(function () {
         // Customer Notifications (3.3)
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+        Route::get('/notifications/check-latest', [NotificationController::class, 'checkLatest']);
         Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 

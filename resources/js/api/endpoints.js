@@ -90,6 +90,7 @@ export const settingsApi = {
 export const notificationsApi = {
     getNotifications: (params = {}) => api.get('/notifications', { params }),
     getUnreadCount: () => api.get('/notifications/unread-count'),
+    checkLatest: (params = {}) => api.get('/notifications/check-latest', { params }),
     markAsRead: (id) => api.post(`/notifications/${id}/read`),
     markAllAsRead: () => api.post('/notifications/read-all'),
 };

@@ -68,4 +68,32 @@ class NotificationController extends Controller
 
         return $this->successResponse(null, 'تم تحديد كافة الإشعارات كمقروءة');
     }
+
+    /**
+     * Real-time notification sync & live event listener.
+     */
+    public function checkLatest(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $unreadCount = $user->unreadNotifications()->count();
+        $afterTimestamp = $request->input('after');
+
+        $query = $user->unreadNotifications()->latest('created_at')->limit(10);
+
+        if ($afterTimestamp) {
+            $query->where('created_at', '>', $afterTimestamp);
+        }
+
+        $newNotifications = $query->get();
+
+        $wallet = $user->wallet;
+        $balance = $wallet ? (float) $wallet->balance : 0.0;
+
+        return $this->successResponse([
+            'unread_count' => $unreadCount,
+            'notifications' => NotificationResource::collection($newNotifications),
+            'wallet_balance' => $balance,
+            'server_time' => now()->toIso8601String(),
+        ], 'تم مزامنة الإشعارات والبيانات اللحظية بنجاح');
+    }
 }
