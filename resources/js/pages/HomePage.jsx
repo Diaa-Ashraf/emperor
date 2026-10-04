@@ -2,40 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     Search,
-    Zap,
-    ShieldCheck,
-    Crown,
-    Headphones,
-    ArrowLeft,
-    ArrowRight,
-    Sparkles,
-    ShoppingBag,
-    TrendingUp,
-    Star,
     ChevronRight,
     ChevronLeft,
-    Users,
-    Clock,
-    CheckCircle2,
+    Star,
     Package,
 } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
-import LiveActivityTicker from '../components/home/LiveActivityTicker';
 import VisualCategoryCards from '../components/home/VisualCategoryCards';
 import LiveTargetMarket from '../components/home/LiveTargetMarket';
 import GoldenTargetBanner from '../components/home/GoldenTargetBanner';
-import CustomerReviewsSection from '../components/home/CustomerReviewsSection';
 import FaqAccordion from '../components/home/FaqAccordion';
 import CommunityTelegramBanner from '../components/home/CommunityTelegramBanner';
 import BestSellerCard from '../components/products/BestSellerCard';
 import { catalogApi } from '../api/endpoints';
-import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { formatImageUrl } from '../utils/imageHelper';
 
 export default function HomePage() {
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
     const { t, isRtl } = useLanguage();
     const { theme } = useTheme();
 
@@ -55,16 +40,13 @@ export default function HomePage() {
     }, []);
 
     const filteredItems = (searchQuery.trim()
-        ? products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        ? products.filter(p => (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()))
         : products
     ).slice(0, 12);
 
     return (
         <MainLayout>
-            {/* ═══ 1. LIVE ACTIVITY TICKER ═══ */}
-            <LiveActivityTicker />
-
-            {/* ═══ 2. PREMIUM LIVE SEARCH BAR ═══ */}
+            {/* ═══ 1. PREMIUM LIVE SEARCH BAR ═══ */}
             <div className="emperor-entrance emperor-entrance-delay-1" style={{
                 maxWidth: '740px',
                 margin: '0 auto 36px',
@@ -111,7 +93,7 @@ export default function HomePage() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onFocus={() => setSearchFocused(true)}
                         onBlur={() => setTimeout(() => setSearchFocused(false), 250)}
-                        placeholder="ابحث عن لعبة، بطاقة، باقة شحن، أو تطبيق بث..."
+                        placeholder="ابحث عن لعبة، بطاقة، باقة شحن، أو تطبيق..."
                         style={{
                             flex: 1,
                             background: 'transparent',
@@ -167,38 +149,43 @@ export default function HomePage() {
                         </div>
                         {filteredItems.length > 0 ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                {filteredItems.slice(0, 6).map((item) => (
-                                    <Link
-                                        key={item.id}
-                                        to={`/product/${item.id}`}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between',
-                                            padding: '10px 14px',
-                                            borderRadius: '12px',
-                                            background: 'rgba(255, 255, 255, 0.02)',
-                                            textDecoration: 'none',
-                                            transition: 'all 0.2s',
-                                        }}
-                                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(212, 165, 55, 0.1)'}
-                                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#222', overflow: 'hidden' }}>
-                                                {item.image ? (
-                                                    <img src={item.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                ) : (
-                                                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D4A537' }}><Package size={16} color="#D4A537" /></div>
-                                                )}
+                                {filteredItems.slice(0, 6).map((item) => {
+                                    const itemImg = formatImageUrl(item.image_url || item.image);
+                                    return (
+                                        <Link
+                                            key={item.id}
+                                            to={`/product/${item.id}`}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                padding: '10px 14px',
+                                                borderRadius: '12px',
+                                                background: 'rgba(255, 255, 255, 0.02)',
+                                                textDecoration: 'none',
+                                                transition: 'all 0.2s',
+                                            }}
+                                            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(212, 165, 55, 0.1)'}
+                                            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#222', overflow: 'hidden' }}>
+                                                    {itemImg ? (
+                                                        <img src={itemImg} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    ) : (
+                                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D4A537' }}>
+                                                            <Package size={16} color="#D4A537" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <span style={{ fontSize: '13.5px', fontWeight: '700', color: '#FFFFFF' }}>{item.name}</span>
                                             </div>
-                                            <span style={{ fontSize: '13.5px', fontWeight: '700', color: '#FFFFFF' }}>{item.name}</span>
-                                        </div>
-                                        <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--gold-300)' }}>
-                                            {item.price_egp ? `${item.price_egp} ج.م` : 'عرض الباقات'}
-                                        </span>
-                                    </Link>
-                                ))}
+                                            <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--gold-300)' }}>
+                                                {item.price_egp ? `${item.price_egp} ج.م` : 'عرض الباقات'}
+                                            </span>
+                                        </Link>
+                                    );
+                                })}
                             </div>
                         ) : (
                             <div style={{ padding: '20px', textAlign: 'center', color: '#888', fontSize: '13px' }}>
@@ -209,146 +196,87 @@ export default function HomePage() {
                 )}
             </div>
 
-            {/* ═══ 4. CATEGORY CARDS (أقسام المتجر والخدمات الرقمية) ═══ */}
+            {/* ═══ 2. CATEGORY CARDS (أقسام المتجر الحقيقية من الداتا بيز) ═══ */}
             <VisualCategoryCards />
 
-            {/* ═══ 5. TARGET CALLOUT BANNER (اضغط هنا لسحب راتبك) ═══ */}
+            {/* ═══ 3. TARGET CALLOUT BANNER (سحب واستبدال التارجت) ═══ */}
             <GoldenTargetBanner />
 
-            {/* ═══ 7. BEST SELLERS SECTION (الأكثر طلباً ومبيعاً) ═══ */}
-            <div className="emperor-entrance" style={{ marginBottom: '56px' }}>
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '24px',
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{
-                            width: '40px',
-                            height: '40px',
-                            borderRadius: '12px',
-                            background: 'rgba(212, 165, 55, 0.10)',
-                            border: '1px solid var(--border-medium)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}>
-                            <Star size={20} color="var(--gold-400)" fill="var(--gold-400)" />
-                        </div>
-                        <div>
-                            <h2 style={{
-                                margin: 0,
-                                fontSize: 'clamp(18px, 3vw, 24px)',
-                                fontWeight: '900',
-                                color: theme === 'light' ? '#F4F4F5' : 'var(--text-primary)',
-                                letterSpacing: '-0.3px',
+            {/* ═══ 4. PRODUCTS & BEST SELLERS SECTION (المنتجات من الداتا بيز) ═══ */}
+            {filteredItems.length > 0 && (
+                <div className="emperor-entrance" style={{ marginBottom: '56px' }}>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: '24px',
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '12px',
+                                background: 'rgba(212, 165, 55, 0.10)',
+                                border: '1px solid var(--border-medium)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                             }}>
-                                الأكثر طلباً ومبيعاً
-                            </h2>
-                            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                                الباقات المفضلة للاعبين والتجار بأسعار حصرية
-                            </span>
+                                <Star size={20} color="var(--gold-400)" fill="var(--gold-400)" />
+                            </div>
+                            <div>
+                                <h2 style={{
+                                    margin: 0,
+                                    fontSize: 'clamp(18px, 3vw, 24px)',
+                                    fontWeight: '900',
+                                    color: theme === 'light' ? '#F4F4F5' : 'var(--text-primary)',
+                                    letterSpacing: '-0.3px',
+                                }}>
+                                    المنتجات المتاحة للشحن
+                                </h2>
+                                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                                    شحن رسمي وفوري بأفضل الأسعار
+                                </span>
+                            </div>
                         </div>
+
+                        <Link
+                            to="/category/all"
+                            className="emperor-btn-ghost"
+                            style={{
+                                padding: '7px 16px',
+                                fontSize: '12px',
+                                borderRadius: '9999px',
+                            }}
+                        >
+                            <span>{t('viewAll')}</span>
+                            {isRtl ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
+                        </Link>
                     </div>
 
-                    <Link
-                        to="/category/games"
-                        className="emperor-btn-ghost"
-                        style={{
-                            padding: '7px 16px',
-                            fontSize: '12px',
-                            borderRadius: '9999px',
-                        }}
-                    >
-                        <span>{t('viewAll')}</span>
-                        {isRtl ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-                    </Link>
+                    {/* Product Grid */}
+                    <div className="responsive-grid-products">
+                        {filteredItems.map((item, i) => (
+                            <div
+                                key={item.id}
+                                className="emperor-entrance"
+                                style={{ animationDelay: `${i * 0.05}s` }}
+                            >
+                                <BestSellerCard item={item} />
+                            </div>
+                        ))}
+                    </div>
                 </div>
+            )}
 
-                {/* Product Grid */}
-                <div className="responsive-grid-products">
-                    {filteredItems.map((item, i) => (
-                        <div
-                            key={item.id}
-                            className="emperor-entrance"
-                            style={{ animationDelay: `${i * 0.05}s` }}
-                        >
-                            <BestSellerCard item={item} />
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* ═══ 8. LIVE TARGET MARKET (بورصة تسييل وسحب التارجت اللحظية) ═══ */}
+            {/* ═══ 5. LIVE TARGET MARKET (يظهر فقط في حال وجود تطبيقات تارجت في الداتا بيز) ═══ */}
             <LiveTargetMarket />
 
-            {/* ═══ 10. TRUST STATS BAR ═══ */}
-            <div className="emperor-entrance emperor-vip-card" style={{
-                borderRadius: '24px',
-                padding: 'clamp(20px, 3.5vw, 32px) clamp(14px, 3vw, 24px)',
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
-                gap: '16px',
-                textAlign: 'center',
-                marginBottom: '44px',
-            }}>
-                <TrustStat
-                    value="+50,000"
-                    label="مستخدم وتاجر نشط"
-                    icon={Users}
-                    color={theme === 'light' ? 'var(--gold-700)' : 'var(--gold-400)'}
-                    labelColor={theme === 'light' ? 'var(--text-secondary)' : 'var(--text-muted)'}
-                />
-                <TrustStat value="+250,000" label="طلب شحن مكتمل" icon={ShoppingBag} color="var(--text-primary)" />
-                <TrustStat value="99.9%" label="معدل نجاح المعاملات" icon={CheckCircle2} color="var(--success)" />
-                <TrustStat value="18 ثانية" label="متوسط سرعة التنفيذ" icon={Clock} color="var(--gold-100)" />
-            </div>
-
-            {/* ═══ 11. CUSTOMER REVIEWS (آراء وتقييمات العملاء والتجار الحقيقيين) ═══ */}
-            <CustomerReviewsSection />
-
-            {/* ═══ 12. FAQ ACCORDION (الأسئلة الأكثر شيوعاً) ═══ */}
+            {/* ═══ 6. FAQ ACCORDION (الأسئلة الشائعة) ═══ */}
             <FaqAccordion />
 
-            {/* ═══ 13. TELEGRAM COMMUNITY BANNER ═══ */}
+            {/* ═══ 7. TELEGRAM / WHATSAPP COMMUNITY BANNER ═══ */}
             <CommunityTelegramBanner />
         </MainLayout>
-    );
-}
-
-/* ── Trust Stat Component ── */
-function TrustStat({ value, label, icon: Icon, color, labelColor = 'var(--text-muted)' }) {
-    return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <div style={{
-                width: '44px',
-                height: '44px',
-                borderRadius: '12px',
-                background: 'rgba(212, 165, 55, 0.08)',
-                border: '1px solid var(--border-subtle)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '4px',
-            }}>
-                <Icon size={20} color={color} />
-            </div>
-            <span style={{
-                fontSize: 'clamp(22px, 3vw, 28px)',
-                fontWeight: '900',
-                color: color,
-                lineHeight: '1',
-            }}>
-                {value}
-            </span>
-            <span style={{
-                fontSize: '12px',
-                color: labelColor,
-                fontWeight: '600',
-            }}>
-                {label}
-            </span>
-        </div>
     );
 }
