@@ -25,13 +25,13 @@
 
 @section('content')
     @if(isset($lowBalanceProviders) && $lowBalanceProviders->count() > 0)
-        <div class="alert alert-warning border-warning bg-warning bg-opacity-10 d-flex align-items-center justify-content-between p-3 mb-4 rounded-3">
+        <div class="alert alert-warning border-warning bg-warning bg-opacity-10 d-flex flex-column flex-md-row align-items-md-center justify-content-between p-3 mb-4 rounded-3 gap-3">
             <div class="d-flex align-items-center gap-3">
-                <div class="fs-2 text-warning">
+                <div class="fs-2 text-warning flex-shrink-0">
                     <i class="ti ti-alert-triangle-filled"></i>
                 </div>
                 <div>
-                    <h6 class="fw-bold text-white mb-1">تنبيه: رصيد منخفض لدى بعض الموردين (API Providers) ⚠️</h6>
+                    <h6 class="fw-bold text-white mb-1">تنبيه: رصيد منخفض لدى بعض الموردين (API Providers)</h6>
                     <p class="text-warning-emphasis mb-0 fs-7">
                         @foreach($lowBalanceProviders as $lp)
                             <strong>{{ $lp->name }}</strong> (الرصيد المتبقي: <span class="font-monospace fw-bold">{{ number_format($lp->balance, 2) }} {{ $lp->balance_currency }}</span>)@if(!$loop->last) ، @endif
@@ -40,7 +40,7 @@
                     </p>
                 </div>
             </div>
-            <a href="{{ route('admin.providers.index') }}" class="btn btn-warning btn-sm fw-bold text-dark px-3 text-nowrap">
+            <a href="{{ route('admin.providers.index') }}" class="btn btn-warning btn-sm fw-bold text-dark px-3 text-nowrap align-self-start align-self-md-center">
                 <i class="ti ti-wallet"></i> فحص وشحن المزودين
             </a>
         </div>

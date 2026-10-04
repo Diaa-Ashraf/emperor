@@ -497,19 +497,22 @@ body {
         line-height: 1.5;
     }
 
-    .dashboard-table-responsive {
-        overflow-x: hidden;
+    .dashboard-table-responsive,
+    .table-responsive {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
 
         .table {
-            table-layout: fixed;
-            width: 100%;
+            min-width: 600px;
+            table-layout: auto !important;
 
             th,
             td {
-                padding: 8px 5px;
-                font-size: 11px;
-                overflow-wrap: anywhere;
-                word-break: break-word;
+                padding: 10px 12px;
+                font-size: 12.5px;
+                white-space: nowrap !important;
+                word-break: normal !important;
+                overflow-wrap: normal !important;
             }
 
             th {
@@ -517,14 +520,27 @@ body {
             }
 
             td .badge {
-                white-space: normal;
+                white-space: nowrap !important;
             }
-
         }
     }
 
     .nav-text {
         font-size: 14px !important;
+    }
+}
+
+.table-responsive,
+.dashboard-table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+
+    .table {
+        min-width: 580px;
+
+        th, td {
+            white-space: nowrap;
+        }
     }
 }
 
