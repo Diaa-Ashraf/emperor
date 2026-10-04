@@ -1,1 +1,0 @@
-.category-ad{opacity:0;transform:translateY(30px)}.category-ad:hover{transform:translateY(-6px)}.ad-card--visible{animation:showAd .7s ease forwards}@keyframes showAd{0%{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}

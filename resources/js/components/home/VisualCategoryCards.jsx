@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Layers, TrendingUp } from 'lucide-react';
 import { catalogApi } from '../../api/endpoints';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { formatImageUrl } from '../../utils/imageHelper';
@@ -32,271 +31,118 @@ export default function VisualCategoryCards() {
     }
 
     return (
-        <div style={{ marginBottom: '40px' }}>
-            <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '18px',
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{
-                        width: '4px',
-                        height: '20px',
-                        background: 'linear-gradient(180deg, #F5D061 0%, #D4A537 100%)',
-                        borderRadius: '4px',
-                    }} />
-                    <h2 style={{
-                        margin: 0,
-                        fontSize: '20px',
-                        fontWeight: '900',
-                        color: '#FFFFFF',
-                        letterSpacing: '-0.3px',
-                    }}>
-                        أقسام المتجر والخدمات الرقمية
-                    </h2>
-                </div>
-            </div>
-
-            <div
-                className="visual-container"
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
-                    gap: '16px',
-                }}>
+        <div style={{ marginBottom: '44px' }}>
+            <div className="emperor-category-poster-grid">
                 {categories.map((cat, i) => (
-                    <CategoryCard key={cat.id || i} cat={cat} isRtl={isRtl} index={i} />
+                    <CategoryPosterCard key={cat.id || i} cat={cat} isRtl={isRtl} index={i} />
                 ))}
             </div>
         </div>
     );
 }
 
-function CategoryCard({ cat, isRtl, index }) {
+function CategoryPosterCard({ cat, isRtl, index }) {
     const [hovered, setHovered] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
-    const sectionRef = React.useRef(null);
     const isTarget = cat.slug === 'target' || cat.slug === 'target-apps' || cat.isTarget;
-    const rawImg = cat.banner_url || cat.banner || cat.icon_url || cat.icon;
-    const imageUrl = formatImageUrl(rawImg);
     const categoryLink = isTarget ? '/target/apps' : `/category/${cat.slug || cat.id}`;
 
-    useEffect(() => {
-        const card = sectionRef.current;
-        if (!card) return;
+    // Resolve artwork image with high-definition defaults
+    const rawImg = cat.banner_url || cat.banner || cat.image_url || cat.image || cat.icon_url || cat.icon;
+    const formattedImg = formatImageUrl(rawImg);
 
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                setIsVisible(entry.isIntersecting);
-            },
-            {
-                threshold: 0.3,
-            }
-        );
-
-        observer.observe(card);
-
-        return () => {
-            observer.disconnect();
-        };
-    }, []);
+    let finalImage = formattedImg;
+    if (!finalImage) {
+        const s = (cat.slug || cat.name || '').toLowerCase();
+        if (s.includes('target') || s.includes('تارجت') || s.includes('سحب')) {
+            finalImage = '/images/artwork/cat_target.jpg';
+        } else if (s.includes('app') || s.includes('تطبيق') || s.includes('بث') || s.includes('شات') || s.includes('voice')) {
+            finalImage = '/images/artwork/cat_apps.jpg';
+        } else {
+            finalImage = '/images/artwork/cat_games.jpg';
+        }
+    }
 
     return (
         <Link
             to={categoryLink}
-            ref={sectionRef}
             style={{
                 textDecoration: 'none',
-                position: 'relative',
-                borderRadius: '22px',
-                overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                border: `1px solid ${hovered || isTarget ? '#D4A537' : 'rgba(255, 255, 255, 0.08)'}`,
-                boxShadow: hovered
-                    ? '0 12px 35px rgba(0,0,0,0.8), 0 0 25px rgba(212,165,55,0.2)'
-                    : isTarget
-                        ? '0 8px 30px rgba(0,0,0,0.7), 0 0 15px rgba(212,165,55,0.1)'
-                        : '0 6px 20px rgba(0,0,0,0.5)',
+                alignItems: 'center',
+                cursor: 'pointer',
                 transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
-                minHeight: '260px',
-                background: '#0B0B0F',
-                animationDelay: `${index * 0.25}s`,
             }}
-            className={`category-ad ${isVisible ? "ad-card--visible" : ""}`}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
-            {/* ── Top Image Area ── */}
-            <div style={{
-                position: 'relative',
-                height: '160px',
-                overflow: 'hidden',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'linear-gradient(145deg, #12121A 0%, #08080C 100%)',
-            }}>
-                {imageUrl ? (
-                    <div style={{
-                        position: 'relative',
+            {/* ── Square Full-Bleed Poster Card Frame ── */}
+            <div
+                className="category-poster-frame"
+                style={{
+                    position: 'relative',
+                    width: '100%',
+                    aspectRatio: '1 / 1',
+                    borderRadius: '24px',
+                    overflow: 'hidden',
+                    background: '#0B0B0F',
+                    border: `1.8px solid ${hovered ? '#F5D061' : 'rgba(212, 165, 55, 0.4)'}`,
+                    boxShadow: hovered
+                        ? '0 16px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 165, 55, 0.35)'
+                        : '0 8px 24px rgba(0, 0, 0, 0.65), 0 0 15px rgba(212, 165, 55, 0.1)',
+                    transform: hovered ? 'translateY(-6px) scale(1.02)' : 'translateY(0) scale(1)',
+                    transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+            >
+                <img
+                    src={finalImage}
+                    alt={cat.name}
+                    loading="lazy"
+                    onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/images/artwork/cat_games.jpg';
+                    }}
+                    style={{
                         width: '100%',
                         height: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'hidden',
-                        background: 'radial-gradient(circle, rgba(212,165,55,0.12) 0%, rgba(10,10,14,0.95) 75%)',
-                    }}>
-                        {/* Ambient Blurred Halo */}
-                        <img
-                            src={imageUrl}
-                            alt=""
-                            aria-hidden="true"
-                            style={{
-                                position: 'absolute',
-                                inset: 0,
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                filter: 'blur(22px) brightness(0.25)',
-                                opacity: 0.6,
-                                transform: 'scale(1.2)',
-                            }}
-                        />
+                        objectFit: 'cover',
+                        objectPosition: 'center',
+                        display: 'block',
+                        transform: hovered ? 'scale(1.06)' : 'scale(1)',
+                        transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                    }}
+                />
 
-                        {/* Foreground Image/Icon */}
-                        <img
-                            src={imageUrl}
-                            alt={cat.name}
-                            style={{
-                                position: 'relative',
-                                zIndex: 2,
-                                maxWidth: '60%',
-                                maxHeight: '60%',
-                                marginTop: '10px',
-                                width: 'auto',
-                                height: 'auto',
-                                objectFit: 'contain',
-                                borderRadius: '16px',
-                                filter: 'drop-shadow(0 10px 22px rgba(0,0,0,0.7))',
-                                transition: 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
-                                transform: hovered ? 'scale(1.1) translateY(-3px)' : 'scale(1)',
-                            }}
-                            onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                            }}
-                        />
-                    </div>
-                ) : (
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '8px',
-                        position: 'relative',
-                        zIndex: 1,
-                    }}>
-                        <div style={{
-                            width: '72px',
-                            height: '72px',
-                            borderRadius: '20px',
-                            background: 'linear-gradient(135deg, rgba(212,165,55,0.15) 0%, rgba(212,165,55,0.05) 100%)',
-                            border: '1.5px solid rgba(212,165,55,0.3)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#F5D061',
-                            transition: 'all 0.35s ease',
-                            transform: hovered ? 'scale(1.1) rotate(-3deg)' : 'scale(1) rotate(0deg)',
-                            boxShadow: hovered ? '0 0 20px rgba(212,165,55,0.3)' : 'none',
-                        }}>
-                            {isTarget ? <TrendingUp size={34} /> : <Layers size={32} />}
-                        </div>
-                    </div>
-                )}
-
-                {/* Gradient overlay at bottom */}
-                <div style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: '60px',
-                    background: 'linear-gradient(transparent, #0B0B0F)',
-                    pointerEvents: 'none',
-                }} />
-
-                {/* Badge */}
-                <div style={{
-                    position: 'absolute',
-                    top: '12px',
-                    [isRtl ? 'right' : 'left']: '12px',
-                    background: isTarget ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)' : 'rgba(0, 0, 0, 0.75)',
-                    color: isTarget ? '#000000' : '#F5D061',
-                    border: `1px solid ${isTarget ? '#D4A537' : 'rgba(212, 165, 55, 0.4)'}`,
-                    padding: '4px 12px',
-                    borderRadius: '12px',
-                    fontSize: '11.5px',
-                    fontWeight: '900',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-                    backdropFilter: 'blur(6px)',
-                }}>
-                    {isTarget ? 'سحب كاش فوري' : (cat.products_count ? `${cat.products_count} منتج` : 'شحن مباشر')}
-                </div>
+                {/* Subtle Luxury Shimmer Glow on hover */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: hovered
+                            ? 'linear-gradient(180deg, rgba(245, 208, 97, 0.12) 0%, transparent 40%, rgba(0,0,0,0.4) 100%)'
+                            : 'linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.3) 100%)',
+                        pointerEvents: 'none',
+                        transition: 'all 0.3s ease',
+                    }}
+                />
             </div>
 
-            {/* ── Bottom Content ── */}
-            <div style={{
-                padding: '16px 18px 18px',
-                display: 'flex',
-                flexDirection: 'column',
-                flex: 1,
-                justifyContent: 'space-between',
-            }}>
-                {/* Category Name */}
-                <h3 style={{
-                    margin: '0 0 10px',
-                    fontSize: '17px',
-                    fontWeight: '900',
-                    color: '#FFFFFF',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                }}>
-                    {isTarget ? (
-                        <TrendingUp size={18} color="#F5D061" />
-                    ) : (
-                        <Layers size={18} color="#D4A537" />
-                    )}
-                    <span>{cat.name}</span>
-                </h3>
-
-                {/* Enter Button */}
-                <div style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '12px',
-                    background: isTarget
-                        ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
-                        : hovered
-                            ? 'rgba(212, 165, 55, 0.15)'
-                            : 'rgba(212, 165, 55, 0.05)',
-                    border: `1px solid ${isTarget ? '#D4A537' : hovered ? '#D4A537' : 'rgba(212, 165, 55, 0.2)'}`,
-                    color: isTarget ? '#000000' : '#F5D061',
-                    fontSize: '13px',
-                    fontWeight: '900',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    transition: 'all 0.3s ease',
-                }}>
-                    <span>دخول</span>
-                    {isRtl ? <ChevronLeft size={15} /> : <ChevronRight size={15} />}
-                </div>
-            </div>
+            {/* ── Category Name Below Poster (Matches Screenshot) ── */}
+            <h3
+                style={{
+                    margin: '14px 0 0',
+                    fontSize: 'clamp(15px, 2vw, 17px)',
+                    fontWeight: '800',
+                    color: hovered ? '#F5D061' : '#FFFFFF',
+                    textAlign: 'center',
+                    lineHeight: '1.4',
+                    letterSpacing: '-0.2px',
+                    transition: 'color 0.25s ease, transform 0.25s ease',
+                    transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+                }}
+            >
+                {cat.name}
+            </h3>
         </Link>
     );
 }
