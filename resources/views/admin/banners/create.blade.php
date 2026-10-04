@@ -33,6 +33,7 @@
                             <select name="type" id="bannerTypeSelect" class="form-select" required>
                                 <option value="slider" {{ old('type') === 'slider' ? 'selected' : '' }}>سلايدر رئيسي (Slider)</option>
                                 <option value="banner" {{ old('type') === 'banner' ? 'selected' : '' }}>بانر إعلاني (Banner)</option>
+                                <option value="target" {{ old('type') === 'target' ? 'selected' : '' }}>بانر سحب التارجت (Target Banner)</option>
                                 <option value="popup" {{ old('type') === 'popup' ? 'selected' : '' }}>نافذة منبثقة (Popup)</option>
                                 <option value="deal" {{ old('type') === 'deal' ? 'selected' : '' }}>عرض وتخفيض خاص (Flash Deal)</option>
                             </select>
