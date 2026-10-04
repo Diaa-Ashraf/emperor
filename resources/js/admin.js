@@ -167,9 +167,10 @@ function updateActiveSidebar(pathname) {
         if (!href) return;
         try {
             const url = new URL(href, window.location.origin);
-            if (url.pathname === pathname) {
+            const linkPath = url.pathname;
+            if (linkPath === pathname) {
                 link.classList.add('active');
-            } else if (pathname !== '/admin' && url.pathname !== '/admin' && pathname.startsWith(url.pathname)) {
+            } else if (linkPath !== '/admin' && pathname.startsWith(linkPath + '/')) {
                 link.classList.add('active');
             } else {
                 link.classList.remove('active');
