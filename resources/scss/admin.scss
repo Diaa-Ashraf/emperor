@@ -759,3 +759,75 @@ body {
         }
     }
 }
+
+// ══════════════════════════════════════════════════
+// Universal Admin Responsive Enhancements
+// ══════════════════════════════════════════════════
+.table-responsive,
+.dashboard-table-responsive {
+    width: 100%;
+    margin-bottom: 0;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba($primary, 0.3);
+        border-radius: 4px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+
+        .btn, .btn-group {
+            align-self: flex-start;
+        }
+    }
+
+    .stat-card {
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            font-size: 20px;
+        }
+    }
+
+    // Apexcharts & Canvas responsive width
+    .apexcharts-canvas {
+        max-width: 100% !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .content {
+        padding: 12px !important;
+    }
+
+    .card {
+        border-radius: 12px;
+    }
+
+    .topbar {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .btn {
+        font-size: 12.5px;
+    }
+
+    .stat-card h3 {
+        font-size: 22px !important;
+    }
+}

@@ -49,17 +49,17 @@
             </div>
 
             <!-- Custom Date Range -->
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex flex-wrap align-items-center gap-2 w-100 w-xl-auto">
                 <input type="hidden" name="range" value="custom">
-                <div class="d-flex align-items-center gap-1 bg-dark px-2 py-1 rounded-3 border border-secondary">
+                <div class="d-flex align-items-center gap-1 bg-dark px-2 py-1 rounded-3 border border-secondary flex-grow-1 flex-sm-grow-0">
                     <span class="text-muted fs-7">من:</span>
-                    <input type="date" name="start_date" value="{{ $startDate ?? $report['from'] }}" class="form-control form-control-sm bg-transparent border-0 text-white" style="width: 130px;">
+                    <input type="date" name="start_date" value="{{ $startDate ?? $report['from'] }}" class="form-control form-control-sm bg-transparent border-0 text-white" style="min-width: 110px; max-width: 140px;">
                 </div>
-                <div class="d-flex align-items-center gap-1 bg-dark px-2 py-1 rounded-3 border border-secondary">
+                <div class="d-flex align-items-center gap-1 bg-dark px-2 py-1 rounded-3 border border-secondary flex-grow-1 flex-sm-grow-0">
                     <span class="text-muted fs-7">إلى:</span>
-                    <input type="date" name="end_date" value="{{ $endDate ?? $report['to'] }}" class="form-control form-control-sm bg-transparent border-0 text-white" style="width: 130px;">
+                    <input type="date" name="end_date" value="{{ $endDate ?? $report['to'] }}" class="form-control form-control-sm bg-transparent border-0 text-white" style="min-width: 110px; max-width: 140px;">
                 </div>
-                <button type="submit" class="btn btn-sm btn-outline-warning px-3 py-2 fw-bold" style="border-radius: 10px;">
+                <button type="submit" class="btn btn-sm btn-outline-warning px-3 py-2 fw-bold flex-grow-1 flex-sm-grow-0" style="border-radius: 10px;">
                     <i class="ti ti-filter"></i> تطبيق
                 </button>
             </div>
