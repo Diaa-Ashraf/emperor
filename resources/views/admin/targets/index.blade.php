@@ -59,9 +59,9 @@
                         <select name="status" class="form-select">
                             <option value="">-- كل الحالات --</option>
                             @foreach(\App\Enums\TargetOrderStatus::cases() as $st)
-                                <option value="{{ $st->value }}" {{ request('status') === $st->value ? 'selected' : '' }}>
-                                    {{ $st->label() }}
-                                </option>
+                            <option value="{{ $st->value }}" {{ request('status') === $st->value ? 'selected' : '' }}>
+                                {{ $st->label() }}
+                            </option>
                             @endforeach
                         </select>
                     </div>
@@ -69,33 +69,33 @@
                         <select name="product_id" class="form-select">
                             <option value="">-- كل التطبيقات --</option>
                             @foreach($targetProducts as $app)
-                                <option value="{{ $app->id }}" {{ request('product_id') == $app->id ? 'selected' : '' }}>
-                                    {{ $app->name }}
-                                </option>
+                            <option value="{{ $app->id }}" {{ request('product_id') == $app->id ? 'selected' : '' }}>
+                                {{ $app->name }}
+                            </option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-2 d-flex gap-2">
                         <button type="submit" class="btn btn-warning flex-fill"><i class="ti ti-filter me-1"></i> تصفية</button>
                         @if(request()->hasAny(['search', 'status', 'product_id']))
-                            <a href="{{ route('admin.targets.index') }}" class="btn btn-outline-secondary"><i class="ti ti-x"></i></a>
+                        <a href="{{ route('admin.targets.index') }}" class="btn btn-outline-secondary"><i class="ti ti-x"></i></a>
                         @endif
                     </div>
                 </form>
             </div>
 
             @if(session('success'))
-                <div class="mx-3 mt-3 alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+            <div class="mx-3 mt-3 alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             @endif
 
             @if(session('error'))
-                <div class="mx-3 mt-3 alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+            <div class="mx-3 mt-3 alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             @endif
 
             <div class="card-body p-0">
@@ -117,71 +117,71 @@
                         </thead>
                         <tbody>
                             @forelse($orders as $order)
-                                <tr>
-                                    <td class="ps-3">
-                                        <a href="{{ route('admin.targets.show', $order->id) }}" class="fw-bold font-monospace text-warning text-decoration-none">
-                                            {{ $order->public_id }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold text-white">{{ $order->user->name ?? 'مستخدم محذوف' }}</div>
-                                        <small class="text-muted font-monospace">{{ $order->user->phone ?? $order->user->email ?? '' }}</small>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-secondary">{{ $order->product->name ?? '-' }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-dark border border-secondary font-monospace text-info fs-6">
-                                            {{ $order->app_user_id }}
-                                        </span>
-                                        @if($order->app_username)
-                                            <small class="text-muted d-block">{{ $order->app_username }}</small>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold text-warning font-monospace fs-6">
-                                            {{ number_format($order->target_points) }} نقطة
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="font-monospace text-muted small">{{ $order->rate_per_point }} EGP</span>
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold text-success font-monospace fs-6">
-                                            {{ number_format((float) $order->net_payout, 2) }} {{ $order->currency }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @php
-                                            $statusBadges = [
-                                                'paid' => 'bg-success',
-                                                'pending' => 'bg-warning text-dark',
-                                                'in_review' => 'bg-info text-dark',
-                                                'verified' => 'bg-primary',
-                                                'rejected' => 'bg-danger',
-                                                'cancelled' => 'bg-secondary',
-                                            ];
-                                        @endphp
-                                        <span class="badge {{ $statusBadges[$order->status->value] ?? 'bg-secondary' }}">
-                                            {{ $order->status->label() }}
-                                        </span>
-                                    </td>
-                                    <td class="text-muted small">
-                                        {{ $order->created_at->format('Y-m-d H:i') }}
-                                    </td>
-                                    <td class="text-end pe-3">
-                                        <a href="{{ route('admin.targets.show', $order->id) }}" class="btn btn-sm btn-outline-info">
-                                            <i class="ti ti-eye"></i> تفاصيل
-                                        </a>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td class="ps-3">
+                                    <a href="{{ route('admin.targets.show', $order->id) }}" class="fw-bold font-monospace text-warning text-decoration-none">
+                                        {{ $order->public_id }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-white">{{ $order->user->name ?? 'مستخدم محذوف' }}</div>
+                                    <small class="text-muted font-monospace">{{ $order->user->phone ?? $order->user->email ?? '' }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ $order->product->name ?? '-' }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-dark border border-secondary font-monospace text-info fs-6">
+                                        {{ $order->app_user_id }}
+                                    </span>
+                                    @if($order->app_username)
+                                    <small class="text-muted d-block">{{ $order->app_username }}</small>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-warning font-monospace fs-6">
+                                        {{ number_format($order->target_points) }} نقطة
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="font-monospace text-muted small">{{ $order->rate_per_point }} EGP</span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-success font-monospace fs-6">
+                                        {{ number_format((float) $order->net_payout, 2) }} {{ $order->currency }}
+                                    </div>
+                                </td>
+                                <td>
+                                    @php
+                                    $statusBadges = [
+                                    'paid' => 'bg-success',
+                                    'pending' => 'bg-warning text-dark',
+                                    'in_review' => 'bg-info text-dark',
+                                    'verified' => 'bg-primary',
+                                    'rejected' => 'bg-danger',
+                                    'cancelled' => 'bg-secondary',
+                                    ];
+                                    @endphp
+                                    <span class="badge {{ $statusBadges[$order->status->value] ?? 'bg-secondary' }}">
+                                        {{ $order->status->label() }}
+                                    </span>
+                                </td>
+                                <td class="text-muted small">
+                                    {{ $order->created_at->format('Y-m-d H:i') }}
+                                </td>
+                                <td class="text-end pe-3">
+                                    <a href="{{ route('admin.targets.show', $order->id) }}" class="btn btn-sm btn-outline-info">
+                                        <i class="ti ti-eye"></i> تفاصيل
+                                    </a>
+                                </td>
+                            </tr>
                             @empty
-                                <tr>
-                                    <td colspan="10" class="text-center py-5 text-muted">
-                                        <i class="ti ti-target-off fs-1 d-block mb-2 text-warning"></i>
-                                        لا توجد طلبات بيع تارجت مسجلة تطابق البحث.
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td colspan="10" class="text-center py-5 text-muted">
+                                    <i class="ti ti-target-off fs-1 d-block mb-2 text-warning"></i>
+                                    لا توجد طلبات بيع تارجت مسجلة تطابق البحث.
+                                </td>
+                            </tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -189,9 +189,9 @@
             </div>
 
             @if($orders->hasPages())
-                <div class="card-footer bg-transparent border-0 d-flex justify-content-center">
-                    {{ $orders->links() }}
-                </div>
+            <div class="card-footer bg-transparent border-0 d-flex justify-content-center">
+                {{ $orders->links() }}
+            </div>
             @endif
         </div>
     </div>

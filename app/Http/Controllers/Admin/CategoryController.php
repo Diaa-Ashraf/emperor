@@ -122,4 +122,25 @@ class CategoryController extends Controller
             ->route('admin.categories.index')
             ->with('success', 'تم حذف القسم بنجاح.');
     }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids) || !is_array($ids)) {
+            return back()->with('error', 'يرجى تحديد قسم واحد على الأقل للحذف.');
+        }
+
+        $withProducts = Category::whereIn('id', $ids)->has('products')->count();
+        if ($withProducts > 0) {
+            return back()->with('error', 'لا يمكن حذف بعض الأقسام المحددة نظراً لوجود منتجات مرتبطة بها.');
+        }
+
+        $count = count($ids);
+        Category::whereIn('id', $ids)->delete();
+
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', "تم حذف {$count} من الأقسام المحددة بنجاح.");
+    }
 }
+

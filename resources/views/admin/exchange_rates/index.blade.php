@@ -16,21 +16,21 @@
             </div>
             <div class="card-body p-4">
                 @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="ti ti-check me-1"></i> {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="ti ti-check me-1"></i> {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
                 @endif
 
                 @if($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <ul class="mb-0 ps-3">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <ul class="mb-0 ps-3">
+                        @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
                 @endif
 
                 <form action="{{ route('admin.exchange-rates.store') }}" method="POST">
@@ -106,51 +106,51 @@
                         </thead>
                         <tbody>
                             @forelse($rates as $rate)
-                                <tr>
-                                    <td class="ps-3">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="badge bg-primary fs-7">{{ $rate->from_currency }}</span>
-                                            <i class="ti ti-arrow-left text-muted"></i>
-                                            <span class="badge bg-success fs-7">{{ $rate->to_currency }}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold text-gold fs-6 font-monospace">
-                                            1 {{ $rate->from_currency }} = {{ number_format((float) $rate->rate, 4) }} {{ $rate->to_currency }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @if((float)$rate->conversion_fee_percent > 0)
-                                            <span class="badge bg-warning text-dark">{{ $rate->conversion_fee_percent }}%</span>
-                                        @else
-                                            <span class="badge bg-secondary text-light">بدون عمولة (0%)</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($rate->is_active)
-                                            <span class="badge bg-success">نشط ومتاح للتحويل</span>
-                                        @else
-                                            <span class="badge bg-danger">معطل</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <small class="text-muted">{{ $rate->updatedBy?->name ?? 'النظام' }}</small>
-                                    </td>
-                                    <td class="text-end pe-3">
-                                        <form action="{{ route('admin.exchange-rates.toggle', $rate->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm {{ $rate->is_active ? 'btn-outline-danger' : 'btn-outline-success' }}">
-                                                {{ $rate->is_active ? 'تعطيل' : 'تفعيل' }}
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td class="ps-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge bg-primary fs-7">{{ $rate->from_currency }}</span>
+                                        <i class="ti ti-arrow-left text-muted"></i>
+                                        <span class="badge bg-success fs-7">{{ $rate->to_currency }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-gold fs-6 font-monospace">
+                                        1 {{ $rate->from_currency }} = {{ number_format((float) $rate->rate, 4) }} {{ $rate->to_currency }}
+                                    </div>
+                                </td>
+                                <td>
+                                    @if((float)$rate->conversion_fee_percent > 0)
+                                    <span class="badge bg-warning text-dark">{{ $rate->conversion_fee_percent }}%</span>
+                                    @else
+                                    <span class="badge bg-secondary text-light">بدون عمولة (0%)</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($rate->is_active)
+                                    <span class="badge bg-success">نشط ومتاح للتحويل</span>
+                                    @else
+                                    <span class="badge bg-danger">معطل</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ $rate->updatedBy?->name ?? 'النظام' }}</small>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <form action="{{ route('admin.exchange-rates.toggle', $rate->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm {{ $rate->is_active ? 'btn-outline-danger' : 'btn-outline-success' }}">
+                                            {{ $rate->is_active ? 'تعطيل' : 'تفعيل' }}
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
                             @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-5 text-muted">
-                                        لا توجد أسعار صرف محددة حتى الآن
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    لا توجد أسعار صرف محددة حتى الآن
+                                </td>
+                            </tr>
                             @endforelse
                         </tbody>
                     </table>

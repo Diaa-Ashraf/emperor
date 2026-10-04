@@ -28,9 +28,9 @@
                         <select name="status" class="form-select">
                             <option value="">-- كل الحالات --</option>
                             @foreach(\App\Enums\OrderStatus::cases() as $st)
-                                <option value="{{ $st->value }}" {{ request('status') === $st->value ? 'selected' : '' }}>
-                                    {{ $st->label() }}
-                                </option>
+                            <option value="{{ $st->value }}" {{ request('status') === $st->value ? 'selected' : '' }}>
+                                {{ $st->label() }}
+                            </option>
                             @endforeach
                         </select>
                     </div>
@@ -38,9 +38,9 @@
                         <select name="product_id" class="form-select">
                             <option value="">-- كل المنتجات --</option>
                             @foreach($products as $prod)
-                                <option value="{{ $prod->id }}" {{ request('product_id') == $prod->id ? 'selected' : '' }}>
-                                    {{ $prod->name }}
-                                </option>
+                            <option value="{{ $prod->id }}" {{ request('product_id') == $prod->id ? 'selected' : '' }}>
+                                {{ $prod->name }}
+                            </option>
                             @endforeach
                         </select>
                     </div>
@@ -50,24 +50,24 @@
                     <div class="col-md-2 d-flex gap-2">
                         <button type="submit" class="btn btn-warning flex-fill"><i class="ti ti-filter me-1"></i> تصفية</button>
                         @if(request()->hasAny(['search', 'status', 'product_id', 'date_from']))
-                            <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary"><i class="ti ti-x"></i></a>
+                        <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary"><i class="ti ti-x"></i></a>
                         @endif
                     </div>
                 </form>
             </div>
 
             @if(session('success'))
-                <div class="mx-3 mt-3 alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+            <div class="mx-3 mt-3 alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             @endif
 
             @if(session('error'))
-                <div class="mx-3 mt-3 alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+            <div class="mx-3 mt-3 alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             @endif
 
             <div class="card-body p-0">
@@ -89,74 +89,74 @@
                         </thead>
                         <tbody>
                             @forelse($orders as $order)
-                                <tr>
-                                    <td class="ps-3">
-                                        <a href="{{ route('admin.orders.show', $order->id) }}" class="fw-bold font-monospace text-warning text-decoration-none">
-                                            {{ $order->public_id }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold text-white">{{ $order->user->name ?? 'مستخدم محذوف' }}</div>
-                                        <small class="text-muted font-monospace">{{ $order->user->phone ?? $order->user->email ?? '' }}</small>
-                                    </td>
-                                    <td>
-                                        <div class="fw-semibold text-white">{{ $order->product->name ?? '-' }}</div>
-                                        <small class="text-warning">{{ $order->tier->name ?? '-' }} (x{{ $order->quantity }})</small>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-dark border border-secondary font-monospace text-info fs-6">
-                                            {{ $order->player_id ?? '-' }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold text-white font-monospace">
-                                            {{ number_format((float) $order->total_amount, 2) }} {{ $order->currency }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle font-monospace">
-                                            +{{ number_format((float) $order->profit_amount, 2) }} $
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @if($order->provider)
-                                            <span class="badge bg-secondary font-monospace">{{ $order->provider->name }}</span>
-                                        @else
-                                            <span class="badge bg-dark text-muted">لم يحدد</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @php
-                                            $statusBadges = [
-                                                'completed' => 'bg-success',
-                                                'processing' => 'bg-info text-dark',
-                                                'pending' => 'bg-warning text-dark',
-                                                'failed' => 'bg-danger',
-                                                'refunded' => 'bg-secondary',
-                                                'cancelled' => 'bg-dark border border-secondary',
-                                            ];
-                                            $badgeClass = $statusBadges[$order->status->value] ?? 'bg-secondary';
-                                        @endphp
-                                        <span class="badge {{ $badgeClass }}">
-                                            {{ $order->status->label() }}
-                                        </span>
-                                    </td>
-                                    <td class="text-muted small">
-                                        {{ $order->created_at->format('Y-m-d H:i') }}
-                                    </td>
-                                    <td class="text-end pe-3">
-                                        <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-outline-info">
-                                            <i class="ti ti-eye"></i> تفاصيل
-                                        </a>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td class="ps-3">
+                                    <a href="{{ route('admin.orders.show', $order->id) }}" class="fw-bold font-monospace text-warning text-decoration-none">
+                                        {{ $order->public_id }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-white">{{ $order->user->name ?? 'مستخدم محذوف' }}</div>
+                                    <small class="text-muted font-monospace">{{ $order->user->phone ?? $order->user->email ?? '' }}</small>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-white">{{ $order->product->name ?? '-' }}</div>
+                                    <small class="text-warning">{{ $order->tier->name ?? '-' }} (x{{ $order->quantity }})</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-dark border border-secondary font-monospace text-info fs-6">
+                                        {{ $order->player_id ?? '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-white font-monospace">
+                                        {{ number_format((float) $order->total_amount, 2) }} {{ $order->currency }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle font-monospace">
+                                        +{{ number_format((float) $order->profit_amount, 2) }} $
+                                    </span>
+                                </td>
+                                <td>
+                                    @if($order->provider)
+                                    <span class="badge bg-secondary font-monospace">{{ $order->provider->name }}</span>
+                                    @else
+                                    <span class="badge bg-dark text-muted">لم يحدد</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @php
+                                    $statusBadges = [
+                                    'completed' => 'bg-success',
+                                    'processing' => 'bg-info text-dark',
+                                    'pending' => 'bg-warning text-dark',
+                                    'failed' => 'bg-danger',
+                                    'refunded' => 'bg-secondary',
+                                    'cancelled' => 'bg-dark border border-secondary',
+                                    ];
+                                    $badgeClass = $statusBadges[$order->status->value] ?? 'bg-secondary';
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }}">
+                                        {{ $order->status->label() }}
+                                    </span>
+                                </td>
+                                <td class="text-muted small">
+                                    {{ $order->created_at->format('Y-m-d H:i') }}
+                                </td>
+                                <td class="text-end pe-3">
+                                    <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-outline-info">
+                                        <i class="ti ti-eye"></i> تفاصيل
+                                    </a>
+                                </td>
+                            </tr>
                             @empty
-                                <tr>
-                                    <td colspan="10" class="text-center py-5 text-muted">
-                                        <i class="ti ti-shopping-cart-off fs-1 d-block mb-2 text-warning"></i>
-                                        لا توجد طلبات مسجلة تطابق خيارات التصفية.
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td colspan="10" class="text-center py-5 text-muted">
+                                    <i class="ti ti-shopping-cart-off fs-1 d-block mb-2 text-warning"></i>
+                                    لا توجد طلبات مسجلة تطابق خيارات التصفية.
+                                </td>
+                            </tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -164,9 +164,9 @@
             </div>
 
             @if($orders->hasPages())
-                <div class="card-footer bg-transparent border-0 d-flex justify-content-center">
-                    {{ $orders->links() }}
-                </div>
+            <div class="card-footer bg-transparent border-0 d-flex justify-content-center">
+                {{ $orders->links() }}
+            </div>
             @endif
         </div>
     </div>

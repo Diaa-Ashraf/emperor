@@ -33,8 +33,16 @@ class ProductController extends Controller
             ->with(['category', 'catalogSource'])
             ->withCount(['tiers', 'orders'])
             ->select([
-                'id', 'category_id', 'catalog_source_id', 'name', 'slug', 'type',
-                'image', 'is_active', 'sort_order', 'created_at'
+                'id',
+                'category_id',
+                'catalog_source_id',
+                'name',
+                'slug',
+                'type',
+                'image',
+                'is_active',
+                'sort_order',
+                'created_at'
             ]);
 
         if ($catId = $request->input('category_id')) {
@@ -48,7 +56,7 @@ class ProductController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%");
+                    ->orWhere('slug', 'like', "%{$search}%");
             });
         }
 
@@ -247,8 +255,6 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $product->update(['is_active' => !$product->is_active]);
 
-        \Illuminate\Support\Facades\Cache::flush();
-
         $status = $product->is_active ? 'تفعيل' : 'تعطيل';
         return back()->with('success', "تم {$status} المنتج بنجاح.");
     }
@@ -262,11 +268,27 @@ class ProductController extends Controller
             $product->delete();
         });
 
-        \Illuminate\Support\Facades\Cache::flush();
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', "تم حذف المنتج «{$product->name}» وباقاته بنجاح.");
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids) || !is_array($ids)) {
+            return back()->with('error', 'يرجى تحديد منتج واحد على الأقل للحذف.');
+        }
+
+        $count = count($ids);
+        DB::transaction(function () use ($ids) {
+            \App\Models\ProductTier::whereIn('product_id', $ids)->delete();
+            Product::whereIn('id', $ids)->delete();
+        });
 
         return redirect()
             ->route('admin.products.index')
-            ->with('success', 'تم حذف المنتج وباقاته بنجاح.');
+            ->with('success', "تم حذف {$count} من المنتجات المحددة وباقاتها بنجاح.");
     }
 }
 

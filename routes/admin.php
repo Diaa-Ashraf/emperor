@@ -22,6 +22,7 @@ Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admi
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::post('/categories/bulk-delete', [CategoryController::class, 'bulkDestroy'])->name('categories.bulk-destroy');
     Route::get('/categories/{id}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
     Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
     Route::post('/categories/{id}/toggle-active', [CategoryController::class, 'toggleActive'])->name('categories.toggle-active');
@@ -33,6 +34,7 @@ Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admi
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::post('/products/bulk-delete', [ProductController::class, 'bulkDestroy'])->name('products.bulk-destroy');
     Route::get('/products/{id}', fn($id) => redirect()->route('admin.products.edit', $id));
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
@@ -168,4 +170,3 @@ Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admi
     Route::post('/notifications-scheduled/{id}/send-now', [App\Http\Controllers\Admin\ScheduledNotificationController::class, 'sendNow'])->name('notifications.scheduled.send-now');
     Route::delete('/notifications-scheduled/{id}', [App\Http\Controllers\Admin\ScheduledNotificationController::class, 'destroy'])->name('notifications.scheduled.destroy');
 });
-
