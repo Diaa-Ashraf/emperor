@@ -24,13 +24,13 @@ class NotificationService
         $user->notifications()->create([
             'id' => (string) Str::uuid(),
             'type' => $payload->type ?? 'general',
-            'data' => json_encode([
+            'data' => [
                 'title' => $payload->title,
                 'body' => $payload->body,
                 'link' => $payload->link,
                 'image_url' => $payload->imageUrl,
                 'extra' => $payload->data,
-            ]),
+            ],
         ]);
 
         // 2. FCM Push Notification (if device token exists)

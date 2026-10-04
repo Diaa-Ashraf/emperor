@@ -9,12 +9,23 @@ class NotificationResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $data = is_string($this->data) ? json_decode($this->data, true) : $this->data;
+        $data = $this->data;
+        while (is_string($data)) {
+            $decoded = json_decode($data, true);
+            if (json_last_error() === JSON_ERROR_NONE && (is_array($decoded) || is_string($decoded))) {
+                $data = $decoded;
+            } else {
+                break;
+            }
+        }
+        if (!is_array($data)) {
+            $data = [];
+        }
 
         return [
             'id' => $this->id,
             'type' => $this->type,
-            'title' => $data['title'] ?? '',
+            'title' => $data['title'] ?? 'إشعار من إمبراطور',
             'body' => $data['body'] ?? '',
             'link' => $data['link'] ?? null,
             'image_url' => $data['image_url'] ?? null,

@@ -85,8 +85,17 @@ export default function NotificationsPage() {
             setUnreadCount((prev) => prev + 1);
         };
 
+        const handleRefresh = () => {
+            fetchNotifications(page, filter);
+            fetchUnreadCount();
+        };
+
         window.addEventListener('emperor:new-notification', handleLiveNotification);
-        return () => window.removeEventListener('emperor:new-notification', handleLiveNotification);
+        window.addEventListener('emperor:refresh-notifications', handleRefresh);
+        return () => {
+            window.removeEventListener('emperor:new-notification', handleLiveNotification);
+            window.removeEventListener('emperor:refresh-notifications', handleRefresh);
+        };
     }, [page, filter, fetchNotifications, fetchUnreadCount]);
 
     // Handle marking single notification as read

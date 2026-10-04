@@ -76,15 +76,12 @@ class NotificationController extends Controller
     {
         $user = $request->user();
         $unreadCount = $user->unreadNotifications()->count();
-        $afterTimestamp = $request->input('after');
 
-        $query = $user->unreadNotifications()->latest('created_at')->limit(10);
-
-        if ($afterTimestamp) {
-            $query->where('created_at', '>', $afterTimestamp);
-        }
-
-        $newNotifications = $query->get();
+        // Get latest 10 unread notifications
+        $newNotifications = $user->unreadNotifications()
+            ->latest('created_at')
+            ->take(10)
+            ->get();
 
         $wallet = $user->wallet;
         $balance = $wallet ? (float) $wallet->balance : 0.0;
