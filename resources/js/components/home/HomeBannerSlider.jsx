@@ -13,25 +13,25 @@ export default function HomeBannerSlider() {
     // Default luxury promotional artwork banners
     const defaultBanners = [
         {
-            id: 'def-1',
+            id: 'banner-vf-cash',
+            title: 'إيداع فودافون كاش أوتوماتيك خلال 0 ثانية',
+            link: '/deposit',
+            isExternal: false,
+            image: '/images/banners/banner_vodafone_cash.jpg',
+        },
+        {
+            id: 'banner-chat-apps',
+            title: 'أقل سعر في مصر لبرامج الدردشة الصوتية',
+            link: '/category/apps',
+            isExternal: false,
+            image: '/images/banners/banner_chat_apps.jpg',
+        },
+        {
+            id: 'banner-whatsapp-channel',
             title: 'انضم إلى مجتمعنا على واتساب',
             link: 'https://whatsapp.com/channel/0029Vb97YHSB4hdZjFJysw14',
             isExternal: true,
             image: '/images/banners/whatsapp_channel_banner.jpg',
-        },
-        {
-            id: 'def-2',
-            title: 'شحن الألعاب الفوري بأقوى الأسعار',
-            link: '/category/games',
-            isExternal: false,
-            image: '/images/banner_gaming.jpg',
-        },
-        {
-            id: 'def-3',
-            title: 'سحب وتسييل تارجت التطبيقات بأعلى سعر',
-            link: '/target/apps',
-            isExternal: false,
-            image: '/images/artwork/hero_banner.jpg',
         }
     ];
 

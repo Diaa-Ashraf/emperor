@@ -34,6 +34,7 @@ import { notificationsApi } from '../api/endpoints';
 import { onForegroundMessage } from '../services/firebaseMessaging';
 import UserSidebarDrawer from '../components/navigation/UserSidebarDrawer';
 import SupportContactModal from '../components/support/SupportContactModal';
+import AppSplashScreen from '../components/ui/AppSplashScreen';
 import HomeBannerSlider from '../components/home/HomeBannerSlider';
 import PromotionalPopup from '../components/ui/PromotionalPopup';
 import { playNotificationSound } from '../utils/soundHelper';
@@ -240,17 +241,24 @@ export default function MainLayout({ children, showBanner = true }) {
                             }}
                         >
                             <div className="header-logo-icon" style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '11px',
-                                background: 'linear-gradient(135deg, #F8E8B8 0%, #D4A537 50%, #9A7210 100%)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
+                                width: '38px',
+                                height: '38px',
+                                borderRadius: '10px',
+                                overflow: 'hidden',
+                                border: '1.2px solid rgba(212, 165, 55, 0.6)',
                                 boxShadow: '0 0 15px rgba(212, 165, 55, 0.4)',
                                 flexShrink: 0,
+                                background: '#050508',
                             }}>
-                                <Crown size={20} color="#050507" strokeWidth={2.6} />
+                                <img
+                                    src="/images/logo.png"
+                                    alt="EMPEROR CARD"
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                    }}
+                                />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                                 <span className="brand-title" style={{
@@ -673,6 +681,9 @@ export default function MainLayout({ children, showBanner = true }) {
                 </div>
             </header>
 
+            {/* Initial Luxury App Splash Screen / Preloader */}
+            <AppSplashScreen />
+
             {/* Sidebar Drawer */}
             <UserSidebarDrawer
                 isOpen={drawerOpen}
@@ -749,16 +760,23 @@ export default function MainLayout({ children, showBanner = true }) {
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                             <div style={{
-                                width: '34px',
-                                height: '34px',
+                                width: '38px',
+                                height: '38px',
                                 borderRadius: '10px',
-                                background: 'linear-gradient(135deg, #F8E8B8 0%, #D4A537 50%, #9A7210 100%)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
+                                overflow: 'hidden',
+                                border: '1.2px solid rgba(212, 165, 55, 0.5)',
                                 boxShadow: '0 0 15px rgba(212, 165, 55, 0.4)',
+                                background: '#050508',
                             }}>
-                                <Crown size={20} color="#050507" strokeWidth={2.5} />
+                                <img
+                                    src="/images/logo.png"
+                                    alt="EMPEROR CARD"
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                    }}
+                                />
                             </div>
                             <span style={{
                                 fontSize: '18px',

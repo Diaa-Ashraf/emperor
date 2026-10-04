@@ -246,16 +246,23 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                         gap: '8px',
                     }}>
                         <div style={{
-                            width: '34px',
-                            height: '34px',
+                            width: '36px',
+                            height: '36px',
                             borderRadius: '10px',
-                            background: 'linear-gradient(135deg, #F8E8B8 0%, #D4A537 50%, #9A7210 100%)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                            overflow: 'hidden',
+                            border: '1.2px solid rgba(212, 165, 55, 0.5)',
                             boxShadow: '0 0 12px rgba(212, 165, 55, 0.35)',
+                            background: '#050508',
                         }}>
-                            <Crown size={18} color="#050507" strokeWidth={2.5} />
+                            <img
+                                src="/images/logo.png"
+                                alt="EMPEROR CARD"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                }}
+                            />
                         </div>
                         <span style={{
                             fontSize: '17px',
