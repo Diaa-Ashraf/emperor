@@ -23,7 +23,8 @@ import {
     LogIn,
     FileText,
     HelpCircle,
-    ShieldCheck
+    ShieldCheck,
+    Headphones
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
