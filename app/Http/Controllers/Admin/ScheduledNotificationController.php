@@ -25,7 +25,11 @@ class ScheduledNotificationController extends Controller
             ->latest('id')
             ->paginate(15);
 
-        $users = User::where('status', 'active')->select(['id', 'name', 'phone'])->take(50)->get();
+        $users = User::where('status', 'active')
+            ->select(['id', 'name', 'phone', 'email'])
+            ->latest('id')
+            ->take(100)
+            ->get();
 
         return view('admin.notifications.scheduled', compact('notifications', 'users'));
     }
