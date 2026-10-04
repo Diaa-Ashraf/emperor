@@ -8,21 +8,40 @@
 @media (max-width: 1024px) {
     .emperor-category-poster-grid {
         grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
+        gap: 16px;
     }
 }
 
+/* On all mobile phones and small screens: ALWAYS 2 columns side-by-side */
 @media (max-width: 768px) {
     .emperor-category-poster-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 14px;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+    
+    .category-poster-frame {
+        border-radius: 18px !important;
+    }
+    
+    .category-poster-title {
+        font-size: 13.5px !important;
+        margin-top: 8px !important;
     }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 360px) {
     .emperor-category-poster-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+    }
+    
+    .category-poster-frame {
+        border-radius: 14px !important;
+    }
+    
+    .category-poster-title {
+        font-size: 12.5px !important;
+        margin-top: 6px !important;
     }
 }
 

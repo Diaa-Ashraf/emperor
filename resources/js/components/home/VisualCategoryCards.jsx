@@ -129,6 +129,7 @@ function CategoryPosterCard({ cat, isRtl, index }) {
 
             {/* ── Category Name Below Poster (Matches Screenshot) ── */}
             <h3
+                className="category-poster-title"
                 style={{
                     margin: '14px 0 0',
                     fontSize: 'clamp(15px, 2vw, 17px)',
