@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             PaymentMethodSeeder::class,
             SampleUsersAndDepositsSeeder::class,
             SampleCatalogAndOrdersSeeder::class,
+            RichShowcaseCatalogSeeder::class,
             SampleSupportAndReferralsSeeder::class,
             SampleApiClientSeeder::class,
         ]);
