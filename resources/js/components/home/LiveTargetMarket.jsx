@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { TrendingUp, DollarSign, ArrowLeft, ArrowRight, ShieldCheck, Zap, Calculator, RefreshCw, Smartphone } from 'lucide-react';
+import { TrendingUp, DollarSign, ArrowLeft, ArrowRight, Calculator, Smartphone } from 'lucide-react';
+import { targetApi } from '../../api/endpoints';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import "../../../css/liveTargetMarket.css";
@@ -13,226 +14,229 @@ export default function LiveTargetMarket() {
     const mediumBorder = isLight ? 'rgba(24, 24, 27, 0.34)' : 'var(--border-medium)';
     const strongBorder = isLight ? 'rgba(154, 114, 16, 0.65)' : 'var(--border-strong)';
     const accentBorder = isLight ? 'var(--gold-600)' : 'var(--gold-400)';
-    // animation
-    const sectionRef = useRef(null);
-    const containerRef = useRef(null);
-    const [overlayWidth, setOverlayWidth] = useState(100);
-    const [overlayRemoved, setOverlayRemoved] = useState(false);
-    const [hideOverlay, setHideOverlay] = useState(false);
 
-    // scroll  for animation
+    const sectionRef = useRef(null);
+    const [hideOverlay, setHideOverlay] = useState(false);
+    const [targetApps, setTargetApps] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedAppId, setSelectedAppId] = useState(null);
+    const [calcPoints, setCalcPoints] = useState(50000);
+
+    // Scroll animation trigger
     useEffect(() => {
         const section = sectionRef.current;
-
         if (!section) return;
 
         let triggered = false;
-
         const handleScroll = () => {
             if (triggered) return;
-
             const rect = section.getBoundingClientRect();
-
-            // لما نوصل للقسم
-            if (
-                rect.top <= window.innerHeight &&
-                rect.bottom >= 0
-            ) {
+            if (rect.top <= window.innerHeight && rect.bottom >= 0) {
                 triggered = true;
                 setHideOverlay(true);
-
-                // مش محتاجين scroll listener بعد كده
                 window.removeEventListener("scroll", handleScroll);
             }
         };
 
         window.addEventListener("scroll", handleScroll, { passive: true });
-
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    // Load real target apps from database
+    useEffect(() => {
+        targetApi.getApps()
+            .then(res => {
+                const data = Array.isArray(res?.data) ? res.data : (res?.data?.data || []);
+                if (data && data.length > 0) {
+                    setTargetApps(data);
+                    setSelectedAppId(data[0].id);
+                } else {
+                    setTargetApps([]);
+                }
+            })
+            .catch(() => {
+                setTargetApps([]);
+            })
+            .finally(() => setLoading(false));
+    }, []);
 
-    const targetApps = [
-        { id: 'pola', name: 'بولا (Pola App)', ratePer10k: 125, trend: '+3.5%', status: 'نشط جداً' },
-        { id: 'mego', name: 'ميجو لايف (Mego Live)', ratePer10k: 132, trend: '+4.1%', status: 'مرتفع' },
-        { id: 'yomi', name: 'ايومي شات (Yomi Chat)', ratePer10k: 110, trend: '+1.8%', status: 'مستقر' },
-        { id: 'azal', name: 'ازال لايف (Azal Live)', ratePer10k: 140, trend: '+5.0%', status: 'أعلى سعر' },
-        { id: 'tada', name: 'تادا شات (Tada Chat)', ratePer10k: 115, trend: '+2.2%', status: 'نشط' },
-        { id: 'bigo', name: 'بيجو لايف (Bigo Live)', ratePer10k: 145, trend: '+2.9%', status: 'طلب عالي' },
-    ];
+    // Do not render anything if no real target apps exist in DB
+    if (!loading && targetApps.length === 0) {
+        return null;
+    }
 
-    const [selectedAppId, setSelectedAppId] = useState(targetApps[0].id);
-    const [calcPoints, setCalcPoints] = useState(50000);
+    if (targetApps.length === 0) {
+        return null;
+    }
 
     const activeApp = targetApps.find((a) => a.id === selectedAppId) || targetApps[0];
-    const estimatedPayout = ((calcPoints / 10000) * activeApp.ratePer10k).toFixed(2);
+    const bestRate = activeApp?.rates?.[0]?.rate_per_point || 0.0125;
+    const ratePer10k = (bestRate * 10000).toFixed(2);
+    const estimatedPayout = (calcPoints * bestRate).toFixed(2);
 
     return (
-        <>
-
+        <div
+            className="emperor-entrance emperor-vip-card"
+            ref={sectionRef}
+            style={{
+                borderRadius: '24px',
+                padding: 'clamp(16px, 3.5vw, 32px)',
+                marginBottom: '40px',
+                border: `1px solid ${strongBorder}`,
+                boxShadow: '0 20px 50px rgba(0,0,0,0.6), var(--shadow-gold)',
+                position: 'relative',
+                overflow: 'hidden',
+            }}
+        >
             <div
-                className="emperor-entrance emperor-vip-card"
-                ref={sectionRef}
+                className={`overlay ${hideOverlay ? "overlay-hide" : ""}`}
                 style={{
-                    borderRadius: '24px',
-                    padding: 'clamp(16px, 3.5vw, 32px)',
-                    marginBottom: '40px',
-                    border: `1px solid ${strongBorder}`,
-                    boxShadow: '0 20px 50px rgba(0,0,0,0.6), var(--shadow-gold)',
-                    position: 'relative',
-                    overflow: 'hidden',
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    width: '100%',
+                    background: '#b8912a42',
+                    pointerEvents: 'none',
+                    zIndex: 10,
+                    transition: 'transform 5s cubic-bezier(0.18, 0.89, 0.32, 1.28)',
+                    transform: hideOverlay ? 'translateX(100%)' : 'translateX(0)',
                 }}
-            >
-                <div
-                    className={`overlay ${hideOverlay ? "overlay-hide" : ""}`}
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        bottom: 0,
-                        right: 0,
-                        width: '100%',
-                        background: '#b8912a42',
-                        pointerEvents: 'none',
-                        zIndex: 10,
-                        transition: 'transform 5s cubic-bezier(0.18, 0.89, 0.32, 1.28)',
-                        transform: hideOverlay
-                            ? 'translateX(100%)'
-                            : 'translateX(0)',
-                    }}
+            />
 
-                ></div>
-                {/* Header */}
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                    gap: '16px',
-                    marginBottom: '26px',
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{
-                            width: '42px',
-                            height: '42px',
-                            borderRadius: '12px',
-                            background: 'rgba(212, 165, 55, 0.12)',
-                            border: `1px solid ${mediumBorder}`,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}>
-                            <TrendingUp size={22} color="var(--gold-400)" />
-                        </div>
-                        <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <h2 style={{
-                                    margin: 0,
-                                    fontSize: 'clamp(18px, 3vw, 24px)',
-                                    fontWeight: '900',
-                                    color: 'var(--text-primary)',
-                                }}>
-                                    بورصة وسحب التارجت اللحظية
-                                </h2>
-                                <span style={{
-                                    background: 'rgba(16, 185, 129, 0.15)',
-                                    color: 'var(--success)',
-                                    fontSize: '11px',
-                                    fontWeight: '800',
-                                    padding: '2px 8px',
-                                    borderRadius: '9999px',
-                                }}>
-                                    أسعار صرف اليوم
-                                </span>
-                            </div>
-                            <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--text-secondary)' }}>
-                                حوّل نقاط وكوينز تطبيقات البث إلى كاش فوراً عبر إنستاباي، فودافون كاش، أو محفظتك
-                            </p>
-                        </div>
+            {/* Header */}
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '16px',
+                marginBottom: '26px',
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                        width: '42px',
+                        height: '42px',
+                        borderRadius: '12px',
+                        background: 'rgba(212, 165, 55, 0.12)',
+                        border: `1px solid ${mediumBorder}`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <TrendingUp size={22} color="var(--gold-400)" />
                     </div>
-
-                    <Link
-                        to="/target/sell"
-                        className="emperor-btn-ghost"
-                        style={{
-                            padding: '8px 18px',
-                            fontSize: '12.5px',
-                            borderRadius: '9999px',
-                        }}
-                    >
-                        <span>فتح منصة التارجت الكاملة</span>
-                        {isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
-                    </Link>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <h2 style={{
+                                margin: 0,
+                                fontSize: 'clamp(18px, 3vw, 24px)',
+                                fontWeight: '900',
+                                color: 'var(--text-primary)',
+                            }}>
+                                بورصة وسحب التارجت اللحظية
+                            </h2>
+                            <span style={{
+                                background: 'rgba(16, 185, 129, 0.15)',
+                                color: 'var(--success)',
+                                fontSize: '11px',
+                                fontWeight: '800',
+                                padding: '2px 8px',
+                                borderRadius: '9999px',
+                            }}>
+                                أسعار صرف اليوم
+                            </span>
+                        </div>
+                        <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--text-secondary)' }}>
+                            حوّل نقاط وكوينز تطبيقات البث إلى كاش فوراً عبر إنستاباي، فودافون كاش، أو محفظتك
+                        </p>
+                    </div>
                 </div>
 
-                {/* Content: Left Rates Grid + Right Live Calculator */}
+                <Link
+                    to="/target/sell"
+                    className="emperor-btn-ghost"
+                    style={{
+                        padding: '8px 18px',
+                        fontSize: '12.5px',
+                        borderRadius: '9999px',
+                    }}
+                >
+                    <span>فتح منصة التارجت الكاملة</span>
+                    {isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
+                </Link>
+            </div>
+
+            {/* Content: Left Rates Grid + Right Live Calculator */}
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+                gap: '20px',
+                alignItems: 'start',
+            }}>
+                {/* 1. Live Rates App Cards */}
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
-                    gap: '20px',
-                    alignItems: 'start',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 140px), 1fr))',
+                    gap: '10px',
                 }}>
-                    {/* 1. Live Rates App Cards */}
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 140px), 1fr))',
-                        gap: '10px',
-                    }}>
-                        {targetApps.map((app) => {
-                            const isSelected = app.id === selectedAppId;
-                            return (
-                                <div
-                                    key={app.id}
-                                    onClick={() => setSelectedAppId(app.id)}
-                                    style={{
-                                        background: isSelected
-                                            ? isLight
-                                                ? 'linear-gradient(135deg, #FDF3D3 0%, #F8E8B8 100%)'
-                                                : 'linear-gradient(135deg, rgba(212, 165, 55, 0.15) 0%, rgba(17, 17, 24, 0.9) 100%)'
-                                            : 'var(--bg-card)',
-                                        border: `1.5px solid ${isSelected ? accentBorder : subtleBorder}`,
-                                        borderRadius: '16px',
-                                        padding: '14px',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.25s ease',
-                                        transform: isSelected ? 'scale(1.02)' : 'scale(1)',
-                                    }}
-                                >
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                        <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'rgba(212, 165, 55, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <Smartphone size={16} color="#F5D061" />
-                                        </div>
-                                        <span style={{
-                                            fontSize: '10px',
-                                            fontWeight: '800',
-                                            color: 'var(--success)',
-                                            background: 'rgba(16, 185, 129, 0.1)',
-                                            padding: '2px 6px',
-                                            borderRadius: '6px',
-                                        }}>
-                                            {app.trend}
-                                        </span>
+                    {targetApps.map((app) => {
+                        const isSelected = app.id === selectedAppId;
+                        const appRate = app?.rates?.[0]?.rate_per_point || 0.0125;
+                        const appRate10k = (appRate * 10000).toFixed(2);
+                        return (
+                            <div
+                                key={app.id}
+                                onClick={() => setSelectedAppId(app.id)}
+                                style={{
+                                    background: isSelected
+                                        ? isLight
+                                            ? 'linear-gradient(135deg, #FDF3D3 0%, #F8E8B8 100%)'
+                                            : 'linear-gradient(135deg, rgba(212, 165, 55, 0.15) 0%, rgba(17, 17, 24, 0.9) 100%)'
+                                        : 'var(--bg-card)',
+                                    border: `1.5px solid ${isSelected ? accentBorder : subtleBorder}`,
+                                    borderRadius: '16px',
+                                    padding: '14px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.25s ease',
+                                    transform: isSelected ? 'scale(1.02)' : 'scale(1)',
+                                }}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                    <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'rgba(212, 165, 55, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Smartphone size={16} color="#F5D061" />
                                     </div>
-
-                                    <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>
-                                        {app.name}
-                                    </div>
-
-                                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                        <span style={{ fontSize: '16px', fontWeight: '900', color: 'var(--gold-300)' }}>
-                                            {app.ratePer10k} ج.م
-                                        </span>
-                                        <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
-                                            / 10,000 نقطة
-                                        </span>
-                                    </div>
+                                    <span style={{
+                                        fontSize: '10px',
+                                        fontWeight: '800',
+                                        color: 'var(--success)',
+                                        background: 'rgba(16, 185, 129, 0.1)',
+                                        padding: '2px 6px',
+                                        borderRadius: '6px',
+                                    }}>
+                                        سحب متاح
+                                    </span>
                                 </div>
-                            );
-                        })}
-                    </div>
 
-                    {/* 2. Interactive Calculator Card */}
+                                <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>
+                                    {app.name}
+                                </div>
+
+                                <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                                    <span style={{ fontSize: '16px', fontWeight: '900', color: 'var(--gold-300)' }}>
+                                        {appRate10k} ج.م
+                                    </span>
+                                    <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+                                        / 10,000 نقطة
+                                    </span>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* 2. Interactive Calculator Card */}
+                {activeApp && (
                     <div style={{
                         background: 'var(--bg-card)',
                         border: `1.5px solid ${mediumBorder}`,
@@ -257,7 +261,7 @@ export default function LiveTargetMarket() {
                             <input
                                 type="number"
                                 step="5000"
-                                min="10000"
+                                min="1000"
                                 value={calcPoints}
                                 onChange={(e) => setCalcPoints(Math.max(0, Number(e.target.value)))}
                                 style={{
@@ -322,7 +326,7 @@ export default function LiveTargetMarket() {
                             </div>
 
                             <div style={{ textAlign: 'end', fontSize: '11px', color: 'var(--success)', fontWeight: '800' }}>
-                                تحويل خلال دقيقتين
+                                تحويل فوري
                                 <br />
                                 <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>إنستاباي / فودافون كاش</span>
                             </div>
@@ -330,7 +334,7 @@ export default function LiveTargetMarket() {
 
                         {/* CTA */}
                         <Link
-                            to={`/target/sell?app=${activeApp.id}`}
+                            to={`/target-orders/new?app_id=${activeApp.id}&app_name=${encodeURIComponent(activeApp.name)}`}
                             className="emperor-btn-primary"
                             style={{
                                 width: '100%',
@@ -343,8 +347,8 @@ export default function LiveTargetMarket() {
                             <span>بيع التارجت واستلم المبلغ الآن</span>
                         </Link>
                     </div>
-                </div>
+                )}
             </div>
-        </>
+        </div>
     );
 }

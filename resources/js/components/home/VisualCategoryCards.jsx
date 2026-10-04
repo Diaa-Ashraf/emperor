@@ -1,92 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Smartphone, Gamepad2, Zap, Tv, Layers, Target, TrendingUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Layers, TrendingUp } from 'lucide-react';
 import { catalogApi } from '../../api/endpoints';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { formatImageUrl } from '../../utils/imageHelper';
 import "../../../css/visualCategory.css";
+
 export default function VisualCategoryCards() {
     const { isRtl } = useLanguage();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Target Selling Featured Category Card
-    const targetCategoryCard = {
-        id: 'target-sell',
-        slug: 'target-sell',
-        customLink: '/target/apps',
-        name: 'بيع واستبدال التارجت',
-        icon_url: '/images/artwork/cat_target.jpg',
-        badge: 'كاش فوري 50 EGP / $',
-        btnText: 'سحب التارجت الآن',
-        isTarget: true,
-    };
-
-    // Standard Fallback Categories
-    const fallbackCategories = [
-        targetCategoryCard,
-        {
-            id: 'apps',
-            slug: 'apps',
-            name: 'تطبيقات البث والشات',
-            icon_url: '/images/artwork/cat_apps.jpg',
-            badge: 'شحن مباشر معتمد',
-            btnText: 'تصفح التطبيقات والأسعار',
-            icon: Smartphone,
-        },
-        {
-            id: 'games',
-            slug: 'games',
-            name: 'الألعاب والبطاقات الرقمية',
-            icon_url: '/images/artwork/cat_games.jpg',
-            badge: 'تسليم فوري مباشر',
-            btnText: 'تصفح الألعاب والبطاقات',
-            icon: Gamepad2,
-        },
-        {
-            id: 'telecom',
-            slug: 'telecom',
-            name: 'كروت الشحن والاتصالات',
-            icon_url: null,
-            badge: 'فواتير وباقات',
-            btnText: 'تصفح كروت الشحن',
-            icon: Zap,
-        },
-        {
-            id: 'tv',
-            slug: 'tv-subscriptions',
-            name: 'اشتراكات البث والترفيه',
-            icon_url: null,
-            badge: 'اشتراكات رسمية',
-            btnText: 'تصفح الاشتراكات',
-            icon: Tv,
-        },
-    ];
-
     useEffect(() => {
         catalogApi.getCategories()
             .then(res => {
                 const data = Array.isArray(res?.data) ? res.data : res?.data?.data;
-                if (data && data.length > 0) {
-                    // Prepend Target Selling category so it's always visible with categories
-                    const hasTarget = data.some(c => c.slug === 'target' || c.slug === 'target-apps' || c.isTarget);
-                    const hasApps = data.some(c => c.slug === 'apps');
-                    const visibleCategories = data.filter(c => c.slug !== 'target' && c.slug !== 'target-apps');
-                    setCategories([
-                        ...(hasTarget ? [] : [targetCategoryCard]),
-                        ...visibleCategories,
-                        ...(hasApps ? [] : [fallbackCategories.find(c => c.slug === 'apps')]),
-                    ]);
+                if (data && Array.isArray(data)) {
+                    setCategories(data);
                 } else {
-                    setCategories(fallbackCategories);
+                    setCategories([]);
                 }
             })
             .catch(() => {
-                setCategories(fallbackCategories);
+                setCategories([]);
             })
             .finally(() => setLoading(false));
     }, []);
 
-    const displayCategories = categories.length > 0 ? categories : fallbackCategories;
+    if (!loading && categories.length === 0) {
+        return null;
+    }
 
     return (
         <div style={{ marginBottom: '40px' }}>
@@ -122,7 +65,7 @@ export default function VisualCategoryCards() {
                     gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
                     gap: '16px',
                 }}>
-                {displayCategories.map((cat, i) => (
+                {categories.map((cat, i) => (
                     <CategoryCard key={cat.id || i} cat={cat} isRtl={isRtl} index={i} />
                 ))}
             </div>
@@ -134,11 +77,11 @@ function CategoryCard({ cat, isRtl, index }) {
     const [hovered, setHovered] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = React.useRef(null);
-    const rawImg = cat.banner_url || cat.icon_url || cat.artwork;
-    const imageUrl = rawImg && typeof rawImg === 'string' && rawImg.includes('/storage/')
-        ? ('/storage/' + rawImg.split('/storage/')[1])
-        : rawImg;
-    const categoryLink = cat.customLink || `/category/${cat.slug || cat.id}`;
+    const isTarget = cat.slug === 'target' || cat.slug === 'target-apps' || cat.isTarget;
+    const rawImg = cat.banner_url || cat.banner || cat.icon_url || cat.icon;
+    const imageUrl = formatImageUrl(rawImg);
+    const categoryLink = isTarget ? '/target/apps' : `/category/${cat.slug || cat.id}`;
+
     useEffect(() => {
         const card = sectionRef.current;
         if (!card) return;
@@ -170,10 +113,10 @@ function CategoryCard({ cat, isRtl, index }) {
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                border: `1px solid ${hovered || cat.isTarget ? '#D4A537' : 'rgba(255, 255, 255, 0.08)'}`,
+                border: `1px solid ${hovered || isTarget ? '#D4A537' : 'rgba(255, 255, 255, 0.08)'}`,
                 boxShadow: hovered
                     ? '0 12px 35px rgba(0,0,0,0.8), 0 0 25px rgba(212,165,55,0.2)'
-                    : cat.isTarget
+                    : isTarget
                         ? '0 8px 30px rgba(0,0,0,0.7), 0 0 15px rgba(212,165,55,0.1)'
                         : '0 6px 20px rgba(0,0,0,0.5)',
                 transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -206,7 +149,7 @@ function CategoryCard({ cat, isRtl, index }) {
                         overflow: 'hidden',
                         background: 'radial-gradient(circle, rgba(212,165,55,0.12) 0%, rgba(10,10,14,0.95) 75%)',
                     }}>
-                        {/* Ambient Blurred Colored Halo */}
+                        {/* Ambient Blurred Halo */}
                         <img
                             src={imageUrl}
                             alt=""
@@ -223,16 +166,16 @@ function CategoryCard({ cat, isRtl, index }) {
                             }}
                         />
 
-                        {/* Sharp Uncropped Foreground Image/Icon */}
+                        {/* Foreground Image/Icon */}
                         <img
                             src={imageUrl}
-                            alt={cat.name || cat.title}
+                            alt={cat.name}
                             style={{
                                 position: 'relative',
                                 zIndex: 2,
                                 maxWidth: '60%',
                                 maxHeight: '60%',
-                                marginTop: '45px',
+                                marginTop: '10px',
                                 width: 'auto',
                                 height: 'auto',
                                 objectFit: 'contain',
@@ -269,7 +212,7 @@ function CategoryCard({ cat, isRtl, index }) {
                             transform: hovered ? 'scale(1.1) rotate(-3deg)' : 'scale(1) rotate(0deg)',
                             boxShadow: hovered ? '0 0 20px rgba(212,165,55,0.3)' : 'none',
                         }}>
-                            {cat.isTarget ? <TrendingUp size={34} /> : <Layers size={32} />}
+                            {isTarget ? <TrendingUp size={34} /> : <Layers size={32} />}
                         </div>
                     </div>
                 )}
@@ -290,9 +233,9 @@ function CategoryCard({ cat, isRtl, index }) {
                     position: 'absolute',
                     top: '12px',
                     [isRtl ? 'right' : 'left']: '12px',
-                    background: cat.isTarget ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)' : 'rgba(0, 0, 0, 0.75)',
-                    color: cat.isTarget ? '#000000' : '#F5D061',
-                    border: `1px solid ${cat.isTarget ? '#D4A537' : 'rgba(212, 165, 55, 0.4)'}`,
+                    background: isTarget ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)' : 'rgba(0, 0, 0, 0.75)',
+                    color: isTarget ? '#000000' : '#F5D061',
+                    border: `1px solid ${isTarget ? '#D4A537' : 'rgba(212, 165, 55, 0.4)'}`,
                     padding: '4px 12px',
                     borderRadius: '12px',
                     fontSize: '11.5px',
@@ -300,7 +243,7 @@ function CategoryCard({ cat, isRtl, index }) {
                     boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
                     backdropFilter: 'blur(6px)',
                 }}>
-                    {cat.badge || (cat.products_count ? `${cat.products_count} منتج` : 'شحن مباشر')}
+                    {isTarget ? 'سحب كاش فوري' : (cat.products_count ? `${cat.products_count} منتج` : 'شحن مباشر')}
                 </div>
             </div>
 
@@ -322,12 +265,12 @@ function CategoryCard({ cat, isRtl, index }) {
                     alignItems: 'center',
                     gap: '8px',
                 }}>
-                    {cat.isTarget ? (
+                    {isTarget ? (
                         <TrendingUp size={18} color="#F5D061" />
                     ) : (
                         <Layers size={18} color="#D4A537" />
                     )}
-                    <span>{cat.name || cat.title}</span>
+                    <span>{cat.name}</span>
                 </h3>
 
                 {/* Enter Button */}
@@ -335,13 +278,13 @@ function CategoryCard({ cat, isRtl, index }) {
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '12px',
-                    background: cat.isTarget
+                    background: isTarget
                         ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
                         : hovered
                             ? 'rgba(212, 165, 55, 0.15)'
                             : 'rgba(212, 165, 55, 0.05)',
-                    border: `1px solid ${cat.isTarget ? '#D4A537' : hovered ? '#D4A537' : 'rgba(212, 165, 55, 0.2)'}`,
-                    color: cat.isTarget ? '#000000' : '#F5D061',
+                    border: `1px solid ${isTarget ? '#D4A537' : hovered ? '#D4A537' : 'rgba(212, 165, 55, 0.2)'}`,
+                    color: isTarget ? '#000000' : '#F5D061',
                     fontSize: '13px',
                     fontWeight: '900',
                     display: 'flex',
@@ -350,7 +293,7 @@ function CategoryCard({ cat, isRtl, index }) {
                     gap: '6px',
                     transition: 'all 0.3s ease',
                 }}>
-                    <span>{cat.btnText || 'تصفح الباقات والأسعار'}</span>
+                    <span>{isTarget ? 'سحب التارجت الآن' : 'تصفح الباقات والأسعار'}</span>
                     {isRtl ? <ChevronLeft size={15} /> : <ChevronRight size={15} />}
                 </div>
             </div>

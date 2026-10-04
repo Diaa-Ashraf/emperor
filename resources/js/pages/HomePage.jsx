@@ -21,7 +21,6 @@ import {
 } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 import LiveActivityTicker from '../components/home/LiveActivityTicker';
-import QuickRechargeWizard from '../components/home/QuickRechargeWizard';
 import VisualCategoryCards from '../components/home/VisualCategoryCards';
 import LiveTargetMarket from '../components/home/LiveTargetMarket';
 import GoldenTargetBanner from '../components/home/GoldenTargetBanner';
@@ -213,10 +212,7 @@ export default function HomePage() {
             {/* ═══ 4. CATEGORY CARDS (أقسام المتجر والخدمات الرقمية) ═══ */}
             <VisualCategoryCards />
 
-            {/* ═══ 5. INSTANT RECHARGE WIZARD (الشاحن الملكي السريع) ═══ */}
-            <QuickRechargeWizard />
-
-            {/* ═══ 6. TARGET CALLOUT BANNER (اضغط هنا لسحب راتبك) ═══ */}
+            {/* ═══ 5. TARGET CALLOUT BANNER (اضغط هنا لسحب راتبك) ═══ */}
             <GoldenTargetBanner />
 
             {/* ═══ 7. BEST SELLERS SECTION (الأكثر طلباً ومبيعاً) ═══ */}
