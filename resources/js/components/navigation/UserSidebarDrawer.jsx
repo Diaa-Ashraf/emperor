@@ -183,6 +183,8 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
         return false;
     };
 
+    const isLight = theme === 'light';
+
     return (
         <>
             {/* Backdrop */}
@@ -201,6 +203,9 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                 className={`drawer-panel ${isRtl ? 'rtl' : 'ltr'}`}
                 style={{
                     zIndex: 99999,
+                    background: isLight
+                        ? '#f8fafc'
+                        : 'radial-gradient(ellipse at 50% 0%, #151522 0%, #0A0A0F 100%)',
                     paddingTop: 'env(safe-area-inset-top, 0px)',
                     paddingBottom: 'env(safe-area-inset-bottom, 0px)',
                 }}
@@ -211,8 +216,8 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    borderBottom: '1px solid rgba(212, 165, 55, 0.25)',
-                    background: 'rgba(12, 12, 16, 0.95)',
+                    borderBottom: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)',
+                    background: isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(12, 12, 16, 0.95)',
                     position: 'sticky',
                     top: 0,
                     zIndex: 10,
@@ -220,15 +225,15 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                     <button
                         onClick={onClose}
                         style={{
-                            background: 'rgba(212, 165, 55, 0.15)',
-                            border: '1.5px solid rgba(212, 165, 55, 0.4)',
+                            background: isLight ? '#ffffff' : 'rgba(212, 165, 55, 0.15)',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1.5px solid rgba(212, 165, 55, 0.4)',
                             borderRadius: '12px',
                             padding: '6px 12px',
                             height: '38px',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '6px',
-                            color: '#F5D061',
+                            color: isLight ? '#b45309' : '#F5D061',
                             cursor: 'pointer',
                             fontSize: '13px',
                             fontWeight: '800',
@@ -252,7 +257,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             overflow: 'hidden',
                             border: '1.2px solid rgba(212, 165, 55, 0.5)',
                             boxShadow: '0 0 12px rgba(212, 165, 55, 0.35)',
-                            background: '#050508',
+                            background: isLight ? '#ffffff' : '#050508',
                         }}>
                             <img
                                 src="/images/logo.png"
@@ -267,7 +272,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                         <span style={{
                             fontSize: '17px',
                             fontWeight: '900',
-                            color: '#FFFFFF',
+                            color: isLight ? '#0f172a' : '#FFFFFF',
                             letterSpacing: '0.5px',
                         }}>
                             EMPEROR
@@ -279,15 +284,15 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                         onClick={toggleTheme}
                         title={theme === 'dark' ? 'الوضع الفاتح' : 'الوضع الليلي'}
                         style={{
-                            background: 'rgba(212, 165, 55, 0.1)',
-                            border: '1px solid rgba(212, 165, 55, 0.25)',
+                            background: isLight ? '#ffffff' : 'rgba(212, 165, 55, 0.1)',
+                            border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)',
                             borderRadius: '10px',
                             width: '36px',
                             height: '36px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: '#D4A537',
+                            color: isLight ? '#b45309' : '#D4A537',
                             cursor: 'pointer',
                         }}
                     >
@@ -301,8 +306,8 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        background: '#121217',
-                        border: '1px solid rgba(212, 165, 55, 0.2)',
+                        background: isLight ? '#edf5fd' : '#121217',
+                        border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.2)',
                         borderRadius: '24px',
                         padding: '4px',
                         gap: '4px',
@@ -315,7 +320,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                 borderRadius: '20px',
                                 border: 'none',
                                 background: language === 'en' ? 'linear-gradient(135deg, #F8E8B8 0%, #D4A537 100%)' : 'transparent',
-                                color: language === 'en' ? '#08080A' : '#A0A0B0',
+                                color: language === 'en' ? '#08080A' : (isLight ? '#64748b' : '#A0A0B0'),
                                 fontWeight: '800',
                                 fontSize: '13px',
                                 cursor: 'pointer',
@@ -324,7 +329,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                         >
                             EN
                         </button>
-                        <span style={{ color: '#40404A', fontSize: '12px' }}>|</span>
+                        <span style={{ color: isLight ? '#cbd5e1' : '#40404A', fontSize: '12px' }}>|</span>
                         <button
                             onClick={() => switchLanguage('ar')}
                             style={{
@@ -333,7 +338,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                 borderRadius: '20px',
                                 border: 'none',
                                 background: language === 'ar' ? 'linear-gradient(135deg, #F8E8B8 0%, #D4A537 100%)' : 'transparent',
-                                color: language === 'ar' ? '#08080A' : '#A0A0B0',
+                                color: language === 'ar' ? '#08080A' : (isLight ? '#64748b' : '#A0A0B0'),
                                 fontWeight: '800',
                                 fontSize: '13px',
                                 cursor: 'pointer',
@@ -349,15 +354,15 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                 <div style={{ padding: '0 20px 12px' }}>
                     {isAuthenticated ? (
                         <div style={{
-                            background: '#101016',
-                            border: '1px solid rgba(212, 165, 55, 0.3)',
+                            background: isLight ? '#ffffff' : '#101016',
+                            border: isLight ? '1px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.3)',
                             borderRadius: '16px',
                             padding: '14px 16px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
                             gap: '12px',
-                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+                            boxShadow: isLight ? '0 4px 16px rgba(15, 23, 42, 0.05)' : '0 4px 20px rgba(0, 0, 0, 0.5)',
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 {/* Avatar with Green Dot */}
@@ -366,12 +371,14 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         width: '42px',
                                         height: '42px',
                                         borderRadius: '12px',
-                                        background: 'linear-gradient(135deg, #2A2415 0%, #151410 100%)',
+                                        background: isLight
+                                            ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)'
+                                            : 'linear-gradient(135deg, #2A2415 0%, #151410 100%)',
                                         border: '1px solid #D4A537',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: '#D4A537',
+                                        color: isLight ? '#92400e' : '#D4A537',
                                         fontSize: '18px',
                                         fontWeight: '800',
                                     }}>
@@ -385,7 +392,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         height: '12px',
                                         borderRadius: '50%',
                                         background: '#22C55E',
-                                        border: '2px solid #0B0B0E',
+                                        border: isLight ? '2px solid #ffffff' : '2px solid #0B0B0E',
                                         boxShadow: '0 0 6px #22C55E',
                                     }} />
                                 </div>
@@ -395,13 +402,13 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         margin: '0 0 2px',
                                         fontSize: '14px',
                                         fontWeight: '800',
-                                        color: '#FFFFFF',
+                                        color: isLight ? '#0f172a' : '#FFFFFF',
                                     }}>
                                         {user?.name || 'عضو إمبراطور'}
                                     </h4>
                                     <span style={{
                                         fontSize: '11px',
-                                        color: '#D4A537',
+                                        color: isLight ? '#b45309' : '#D4A537',
                                         fontWeight: '700',
                                         display: 'flex',
                                         alignItems: 'center',
@@ -420,11 +427,11 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '4px',
-                                    background: 'rgba(255, 255, 255, 0.05)',
-                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    background: isLight ? '#f1f5f9' : 'rgba(255, 255, 255, 0.05)',
+                                    border: isLight ? '1px solid #e2e8f0' : '1px solid rgba(255, 255, 255, 0.1)',
                                     borderRadius: '8px',
                                     padding: '4px 8px',
-                                    color: '#A0A0B0',
+                                    color: isLight ? '#475569' : '#A0A0B0',
                                     fontSize: '11px',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s ease',
@@ -436,13 +443,14 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                         </div>
                     ) : (
                         <div style={{
-                            background: '#101016',
-                            border: '1px solid rgba(212, 165, 55, 0.25)',
+                            background: isLight ? '#ffffff' : '#101016',
+                            border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)',
                             borderRadius: '16px',
                             padding: '16px',
                             textAlign: 'center',
+                            boxShadow: isLight ? '0 4px 16px rgba(15, 23, 42, 0.05)' : 'none',
                         }}>
-                            <p style={{ margin: '0 0 12px', fontSize: '13px', color: '#A0A0B0' }}>
+                            <p style={{ margin: '0 0 12px', fontSize: '13px', color: isLight ? '#64748b' : '#A0A0B0' }}>
                                 سجل دخولك للوصول إلى محفظتك والشحن الفوري
                             </p>
                             <div style={{ display: 'flex', gap: '8px' }}>
@@ -453,9 +461,9 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         flex: 1,
                                         padding: '8px',
                                         borderRadius: '8px',
-                                        background: 'rgba(212, 165, 55, 0.15)',
-                                        border: '1px solid rgba(212, 165, 55, 0.3)',
-                                        color: '#F8E8B8',
+                                        background: isLight ? 'rgba(212, 165, 55, 0.15)' : 'rgba(212, 165, 55, 0.15)',
+                                        border: isLight ? '1px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.3)',
+                                        color: isLight ? '#92400e' : '#F8E8B8',
                                         fontSize: '13px',
                                         fontWeight: '700',
                                         textDecoration: 'none',
@@ -487,11 +495,15 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                 {/* Wallet Balance & Recharge Box (Matches KA-Card Sidebar Exactly) */}
                 <div style={{ padding: '0 20px 18px' }}>
                     <div style={{
-                        background: 'linear-gradient(145deg, #14141E 0%, #0B0B0F 100%)',
-                        border: '1px solid #D4A537',
+                        background: isLight
+                            ? 'linear-gradient(145deg, #ffffff 0%, #edf5fe 100%)'
+                            : 'linear-gradient(145deg, #14141E 0%, #0B0B0F 100%)',
+                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.5)' : '1px solid #D4A537',
                         borderRadius: '18px',
                         padding: '16px 18px',
-                        boxShadow: '0 8px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 165, 55, 0.1)',
+                        boxShadow: isLight
+                            ? '0 8px 25px rgba(15, 23, 42, 0.06), 0 0 15px rgba(212, 165, 55, 0.1)'
+                            : '0 8px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 165, 55, 0.1)',
                     }}>
                         <div style={{
                             display: 'flex',
@@ -500,10 +512,10 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             marginBottom: '12px',
                         }}>
                             <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '11px', color: '#8E8E98', fontWeight: '700', marginBottom: '2px' }}>
+                                <div style={{ fontSize: '11px', color: isLight ? '#64748b' : '#8E8E98', fontWeight: '700', marginBottom: '2px' }}>
                                     رصيد المحفظة
                                 </div>
-                                <div style={{ fontSize: '18px', fontWeight: '900', color: '#FFFFFF', letterSpacing: '0.5px' }}>
+                                <div style={{ fontSize: '18px', fontWeight: '900', color: isLight ? '#0f172a' : '#FFFFFF', letterSpacing: '0.5px' }}>
                                     EGY {Number(user?.wallet?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
                                 </div>
                             </div>
@@ -511,12 +523,12 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                 width: '38px',
                                 height: '38px',
                                 borderRadius: '12px',
-                                background: 'rgba(212, 165, 55, 0.15)',
-                                border: '1px solid rgba(212, 165, 55, 0.4)',
+                                background: isLight ? 'rgba(212, 165, 55, 0.2)' : 'rgba(212, 165, 55, 0.15)',
+                                border: isLight ? '1px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.4)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: '#F5D061',
+                                color: isLight ? '#b45309' : '#F5D061',
                             }}>
                                 <Wallet size={20} />
                             </div>
@@ -552,7 +564,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                     padding: '0 24px 8px',
                     fontSize: '12px',
                     fontWeight: '700',
-                    color: '#8E8E98',
+                    color: isLight ? '#64748b' : '#8E8E98',
                     textTransform: 'uppercase',
                 }}>
                     القائمة الرئيسية
@@ -583,16 +595,22 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     borderRadius: '12px',
                                     textDecoration: 'none',
                                     background: active
-                                        ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.18) 0%, rgba(20, 20, 26, 0.9) 100%)'
-                                        : 'rgba(255, 255, 255, 0.02)',
+                                        ? (isLight
+                                            ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.22) 0%, rgba(255, 255, 255, 0.95) 100%)'
+                                            : 'linear-gradient(135deg, rgba(212, 165, 55, 0.18) 0%, rgba(20, 20, 26, 0.9) 100%)')
+                                        : (isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.02)'),
                                     border: active
-                                        ? '1px solid rgba(212, 165, 55, 0.4)'
-                                        : '1px solid transparent',
-                                    color: active ? '#D4A537' : '#D1D1DB',
-                                    fontWeight: '700',
+                                        ? (isLight ? '1.5px solid rgba(212, 165, 55, 0.6)' : '1px solid rgba(212, 165, 55, 0.4)')
+                                        : (isLight ? '1px solid rgba(226, 232, 240, 0.9)' : '1px solid transparent'),
+                                    color: active
+                                        ? (isLight ? '#b45309' : '#D4A537')
+                                        : (isLight ? '#1e293b' : '#D1D1DB'),
+                                    fontWeight: active ? '800' : '700',
                                     fontSize: '14px',
                                     transition: 'all 0.2s ease',
-                                    boxShadow: active ? '0 0 15px rgba(212, 165, 55, 0.15)' : 'none',
+                                    boxShadow: active
+                                        ? (isLight ? '0 4px 16px rgba(212, 165, 55, 0.18)' : '0 0 15px rgba(212, 165, 55, 0.15)')
+                                        : (isLight ? '0 2px 8px rgba(15, 23, 42, 0.03)' : 'none'),
                                 }}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -600,18 +618,22 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         width: '32px',
                                         height: '32px',
                                         borderRadius: '8px',
-                                        background: 'rgba(212, 165, 55, 0.12)',
-                                        border: '1px solid rgba(212, 165, 55, 0.25)',
+                                        background: isLight ? 'rgba(212, 165, 55, 0.18)' : 'rgba(212, 165, 55, 0.12)',
+                                        border: isLight ? '1px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.25)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: '#F5D061',
+                                        color: isLight ? '#92400e' : '#F5D061',
                                     }}>
                                         <item.icon size={16} />
                                     </div>
                                     <span>{item.label}</span>
                                 </div>
-                                {isRtl ? <ChevronLeft size={16} color="#6E6E78" /> : <ChevronRight size={16} color="#6E6E78" />}
+                                {isRtl ? (
+                                    <ChevronLeft size={16} color={isLight ? '#94a3b8' : '#6E6E78'} />
+                                ) : (
+                                    <ChevronRight size={16} color={isLight ? '#94a3b8' : '#6E6E78'} />
+                                )}
                             </Link>
                         );
                     })}
@@ -629,7 +651,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                 marginTop: '10px',
                                 borderRadius: '12px',
                                 border: '1px solid rgba(239, 68, 68, 0.25)',
-                                background: 'rgba(239, 68, 68, 0.06)',
+                                background: isLight ? 'rgba(239, 68, 68, 0.08)' : 'rgba(239, 68, 68, 0.06)',
                                 color: '#EF4444',
                                 fontWeight: '700',
                                 fontSize: '14px',

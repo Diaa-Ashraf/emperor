@@ -90,6 +90,8 @@ export default function FaqAccordion() {
                 <div ref={faqListRef} className="faq-list" style={{ maxWidth: '820px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {faqs.map((faq, idx) => {
                         const isOpen = openIndex === idx;
+                        const isLight = theme === 'light';
+
                         return (
                             <div
                                 key={idx}
@@ -97,13 +99,17 @@ export default function FaqAccordion() {
                                 className={`faq-question${activeIndex === idx ? ' faq-question--pointed' : ''}`}
                                 style={{
                                     background: isOpen
-                                        ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.08) 0%, rgba(17, 17, 24, 0.95) 100%)'
-                                        : 'var(--bg-card)',
-                                    border: `1px solid ${isOpen ? 'var(--gold-400)' : 'var(--border-subtle)'}`,
+                                        ? (isLight
+                                            ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.12) 0%, #ffffff 100%)'
+                                            : 'linear-gradient(135deg, rgba(212, 165, 55, 0.08) 0%, rgba(17, 17, 24, 0.95) 100%)')
+                                        : (isLight ? '#ffffff' : 'rgba(17, 17, 24, 0.85)'),
+                                    border: `1.5px solid ${isOpen ? 'var(--gold-400)' : (isLight ? 'rgba(210, 228, 245, 0.9)' : 'rgba(255, 255, 255, 0.06)')}`,
                                     borderRadius: '18px',
                                     overflow: 'hidden',
                                     transition: 'all 0.3s ease',
-                                    boxShadow: isOpen ? 'var(--shadow-gold)' : 'none',
+                                    boxShadow: isOpen
+                                        ? (isLight ? '0 10px 30px rgba(212, 165, 55, 0.18), 0 4px 12px rgba(15, 23, 42, 0.05)' : 'var(--shadow-gold)')
+                                        : (isLight ? '0 4px 16px rgba(15, 23, 42, 0.04)' : 'none'),
                                 }}
                             >
                                 <button
@@ -119,7 +125,9 @@ export default function FaqAccordion() {
                                         border: 'none',
                                         cursor: 'pointer',
                                         textAlign: isRtl ? 'right' : 'left',
-                                        color: isOpen ? 'var(--gold-100)' : 'var(--text-primary)',
+                                        color: isOpen
+                                            ? (isLight ? 'var(--gold-700)' : 'var(--gold-100)')
+                                            : (isLight ? '#0f172a' : 'var(--text-primary)'),
                                         fontFamily: 'var(--font-cairo)',
                                         fontSize: '14.5px',
                                         fontWeight: '800',
@@ -129,17 +137,17 @@ export default function FaqAccordion() {
                                     {isOpen ? (
                                         <ChevronUp size={18} color="var(--gold-400)" style={{ flexShrink: 0 }} />
                                     ) : (
-                                        <ChevronDown size={18} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+                                        <ChevronDown size={18} color={isLight ? '#64748b' : 'var(--text-muted)'} style={{ flexShrink: 0 }} />
                                     )}
                                 </button>
 
                                 {isOpen && (
                                     <div style={{
                                         padding: '0 20px 20px',
-                                        color: 'var(--text-secondary)',
+                                        color: isLight ? '#334155' : 'var(--text-secondary)',
                                         fontSize: '13.5px',
                                         lineHeight: '1.8',
-                                        borderTop: '1px solid rgba(212, 165, 55, 0.1)',
+                                        borderTop: isLight ? '1px solid rgba(212, 165, 55, 0.2)' : '1px solid rgba(212, 165, 55, 0.1)',
                                         paddingTop: '14px',
                                         animation: 'fadeInUp 0.3s ease',
                                     }}>

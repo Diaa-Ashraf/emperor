@@ -83,45 +83,45 @@
     --glass-blur-heavy: blur(32px) saturate(1.6);
 }
 
-/* ── Light Mode ── */
+/* ── Light Mode (KA-Cards Porcelain & Ice-Blue Palette) ── */
 .light {
-    --bg-main: #F8F9FC;
-    --bg-surface: #FFFFFF;
-    --bg-card: #FFFFFF;
-    --bg-card-hover: #F5F5F8;
-    --bg-elevated: #F0F1F5;
-    --border-subtle: rgba(0, 0, 0, 0.06);
-    --border-medium: rgba(0, 0, 0, 0.10);
-    --border-strong: rgba(154, 114, 16, 0.30);
-    --border-glow: rgba(154, 114, 16, 0.50);
-    --text-primary: #09090B;
-    --text-secondary: #52525B;
-    --text-muted: #A1A1AA;
-    --text-gold: #6B5A20;
-    --text-gold-bright: #9A7210;
+    --bg-main: #ebf4fc;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f1f7fd;
+    --bg-elevated: #e2eefa;
+    --border-subtle: rgba(200, 225, 245, 0.85);
+    --border-medium: rgba(180, 215, 240, 0.95);
+    --border-strong: rgba(212, 165, 55, 0.50);
+    --border-glow: rgba(212, 165, 55, 0.75);
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --text-gold: #9a7210;
+    --text-gold-bright: #b8860b;
 
-    --success-soft: rgba(16, 185, 129, 0.08);
-    --danger-soft: rgba(239, 68, 68, 0.08);
+    --success-soft: rgba(16, 185, 129, 0.12);
+    --danger-soft: rgba(239, 68, 68, 0.12);
 
-    --gold-metallic: linear-gradient(135deg, #D4A537 0%, #B8912A 50%, #9A7210 100%);
-    --gold-metallic-soft: linear-gradient(135deg, rgba(212, 165, 55, 0.10) 0%, rgba(154, 114, 16, 0.05) 100%);
-    --gold-shimmer: linear-gradient(110deg, transparent 25%, rgba(212, 165, 55, 0.06) 37%, rgba(154, 114, 16, 0.10) 50%, rgba(212, 165, 55, 0.06) 63%, transparent 75%);
-    --surface-gradient: linear-gradient(145deg, #FFFFFF 0%, #F8F9FC 100%);
-    --card-gradient: linear-gradient(145deg, #FFFFFF 0%, #FAFBFE 100%);
+    --gold-metallic: linear-gradient(135deg, #e5c378 0%, #d4a537 50%, #9a7210 100%);
+    --gold-metallic-soft: linear-gradient(135deg, rgba(212, 165, 55, 0.15) 0%, rgba(154, 114, 16, 0.08) 100%);
+    --gold-shimmer: linear-gradient(110deg, transparent 25%, rgba(212, 165, 55, 0.08) 37%, rgba(154, 114, 16, 0.14) 50%, rgba(212, 165, 55, 0.08) 63%, transparent 75%);
+    --surface-gradient: linear-gradient(145deg, #ffffff 0%, #f0f7fd 100%);
+    --card-gradient: linear-gradient(145deg, #ffffff 0%, #f4f9fe 100%);
 
-    --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10);
-    --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.12);
-    --shadow-gold: 0 0 20px rgba(154, 114, 16, 0.08);
-    --shadow-gold-md: 0 4px 20px rgba(154, 114, 16, 0.12);
-    --shadow-gold-lg: 0 8px 32px rgba(154, 114, 16, 0.18);
-    --glow-gold: 0 0 0 1px rgba(154, 114, 16, 0.12), 0 0 12px rgba(154, 114, 16, 0.06);
+    --shadow-sm: 0 2px 8px rgba(30, 80, 140, 0.05);
+    --shadow-md: 0 6px 20px rgba(30, 80, 140, 0.07);
+    --shadow-lg: 0 12px 36px rgba(30, 80, 140, 0.10);
+    --shadow-xl: 0 20px 50px rgba(30, 80, 140, 0.14);
+    --shadow-gold: 0 0 25px rgba(212, 165, 55, 0.15);
+    --shadow-gold-md: 0 6px 24px rgba(212, 165, 55, 0.20);
+    --shadow-gold-lg: 0 10px 36px rgba(212, 165, 55, 0.25);
+    --glow-gold: 0 0 0 1px rgba(212, 165, 55, 0.25), 0 0 16px rgba(212, 165, 55, 0.12);
 
-    --glass-bg: rgba(255, 255, 255, 0.85);
-    --glass-bg-heavy: rgba(255, 255, 255, 0.92);
-    --glass-blur: blur(20px) saturate(1.2);
-    --glass-blur-heavy: blur(32px) saturate(1.4);
+    --glass-bg: rgba(255, 255, 255, 0.88);
+    --glass-bg-heavy: rgba(255, 255, 255, 0.95);
+    --glass-blur: blur(20px) saturate(1.4);
+    --glass-blur-heavy: blur(32px) saturate(1.6);
 }
 
 

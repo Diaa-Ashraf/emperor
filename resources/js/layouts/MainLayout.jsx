@@ -193,13 +193,15 @@ export default function MainLayout({ children, showBanner = true }) {
         { to: '/account-issues', label: 'الشكاوى', icon: HelpCircle },
     ];
 
+    const isLight = theme === 'light';
+
     return (
         <div style={{
             minHeight: '100vh',
             display: 'flex',
             flexDirection: 'column',
-            backgroundColor: '#070709',
-            color: '#FFFFFF',
+            backgroundColor: isLight ? 'var(--bg-main)' : '#070709',
+            color: isLight ? 'var(--text-primary)' : '#FFFFFF',
             fontFamily: 'var(--font-cairo)',
             direction: isRtl ? 'rtl' : 'ltr',
         }}>
@@ -214,17 +216,21 @@ export default function MainLayout({ children, showBanner = true }) {
                     maxWidth: '1440px',
                     margin: '0 auto',
                     padding: '8px 18px',
-                    background: headerScrolled ? 'rgba(11, 11, 15, 0.95)' : 'rgba(14, 14, 20, 0.90)',
+                    background: isLight
+                        ? (headerScrolled ? 'rgba(255, 255, 255, 0.96)' : 'rgba(240, 247, 255, 0.94)')
+                        : (headerScrolled ? 'rgba(11, 11, 15, 0.95)' : 'rgba(14, 14, 20, 0.90)'),
                     backdropFilter: 'blur(20px) saturate(1.8)',
                     WebkitBackdropFilter: 'blur(20px) saturate(1.8)',
-                    border: '1.5px solid rgba(229, 195, 120, 0.75)',
+                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1.5px solid rgba(229, 195, 120, 0.75)',
                     borderRadius: '24px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    boxShadow: headerScrolled
-                        ? '0 12px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(212, 165, 55, 0.22)'
-                        : '0 6px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 165, 55, 0.15)',
+                    boxShadow: isLight
+                        ? '0 10px 30px rgba(15, 23, 42, 0.08), 0 0 20px rgba(212, 165, 55, 0.12)'
+                        : (headerScrolled
+                            ? '0 12px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(212, 165, 55, 0.22)'
+                            : '0 6px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 165, 55, 0.15)'),
                     transition: 'all 0.3s ease',
                 }}>
                     {/* ── Brand Logo ── */}
@@ -248,7 +254,7 @@ export default function MainLayout({ children, showBanner = true }) {
                                 border: '1.2px solid rgba(212, 165, 55, 0.6)',
                                 boxShadow: '0 0 15px rgba(212, 165, 55, 0.4)',
                                 flexShrink: 0,
-                                background: '#050508',
+                                background: isLight ? '#ffffff' : '#050508',
                             }}>
                                 <img
                                     src="/images/logo.png"
@@ -264,7 +270,7 @@ export default function MainLayout({ children, showBanner = true }) {
                                 <span className="brand-title" style={{
                                     fontSize: '17px',
                                     fontWeight: '900',
-                                    color: '#FFFFFF',
+                                    color: isLight ? '#0f172a' : '#FFFFFF',
                                     letterSpacing: '1px',
                                     lineHeight: 1.1,
                                     whiteSpace: 'nowrap',
@@ -274,7 +280,7 @@ export default function MainLayout({ children, showBanner = true }) {
                                 <span className="brand-subtitle" style={{
                                     fontSize: '9px',
                                     fontWeight: '800',
-                                    color: '#D4A537',
+                                    color: isLight ? '#b45309' : '#D4A537',
                                     letterSpacing: '0.4px',
                                     whiteSpace: 'nowrap',
                                 }}>
@@ -314,22 +320,22 @@ export default function MainLayout({ children, showBanner = true }) {
                                                 background: 'transparent',
                                                 fontSize: '13px',
                                                 fontWeight: '700',
-                                                color: '#D1D1DB',
+                                                color: isLight ? '#475569' : '#D1D1DB',
                                                 cursor: 'pointer',
                                                 fontFamily: 'inherit',
                                                 transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                                                 whiteSpace: 'nowrap',
                                             }}
                                             onMouseEnter={(e) => {
-                                                e.currentTarget.style.color = '#F5D061';
-                                                e.currentTarget.style.background = 'rgba(212, 165, 55, 0.08)';
+                                                e.currentTarget.style.color = isLight ? '#b45309' : '#F5D061';
+                                                e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.12)' : 'rgba(212, 165, 55, 0.08)';
                                             }}
                                             onMouseLeave={(e) => {
-                                                e.currentTarget.style.color = '#D1D1DB';
+                                                e.currentTarget.style.color = isLight ? '#475569' : '#D1D1DB';
                                                 e.currentTarget.style.background = 'transparent';
                                             }}
                                         >
-                                            <link.icon size={14} color="#A0A0B0" />
+                                            <link.icon size={14} color={isLight ? '#64748b' : '#A0A0B0'} />
                                             <span>{link.label}</span>
                                         </button>
                                     );
@@ -349,14 +355,16 @@ export default function MainLayout({ children, showBanner = true }) {
                                             textDecoration: 'none',
                                             fontSize: '13px',
                                             fontWeight: active ? '900' : '700',
-                                            color: active ? '#F5D061' : '#D1D1DB',
+                                            color: active
+                                                ? (isLight ? '#b45309' : '#F5D061')
+                                                : (isLight ? '#334155' : '#D1D1DB'),
                                             background: active
-                                                ? 'rgba(212, 165, 55, 0.12)'
+                                                ? (isLight ? 'rgba(212, 165, 55, 0.16)' : 'rgba(212, 165, 55, 0.12)')
                                                 : link.isSpecial
-                                                    ? 'rgba(212, 165, 55, 0.06)'
+                                                    ? (isLight ? 'rgba(212, 165, 55, 0.09)' : 'rgba(212, 165, 55, 0.06)')
                                                     : 'transparent',
                                             border: active
-                                                ? '1px solid rgba(212, 165, 55, 0.35)'
+                                                ? (isLight ? '1px solid rgba(212, 165, 55, 0.5)' : '1px solid rgba(212, 165, 55, 0.35)')
                                                 : link.isSpecial
                                                     ? '1px solid rgba(212, 165, 55, 0.2)'
                                                     : '1px solid transparent',
@@ -366,18 +374,18 @@ export default function MainLayout({ children, showBanner = true }) {
                                         }}
                                         onMouseEnter={(e) => {
                                             if (!active) {
-                                                e.currentTarget.style.color = '#F5D061';
-                                                e.currentTarget.style.background = 'rgba(212, 165, 55, 0.08)';
+                                                e.currentTarget.style.color = isLight ? '#b45309' : '#F5D061';
+                                                e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.12)' : 'rgba(212, 165, 55, 0.08)';
                                             }
                                         }}
                                         onMouseLeave={(e) => {
                                             if (!active) {
-                                                e.currentTarget.style.color = '#D1D1DB';
-                                                e.currentTarget.style.background = link.isSpecial ? 'rgba(212, 165, 55, 0.06)' : 'transparent';
+                                                e.currentTarget.style.color = isLight ? '#334155' : '#D1D1DB';
+                                                e.currentTarget.style.background = link.isSpecial ? (isLight ? 'rgba(212, 165, 55, 0.09)' : 'rgba(212, 165, 55, 0.06)') : 'transparent';
                                             }
                                         }}
                                     >
-                                        <link.icon size={14} color={active || link.isSpecial ? '#F5D061' : '#A0A0B0'} />
+                                        <link.icon size={14} color={active || link.isSpecial ? (isLight ? '#b45309' : '#F5D061') : (isLight ? '#64748b' : '#A0A0B0')} />
                                         <span>{link.label}</span>
                                         {link.badge && (
                                             <span style={{
@@ -414,24 +422,25 @@ export default function MainLayout({ children, showBanner = true }) {
                                 width: '36px',
                                 height: '36px',
                                 borderRadius: '11px',
-                                background: 'rgba(255, 255, 255, 0.04)',
-                                border: '1px solid rgba(212, 165, 55, 0.25)',
+                                background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.04)',
+                                border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: '#F5D061',
+                                color: isLight ? '#b45309' : '#F5D061',
                                 cursor: 'pointer',
                                 transition: 'all 0.2s ease',
                                 flexShrink: 0,
+                                boxShadow: isLight ? '0 2px 8px rgba(15, 23, 42, 0.05)' : 'none',
                             }}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = '#F5D061';
-                                e.currentTarget.style.background = 'rgba(212, 165, 55, 0.12)';
+                                e.currentTarget.style.borderColor = isLight ? '#b45309' : '#F5D061';
+                                e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.15)' : 'rgba(212, 165, 55, 0.12)';
                                 e.currentTarget.style.transform = 'scale(1.05)';
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.25)';
-                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
+                                e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(212, 165, 55, 0.25)';
+                                e.currentTarget.style.background = isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.04)';
                                 e.currentTarget.style.transform = 'scale(1)';
                             }}
                         >
@@ -447,25 +456,26 @@ export default function MainLayout({ children, showBanner = true }) {
                                 width: '36px',
                                 height: '36px',
                                 borderRadius: '11px',
-                                background: 'rgba(255, 255, 255, 0.04)',
-                                border: '1px solid rgba(212, 165, 55, 0.25)',
+                                background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.04)',
+                                border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: unreadNotifications > 0 ? '#F5D061' : '#D1D1DB',
+                                color: unreadNotifications > 0 ? (isLight ? '#b45309' : '#F5D061') : (isLight ? '#64748b' : '#D1D1DB'),
                                 textDecoration: 'none',
                                 position: 'relative',
                                 transition: 'all 0.2s ease',
                                 flexShrink: 0,
+                                boxShadow: isLight ? '0 2px 8px rgba(15, 23, 42, 0.05)' : 'none',
                             }}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = '#F5D061';
-                                e.currentTarget.style.background = 'rgba(212, 165, 55, 0.12)';
+                                e.currentTarget.style.borderColor = isLight ? '#b45309' : '#F5D061';
+                                e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.15)' : 'rgba(212, 165, 55, 0.12)';
                                 e.currentTarget.style.transform = 'scale(1.05)';
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.25)';
-                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
+                                e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(212, 165, 55, 0.25)';
+                                e.currentTarget.style.background = isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.04)';
                                 e.currentTarget.style.transform = 'scale(1)';
                             }}
                         >
@@ -486,7 +496,7 @@ export default function MainLayout({ children, showBanner = true }) {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     padding: '0 3px',
-                                    border: '2px solid #070709',
+                                    border: isLight ? '2px solid #ffffff' : '2px solid #070709',
                                 }}>
                                     {unreadNotifications > 99 ? '99+' : unreadNotifications}
                                 </span>
@@ -497,12 +507,14 @@ export default function MainLayout({ children, showBanner = true }) {
                         <div className="header-wallet-capsule" style={{
                             display: 'flex',
                             alignItems: 'center',
-                            background: 'rgba(15, 15, 22, 0.95)',
-                            border: '1.2px solid rgba(212, 165, 55, 0.45)',
+                            background: isLight ? '#ffffff' : 'rgba(15, 15, 22, 0.95)',
+                            border: isLight ? '1.2px solid rgba(212, 165, 55, 0.5)' : '1.2px solid rgba(212, 165, 55, 0.45)',
                             borderRadius: '13px',
                             padding: '3px 4px 3px 10px',
                             gap: '6px',
-                            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(212, 165, 55, 0.1)',
+                            boxShadow: isLight
+                                ? '0 4px 16px rgba(15, 23, 42, 0.06), 0 0 10px rgba(212, 165, 55, 0.08)'
+                                : '0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(212, 165, 55, 0.1)',
                             flexShrink: 0,
                         }}>
                             <Link
@@ -513,7 +525,7 @@ export default function MainLayout({ children, showBanner = true }) {
                                     alignItems: 'center',
                                     gap: '5px',
                                     textDecoration: 'none',
-                                    color: '#FFFFFF',
+                                    color: isLight ? '#0f172a' : '#FFFFFF',
                                     fontSize: '12.5px',
                                     fontWeight: '800',
                                     whiteSpace: 'nowrap',
@@ -523,15 +535,15 @@ export default function MainLayout({ children, showBanner = true }) {
                                     width: '22px',
                                     height: '22px',
                                     borderRadius: '6px',
-                                    background: 'rgba(212, 165, 55, 0.15)',
+                                    background: isLight ? 'rgba(212, 165, 55, 0.2)' : 'rgba(212, 165, 55, 0.15)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                 }}>
-                                    <Wallet size={13} color="#F5D061" />
+                                    <Wallet size={13} color={isLight ? '#b45309' : '#F5D061'} />
                                 </div>
                                 <span style={{ letterSpacing: '0.3px' }}>{formattedBalance}</span>
-                                <span className="wallet-currency-label" style={{ fontSize: '10.5px', color: '#22C55E', fontWeight: '900' }}>{currency}</span>
+                                <span className="wallet-currency-label" style={{ fontSize: '10.5px', color: '#16a34a', fontWeight: '900' }}>{currency}</span>
                             </Link>
 
                             <Link
@@ -579,20 +591,21 @@ export default function MainLayout({ children, showBanner = true }) {
                                     gap: '6px',
                                     padding: '4px 8px',
                                     borderRadius: '11px',
-                                    background: 'rgba(212, 165, 55, 0.08)',
-                                    border: '1.2px solid rgba(212, 165, 55, 0.35)',
-                                    color: '#FFFFFF',
+                                    background: isLight ? '#ffffff' : 'rgba(212, 165, 55, 0.08)',
+                                    border: isLight ? '1.2px solid rgba(212, 165, 55, 0.45)' : '1.2px solid rgba(212, 165, 55, 0.35)',
+                                    color: isLight ? '#0f172a' : '#FFFFFF',
                                     textDecoration: 'none',
                                     transition: 'all 0.2s ease',
                                     flexShrink: 0,
+                                    boxShadow: isLight ? '0 2px 8px rgba(15, 23, 42, 0.05)' : 'none',
                                 }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.background = 'rgba(212, 165, 55, 0.18)';
-                                    e.currentTarget.style.borderColor = '#F5D061';
+                                    e.currentTarget.style.background = isLight ? '#f8fafc' : 'rgba(212, 165, 55, 0.18)';
+                                    e.currentTarget.style.borderColor = '#D4A537';
                                 }}
                                 onMouseLeave={(e) => {
-                                    e.currentTarget.style.background = 'rgba(212, 165, 55, 0.08)';
-                                    e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.35)';
+                                    e.currentTarget.style.background = isLight ? '#ffffff' : 'rgba(212, 165, 55, 0.08)';
+                                    e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.45)' : 'rgba(212, 165, 55, 0.35)';
                                 }}
                             >
                                 <div style={{
@@ -615,7 +628,8 @@ export default function MainLayout({ children, showBanner = true }) {
                                     maxWidth: '75px',
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap'
+                                    whiteSpace: 'nowrap',
+                                    color: isLight ? '#0f172a' : '#FFFFFF',
                                 }}>
                                     {user?.name?.split(' ')[0] || 'حسابي'}
                                 </span>
@@ -630,9 +644,9 @@ export default function MainLayout({ children, showBanner = true }) {
                                     gap: '5px',
                                     padding: '6px 12px',
                                     borderRadius: '11px',
-                                    background: 'rgba(212, 165, 55, 0.12)',
-                                    border: '1.2px solid rgba(212, 165, 55, 0.4)',
-                                    color: '#F5D061',
+                                    background: isLight ? 'linear-gradient(135deg, #F8E8B8 0%, #D4A537 100%)' : 'rgba(212, 165, 55, 0.12)',
+                                    border: isLight ? '1.2px solid rgba(212, 165, 55, 0.5)' : '1.2px solid rgba(212, 165, 55, 0.4)',
+                                    color: isLight ? '#0f172a' : '#F5D061',
                                     fontSize: '12.5px',
                                     fontWeight: '800',
                                     textDecoration: 'none',
@@ -744,8 +758,8 @@ export default function MainLayout({ children, showBanner = true }) {
 
             {/* ═══ Premium Footer ═══ */}
             <footer style={{
-                backgroundColor: '#0A0A0F',
-                borderTop: '1px solid rgba(212, 165, 55, 0.2)',
+                backgroundColor: isLight ? '#f1f7fc' : '#0A0A0F',
+                borderTop: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.2)',
                 padding: '48px 20px 88px',
                 marginTop: 'auto',
             }}>
@@ -766,7 +780,7 @@ export default function MainLayout({ children, showBanner = true }) {
                                 overflow: 'hidden',
                                 border: '1.2px solid rgba(212, 165, 55, 0.5)',
                                 boxShadow: '0 0 15px rgba(212, 165, 55, 0.4)',
-                                background: '#050508',
+                                background: isLight ? '#ffffff' : '#050508',
                             }}>
                                 <img
                                     src="/images/logo.png"
@@ -781,14 +795,14 @@ export default function MainLayout({ children, showBanner = true }) {
                             <span style={{
                                 fontSize: '18px',
                                 fontWeight: '900',
-                                color: '#FFFFFF',
+                                color: isLight ? '#0f172a' : '#FFFFFF',
                                 letterSpacing: '1px',
                             }}>
                                 EMPEROR
                             </span>
                         </div>
                         <p style={{
-                            color: '#A0A0B0',
+                            color: isLight ? '#475569' : '#A0A0B0',
                             fontSize: '13px',
                             lineHeight: '1.8',
                             margin: 0,
@@ -801,7 +815,7 @@ export default function MainLayout({ children, showBanner = true }) {
                     {/* Quick Links */}
                     <div>
                         <h4 style={{
-                            color: '#F5D061',
+                            color: isLight ? '#b45309' : '#F5D061',
                             fontSize: '14px',
                             fontWeight: '800',
                             marginBottom: '14px',
@@ -823,14 +837,14 @@ export default function MainLayout({ children, showBanner = true }) {
                                     key={link.to}
                                     to={link.to}
                                     style={{
-                                        color: '#8E8E98',
+                                        color: isLight ? '#64748b' : '#8E8E98',
                                         textDecoration: 'none',
                                         fontSize: '13px',
                                         fontWeight: '600',
                                         transition: 'color 0.2s',
                                     }}
-                                    onMouseEnter={e => e.target.style.color = '#F5D061'}
-                                    onMouseLeave={e => e.target.style.color = '#8E8E98'}
+                                    onMouseEnter={e => e.target.style.color = isLight ? '#b45309' : '#F5D061'}
+                                    onMouseLeave={e => e.target.style.color = isLight ? '#64748b' : '#8E8E98'}
                                 >
                                     {link.label}
                                 </Link>
@@ -841,7 +855,7 @@ export default function MainLayout({ children, showBanner = true }) {
                     {/* Payment Methods */}
                     <div>
                         <h4 style={{
-                            color: '#F5D061',
+                            color: isLight ? '#b45309' : '#F5D061',
                             fontSize: '14px',
                             fontWeight: '800',
                             marginBottom: '14px',
@@ -857,9 +871,9 @@ export default function MainLayout({ children, showBanner = true }) {
                                 <span key={pm} style={{
                                     fontSize: '11px',
                                     fontWeight: '700',
-                                    color: '#F5D061',
-                                    background: 'rgba(212, 165, 55, 0.1)',
-                                    border: '1px solid rgba(212, 165, 55, 0.25)',
+                                    color: isLight ? '#92400e' : '#F5D061',
+                                    background: isLight ? 'rgba(212, 165, 55, 0.15)' : 'rgba(212, 165, 55, 0.1)',
+                                    border: isLight ? '1px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.25)',
                                     padding: '4px 10px',
                                     borderRadius: '8px',
                                 }}>
@@ -872,7 +886,7 @@ export default function MainLayout({ children, showBanner = true }) {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',
-                            color: '#22C55E',
+                            color: '#16a34a',
                             fontSize: '12px',
                             fontWeight: '700',
                         }}>
@@ -887,14 +901,14 @@ export default function MainLayout({ children, showBanner = true }) {
                     maxWidth: '1360px',
                     margin: '32px auto 0',
                     paddingTop: '20px',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                    borderTop: isLight ? '1px solid rgba(210, 228, 245, 0.8)' : '1px solid rgba(255, 255, 255, 0.06)',
                     display: 'flex',
                     flexWrap: 'wrap',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: '12px',
                     fontSize: '12.5px',
-                    color: '#8E8E98',
+                    color: isLight ? '#64748b' : '#8E8E98',
                 }}>
                     <div>
                         جميع الحقوق محفوظة © {new Date().getFullYear()} — منصة إمبراطور
@@ -903,7 +917,7 @@ export default function MainLayout({ children, showBanner = true }) {
                         <Link
                             to="/created-by"
                             style={{
-                                color: '#D4A537',
+                                color: isLight ? '#b45309' : '#D4A537',
                                 textDecoration: 'none',
                                 fontWeight: '700',
                             }}
