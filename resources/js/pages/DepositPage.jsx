@@ -30,6 +30,7 @@ import { depositsApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function DepositPage() {
     const navigate = useNavigate();
@@ -37,6 +38,8 @@ export default function DepositPage() {
     const { user, isAuthenticated } = useAuth();
     const { success, error: toastError } = useToast();
     const { isRtl } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
 
     const [activeCountry, setActiveCountry] = useState('egypt');
     const [selectedMethod, setSelectedMethod] = useState(null);
@@ -635,7 +638,7 @@ export default function DepositPage() {
                                 gap: '16px',
                                 marginBottom: '24px',
                                 paddingBottom: '18px',
-                                borderBottom: '1px solid rgba(212, 165, 55, 0.25)',
+                                borderBottom: isLight ? '1px solid rgba(212, 165, 55, 0.3)' : '1px solid rgba(212, 165, 55, 0.25)',
                             }}>
                                 <div style={{
                                     width: '64px',
@@ -645,7 +648,7 @@ export default function DepositPage() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5)',
+                                    boxShadow: isLight ? '0 4px 15px rgba(15, 23, 42, 0.1)' : '0 4px 15px rgba(0, 0, 0, 0.5)',
                                     flexShrink: 0,
                                 }}>
                                     <PaymentBrandLogo methodId={selectedMethod.id} size={56} />
@@ -653,14 +656,14 @@ export default function DepositPage() {
 
                                 <div style={{ flex: 1 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: '#FFFFFF' }}>
+                                        <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: isLight ? '#0f172a' : '#FFFFFF' }}>
                                             {selectedMethod.name}
                                         </h2>
                                         <span className="ka-card-cur-badge">
                                             {selectedMethod.currency}
                                         </span>
                                     </div>
-                                    <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#A0A0B0' }}>
+                                    <p style={{ margin: '4px 0 0', fontSize: '13px', color: isLight ? '#475569' : '#A0A0B0' }}>
                                         {selectedMethod.instruction}
                                     </p>
                                 </div>
@@ -669,10 +672,10 @@ export default function DepositPage() {
                             {/* Account Details & Copy Box */}
                             <div className="deposit-account-box">
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                    <span style={{ fontSize: '12px', fontWeight: '800', color: '#F5D061' }}>
+                                    <span style={{ fontSize: '12px', fontWeight: '800', color: isLight ? '#b45309' : '#F5D061' }}>
                                         {selectedMethod.id.includes('usdt') ? 'عنوان المحفظة (TRC-20 Address):' : (selectedMethod.id.includes('binance') ? 'Binance Pay ID:' : 'رقم الحساب / المحفظة للتحويل:')}
                                     </span>
-                                    <span style={{ fontSize: '11px', color: '#4ADE80', fontWeight: '700' }}>
+                                    <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: '700' }}>
                                         ✓ معتمد ونشط الآن
                                     </span>
                                 </div>
@@ -681,8 +684,8 @@ export default function DepositPage() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
-                                    background: '#0D0C09',
-                                    border: '1px solid rgba(212, 165, 55, 0.3)',
+                                    background: isLight ? '#ffffff' : '#0D0C09',
+                                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.3)',
                                     borderRadius: '12px',
                                     padding: '10px 14px',
                                     gap: '10px',
@@ -690,7 +693,7 @@ export default function DepositPage() {
                                     <span style={{
                                         fontSize: '17px',
                                         fontWeight: '900',
-                                        color: '#FFFFFF',
+                                        color: isLight ? '#0f172a' : '#FFFFFF',
                                         fontFamily: 'monospace',
                                         letterSpacing: '1px',
                                         wordBreak: 'break-all',
@@ -727,7 +730,7 @@ export default function DepositPage() {
                             <form onSubmit={handleSubmitDeposit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                                 {/* Amount Input */}
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#F3F4F6', marginBottom: '8px' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: isLight ? '#0f172a' : '#F3F4F6', marginBottom: '8px' }}>
                                         المبلغ المحول ({selectedMethod.currency}): <span style={{ color: '#EF4444' }}>*</span>
                                     </label>
                                     <div style={{ position: 'relative' }}>
@@ -742,11 +745,11 @@ export default function DepositPage() {
                                             style={{
                                                 width: '100%',
                                                 boxSizing: 'border-box',
-                                                background: '#0D0C09',
-                                                border: '1.5px solid rgba(255, 255, 255, 0.15)',
+                                                background: isLight ? '#ffffff' : '#0D0C09',
+                                                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1.5px solid rgba(255, 255, 255, 0.15)',
                                                 borderRadius: '12px',
                                                 padding: '12px 16px',
-                                                color: '#FFFFFF',
+                                                color: isLight ? '#0f172a' : '#FFFFFF',
                                                 fontSize: '16px',
                                                 fontWeight: '800',
                                                 outline: 'none',
@@ -771,7 +774,7 @@ export default function DepositPage() {
 
                                 {/* Sender Phone / Account Number */}
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#F3F4F6', marginBottom: '8px' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: isLight ? '#0f172a' : '#F3F4F6', marginBottom: '8px' }}>
                                         رقم المحفظة أو الحساب المحول منه: <span style={{ color: '#EF4444' }}>*</span>
                                     </label>
                                     <input
@@ -783,11 +786,11 @@ export default function DepositPage() {
                                         style={{
                                             width: '100%',
                                             boxSizing: 'border-box',
-                                            background: '#0D0C09',
-                                            border: '1.5px solid rgba(255, 255, 255, 0.15)',
+                                            background: isLight ? '#ffffff' : '#0D0C09',
+                                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1.5px solid rgba(255, 255, 255, 0.15)',
                                             borderRadius: '12px',
                                             padding: '12px 16px',
-                                            color: '#FFFFFF',
+                                            color: isLight ? '#0f172a' : '#FFFFFF',
                                             fontSize: '14px',
                                             outline: 'none',
                                         }}
@@ -796,7 +799,7 @@ export default function DepositPage() {
 
                                 {/* Transaction Reference / ID */}
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#F3F4F6', marginBottom: '8px' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: isLight ? '#0f172a' : '#F3F4F6', marginBottom: '8px' }}>
                                         رقم العملية أو المرجع (إن وجد):
                                     </label>
                                     <input
@@ -807,11 +810,11 @@ export default function DepositPage() {
                                         style={{
                                             width: '100%',
                                             boxSizing: 'border-box',
-                                            background: '#0D0C09',
-                                            border: '1.5px solid rgba(255, 255, 255, 0.15)',
+                                            background: isLight ? '#ffffff' : '#0D0C09',
+                                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1.5px solid rgba(255, 255, 255, 0.15)',
                                             borderRadius: '12px',
                                             padding: '12px 16px',
-                                            color: '#FFFFFF',
+                                            color: isLight ? '#0f172a' : '#FFFFFF',
                                             fontSize: '14px',
                                             outline: 'none',
                                         }}
@@ -820,7 +823,7 @@ export default function DepositPage() {
 
                                 {/* Receipt Proof Image Upload */}
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#F3F4F6', marginBottom: '8px' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: isLight ? '#0f172a' : '#F3F4F6', marginBottom: '8px' }}>
                                         صورة إيصال التحويل (Screenshot):
                                     </label>
                                     <label style={{
@@ -829,9 +832,9 @@ export default function DepositPage() {
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         padding: '20px',
-                                        border: '2px dashed rgba(212, 165, 55, 0.4)',
+                                        border: isLight ? '2px dashed rgba(212, 165, 55, 0.6)' : '2px dashed rgba(212, 165, 55, 0.4)',
                                         borderRadius: '14px',
-                                        background: 'rgba(0, 0, 0, 0.4)',
+                                        background: isLight ? '#ffffff' : 'rgba(0, 0, 0, 0.4)',
                                         cursor: 'pointer',
                                         transition: 'all 0.2s',
                                     }}>
@@ -848,14 +851,14 @@ export default function DepositPage() {
                                                     alt="إيصال التحويل"
                                                     style={{ maxHeight: '120px', borderRadius: '8px', marginBottom: '8px' }}
                                                 />
-                                                <div style={{ color: '#4ADE80', fontSize: '12px', fontWeight: '800' }}>
+                                                <div style={{ color: '#16a34a', fontSize: '12px', fontWeight: '800' }}>
                                                     ✓ تم اختيار الصورة (انقر للتغيير)
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div style={{ textAlign: 'center', color: '#9CA3AF' }}>
+                                            <div style={{ textAlign: 'center', color: isLight ? '#64748b' : '#9CA3AF' }}>
                                                 <Upload size={24} color="#D4A537" style={{ marginBottom: '6px' }} />
-                                                <div style={{ fontSize: '13px', fontWeight: '700', color: '#E2E8F0' }}>
+                                                <div style={{ fontSize: '13px', fontWeight: '700', color: isLight ? '#0f172a' : '#E2E8F0' }}>
                                                     اضغط لرفع لقطة شاشة الإيصال
                                                 </div>
                                                 <div style={{ fontSize: '11px', marginTop: '3px' }}>
@@ -874,10 +877,10 @@ export default function DepositPage() {
                                         style={{
                                             padding: '14px 20px',
                                             borderRadius: '14px',
-                                            background: 'linear-gradient(135deg, #e5c378 0%, #d4a537 50%, #b38622 100%)',
+                                            background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
                                             border: 'none',
-                                            color: '#0B0B0F',
-                                            fontSize: '16px',
+                                            color: '#08080a',
+                                            fontSize: '15px',
                                             fontWeight: '900',
                                             cursor: 'pointer',
                                             display: 'flex',
@@ -898,9 +901,9 @@ export default function DepositPage() {
                                         style={{
                                             padding: '14px',
                                             borderRadius: '14px',
-                                            background: 'rgba(255, 255, 255, 0.05)',
-                                            border: '1px solid rgba(255, 255, 255, 0.15)',
-                                            color: '#CBD5E1',
+                                            background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.05)',
+                                            border: isLight ? '1px solid #cbd5e1' : '1px solid rgba(255, 255, 255, 0.15)',
+                                            color: isLight ? '#475569' : '#CBD5E1',
                                             fontSize: '14px',
                                             fontWeight: '800',
                                             cursor: 'pointer',

@@ -1,34 +1,37 @@
 /* ==========================================================================
-   Emperor Royal Deposit & Add Balance Theme (KA-Cards Luxury Edition)
+   Emperor Royal Deposit & Balance Theme (Emperor Luxury Gold & Obsidian Edition)
    ========================================================================== */
 
 .emperor-deposit-container {
-    max-width: 1140px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 10px 15px 80px;
+    padding: 12px 16px 90px;
     box-sizing: border-box;
 }
 
-/* Top Hero Header Card */
+/* ══════════════════════════════════════════════════════════════════════
+   TOP HERO HEADER CARD
+   ══════════════════════════════════════════════════════════════════════ */
 .deposit-hero-banner {
-    background: radial-gradient(ellipse at top right, #2d0b12 0%, #15080c 40%, #0c0c10 100%);
+    background: radial-gradient(ellipse at top right, #1f1a0e 0%, #12110c 45%, #08080c 100%);
     border: 1.5px solid rgba(212, 165, 55, 0.45);
-    border-radius: 26px;
-    padding: clamp(20px, 3.5vw, 30px);
-    margin-bottom: 28px;
+    border-radius: 24px;
+    padding: clamp(18px, 3.5vw, 30px);
+    margin-bottom: 24px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 165, 55, 0.12);
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 165, 55, 0.15);
+    transition: all 0.3s ease;
 }
 
 .deposit-hero-banner::before {
     content: '';
     position: absolute;
-    top: -50%;
-    right: -20%;
-    width: 350px;
-    height: 350px;
-    background: radial-gradient(circle, rgba(220, 20, 60, 0.25) 0%, transparent 70%);
+    top: -40%;
+    right: -15%;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(212, 165, 55, 0.18) 0%, transparent 70%);
     pointer-events: none;
 }
 
@@ -37,79 +40,92 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
+    gap: 18px;
     position: relative;
     z-index: 2;
 }
 
 .deposit-hero-title {
-    font-size: clamp(24px, 4vw, 32px);
+    font-size: clamp(22px, 3.5vw, 30px);
     font-weight: 900;
     color: #ffffff;
     margin: 0 0 6px 0;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.3px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .deposit-hero-desc {
     margin: 0;
-    font-size: 14px;
+    font-size: 13.5px;
     color: #cbd5e1;
     line-height: 1.6;
+    max-width: 580px;
 }
 
 .deposit-balance-capsule {
-    background: rgba(0, 0, 0, 0.65);
-    border: 1.5px solid rgba(212, 165, 55, 0.4);
+    background: rgba(14, 14, 20, 0.85);
+    border: 1.5px solid rgba(212, 165, 55, 0.45);
     border-radius: 18px;
-    padding: 12px 24px;
+    padding: 12px 22px;
     text-align: center;
     backdrop-filter: blur(12px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 165, 55, 0.1);
 }
 
 .deposit-balance-label {
-    font-size: 11px;
-    color: #9ca3af;
+    font-size: 11.5px;
+    color: #94a3b8;
     font-weight: 700;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
 
 .deposit-balance-val {
     font-size: 22px;
     font-weight: 900;
-    color: #4ade80;
-    font-family: monospace;
-    letter-spacing: -0.5px;
+    color: #22c55e;
+    letter-spacing: 0.3px;
 }
 
-/* Country & Currency Filter Pills */
+/* ══════════════════════════════════════════════════════════════════════
+   COUNTRY & CURRENCY FILTER PILLS (Responsive Horizontal Scroll)
+   ══════════════════════════════════════════════════════════════════════ */
 .deposit-filter-pills-row {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 24px;
-    padding-top: 20px;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 18px;
     border-top: 1px solid rgba(212, 165, 55, 0.2);
     position: relative;
     z-index: 2;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+}
+
+.deposit-filter-pills-row::-webkit-scrollbar {
+    display: none;
 }
 
 .deposit-filter-pill {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 9px 18px;
-    border-radius: 25px;
+    gap: 7px;
+    padding: 8px 16px;
+    border-radius: 20px;
     font-size: 13px;
     font-weight: 800;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.12);
     color: #e2e8f0;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-family: inherit;
 }
 
 .deposit-filter-pill:hover {
@@ -120,42 +136,43 @@
 }
 
 .deposit-filter-pill.active {
-    background: linear-gradient(135deg, #e5c378 0%, #d4a537 100%);
-    border-color: #d4a537;
-    color: #0b0b0f;
+    background: linear-gradient(135deg, #F5D061 0%, #D4A537 100%);
+    border-color: #D4A537;
+    color: #08080a;
     box-shadow: 0 4px 18px rgba(212, 165, 55, 0.4);
 }
 
 .deposit-filter-pill-cur {
-    font-size: 11px;
-    padding: 2px 7px;
+    font-size: 10.5px;
+    padding: 2px 6px;
     border-radius: 6px;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.25);
+    font-weight: 800;
 }
 
 .deposit-filter-pill.active .deposit-filter-pill-cur {
-    background: rgba(0, 0, 0, 0.25);
-    color: #000;
+    background: rgba(0, 0, 0, 0.3);
+    color: #000000;
     font-weight: 900;
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   KA-CARDS STYLE PAYMENT CARDS GRID
+   EMPEROR LUXURY PAYMENT CARDS GRID (Brand Gold & Obsidian)
    ══════════════════════════════════════════════════════════════════════ */
 .deposit-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-    gap: 22px;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: 18px;
 }
 
 .ka-deposit-card {
-    background: linear-gradient(180deg, #9b0b1c 0%, #5d0611 35%, #18090d 100%);
+    background: linear-gradient(180deg, #151522 0%, #0d0d14 100%);
     border: 1.5px solid rgba(212, 165, 55, 0.35);
-    border-radius: 22px;
+    border-radius: 20px;
     padding: 16px;
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
     cursor: pointer;
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -169,15 +186,15 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 120px;
-    background: radial-gradient(ellipse at top, rgba(255, 60, 80, 0.3) 0%, transparent 70%);
+    height: 100px;
+    background: radial-gradient(ellipse at top, rgba(212, 165, 55, 0.15) 0%, transparent 70%);
     pointer-events: none;
 }
 
 .ka-deposit-card:hover {
-    transform: translateY(-8px);
-    border-color: #d4a537;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(212, 165, 55, 0.35);
+    transform: translateY(-6px);
+    border-color: #D4A537;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(212, 165, 55, 0.3);
 }
 
 /* Card Header Pills */
@@ -185,17 +202,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     position: relative;
     z-index: 2;
 }
 
 .ka-card-recharge-tag {
     background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 8px;
     padding: 3px 9px;
-    color: #ffffff;
+    color: #e2e8f0;
     font-size: 10.5px;
     font-weight: 800;
     letter-spacing: 0.5px;
@@ -213,67 +230,67 @@
 /* Elevated White Capsule with Brand Logo */
 .ka-card-white-capsule {
     background: #ffffff;
-    border-radius: 18px;
-    padding: 16px 12px;
+    border-radius: 16px;
+    padding: 14px 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.8);
     position: relative;
     z-index: 2;
-    min-height: 80px;
+    min-height: 76px;
 }
 
 .ka-card-logo-circle {
-    width: 68px;
-    height: 68px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Golden 0000 Pins Box */
 .ka-card-pins-box {
     text-align: center;
     color: #f5d061;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 900;
     font-family: monospace;
     letter-spacing: 3px;
     margin-bottom: 8px;
-    text-shadow: 0 0 10px rgba(245, 208, 97, 0.6);
+    text-shadow: 0 0 10px rgba(245, 208, 97, 0.5);
 }
 
-/* Crimson Method Name Badge */
+/* Emperor Luxury Golden Name Badge */
 .ka-card-name-pill {
-    background: linear-gradient(135deg, #c41228 0%, #880918 100%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #F5D061 0%, #D4A537 100%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 12px;
     padding: 8px 12px;
     text-align: center;
-    color: #ffffff;
-    font-size: 14.5px;
+    color: #08080a;
+    font-size: 14px;
     font-weight: 900;
     margin-bottom: 10px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 4px 14px rgba(212, 165, 55, 0.25);
     letter-spacing: -0.2px;
 }
 
 /* Translucent Note Box */
 .ka-card-note-box {
-    background: rgba(12, 4, 6, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(18, 18, 26, 0.75);
+    border: 1px solid rgba(212, 165, 55, 0.15);
     border-radius: 12px;
-    padding: 10px 12px;
+    padding: 9px 12px;
     margin-bottom: 12px;
     font-size: 11.5px;
     line-height: 1.5;
-    color: #e2e8f0;
-    min-height: 52px;
+    color: #cbd5e1;
+    min-height: 48px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -288,7 +305,7 @@
 
 /* Bottom Footer Bar */
 .ka-card-footer-bar {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     padding-top: 10px;
     display: flex;
     align-items: center;
@@ -297,12 +314,12 @@
 }
 
 .ka-card-cur-badge {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(212, 165, 55, 0.15);
     border: 1px solid rgba(212, 165, 55, 0.35);
     color: #f5d061;
     border-radius: 6px;
     padding: 2px 7px;
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 800;
 }
 
@@ -320,22 +337,22 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   DETAIL DEPOSIT FORM / DRAWER MODAL
+   DETAIL DEPOSIT FORM / SUBMIT CARD
    ══════════════════════════════════════════════════════════════════════ */
 .deposit-form-card {
-    background: linear-gradient(180deg, #18090d 0%, #0d0c09 100%);
+    background: linear-gradient(180deg, #151522 0%, #0d0d14 100%);
     border: 1.5px solid rgba(212, 165, 55, 0.45);
-    border-radius: 26px;
-    padding: clamp(20px, 4vw, 36px);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(212, 165, 55, 0.15);
+    border-radius: 24px;
+    padding: clamp(18px, 3.5vw, 32px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 165, 55, 0.15);
 }
 
 .deposit-account-box {
-    background: linear-gradient(135deg, rgba(220, 20, 60, 0.15) 0%, rgba(18, 17, 14, 0.9) 100%);
+    background: linear-gradient(135deg, rgba(212, 165, 55, 0.1) 0%, rgba(18, 18, 26, 0.95) 100%);
     border: 1.5px solid rgba(212, 165, 55, 0.4);
-    border-radius: 18px;
-    padding: 18px;
-    margin-bottom: 24px;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
 }
 
 .deposit-amount-preset-btn {
@@ -351,13 +368,201 @@
 }
 
 .deposit-amount-preset-btn:hover {
-    background: rgba(212, 165, 55, 0.25);
+    background: rgba(212, 165, 55, 0.22);
     border-color: #d4a537;
     transform: translateY(-2px);
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   LIGHT MODE OVERRIDES (.light)
+   ══════════════════════════════════════════════════════════════════════ */
+.light .deposit-hero-banner {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+    border: 1.5px solid rgba(212, 165, 55, 0.45);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06), 0 0 20px rgba(212, 165, 55, 0.1);
+}
+
+.light .deposit-hero-banner::before {
+    background: radial-gradient(circle, rgba(212, 165, 55, 0.12) 0%, transparent 70%);
+}
+
+.light .deposit-hero-title {
+    color: #0f172a;
+}
+
+.light .deposit-hero-desc {
+    color: #475569;
+}
+
+.light .deposit-balance-capsule {
+    background: #ffffff;
+    border: 1.5px solid rgba(212, 165, 55, 0.45);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+
+.light .deposit-balance-label {
+    color: #64748b;
+}
+
+.light .deposit-balance-val {
+    color: #16a34a;
+}
+
+.light .deposit-filter-pills-row {
+    border-top: 1px solid rgba(212, 165, 55, 0.25);
+}
+
+.light .deposit-filter-pill {
+    background: #ffffff;
+    border: 1px solid rgba(210, 228, 245, 0.9);
+    color: #334155;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+}
+
+.light .deposit-filter-pill:hover {
+    background: rgba(212, 165, 55, 0.15);
+    border-color: rgba(212, 165, 55, 0.5);
+    color: #b45309;
+}
+
+.light .deposit-filter-pill.active {
+    background: linear-gradient(135deg, #F8E8B8 0%, #D4A537 100%);
+    border-color: #D4A537;
+    color: #0f172a;
+}
+
+.light .ka-deposit-card {
+    background: #ffffff;
+    border: 1.5px solid rgba(210, 228, 245, 0.95);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+}
+
+.light .ka-deposit-card:hover {
+    border-color: #D4A537;
+    box-shadow: 0 14px 35px rgba(15, 23, 42, 0.1), 0 0 20px rgba(212, 165, 55, 0.2);
+}
+
+.light .ka-card-recharge-tag {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+}
+
+.light .ka-card-flame-tag {
+    color: #b45309;
+}
+
+.light .ka-card-white-capsule {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.light .ka-card-pins-box {
+    color: #b45309;
+    text-shadow: none;
+}
+
+.light .ka-card-name-pill {
+    background: linear-gradient(135deg, #F8E8B8 0%, #D4A537 100%);
+    color: #0f172a;
+    border: 1px solid rgba(212, 165, 55, 0.4);
+}
+
+.light .ka-card-note-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+}
+
+.light .ka-card-note-title {
+    color: #b45309;
+}
+
+.light .ka-card-footer-bar {
+    border-top: 1px solid #e2e8f0;
+}
+
+.light .ka-card-cur-badge {
+    background: rgba(212, 165, 55, 0.15);
+    border: 1px solid rgba(212, 165, 55, 0.4);
+    color: #92400e;
+}
+
+.light .ka-card-action-text {
+    color: #64748b;
+}
+
+.light .ka-deposit-card:hover .ka-card-action-text {
+    color: #b45309;
+}
+
+.light .deposit-form-card {
+    background: #ffffff;
+    border: 1.5px solid rgba(212, 165, 55, 0.45);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+.light .deposit-account-box {
+    background: linear-gradient(135deg, rgba(212, 165, 55, 0.12) 0%, #f8fafc 100%);
+    border: 1.5px solid rgba(212, 165, 55, 0.4);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   MOBILE & TABLET RESPONSIVENESS
+   ══════════════════════════════════════════════════════════════════════ */
 @media (max-width: 640px) {
+    .emperor-deposit-container {
+        padding: 8px 10px 85px;
+    }
+
+    .deposit-hero-banner {
+        padding: 16px 14px;
+        border-radius: 18px;
+        margin-bottom: 16px;
+    }
+
+    .deposit-hero-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+    }
+
+    .deposit-balance-capsule {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 16px;
+    }
+
     .deposit-cards-grid {
         grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .ka-deposit-card {
+        padding: 14px 12px;
+        border-radius: 16px;
+    }
+
+    .ka-card-white-capsule {
+        min-height: 70px;
+        padding: 10px 8px;
+    }
+
+    .ka-card-logo-circle {
+        width: 56px;
+        height: 56px;
+    }
+
+    .deposit-form-card {
+        padding: 18px 14px;
+        border-radius: 18px;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 960px) {
+    .deposit-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
     }
 }
