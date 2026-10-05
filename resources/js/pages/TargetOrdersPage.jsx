@@ -161,56 +161,58 @@ export default function TargetOrdersPage() {
                                     key={order.id}
                                     to={`/target/orders/${order.id}`}
                                     style={{
-                                        background: '#0B0B0F',
-                                        border: '1px solid rgba(212, 165, 55, 0.3)',
+                                        background: 'var(--bg-card)',
+                                        border: '1px solid var(--border-medium)',
                                         borderRadius: '18px',
-                                        padding: '18px 22px',
+                                        padding: 'clamp(14px, 2.5vw, 18px) clamp(14px, 2.5vw, 22px)',
                                         display: 'flex',
                                         flexWrap: 'wrap',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
-                                        gap: '16px',
+                                        gap: '14px',
                                         textDecoration: 'none',
-                                        transition: 'all 0.2s ease',
+                                        transition: 'all 0.25s ease',
+                                        boxSizing: 'border-box',
+                                        width: '100%',
                                     }}
                                     onMouseEnter={(e) => {
-                                        e.currentTarget.style.borderColor = '#F5D061';
+                                        e.currentTarget.style.borderColor = 'var(--gold-400)';
                                         e.currentTarget.style.transform = 'translateY(-2px)';
-                                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(212, 165, 55, 0.15)';
+                                        e.currentTarget.style.boxShadow = 'var(--shadow-gold)';
                                     }}
                                     onMouseLeave={(e) => {
-                                        e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.3)';
+                                        e.currentTarget.style.borderColor = 'var(--border-medium)';
                                         e.currentTarget.style.transform = 'translateY(0)';
                                         e.currentTarget.style.boxShadow = 'none';
                                     }}
                                 >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: '1 1 200px', minWidth: 0 }}>
                                         <div style={{
-                                            width: '48px',
-                                            height: '48px',
+                                            width: '46px',
+                                            height: '46px',
                                             borderRadius: '14px',
-                                            background: 'rgba(212, 165, 55, 0.12)',
-                                            border: '1px solid rgba(212, 165, 55, 0.3)',
-                                            color: '#F5D061',
+                                            background: 'var(--gold-metallic-soft)',
+                                            border: '1px solid var(--border-medium)',
+                                            color: 'var(--gold-400)',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             fontSize: '20px',
                                             flexShrink: 0,
                                         }}>
-                                            <Smartphone size={20} color="#F5D061" />
+                                            <Smartphone size={20} color="var(--gold-400)" />
                                         </div>
 
-                                        <div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                                <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: '#FFFFFF' }}>
+                                        <div style={{ minWidth: 0, flex: 1 }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                                                <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                     {order.product?.name || 'بيع تارجت'}
                                                 </h4>
-                                                <span style={{ fontSize: '12px', color: '#F5D061', fontWeight: '700' }}>
+                                                <span style={{ fontSize: '12px', color: 'var(--gold-400)', fontWeight: '700', fontFamily: 'monospace' }}>
                                                     #{order.id}
                                                 </span>
                                             </div>
-                                            <div style={{ fontSize: '12px', color: '#8E8E98' }}>
+                                            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                                                 {new Date(order.created_at).toLocaleDateString('ar-EG', {
                                                     year: 'numeric',
                                                     month: 'short',
@@ -222,12 +224,12 @@ export default function TargetOrdersPage() {
                                         </div>
                                     </div>
 
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                        <div style={{ textAlign: 'left' }}>
-                                            <div style={{ fontSize: '11px', color: '#8E8E98', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexShrink: 0 }}>
+                                        <div style={{ textAlign: isRtl ? 'left' : 'right' }}>
+                                            <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '2px' }}>
                                                 الصافي المستحق
                                             </div>
-                                            <div style={{ fontSize: '16px', fontWeight: '900', color: '#22C55E' }}>
+                                            <div style={{ fontSize: '16px', fontWeight: '900', color: '#22C55E', direction: 'ltr', fontFamily: 'Outfit, Cairo, sans-serif' }}>
                                                 {netPayout} EGP
                                             </div>
                                         </div>
@@ -245,6 +247,7 @@ export default function TargetOrdersPage() {
                                         </div>
                                     </div>
                                 </Link>
+
                             );
                         })}
                     </div>

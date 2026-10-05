@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { developerApi } from '../api/endpoints';
 import { ShieldCheck, Lock, Clock, Send, MessageCircle, Key, RefreshCw, Copy, Check, Terminal, ExternalLink } from 'lucide-react';
 import "../../css/developerApi.css";
+
 
 export default function DeveloperApiPage() {
     const { user } = useAuth();
@@ -134,15 +136,17 @@ export default function DeveloperApiPage() {
     };
 
     return (
-        <div className="developer-api-page" style={{
-            maxWidth: '1100px',
-            width: '100%',
-            boxSizing: 'border-box',
-            margin: '0 auto',
-            padding: '30px 20px 80px',
-            color: '#f3f4f6',
-            fontFamily: 'inherit'
-        }}>
+        <MainLayout>
+            <div className="developer-api-page" style={{
+                maxWidth: '1100px',
+                width: '100%',
+                boxSizing: 'border-box',
+                margin: '0 auto',
+                padding: '10px 0 60px',
+                color: '#f3f4f6',
+                fontFamily: 'inherit'
+            }}>
+
             {/* Header */}
             <div className="developer-api-header" style={{
                 display: 'flex',
@@ -758,5 +762,7 @@ export default function DeveloperApiPage() {
                 </div>
             )}
         </div>
+    </MainLayout>
     );
 }
+

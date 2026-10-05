@@ -16,13 +16,13 @@ import {
     Mail,
     Sliders,
 } from 'lucide-react';
+import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import { settingsApi } from '../api/endpoints';
 import { requestNotificationPermission } from '../services/firebaseMessaging';
 import Button from '../components/ui/Button';
-
 
 export default function SettingsPage() {
     const { user, logout } = useAuth();
@@ -99,7 +99,9 @@ export default function SettingsPage() {
     };
 
     return (
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 16px 80px' }}>
+        <MainLayout>
+            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '10px 0 60px' }}>
+
             {/* Header */}
             <div style={{
                 display: 'flex',
@@ -393,5 +395,7 @@ export default function SettingsPage() {
                 </div>
             </div>
         </div>
+    </MainLayout>
     );
 }
+

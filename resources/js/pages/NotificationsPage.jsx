@@ -10,9 +10,11 @@ import {
     ChevronLeft,
     ChevronRight,
 } from 'lucide-react';
+import MainLayout from '../layouts/MainLayout';
 import { notificationsApi } from '../api/endpoints';
 import { useToast } from '../contexts/ToastContext';
 import NotificationItem from '../components/notifications/NotificationItem';
+
 
 export default function NotificationsPage() {
     const { addToast } = useToast();
@@ -144,16 +146,18 @@ export default function NotificationsPage() {
     };
 
     return (
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 16px 80px' }}>
-            {/* Header Title Section */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '16px',
-                marginBottom: '24px',
-            }}>
+        <MainLayout>
+            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '10px 0 60px' }}>
+                {/* Header Title Section */}
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '16px',
+                    marginBottom: '24px',
+                }}>
+
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                     <div style={{
                         width: '52px',
@@ -408,5 +412,7 @@ export default function NotificationsPage() {
                 </div>
             )}
         </div>
+    </MainLayout>
     );
 }
+

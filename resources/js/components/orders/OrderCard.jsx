@@ -2,8 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, Zap, Clock, CheckCircle2, XCircle, RefreshCw, Gamepad2 } from 'lucide-react';
 import Badge from '../ui/Badge';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function OrderCard({ order }) {
+    const { isRtl } = useLanguage();
     if (!order) return null;
 
     const getStatusConfig = (status) => {
@@ -49,43 +51,44 @@ export default function OrderCard({ order }) {
         <Link
             to={`/orders/${order.public_id || order.id}`}
             style={{
-                background: 'rgba(26, 26, 36, 0.75)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border-medium)',
                 borderRadius: '18px',
-                padding: '20px 22px',
+                padding: 'clamp(14px, 2.5vw, 20px)',
                 display: 'flex',
                 flexWrap: 'wrap',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                gap: '16px',
+                gap: '14px',
                 textDecoration: 'none',
-                transition: 'all 0.25s ease',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                boxSizing: 'border-box',
+                width: '100%',
             }}
             onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#D4A537';
+                e.currentTarget.style.borderColor = 'var(--gold-400)';
                 e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.4)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-gold)';
             }}
             onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                e.currentTarget.style.borderColor = 'var(--border-medium)';
                 e.currentTarget.style.transform = 'translateY(0)';
                 e.currentTarget.style.boxShadow = 'none';
             }}
         >
             {/* Left Column: Image & Details */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: '1 1 240px', minWidth: 0 }}>
                 <div style={{
-                    width: '56px',
-                    height: '56px',
+                    width: '52px',
+                    height: '52px',
                     borderRadius: '14px',
-                    background: '#121218',
+                    background: 'var(--bg-elevated)',
                     overflow: 'hidden',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '26px',
                     flexShrink: 0,
-                    border: '1px solid rgba(212, 165, 55, 0.2)',
+                    border: '1px solid var(--border-subtle)',
                 }}>
                     {order.product?.image_url ? (
                         <img
@@ -98,53 +101,53 @@ export default function OrderCard({ order }) {
                     )}
                 </div>
 
-                <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                        <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '800', color: '#FFFFFF' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
+                        <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {order.product?.name || 'طلب شحن'}
                         </h4>
-                        <span style={{ fontSize: '12px', color: '#D4A537', fontWeight: '700' }}>
+                        <span style={{ fontSize: '12px', color: 'var(--gold-400)', fontWeight: '700', fontFamily: 'monospace' }}>
                             {orderId}
                         </span>
                     </div>
 
-                    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#9E9EA8' }}>
-                        <span>باقة: <strong style={{ color: '#E2E8F0' }}>{order.tier?.name || 'باقة مخصصة'}</strong></span>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px', fontSize: '12.5px', color: 'var(--text-secondary)' }}>
+                        <span>باقة: <strong style={{ color: 'var(--text-primary)' }}>{order.tier?.name || 'باقة مخصصة'}</strong></span>
                         <span>•</span>
-                        <span>الكمية: <strong style={{ color: '#E2E8F0' }}>{order.quantity}</strong></span>
+                        <span>الكمية: <strong style={{ color: 'var(--text-primary)' }}>{order.quantity}</strong></span>
                         {order.player_id && (
                             <>
                                 <span>•</span>
-                                <span>ID: <strong style={{ color: '#CBD5E1' }}>{order.player_id}</strong></span>
+                                <span>ID: <strong style={{ color: 'var(--text-primary)', fontFamily: 'monospace' }}>{order.player_id}</strong></span>
                             </>
                         )}
                     </div>
 
-                    <span style={{ fontSize: '11px', color: '#656570', display: 'block', marginTop: '4px' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginTop: '4px' }}>
                         {formattedDate}
                     </span>
                 </div>
             </div>
 
             {/* Right Column: Status & Price */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexShrink: 0 }}>
+                <div style={{ textAlign: isRtl ? 'left' : 'right', display: 'flex', flexDirection: 'column', alignItems: isRtl ? 'flex-end' : 'flex-start', gap: '6px' }}>
                     <Badge variant={statusConfig.variant} size="md">
                         {statusConfig.label}
                     </Badge>
 
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
-                        <span style={{ fontSize: '18px', fontWeight: '900', color: '#FFFFFF' }}>
+                        <span style={{ fontSize: '17px', fontWeight: '900', color: 'var(--text-primary)' }}>
                             {amount}
                         </span>
-                        <span style={{ fontSize: '12px', color: '#D4A537', fontWeight: '700' }}>
+                        <span style={{ fontSize: '12px', color: 'var(--gold-400)', fontWeight: '700' }}>
                             ج.م
                         </span>
                     </div>
                 </div>
 
-                <div style={{ color: '#D4A537' }}>
-                    <ChevronLeft size={20} />
+                <div style={{ color: 'var(--gold-400)', flexShrink: 0 }}>
+                    <ChevronLeft size={18} />
                 </div>
             </div>
         </Link>

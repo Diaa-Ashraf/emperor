@@ -25,6 +25,7 @@ import {
     RefreshCw,
     QrCode,
 } from 'lucide-react';
+import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { profileApi } from '../api/endpoints';
@@ -34,6 +35,7 @@ import Select from '../components/ui/Select';
 import Modal from '../components/ui/Modal';
 import PhoneVerificationModal from '../components/auth/PhoneVerificationModal';
 import TwoFactorModal from '../components/auth/TwoFactorModal';
+
 
 export default function ProfilePage() {
     const { user, refreshProfile, setUser } = useAuth();
@@ -191,18 +193,20 @@ export default function ProfilePage() {
     ];
 
     return (
-        <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '24px 16px 80px' }}>
-            {/* Top User Hero Card */}
-            <div style={{
-                background: 'linear-gradient(135deg, rgba(28, 28, 38, 0.95) 0%, rgba(18, 18, 24, 0.95) 100%)',
-                border: '1px solid rgba(212, 165, 55, 0.25)',
-                borderRadius: '24px',
-                padding: '30px',
-                marginBottom: '28px',
-                position: 'relative',
-                overflow: 'hidden',
-                boxShadow: '0 12px 30px rgba(0, 0, 0, 0.4)',
-            }}>
+        <MainLayout>
+            <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '10px 0 60px' }}>
+                {/* Top User Hero Card */}
+                <div style={{
+                    background: 'linear-gradient(135deg, rgba(28, 28, 38, 0.95) 0%, rgba(18, 18, 24, 0.95) 100%)',
+                    border: '1px solid rgba(212, 165, 55, 0.25)',
+                    borderRadius: '24px',
+                    padding: 'clamp(18px, 3.5vw, 30px)',
+                    marginBottom: '28px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    boxShadow: '0 12px 30px rgba(0, 0, 0, 0.4)',
+                }}>
+
                 {/* Background Gold Glow */}
                 <div style={{
                     position: 'absolute',
@@ -858,5 +862,7 @@ export default function ProfilePage() {
                 }}
             />
         </div>
+    </MainLayout>
     );
 }
+

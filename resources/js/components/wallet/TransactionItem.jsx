@@ -65,7 +65,7 @@ export default function TransactionItem({ transaction }) {
                     icon: isCredit ? ArrowDownLeft : ArrowUpRight,
                     color: isCredit ? '#22C55E' : '#EF4444',
                     bg: isCredit ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                    border: 'rgba(255, 255, 255, 0.1)',
+                    border: 'rgba(212, 165, 55, 0.2)',
                 };
         }
     };
@@ -92,30 +92,33 @@ export default function TransactionItem({ transaction }) {
 
     return (
         <div style={{
-            background: 'rgba(26, 26, 36, 0.65)',
-            border: '1px solid rgba(255, 255, 255, 0.07)',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-subtle)',
             borderRadius: '16px',
-            padding: '16px 18px',
+            padding: 'clamp(12px, 2.5vw, 16px) 18px',
             display: 'flex',
+            flexWrap: 'wrap',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: '14px',
+            gap: '12px',
             transition: 'all 0.2s ease',
+            boxSizing: 'border-box',
+            width: '100%',
         }}
         onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.3)';
-            e.currentTarget.style.background = 'rgba(26, 26, 36, 0.9)';
+            e.currentTarget.style.borderColor = 'var(--border-strong)';
+            e.currentTarget.style.transform = 'translateY(-1px)';
         }}
         onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.07)';
-            e.currentTarget.style.background = 'rgba(26, 26, 36, 0.65)';
+            e.currentTarget.style.borderColor = 'var(--border-subtle)';
+            e.currentTarget.style.transform = 'translateY(0)';
         }}
         >
             {/* Left: Icon & Description */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: '1 1 200px', minWidth: 0 }}>
                 <div style={{
-                    width: '44px',
-                    height: '44px',
+                    width: '42px',
+                    height: '42px',
                     borderRadius: '12px',
                     background: config.bg,
                     border: `1px solid ${config.border}`,
@@ -125,40 +128,40 @@ export default function TransactionItem({ transaction }) {
                     justifyContent: 'center',
                     flexShrink: 0,
                 }}>
-                    <Icon size={20} />
+                    <Icon size={18} />
                 </div>
 
-                <div>
+                <div style={{ minWidth: 0, flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                        <span style={{ fontSize: '15px', fontWeight: '800', color: '#FFFFFF' }}>
+                        <span style={{ fontSize: '14.5px', fontWeight: '800', color: 'var(--text-primary)' }}>
                             {config.label}
                         </span>
                     </div>
 
-                    <p style={{ margin: '0 0 4px', fontSize: '13px', color: '#9E9EA8' }}>
+                    <p style={{ margin: '0 0 2px', fontSize: '12.5px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {transaction.description || 'عملية على محفظة إمبراطور'}
                     </p>
 
-                    <span style={{ fontSize: '11px', color: '#656570' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                         {formattedDate}
                     </span>
                 </div>
             </div>
 
             {/* Right: Amount & Balance After */}
-            <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0 }}>
                 <div style={{
-                    fontSize: '17px',
+                    fontSize: '16px',
                     fontWeight: '900',
-                    color: isCredit ? '#4ADE80' : '#F87171',
+                    color: isCredit ? '#22C55E' : '#EF4444',
                     direction: 'ltr',
-                    fontFamily: 'Cairo, sans-serif',
+                    fontFamily: 'Outfit, Cairo, sans-serif',
                 }}>
                     {isCredit ? `+${amount}` : `-${amount}`} ج.م
                 </div>
 
-                <span style={{ fontSize: '12px', color: '#8E8E98', marginTop: '2px' }}>
-                    الرصيد بعدها: <strong style={{ color: '#CBD5E1' }}>{balanceAfter} ج.م</strong>
+                <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    الرصيد: <strong style={{ color: 'var(--text-secondary)' }}>{balanceAfter} ج.م</strong>
                 </span>
             </div>
         </div>
