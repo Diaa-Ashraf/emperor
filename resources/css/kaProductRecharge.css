@@ -464,3 +464,111 @@
         font-size: 13px;
     }
 }
+
+/* ==========================================================================
+   LIGHT MODE OVERRIDES FOR KA-PRODUCT RECHARGE
+   ========================================================================== */
+.light .ka-recharge-card {
+    background: #ffffff;
+    border-color: rgba(212, 165, 55, 0.45);
+    box-shadow: 0 15px 40px rgba(15, 23, 42, 0.08), 0 0 25px rgba(212, 165, 55, 0.15);
+}
+
+.light .ka-card-close-btn {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+}
+
+.light .ka-avatar-circle {
+    background: #ffffff;
+    box-shadow: 0 0 20px rgba(212, 165, 55, 0.35);
+}
+
+.light .ka-product-title {
+    color: #0f172a;
+}
+
+.light .ka-package-selector-bar {
+    background: #f8fafc;
+    border-color: rgba(212, 165, 55, 0.35);
+}
+
+.light .ka-package-name {
+    color: #0f172a;
+}
+
+.light .ka-tier-pill {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.light .ka-tier-pill:hover {
+    background: #f1f5f9;
+    border-color: #d4a537;
+}
+
+.light .ka-tier-pill.selected {
+    background: linear-gradient(135deg, rgba(212, 165, 55, 0.15) 0%, rgba(248, 232, 184, 0.25) 100%);
+    border-color: #d4a537;
+}
+
+.light .ka-tier-pill-title {
+    color: #334155;
+}
+
+.light .ka-tier-pill.selected .ka-tier-pill-title {
+    color: #0f172a;
+}
+
+.light .ka-metric-box {
+    background: #f8fafc;
+    border-color: rgba(212, 165, 55, 0.35);
+}
+
+.light .ka-metric-label {
+    color: #64748b;
+}
+
+.light .ka-total-val {
+    color: #0f172a;
+}
+
+.light .ka-qty-btn {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+    color: #1e293b;
+}
+
+.light .ka-qty-num-input {
+    background: #ffffff;
+    border-color: rgba(212, 165, 55, 0.4);
+    color: #0f172a;
+}
+
+.light .ka-user-input-card {
+    background: #f8fafc;
+    border-color: rgba(212, 165, 55, 0.35);
+}
+
+.light .ka-input-title {
+    color: #0f172a;
+}
+
+.light .ka-text-input {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+.light .ka-cancel-btn {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+}
+
+.light .ka-cancel-btn:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+

@@ -84,7 +84,9 @@
 }
 
 /* ── Light Mode (KA-Cards Porcelain & Ice-Blue Palette) ── */
-.light {
+.light,
+html.light,
+[data-theme="light"] {
     --bg-main: #ebf4fc;
     --bg-surface: #ffffff;
     --bg-card: #ffffff;
@@ -122,6 +124,117 @@
     --glass-bg-heavy: rgba(255, 255, 255, 0.95);
     --glass-blur: blur(20px) saturate(1.4);
     --glass-blur-heavy: blur(32px) saturate(1.6);
+}
+
+/* ── Light Mode Global Typography & Surface Rules ── */
+.light body,
+html.light body {
+    background-color: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+}
+
+.light h1,
+.light h2,
+.light h3,
+.light h4,
+.light h5,
+.light h6 {
+    color: var(--text-primary);
+}
+
+.light p {
+    color: var(--text-secondary);
+}
+
+.light label {
+    color: var(--text-primary);
+}
+
+.light input,
+.light textarea,
+.light select {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--border-medium);
+}
+
+.light input::placeholder,
+.light textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.light .emperor-page-card,
+.light .emperor-card {
+    background: var(--bg-card);
+    border-color: var(--border-medium);
+    box-shadow: var(--shadow-md);
+}
+
+.light .emperor-glass {
+    background: var(--glass-bg);
+    border-color: var(--border-subtle);
+}
+
+.light .emperor-glass-heavy {
+    background: var(--glass-bg-heavy);
+    border-color: var(--border-medium);
+}
+
+.light .emperor-input {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--border-medium);
+}
+
+.light .emperor-btn-ghost {
+    color: var(--gold-600);
+    border-color: var(--gold-400);
+}
+
+.light .emperor-btn-ghost:hover {
+    background: rgba(212, 165, 55, 0.12);
+}
+
+/* Override inline white/light colors when viewed in light mode */
+.light [style*="color: #FFFFFF"]:not(.emperor-btn-primary):not(.ka-buy-btn):not([data-keep-color]),
+.light [style*="color: #ffffff"]:not(.emperor-btn-primary):not(.ka-buy-btn):not([data-keep-color]),
+.light [style*="color: rgb(255, 255, 255)"]:not(.emperor-btn-primary):not(.ka-buy-btn):not([data-keep-color]),
+.light [style*="color: white"]:not(.emperor-btn-primary):not(.ka-buy-btn):not([data-keep-color]) {
+    color: var(--text-primary) !important;
+}
+
+.light [style*="color: #F3F4F6"]:not(.emperor-btn-primary),
+.light [style*="color: #f3f4f6"]:not(.emperor-btn-primary),
+.light [style*="color: #E2E8F0"]:not(.emperor-btn-primary),
+.light [style*="color: #e2e8f0"]:not(.emperor-btn-primary) {
+    color: var(--text-primary) !important;
+}
+
+.light [style*="color: #CBD5E1"]:not(.emperor-btn-primary),
+.light [style*="color: #cbd5e1"]:not(.emperor-btn-primary),
+.light [style*="color: #A0A0B0"]:not(.emperor-btn-primary),
+.light [style*="color: #a0a0b0"]:not(.emperor-btn-primary),
+.light [style*="color: #9CA3AF"]:not(.emperor-btn-primary),
+.light [style*="color: #9ca3af"]:not(.emperor-btn-primary),
+.light [style*="color: #94A3B8"]:not(.emperor-btn-primary),
+.light [style*="color: #94a3b8"]:not(.emperor-btn-primary) {
+    color: var(--text-secondary) !important;
+}
+
+.light [style*="color: #71717A"],
+.light [style*="color: #71717a"],
+.light [style*="color: #5A5A6A"],
+.light [style*="color: #5a5a6a"],
+.light [style*="color: #64748B"],
+.light [style*="color: #64748b"] {
+    color: var(--text-muted) !important;
+}
+
+.light [style*="color: #F8E8B8"],
+.light [style*="color: #f8e8b8"],
+.light [style*="color: #F5D061"],
+.light [style*="color: #f5d061"] {
+    color: var(--text-gold) !important;
 }
 
 

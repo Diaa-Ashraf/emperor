@@ -29,7 +29,7 @@
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </head>
-<body class="bg-[#070709] text-white font-['Cairo',sans-serif] antialiased selection:bg-[#D4A537] selection:text-[#070709]">
+<body class="font-['Cairo',sans-serif] antialiased">
     <div id="app"></div>
 </body>
 </html>
