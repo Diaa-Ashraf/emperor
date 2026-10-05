@@ -33,6 +33,61 @@ export default function FaqAccordion() {
             q: 'أنا صاحب متجر أو موقع، كيف يمكنني ربط موقعي بـ API إمبراطور؟',
             a: 'نوفر للتجار والموزعين واجهة برمجية كاملة (API) تتيح مزامنة الأسعار وإرسال طلبات الشحن تلقائياً وخصم القيمة من محفظتك. يمكنك ترقية حسابك إلى رتبة «وكيل معتمد» أو التواصل مع الدعم الفني لاستلام مفتاح الـ API وتوثيق الاندماج.',
         },
+        {
+            q: 'من هو مطور ومبرمج منصة إمبراطور؟ وكيف يمكنني طلب مشروع أو سيستم مماثل؟',
+            a: (
+                <div>
+                    <span>تم تصميم وبرمجة منصة إمبراطور بأعلى معايير الأمان والسرعة بواسطة المهندس </span>
+                    <strong style={{ color: 'var(--gold-400)' }}>ضياء الشافعي (Diaa Elshafey)</strong>
+                    <span> وفريق </span>
+                    <strong style={{ color: 'var(--gold-400)' }}>Stackway</strong>.
+                    <br />
+                    <span>لطلب وتطوير منصات شحن رقمي، متاجر إلكترونية، أو أنظمة SaaS مخصصة:</span>
+                    <div style={{ marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+                        <a
+                            href="https://wa.me/201202325201"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: '7px 14px',
+                                borderRadius: '10px',
+                                background: 'rgba(34, 197, 94, 0.15)',
+                                border: '1px solid rgba(34, 197, 94, 0.4)',
+                                color: '#22C55E',
+                                textDecoration: 'none',
+                                fontWeight: '800',
+                                fontSize: '13px',
+                            }}
+                        >
+                            <span>واتساب: 01202325201 (+201202325201)</span>
+                        </a>
+                        <a
+                            href="https://portfolio.stackway.cloud"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: '7px 14px',
+                                borderRadius: '10px',
+                                background: 'rgba(212, 165, 55, 0.15)',
+                                border: '1px solid rgba(212, 165, 55, 0.4)',
+                                color: 'var(--gold-400)',
+                                textDecoration: 'none',
+                                fontWeight: '800',
+                                fontSize: '13px',
+                            }}
+                        >
+                            <span>معرض الأعمال (Portfolio Stackway)</span>
+                        </a>
+                    </div>
+                </div>
+            ),
+        },
     ];
 
     const [openIndex, setOpenIndex] = useState(-1);

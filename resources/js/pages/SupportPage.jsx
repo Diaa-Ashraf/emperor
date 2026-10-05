@@ -127,6 +127,61 @@ export default function SupportPage() {
             q: 'كيف يعمل برنامج الإحالات وجني الأرباح؟',
             a: 'بمجرد تسجيلك، تحصل على كود ورابط إحالة خاص بك. شاركه مع أصدقائك أو متابعيك، وستربح نسبة عمولة نقدية مباشرة تضاف لمحفظتك مع كل عملية شحن أو بيع تارجت يقومون بها مدى الحياة!',
         },
+        {
+            q: 'من هو مطور ومبرمج منصة إمبراطور؟ وكيف يمكنني طلب مشروع برمجي؟',
+            a: (
+                <div>
+                    <span>تم بناء وتطوير منصة إمبراطور بكامل تقنياتها بواسطة المهندس </span>
+                    <strong style={{ color: '#D4A537' }}>ضياء الشافعي (Diaa Elshafey)</strong>
+                    <span> وفريق </span>
+                    <strong style={{ color: '#D4A537' }}>Stackway</strong>.
+                    <br />
+                    <span>لطلب مشاريع برمجية، منصات شحن ألعاب، أو ربط API وتطوير تطبيقات:</span>
+                    <div style={{ marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+                        <a
+                            href="https://wa.me/201202325201"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: '7px 14px',
+                                borderRadius: '10px',
+                                background: 'rgba(34, 197, 94, 0.15)',
+                                border: '1px solid rgba(34, 197, 94, 0.4)',
+                                color: '#4ADE80',
+                                textDecoration: 'none',
+                                fontWeight: '800',
+                                fontSize: '13px',
+                            }}
+                        >
+                            <span>واتساب: 01202325201 (+201202325201)</span>
+                        </a>
+                        <a
+                            href="https://portfolio.stackway.cloud"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: '7px 14px',
+                                borderRadius: '10px',
+                                background: 'rgba(212, 165, 55, 0.15)',
+                                border: '1px solid rgba(212, 165, 55, 0.4)',
+                                color: '#F5D061',
+                                textDecoration: 'none',
+                                fontWeight: '800',
+                                fontSize: '13px',
+                            }}
+                        >
+                            <span>معرض الأعمال (Portfolio Stackway)</span>
+                        </a>
+                    </div>
+                </div>
+            ),
+        },
     ];
 
     const getChannelAction = (contact) => {
