@@ -16,6 +16,7 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'role' => $this->role?->value ?? 'customer',
             'role_label' => $this->role?->label() ?? 'عميل',
+            'is_admin' => (bool) ($this->isAdmin() || ($this->role?->value ?? $this->role) === 'admin'),
             'status' => $this->status?->value ?? 'active',
             'currency' => $this->currency ?? 'EGP',
             'country' => $this->country,

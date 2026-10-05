@@ -342,6 +342,7 @@ export default function CategoryPage() {
                                             alt=""
                                             loading="lazy"
                                             decoding="async"
+                                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                             style={{ width: '18px', height: '18px', objectFit: 'contain', borderRadius: '4px' }}
                                         />
                                     ) : (
@@ -415,11 +416,7 @@ export default function CategoryPage() {
                         <LoadingSpinner text="جاري تحميل المنتجات والأسعار..." />
                     </div>
                 ) : filteredProducts.length > 0 ? (
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 240px), 1fr))',
-                        gap: '20px',
-                    }}>
+                    <div className="emperor-products-grid">
                         {filteredProducts.map((product) => (
                             <ProductCard key={product.id} product={product} />
                         ))}

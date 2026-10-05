@@ -98,6 +98,16 @@ export default function LoginPage() {
             }
 
             if (data?.token) {
+                const user = data?.user;
+                const userRole = user?.role?.value || user?.role;
+                const isAdmin = user?.is_admin === true || userRole === 'admin';
+
+                if (isAdmin) {
+                    success('تم تسجيل الدخول بنجاح! مرحباً بك يا مدير، جاري توجيهك إلى لوحة الإدارة...');
+                    window.location.href = '/admin';
+                    return;
+                }
+
                 success('تم تسجيل الدخول بنجاح، مرحباً بك');
                 navigate(from, { replace: true });
             }
@@ -182,6 +192,16 @@ export default function LoginPage() {
 
             const data = await login2FA(payload);
             if (data?.token) {
+                const user = data?.user;
+                const userRole = user?.role?.value || user?.role;
+                const isAdmin = user?.is_admin === true || userRole === 'admin';
+
+                if (isAdmin) {
+                    success('تم التحقق وتسجيل الدخول بنجاح! جاري توجيهك إلى لوحة الإدارة...');
+                    window.location.href = '/admin';
+                    return;
+                }
+
                 success('تم التحقق وتسجيل الدخول بنجاح');
                 navigate(from, { replace: true });
             }

@@ -1705,6 +1705,64 @@ body {
         word-break: break-all !important;
         white-space: pre-wrap !important;
     }
+
+    /* 2-Column Mobile Product Card Adjustments */
+    .emperor-product-card-luxury {
+        border-radius: 16px !important;
+    }
+    .emperor-product-card-luxury .card-media-wrap {
+        height: 112px !important;
+        padding: 8px !important;
+    }
+    .emperor-product-card-luxury .card-body-wrap {
+        padding: 10px 10px 8px !important;
+    }
+    .emperor-product-card-luxury .card-app-icon {
+        width: 60px !important;
+        height: 60px !important;
+    }
+    .emperor-product-card-luxury .card-product-title {
+        font-size: 13.5px !important;
+        margin-bottom: 2px !important;
+    }
+    .emperor-product-card-luxury .card-product-desc {
+        display: none !important;
+    }
+    .emperor-product-card-luxury .card-price-label {
+        font-size: 9.5px !important;
+        margin-bottom: 0px !important;
+    }
+    .emperor-product-card-luxury .card-price-val {
+        font-size: 13.5px !important;
+    }
+    .emperor-product-card-luxury .card-action-btn {
+        padding: 5px 9px !important;
+        font-size: 11px !important;
+        border-radius: 10px !important;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EMPEROR RESPONSIVE 2-COL PRODUCTS GRID
+   ═══════════════════════════════════════════════════════════════ */
+.emperor-products-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+@media (min-width: 640px) {
+    .emperor-products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .emperor-products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
 }
 
 @keyframes fadeIn {

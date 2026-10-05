@@ -23,7 +23,7 @@ class StoreProductRequest extends FormRequest
             'slug' => ['nullable', 'string', 'max:255', 'unique:products,slug'],
             'type' => ['required', Rule::enum(ProductType::class)],
             'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:3072'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:10240'],
             'player_id_label' => ['nullable', 'string', 'max:100'],
             'player_id_validation_regex' => ['nullable', 'string', 'max:255'],
             'has_server_id' => ['nullable', 'boolean'],
@@ -54,6 +54,8 @@ class StoreProductRequest extends FormRequest
             'slug.unique' => 'الرابط المخصص مستخدم بالفعل.',
             'type.required' => 'يرجى تحديد نوع المنتج.',
             'image.image' => 'يجب أن يكون ملف الصورة صالحاً.',
+            'image.mimes' => 'صيغة الصورة يجب أن تكون PNG أو JPG أو WEBP أو SVG.',
+            'image.max' => 'حجم الصورة يجب ألا يتجاوز 10 ميجابايت.',
             'tiers.*.name.required' => 'يرجى إدخال اسم الباقة/الفئة.',
             'tiers.*.source_cost.required' => 'يرجى إدخال سعر التكلفة للباقة.',
         ];

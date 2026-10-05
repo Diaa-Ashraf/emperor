@@ -65,9 +65,9 @@ export default function ProductCard({ product }) {
             }}
         >
             {/* Top Media Container */}
-            <div style={{
+            <div className="card-media-wrap" style={{
                 position: 'relative',
-                height: 'clamp(120px, 20vw, 150px)',
+                height: 'clamp(112px, 18vw, 150px)',
                 background: isLight ? 'linear-gradient(180deg, #f0f7fd 0%, #e2eefa 100%)' : 'linear-gradient(180deg, #181824 0%, #0D0D12 100%)',
                 display: 'flex',
                 alignItems: 'center',
@@ -78,8 +78,8 @@ export default function ProductCard({ product }) {
                 {/* Floating Instant Delivery Badge */}
                 <div style={{
                     position: 'absolute',
-                    top: '10px',
-                    right: '10px',
+                    top: '8px',
+                    right: '8px',
                     zIndex: 2,
                     display: 'flex',
                     alignItems: 'center',
@@ -88,12 +88,12 @@ export default function ProductCard({ product }) {
                     border: '1px solid rgba(34, 197, 94, 0.4)',
                     color: '#4ADE80',
                     borderRadius: '8px',
-                    padding: '3px 8px',
-                    fontSize: '11px',
+                    padding: '2px 7px',
+                    fontSize: '10.5px',
                     fontWeight: '800',
                     backdropFilter: 'blur(8px)',
                 }}>
-                    <Zap size={11} fill="#4ADE80" />
+                    <Zap size={10} fill="#4ADE80" />
                     <span>فوري</span>
                 </div>
 
@@ -101,18 +101,22 @@ export default function ProductCard({ product }) {
                 {product.category?.name && (
                     <div style={{
                         position: 'absolute',
-                        bottom: '10px',
-                        left: '10px',
+                        bottom: '8px',
+                        left: '8px',
                         zIndex: 2,
                         background: isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(10, 10, 14, 0.85)',
                         border: isLight ? '1px solid rgba(212, 165, 55, 0.5)' : '1px solid rgba(212, 165, 55, 0.3)',
                         color: isLight ? '#9A7210' : '#F5D061',
                         borderRadius: '8px',
-                        padding: '3px 9px',
-                        fontSize: '11px',
+                        padding: '2px 8px',
+                        fontSize: '10px',
                         fontWeight: '800',
                         backdropFilter: 'blur(8px)',
                         boxShadow: isLight ? '0 2px 8px rgba(0, 0, 0, 0.08)' : '0 4px 12px rgba(0, 0, 0, 0.5)',
+                        maxWidth: 'calc(100% - 16px)',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
                     }}>
                         {product.category.name}
                     </div>
@@ -120,17 +124,17 @@ export default function ProductCard({ product }) {
 
                 {/* Main Media Image / 3D App Icon */}
                 {showTargetIcon ? (
-                    <div style={{
-                        width: '84px',
-                        height: '84px',
-                        borderRadius: '20px',
+                    <div className="card-app-icon" style={{
+                        width: '76px',
+                        height: '76px',
+                        borderRadius: '18px',
                         boxShadow: '0 10px 25px rgba(0, 0, 0, 0.65)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         transition: 'transform 0.35s ease',
                     }}>
-                        <TargetAppIconRenderer app={product} size={84} />
+                        <TargetAppIconRenderer app={product} size={76} />
                     </div>
                 ) : imageSrc && !imgError ? (
                     <img
@@ -148,23 +152,23 @@ export default function ProductCard({ product }) {
                         }}
                     />
                 ) : (
-                    <div style={{
-                        width: '84px',
-                        height: '84px',
-                        borderRadius: '20px',
+                    <div className="card-app-icon" style={{
+                        width: '76px',
+                        height: '76px',
+                        borderRadius: '18px',
                         boxShadow: '0 10px 25px rgba(0, 0, 0, 0.65)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}>
-                        <TargetAppIconRenderer app={product} size={84} />
+                        <TargetAppIconRenderer app={product} size={76} />
                     </div>
                 )}
             </div>
 
             {/* Content Body */}
-            <div style={{
-                padding: '16px 16px 14px',
+            <div className="card-body-wrap" style={{
+                padding: '14px 14px 12px',
                 display: 'flex',
                 flexDirection: 'column',
                 flex: 1,
@@ -172,24 +176,27 @@ export default function ProductCard({ product }) {
                 background: isLight ? '#ffffff' : 'rgba(10, 10, 14, 0.6)',
             }}>
                 <div>
-                    <h4 style={{
-                        margin: '0 0 6px',
-                        fontSize: 'clamp(14.5px, 2.5vw, 16px)',
+                    <h4 className="card-product-title" style={{
+                        margin: '0 0 4px',
+                        fontSize: 'clamp(13.5px, 2.5vw, 15.5px)',
                         fontWeight: '900',
                         color: isLight ? '#0f172a' : '#FFFFFF',
                         lineHeight: '1.35',
                         letterSpacing: '-0.3px',
-                    }}>
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                    }} title={product.name}>
                         {product.name}
                     </h4>
 
-                    <p style={{
-                        margin: '0 0 14px',
-                        fontSize: '12.5px',
+                    <p className="card-product-desc" style={{
+                        margin: '0 0 10px',
+                        fontSize: '12px',
                         color: isLight ? '#475569' : '#94A3B8',
-                        lineHeight: '1.6',
+                        lineHeight: '1.5',
                         display: '-webkit-box',
-                        WebkitLineClamp: 2,
+                        WebkitLineClamp: 1,
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden',
                     }}>
@@ -200,22 +207,22 @@ export default function ProductCard({ product }) {
                 {/* Price & Action Row */}
                 <div style={{
                     borderTop: isLight ? '1px solid rgba(200, 225, 245, 0.85)' : '1px solid rgba(255, 255, 255, 0.07)',
-                    paddingTop: '12px',
+                    paddingTop: '10px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    gap: '8px',
+                    gap: '6px',
                 }}>
-                    <div style={{ minWidth: 0 }}>
-                        <span style={{ fontSize: '11px', color: isLight ? '#64748b' : '#8E8E98', display: 'block', fontWeight: '700', marginBottom: '2px' }}>
+                    <div style={{ minWidth: 0, flex: '1 1 auto' }}>
+                        <span className="card-price-label" style={{ fontSize: '10px', color: isLight ? '#64748b' : '#8E8E98', display: 'block', fontWeight: '700', marginBottom: '1px' }}>
                             الأسعار تبدأ من
                         </span>
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
-                            <span style={{ fontSize: '16px', fontWeight: '900', color: isLight ? '#9a7210' : '#D4A537', fontFamily: 'Cairo, sans-serif' }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px', flexWrap: 'nowrap' }}>
+                            <span className="card-price-val" style={{ fontSize: '15px', fontWeight: '900', color: isLight ? '#9a7210' : '#D4A537', fontFamily: 'Cairo, sans-serif', whiteSpace: 'nowrap' }}>
                                 {formattedPrice ? formattedPrice : 'حسب الباقة'}
                             </span>
                             {formattedPrice && (
-                                <span style={{ fontSize: '11px', color: isLight ? '#9a7210' : '#D4A537', fontWeight: '800' }}>
+                                <span style={{ fontSize: '10px', color: isLight ? '#9a7210' : '#D4A537', fontWeight: '800' }}>
                                     ج.م
                                 </span>
                             )}
@@ -225,20 +232,22 @@ export default function ProductCard({ product }) {
                     <Link to={productUrl} style={{ textDecoration: 'none', flexShrink: 0 }}>
                         <button
                             type="button"
+                            className="card-action-btn"
                             style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: '5px',
-                                padding: '8px 16px',
+                                gap: '4px',
+                                padding: '7px 14px',
                                 borderRadius: '12px',
                                 background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
                                 color: '#0A0A0E',
                                 border: 'none',
-                                fontSize: '12.5px',
+                                fontSize: '12px',
                                 fontWeight: '900',
                                 cursor: 'pointer',
                                 boxShadow: '0 4px 15px rgba(212, 165, 55, 0.3)',
                                 transition: 'all 0.2s ease',
+                                whiteSpace: 'nowrap',
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = 'scale(1.04)';
@@ -249,8 +258,8 @@ export default function ProductCard({ product }) {
                                 e.currentTarget.style.boxShadow = '0 4px 15px rgba(212, 165, 55, 0.3)';
                             }}
                         >
-                            <span>شحن الآن</span>
-                            <ChevronLeft size={15} strokeWidth={2.5} />
+                            <span>شحن</span>
+                            <ChevronLeft size={14} strokeWidth={2.5} />
                         </button>
                     </Link>
                 </div>

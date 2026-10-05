@@ -125,6 +125,15 @@ class AuthController extends Controller
             'fcm_token' => $validated['fcm_token'] ?? $user->fcm_token,
         ]);
 
+        // If user is Admin, also authenticate the Laravel web session so /admin routes are immediately accessible
+        if ($user->isAdmin() || $user->role === UserRole::ADMIN) {
+            try {
+                auth()->guard('web')->login($user, (bool) ($validated['remember'] ?? false));
+            } catch (\Throwable $e) {
+                // Session guard fallback
+            }
+        }
+
         $deviceName = $validated['device_name'] ?? 'Web Application';
         $token = $user->createToken($deviceName)->plainTextToken;
 
@@ -195,6 +204,14 @@ class AuthController extends Controller
             'last_login_at' => now(),
             'last_login_ip' => $request->ip(),
         ]);
+
+        if ($user->isAdmin() || $user->role === UserRole::ADMIN) {
+            try {
+                auth()->guard('web')->login($user, true);
+            } catch (\Throwable $e) {
+                // Session guard fallback
+            }
+        }
 
         $deviceName = $request->input('device_name', 'Web Application (2FA)');
         $token = $user->createToken($deviceName)->plainTextToken;
