@@ -30,6 +30,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useToast } from '../../contexts/ToastContext';
+import { getSiteLogo } from '../../utils/settingsHelper';
 
 export default function UserSidebarDrawer({ isOpen, onClose }) {
     const { user, isAuthenticated, logout } = useAuth();
@@ -260,12 +261,12 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             background: isLight ? '#ffffff' : '#050508',
                         }}>
                             <img
-                                src="/images/logo.png"
+                                src={getSiteLogo()}
                                 alt="EMPEROR CARD"
                                 style={{
                                     width: '100%',
                                     height: '100%',
-                                    objectFit: 'cover',
+                                    objectFit: 'contain',
                                 }}
                             />
                         </div>

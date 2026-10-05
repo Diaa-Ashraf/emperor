@@ -7,8 +7,15 @@
 
     <title>{{ config('app.name', 'Emperor') }} - تسجيل الدخول</title>
 
+    @php
+        $siteFavicon = \App\Models\Setting::get('site_favicon') ? asset(\App\Models\Setting::get('site_favicon')) : asset('images/logo.png');
+        $siteLogo = \App\Models\Setting::get('site_logo') ? asset(\App\Models\Setting::get('site_logo')) : asset('images/logo.png');
+        $siteName = \App\Models\Setting::get('site_name', 'Emperor');
+    @endphp
+
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon_io/favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ $siteFavicon }}" type="image/png">
+    <link rel="icon" href="{{ $siteFavicon }}" type="image/png">
 
     <!-- Styles & Scripts via Vite -->
     @vite(['resources/scss/admin.scss', 'resources/js/admin.js'])
@@ -17,8 +24,8 @@
     <div class="container" style="max-width: 460px;">
         <!-- Logo & Branding -->
         <div class="text-center mb-4">
-            <img src="{{ asset('images/logo.png') }}" alt="Emperor Logo" class="mb-3" style="width: 72px; height: 72px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(212, 165, 55, 0.5));">
-            <h2 class="fw-black text-white tracking-wide mb-1">EMPEROR</h2>
+            <img src="{{ $siteLogo }}" alt="Emperor Logo" class="mb-3" style="width: 72px; height: 72px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(212, 165, 55, 0.5));">
+            <h2 class="fw-black text-white tracking-wide mb-1">{{ $siteName }}</h2>
             <p class="text-gold fw-semibold fs-6 mb-0">منصة إمبراطور للخدمات الرقمية وشحن الألعاب</p>
         </div>
 

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { catalogApi, depositsApi, supportApi } from '../../api/endpoints';
 import { useTheme } from '../../contexts/ThemeContext';
+import { getSiteLogo } from '../../utils/settingsHelper';
 
 export default function AppFooter() {
     const { theme } = useTheme();
@@ -110,12 +111,12 @@ export default function AppFooter() {
                             background: isLight ? '#ffffff' : '#050508',
                         }}>
                             <img
-                                src="/images/logo.png"
+                                src={getSiteLogo()}
                                 alt="EMPEROR CARD"
                                 style={{
                                     width: '100%',
                                     height: '100%',
-                                    objectFit: 'cover',
+                                    objectFit: 'contain',
                                 }}
                             />
                         </div>

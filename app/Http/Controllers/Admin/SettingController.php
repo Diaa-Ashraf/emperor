@@ -30,11 +30,25 @@ class SettingController extends Controller
     {
         $validated = $request->validated();
 
-        foreach ($validated as $key => $value) {
-            Setting::set($key, $value, 'general', 'string', true);
+        if ($request->hasFile('site_logo')) {
+            $logoPath = $request->file('site_logo')->store('settings', 'public');
+            Setting::set('site_logo', '/storage/' . $logoPath, 'general', 'string', true);
+            unset($validated['site_logo']);
         }
 
-        return back()->with('success', 'تم حفظ وتحديث الإعدادات العامة بنجاح.');
+        if ($request->hasFile('site_favicon')) {
+            $favPath = $request->file('site_favicon')->store('settings', 'public');
+            Setting::set('site_favicon', '/storage/' . $favPath, 'general', 'string', true);
+            unset($validated['site_favicon']);
+        }
+
+        foreach ($validated as $key => $value) {
+            if (!in_array($key, ['site_logo', 'site_favicon']) && !is_null($value)) {
+                Setting::set($key, $value, 'general', 'string', true);
+            }
+        }
+
+        return back()->with('success', 'تم حفظ وتحديث الإعدادات العامة واللوجو بنجاح.');
     }
 
     /**

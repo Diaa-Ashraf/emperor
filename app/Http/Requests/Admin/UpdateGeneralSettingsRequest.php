@@ -21,6 +21,8 @@ class UpdateGeneralSettingsRequest extends FormRequest
             'target_agency_id' => ['required', 'string', 'max:50'],
             'target_agency_name' => ['required', 'string', 'max:100'],
             'min_wallet_deposit' => ['required', 'numeric', 'min:1'],
+            'site_logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,svg,webp', 'max:5120'],
+            'site_favicon' => ['nullable', 'image', 'mimes:png,ico,jpg,jpeg,svg,webp', 'max:2048'],
         ];
     }
 

@@ -8,7 +8,11 @@
     <title>@yield('title', 'لوحة التحكم') | {{ config('app.name', 'Emperor') }}</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon_io/favicon.ico') }}" type="image/x-icon">
+    @php
+        $adminFavicon = \App\Models\Setting::get('site_favicon') ? asset(\App\Models\Setting::get('site_favicon')) : asset('images/logo.png');
+    @endphp
+    <link rel="shortcut icon" href="{{ $adminFavicon }}" type="image/png">
+    <link rel="icon" href="{{ $adminFavicon }}" type="image/png">
 
     <!-- Styles & Scripts via Vite -->
     @vite(['resources/scss/admin.scss', 'resources/js/admin.js'])

@@ -39,6 +39,7 @@ import AppSplashScreen from '../components/ui/AppSplashScreen';
 import HomeBannerSlider from '../components/home/HomeBannerSlider';
 import PromotionalPopup from '../components/ui/PromotionalPopup';
 import { playNotificationSound } from '../utils/soundHelper';
+import { getSiteLogo, getSiteName } from '../utils/settingsHelper';
 
 export default function MainLayout({ children, showBanner = true }) {
     const { user, isAuthenticated } = useAuth();
@@ -258,12 +259,12 @@ export default function MainLayout({ children, showBanner = true }) {
                                 background: isLight ? '#ffffff' : '#050508',
                             }}>
                                 <img
-                                    src="/images/logo.png"
+                                    src={getSiteLogo()}
                                     alt="EMPEROR CARD"
                                     style={{
                                         width: '100%',
                                         height: '100%',
-                                        objectFit: 'cover',
+                                        objectFit: 'contain',
                                     }}
                                 />
                             </div>

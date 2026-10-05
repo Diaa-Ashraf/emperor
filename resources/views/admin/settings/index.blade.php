@@ -25,8 +25,38 @@
                     <i class="ti ti-adjustments text-gold"></i>
                     <span>بيانات المنصة والدعم</span>
                 </h5>
-                <form method="POST" action="{{ route('admin.settings.update-general') }}">
+                <form method="POST" action="{{ route('admin.settings.update-general') }}" enctype="multipart/form-data">
                     @csrf
+
+                    <!-- Logo and Favicon Section -->
+                    <div class="p-3 mb-4 rounded-3 border border-secondary" style="background: rgba(255, 255, 255, 0.02);">
+                        <h6 class="fw-bold text-gold mb-3 d-flex align-items-center gap-2">
+                            <i class="ti ti-photo"></i>
+                            <span>شعار المنصة وأيقونة التاب (Logo & Favicon)</span>
+                        </h6>
+                        <div class="row g-3">
+                            <!-- Site Logo -->
+                            <div class="col-12 col-md-6">
+                                <label class="form-label text-white fw-semibold fs-7 mb-1">لوجو الموقع الرئيسي (Site Logo)</label>
+                                <div class="d-flex align-items-center gap-3 mb-2 p-2 rounded bg-dark border border-secondary">
+                                    <img id="site_logo_preview" src="{{ !empty($settings['site_logo']) ? asset($settings['site_logo']) : asset('images/logo.png') }}" alt="Logo" style="width: 48px; height: 48px; object-fit: contain; background: #000; border-radius: 8px; padding: 4px;">
+                                    <div class="fs-8 text-muted">اللوجو يظهر في الهيدر، الفوتر، والداشبورد.</div>
+                                </div>
+                                <input type="file" name="site_logo" id="site_logo_input" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this, 'site_logo_preview')">
+                            </div>
+
+                            <!-- Tab Favicon -->
+                            <div class="col-12 col-md-6">
+                                <label class="form-label text-white fw-semibold fs-7 mb-1">أيقونة التاب في المتصفح (Tab Favicon)</label>
+                                <div class="d-flex align-items-center gap-3 mb-2 p-2 rounded bg-dark border border-secondary">
+                                    <img id="site_favicon_preview" src="{{ !empty($settings['site_favicon']) ? asset($settings['site_favicon']) : (!empty($settings['site_logo']) ? asset($settings['site_logo']) : asset('images/logo.png')) }}" alt="Favicon" style="width: 32px; height: 32px; object-fit: contain; background: #000; border-radius: 6px; padding: 2px;">
+                                    <div class="fs-8 text-muted">الأيقونة تظهر بجانب اسم الصفحة في تبويب المتصفح.</div>
+                                </div>
+                                <input type="file" name="site_favicon" id="site_favicon_input" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this, 'site_favicon_preview')">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label text-white fw-semibold">اسم المنصة</label>
                         <input type="text" name="site_name" class="form-control" value="{{ old('site_name', $settings['site_name'] ?? 'Emperor') }}" required>
@@ -156,5 +186,18 @@
             @endforeach
         </div>
     </div>
-    </div>
 @endsection
+
+@push('scripts')
+<script>
+function previewImage(input, previewId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById(previewId).src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+@endpush

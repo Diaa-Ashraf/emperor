@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getSiteLogo, getSiteName } from '../../utils/settingsHelper';
 
 export default function AppSplashScreen() {
     const [visible, setVisible] = useState(true);
@@ -74,13 +75,13 @@ export default function AppSplashScreen() {
                     animation: 'emperorPulseLogo 2.5s ease-in-out infinite',
                 }}>
                     <img
-                        src="/images/logo.png"
+                        src={getSiteLogo()}
                         alt="EMPEROR CARD"
                         style={{
                             width: '100%',
                             height: '100%',
                             borderRadius: '28px',
-                            objectFit: 'cover',
+                            objectFit: 'contain',
                             border: '2px solid rgba(212, 165, 55, 0.6)',
                             boxShadow: '0 0 30px rgba(212, 165, 55, 0.5), inset 0 0 15px rgba(212, 165, 55, 0.3)',
                         }}
