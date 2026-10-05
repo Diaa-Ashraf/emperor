@@ -17,9 +17,7 @@
     <div class="container" style="max-width: 460px;">
         <!-- Logo & Branding -->
         <div class="text-center mb-4">
-            <div class="rounded-circle bg-gold d-inline-flex align-items-center justify-content-center fw-bold mb-3 shadow-lg" style="width: 64px; height: 64px; font-size: 32px; color: #000; box-shadow: 0 0 30px rgba(212, 165, 55, 0.4) !important;">
-                👑
-            </div>
+            <img src="{{ asset('images/logo.png') }}" alt="Emperor Logo" class="mb-3" style="width: 72px; height: 72px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(212, 165, 55, 0.5));">
             <h2 class="fw-black text-white tracking-wide mb-1">EMPEROR</h2>
             <p class="text-gold fw-semibold fs-6 mb-0">منصة إمبراطور للخدمات الرقمية وشحن الألعاب</p>
         </div>

@@ -29,9 +29,10 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Alert on active API providers with low balance (< 30 or configurable)
+        // Alert on active automated API providers with low balance (< 30 or configurable)
         $lowBalanceProviders = \App\Models\Provider::where('is_active', true)
-            ->where('driver', '!=', 'manual')
+            ->where('auto_fulfill', true)
+            ->where('driver', 'not like', 'manual%')
             ->where('balance', '<', 30.00)
             ->get();
 

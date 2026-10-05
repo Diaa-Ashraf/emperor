@@ -2,9 +2,7 @@
     <!-- Brand Logo Area -->
     <div class="logo-area">
         <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center gap-2 text-decoration-none">
-            <div class="rounded-3 bg-gold d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; font-size: 18px; color: #000;">
-                👑
-            </div>
+            <img src="{{ asset('images/logo.png') }}" alt="Emperor Logo" style="width: 38px; height: 38px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(212, 165, 55, 0.4));">
             <div class="logo-text d-flex flex-column">
                 <span class="fw-bold fs-5 text-white tracking-wide">EMPEROR</span>
                 <span class="text-gold" style="font-size: 11px; margin-top: -3px; font-weight: 600;">لوحة الإدارة</span>
