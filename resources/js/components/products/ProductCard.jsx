@@ -3,9 +3,13 @@ import { Link } from 'react-router-dom';
 import { Zap, ChevronLeft, ShieldCheck, Sparkles, ArrowLeft } from 'lucide-react';
 import { TargetAppIconRenderer } from '../target/TargetAppIcons';
 import { formatImageUrl } from '../../utils/imageHelper';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function ProductCard({ product }) {
     if (!product) return null;
+
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
 
     const imageSrc = formatImageUrl(product.image_url || product.image);
     const [imgError, setImgError] = useState(false);
@@ -35,15 +39,17 @@ export default function ProductCard({ product }) {
         <div
             className="emperor-product-card-luxury"
             style={{
-                background: 'linear-gradient(145deg, rgba(22, 22, 30, 0.9) 0%, rgba(12, 12, 16, 0.96) 100%)',
-                border: '1.5px solid rgba(212, 165, 55, 0.22)',
+                background: isLight
+                    ? '#ffffff'
+                    : 'linear-gradient(145deg, rgba(22, 22, 30, 0.9) 0%, rgba(12, 12, 16, 0.96) 100%)',
+                border: isLight ? '1.5px solid rgba(180, 215, 240, 0.95)' : '1.5px solid rgba(212, 165, 55, 0.22)',
                 borderRadius: '22px',
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.45)',
+                boxShadow: isLight ? '0 6px 20px rgba(30, 80, 140, 0.08)' : '0 10px 30px rgba(0, 0, 0, 0.45)',
                 position: 'relative',
                 boxSizing: 'border-box',
                 height: '100%',
@@ -51,19 +57,21 @@ export default function ProductCard({ product }) {
             onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.65)';
                 e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = '0 16px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(212, 165, 55, 0.2)';
+                e.currentTarget.style.boxShadow = isLight
+                    ? '0 12px 30px rgba(30, 80, 140, 0.15), 0 0 20px rgba(212, 165, 55, 0.2)'
+                    : '0 16px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(212, 165, 55, 0.2)';
             }}
             onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.22)';
+                e.currentTarget.style.borderColor = isLight ? 'rgba(180, 215, 240, 0.95)' : 'rgba(212, 165, 55, 0.22)';
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.45)';
+                e.currentTarget.style.boxShadow = isLight ? '0 6px 20px rgba(30, 80, 140, 0.08)' : '0 10px 30px rgba(0, 0, 0, 0.45)';
             }}
         >
             {/* Top Media Container */}
             <div style={{
                 position: 'relative',
                 height: 'clamp(120px, 20vw, 150px)',
-                background: 'linear-gradient(180deg, #181824 0%, #0D0D12 100%)',
+                background: isLight ? 'linear-gradient(180deg, #f0f7fd 0%, #e2eefa 100%)' : 'linear-gradient(180deg, #181824 0%, #0D0D12 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -164,14 +172,14 @@ export default function ProductCard({ product }) {
                 flexDirection: 'column',
                 flex: 1,
                 justifyContent: 'space-between',
-                background: 'rgba(10, 10, 14, 0.6)',
+                background: isLight ? '#ffffff' : 'rgba(10, 10, 14, 0.6)',
             }}>
                 <div>
                     <h4 style={{
                         margin: '0 0 6px',
                         fontSize: 'clamp(14.5px, 2.5vw, 16px)',
                         fontWeight: '900',
-                        color: '#FFFFFF',
+                        color: isLight ? '#0f172a' : '#FFFFFF',
                         lineHeight: '1.35',
                         letterSpacing: '-0.3px',
                     }}>
@@ -181,7 +189,7 @@ export default function ProductCard({ product }) {
                     <p style={{
                         margin: '0 0 14px',
                         fontSize: '12.5px',
-                        color: '#94A3B8',
+                        color: isLight ? '#475569' : '#94A3B8',
                         lineHeight: '1.6',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
@@ -194,7 +202,7 @@ export default function ProductCard({ product }) {
 
                 {/* Price & Action Row */}
                 <div style={{
-                    borderTop: '1px solid rgba(255, 255, 255, 0.07)',
+                    borderTop: isLight ? '1px solid rgba(200, 225, 245, 0.85)' : '1px solid rgba(255, 255, 255, 0.07)',
                     paddingTop: '12px',
                     display: 'flex',
                     alignItems: 'center',
@@ -202,15 +210,15 @@ export default function ProductCard({ product }) {
                     gap: '8px',
                 }}>
                     <div style={{ minWidth: 0 }}>
-                        <span style={{ fontSize: '11px', color: '#8E8E98', display: 'block', fontWeight: '700', marginBottom: '2px' }}>
+                        <span style={{ fontSize: '11px', color: isLight ? '#64748b' : '#8E8E98', display: 'block', fontWeight: '700', marginBottom: '2px' }}>
                             الأسعار تبدأ من
                         </span>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
-                            <span style={{ fontSize: '16px', fontWeight: '900', color: '#D4A537', fontFamily: 'Cairo, sans-serif' }}>
+                            <span style={{ fontSize: '16px', fontWeight: '900', color: isLight ? '#9a7210' : '#D4A537', fontFamily: 'Cairo, sans-serif' }}>
                                 {formattedPrice ? formattedPrice : 'حسب الباقة'}
                             </span>
                             {formattedPrice && (
-                                <span style={{ fontSize: '11px', color: '#D4A537', fontWeight: '800' }}>
+                                <span style={{ fontSize: '11px', color: isLight ? '#9a7210' : '#D4A537', fontWeight: '800' }}>
                                     ج.م
                                 </span>
                             )}

@@ -139,102 +139,163 @@ html.light body {
 .light h4,
 .light h5,
 .light h6 {
-    color: var(--text-primary);
+    color: #0f172a !important;
 }
 
 .light p {
-    color: var(--text-secondary);
+    color: #334155 !important;
 }
 
 .light label {
-    color: var(--text-primary);
+    color: #0f172a !important;
 }
 
 .light input,
 .light textarea,
 .light select {
-    background-color: var(--bg-surface);
-    color: var(--text-primary);
-    border-color: var(--border-medium);
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
 }
 
 .light input::placeholder,
 .light textarea::placeholder {
-    color: var(--text-muted);
+    color: #64748b !important;
 }
 
 .light .emperor-page-card,
 .light .emperor-card {
-    background: var(--bg-card);
-    border-color: var(--border-medium);
-    box-shadow: var(--shadow-md);
+    background: #ffffff !important;
+    border-color: rgba(180, 215, 240, 0.95) !important;
+    box-shadow: 0 4px 18px rgba(30, 80, 140, 0.08) !important;
 }
 
 .light .emperor-glass {
-    background: var(--glass-bg);
-    border-color: var(--border-subtle);
+    background: rgba(255, 255, 255, 0.92) !important;
+    border-color: rgba(200, 225, 245, 0.85) !important;
 }
 
 .light .emperor-glass-heavy {
-    background: var(--glass-bg-heavy);
-    border-color: var(--border-medium);
+    background: rgba(255, 255, 255, 0.98) !important;
+    border-color: rgba(180, 215, 240, 0.95) !important;
 }
 
 .light .emperor-input {
-    background: var(--bg-surface);
-    color: var(--text-primary);
-    border-color: var(--border-medium);
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
 }
 
 .light .emperor-btn-ghost {
-    color: var(--gold-600);
-    border-color: var(--gold-400);
+    color: var(--gold-600) !important;
+    border-color: var(--gold-400) !important;
 }
 
 .light .emperor-btn-ghost:hover {
-    background: rgba(212, 165, 55, 0.12);
+    background: rgba(212, 165, 55, 0.12) !important;
 }
 
-/* Override inline white/light colors when viewed in light mode */
-.light [style*="color: #FFFFFF"]:not(.emperor-btn-primary):not(.ka-buy-btn):not([data-keep-color]),
-.light [style*="color: #ffffff"]:not(.emperor-btn-primary):not(.ka-buy-btn):not([data-keep-color]),
-.light [style*="color: rgb(255, 255, 255)"]:not(.emperor-btn-primary):not(.ka-buy-btn):not([data-keep-color]),
-.light [style*="color: white"]:not(.emperor-btn-primary):not(.ka-buy-btn):not([data-keep-color]) {
-    color: var(--text-primary) !important;
+/* Light Mode Overrides for Hardcoded Text Colors (Hex, lower, upper, and rgb) */
+.light [style*="#FFFFFF"],
+.light [style*="#ffffff"],
+.light [style*="rgb(255, 255, 255)"],
+.light [style*="rgb(255,255,255)"],
+.light [style*="#F3F4F6"],
+.light [style*="#f3f4f6"],
+.light [style*="rgb(243, 244, 246)"],
+.light [style*="rgb(243,244,246)"],
+.light [style*="#E2E8F0"],
+.light [style*="#e2e8f0"],
+.light [style*="rgb(226, 232, 240)"],
+.light [style*="rgb(226,232,240)"] {
+    color: #0f172a !important;
 }
 
-.light [style*="color: #F3F4F6"]:not(.emperor-btn-primary),
-.light [style*="color: #f3f4f6"]:not(.emperor-btn-primary),
-.light [style*="color: #E2E8F0"]:not(.emperor-btn-primary),
-.light [style*="color: #e2e8f0"]:not(.emperor-btn-primary) {
-    color: var(--text-primary) !important;
+.light .emperor-btn-primary,
+.light .emperor-btn-primary *,
+.light .ka-buy-btn,
+.light .ka-buy-btn *,
+.light .btn-primary,
+.light .btn-primary *,
+.light .btn-danger,
+.light .btn-danger *,
+.light .btn-success,
+.light .btn-success * {
+    color: #050507 !important;
 }
 
-.light [style*="color: #CBD5E1"]:not(.emperor-btn-primary),
-.light [style*="color: #cbd5e1"]:not(.emperor-btn-primary),
-.light [style*="color: #A0A0B0"]:not(.emperor-btn-primary),
-.light [style*="color: #a0a0b0"]:not(.emperor-btn-primary),
-.light [style*="color: #9CA3AF"]:not(.emperor-btn-primary),
-.light [style*="color: #9ca3af"]:not(.emperor-btn-primary),
-.light [style*="color: #94A3B8"]:not(.emperor-btn-primary),
-.light [style*="color: #94a3b8"]:not(.emperor-btn-primary) {
-    color: var(--text-secondary) !important;
+.light [style*="#CBD5E1"],
+.light [style*="#cbd5e1"],
+.light [style*="rgb(203, 213, 225)"],
+.light [style*="rgb(203,213,225)"],
+.light [style*="#A0A0B0"],
+.light [style*="#a0a0b0"],
+.light [style*="rgb(160, 160, 176)"],
+.light [style*="rgb(160,160,176)"],
+.light [style*="#9CA3AF"],
+.light [style*="#9ca3af"],
+.light [style*="rgb(156, 163, 175)"],
+.light [style*="rgb(156,163,175)"],
+.light [style*="#94A3B8"],
+.light [style*="#94a3b8"],
+.light [style*="rgb(148, 163, 184)"],
+.light [style*="rgb(148,163,184)"],
+.light [style*="#8E8E98"],
+.light [style*="#8e8e98"],
+.light [style*="rgb(142, 142, 152)"],
+.light [style*="rgb(142,142,152)"],
+.light [style*="#D1D1DB"],
+.light [style*="#d1d1db"],
+.light [style*="rgb(209, 209, 219)"],
+.light [style*="rgb(209,209,219)"] {
+    color: #334155 !important;
 }
 
-.light [style*="color: #71717A"],
-.light [style*="color: #71717a"],
-.light [style*="color: #5A5A6A"],
-.light [style*="color: #5a5a6a"],
-.light [style*="color: #64748B"],
-.light [style*="color: #64748b"] {
-    color: var(--text-muted) !important;
+.light [style*="#71717A"],
+.light [style*="#71717a"],
+.light [style*="rgb(113, 113, 122)"],
+.light [style*="#5A5A6A"],
+.light [style*="#5a5a6a"],
+.light [style*="rgb(90, 90, 106)"],
+.light [style*="#64748B"],
+.light [style*="#64748b"],
+.light [style*="rgb(100, 116, 139)"] {
+    color: #64748b !important;
 }
 
-.light [style*="color: #F8E8B8"],
-.light [style*="color: #f8e8b8"],
-.light [style*="color: #F5D061"],
-.light [style*="color: #f5d061"] {
-    color: var(--text-gold) !important;
+.light [style*="#F8E8B8"],
+.light [style*="#f8e8b8"],
+.light [style*="rgb(248, 232, 184)"],
+.light [style*="#F5D061"],
+.light [style*="#f5d061"],
+.light [style*="rgb(245, 208, 97)"],
+.light [style*="#E5C378"],
+.light [style*="#e5c378"],
+.light [style*="rgb(229, 195, 120)"],
+.light [style*="#FFE082"],
+.light [style*="#ffe082"] {
+    color: #9a7210 !important;
+}
+
+/* Light Table styling */
+.light table {
+    color: #0f172a !important;
+}
+
+.light th {
+    color: #475569 !important;
+    background: #f1f7fc !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+    font-weight: 800 !important;
+}
+
+.light td {
+    color: #1e293b !important;
+    border-bottom: 1px solid #e2eefa !important;
+}
+
+.light tr:hover td {
+    background: #f8fafc !important;
 }
 
 
