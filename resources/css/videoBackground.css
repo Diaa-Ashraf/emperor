@@ -21,3 +21,20 @@
     position: relative;
     z-index: 2;
 }
+
+/* ── Light Mode: Make VideoBackground clean & transparent everywhere ── */
+.light .emperor-static-hero-bg,
+html.light .emperor-static-hero-bg,
+[data-theme="light"] .emperor-static-hero-bg {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-bottom: 16px;
+}
+
+.light .emperor-bg-glow,
+html.light .emperor-bg-glow,
+[data-theme="light"] .emperor-bg-glow {
+    display: none !important;
+}

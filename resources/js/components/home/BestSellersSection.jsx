@@ -15,9 +15,12 @@ import {
 import { catalogApi } from '../../api/endpoints';
 import { formatImageUrl } from '../../utils/imageHelper';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function BestSellersSection() {
     const { t, isRtl } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const [bestSellers, setBestSellers] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -167,25 +170,25 @@ export default function BestSellersSection() {
                                 to={`/products/${product.id}`}
                                 style={{
                                     textDecoration: 'none',
-                                    background: 'linear-gradient(145deg, rgba(30, 30, 42, 0.9) 0%, rgba(18, 18, 26, 0.95) 100%)',
-                                    border: '1px solid rgba(212, 165, 55, 0.25)',
+                                    background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, rgba(30, 30, 42, 0.9) 0%, rgba(18, 18, 26, 0.95) 100%)',
+                                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.25)',
                                     borderRadius: '22px',
                                     overflow: 'hidden',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3)',
+                                    boxShadow: isLight ? '0 6px 20px rgba(30, 80, 140, 0.08)' : '0 8px 25px rgba(0, 0, 0, 0.3)',
                                     position: 'relative',
                                 }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.transform = 'translateY(-6px)';
                                     e.currentTarget.style.borderColor = '#D4A537';
-                                    e.currentTarget.style.boxShadow = '0 16px 35px rgba(212, 165, 55, 0.18)';
+                                    e.currentTarget.style.boxShadow = isLight ? '0 12px 30px rgba(212, 165, 55, 0.25)' : '0 16px 35px rgba(212, 165, 55, 0.18)';
                                 }}
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.25)';
-                                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.3)';
+                                    e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.4)' : 'rgba(212, 165, 55, 0.25)';
+                                    e.currentTarget.style.boxShadow = isLight ? '0 6px 20px rgba(30, 80, 140, 0.08)' : '0 8px 25px rgba(0, 0, 0, 0.3)';
                                 }}
                             >
                                 {/* Ranking Badge */}
@@ -236,7 +239,7 @@ export default function BestSellersSection() {
                                     height: '160px',
                                     width: '100%',
                                     position: 'relative',
-                                    background: 'linear-gradient(180deg, #181824 0%, #0D0D14 100%)',
+                                    background: isLight ? 'linear-gradient(180deg, #f0f7fd 0%, #e2eefa 100%)' : 'linear-gradient(180deg, #181824 0%, #0D0D14 100%)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -282,7 +285,7 @@ export default function BestSellersSection() {
                                         left: 0,
                                         right: 0,
                                         height: '40%',
-                                        background: 'linear-gradient(transparent, rgba(18, 18, 26, 0.95))',
+                                        background: isLight ? 'linear-gradient(transparent, rgba(255, 255, 255, 0.95))' : 'linear-gradient(transparent, rgba(18, 18, 26, 0.95))',
                                     }} />
                                 </div>
 
@@ -294,13 +297,14 @@ export default function BestSellersSection() {
                                     flex: 1,
                                     justifyContent: 'space-between',
                                     gap: '12px',
+                                    background: isLight ? '#FFFFFF' : 'transparent',
                                 }}>
                                     <div>
                                         {product.category_name && (
                                             <span style={{
                                                 fontSize: '11px',
                                                 fontWeight: '800',
-                                                color: 'var(--gold-400)',
+                                                color: isLight ? '#9A7210' : 'var(--gold-400)',
                                                 textTransform: 'uppercase',
                                                 letterSpacing: '0.5px',
                                             }}>
@@ -311,7 +315,7 @@ export default function BestSellersSection() {
                                             margin: '4px 0 0',
                                             fontSize: '16px',
                                             fontWeight: '800',
-                                            color: '#FFFFFF',
+                                            color: isLight ? '#0F172A' : '#FFFFFF',
                                             lineHeight: '1.3',
                                         }}>
                                             {product.name}
@@ -324,16 +328,16 @@ export default function BestSellersSection() {
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
                                         paddingTop: '10px',
-                                        borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                                        borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.06)',
                                     }}>
                                         <div>
-                                            <span style={{ fontSize: '11px', color: '#94A3B8', display: 'block' }}>
+                                            <span style={{ fontSize: '11px', color: isLight ? '#64748B' : '#94A3B8', display: 'block' }}>
                                                 {minPrice ? 'السعر يبدأ من' : 'الشحن المباشر'}
                                             </span>
                                             <span style={{
                                                 fontSize: '15px',
                                                 fontWeight: '900',
-                                                color: '#D4A537',
+                                                color: isLight ? '#9A7210' : '#D4A537',
                                             }}>
                                                 {minPrice ? `${minPrice} ج.م` : 'شحن فوري'}
                                             </span>
@@ -342,7 +346,7 @@ export default function BestSellersSection() {
                                         <div style={{
                                             padding: '8px 14px',
                                             borderRadius: '12px',
-                                            background: 'linear-gradient(135deg, #D4A537 0%, #AA7C11 100%)',
+                                            background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
                                             color: '#000000',
                                             fontSize: '12px',
                                             fontWeight: '900',
