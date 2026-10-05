@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { catalogApi, depositsApi, supportApi } from '../../api/endpoints';
 import { useTheme } from '../../contexts/ThemeContext';
-import { getSiteLogo } from '../../utils/settingsHelper';
+import { getSiteLogo, getSiteName, getSiteDescription, getFooterSlogan } from '../../utils/settingsHelper';
 
 export default function AppFooter() {
     const { theme } = useTheme();
@@ -129,14 +129,14 @@ export default function AppFooter() {
                                 display: 'block',
                                 lineHeight: '1.2',
                             }}>
-                                EMPEROR
+                                {getSiteName()}
                             </span>
                             <span style={{
                                 fontSize: '11px',
                                 fontWeight: '700',
                                 color: isLight ? '#b45309' : '#D4A537',
                             }}>
-                                إمبراطور كارد للخدمات الرقمية
+                                {getSiteDescription()}
                             </span>
                         </div>
                     </div>
@@ -148,7 +148,7 @@ export default function AppFooter() {
                         margin: '0 0 16px',
                         maxWidth: '320px',
                     }}>
-                        منصة إمبراطور — المنصة الرائدة في مصر والشرق الأوسط لشحن الألعاب، بطاقات الهدايا الرقمية، وتسييل وبيع التارجت للوكالات بأعلى سعر وصرف فوري موثوق.
+                        {getFooterSlogan()}
                     </p>
 
                     {/* Security & Speed Trust Badges */}

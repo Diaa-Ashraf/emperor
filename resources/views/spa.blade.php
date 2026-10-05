@@ -22,10 +22,29 @@
     <script>
         window.__APP_SETTINGS__ = {
             site_name: {!! json_encode($siteName) !!},
+            site_description: {!! json_encode($siteDesc) !!},
             site_logo: {!! json_encode($siteLogo) !!},
             site_favicon: {!! json_encode($siteFavicon) !!},
+            footer_slogan: {!! json_encode(\App\Models\Setting::get('footer_slogan', 'المنصة الرائدة والأولى لشحن الألعاب والبطاقات الرقمية وبيع التارجت بأفضل الأسعار.')) !!},
             whatsapp_support: {!! json_encode(\App\Models\Setting::get('whatsapp_support', '+201000000000')) !!},
-            telegram_support: {!! json_encode(\App\Models\Setting::get('telegram_support', 'EmperorSupport')) !!}
+            telegram_support: {!! json_encode(\App\Models\Setting::get('telegram_support', 'EmperorSupport')) !!},
+            support_email: {!! json_encode(\App\Models\Setting::get('support_email', 'support@emperorcard.com')) !!},
+            support_phone: {!! json_encode(\App\Models\Setting::get('support_phone', '')) !!},
+            working_hours: {!! json_encode(\App\Models\Setting::get('working_hours', 'على مدار 24 ساعة طوال أيام الأسبوع')) !!},
+            social_facebook: {!! json_encode(\App\Models\Setting::get('social_facebook', '')) !!},
+            social_instagram: {!! json_encode(\App\Models\Setting::get('social_instagram', '')) !!},
+            social_tiktok: {!! json_encode(\App\Models\Setting::get('social_tiktok', '')) !!},
+            social_youtube: {!! json_encode(\App\Models\Setting::get('social_youtube', '')) !!},
+            social_telegram: {!! json_encode(\App\Models\Setting::get('social_telegram', '')) !!},
+            social_discord: {!! json_encode(\App\Models\Setting::get('social_discord', '')) !!},
+            announcement_enabled: {!! json_encode(\App\Models\Setting::get('announcement_enabled', '0') == '1') !!},
+            announcement_text: {!! json_encode(\App\Models\Setting::get('announcement_text', '')) !!},
+            target_agency_id: {!! json_encode(\App\Models\Setting::get('target_agency_id', 'EMP-TARGET-001')) !!},
+            target_agency_name: {!! json_encode(\App\Models\Setting::get('target_agency_name', 'وكالة إمبراطور الرسمية')) !!},
+            min_wallet_deposit: {!! json_encode((int) \App\Models\Setting::get('min_wallet_deposit', 50)) !!},
+            about_us_text: {!! json_encode(\App\Models\Setting::get('about_us_text', '')) !!},
+            terms_conditions: {!! json_encode(\App\Models\Setting::get('terms_conditions', '')) !!},
+            privacy_policy: {!! json_encode(\App\Models\Setting::get('privacy_policy', '')) !!}
         };
     </script>
 

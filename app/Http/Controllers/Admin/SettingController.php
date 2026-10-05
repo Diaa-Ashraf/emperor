@@ -42,13 +42,34 @@ class SettingController extends Controller
             unset($validated['site_favicon']);
         }
 
+        // Handle announcement checkbox boolean
+        if (!$request->has('announcement_enabled')) {
+            Setting::set('announcement_enabled', '0', 'general', 'string', true);
+        }
+
         foreach ($validated as $key => $value) {
-            if (!in_array($key, ['site_logo', 'site_favicon']) && !is_null($value)) {
+            if (!in_array($key, ['site_logo', 'site_favicon', 'methods']) && !is_null($value)) {
                 Setting::set($key, $value, 'general', 'string', true);
             }
         }
 
-        return back()->with('success', 'تم حفظ وتحديث الإعدادات العامة واللوجو بنجاح.');
+        // Also update payment methods if included in form
+        if ($request->has('methods') && is_array($request->input('methods'))) {
+            foreach ($request->input('methods') as $mId => $mData) {
+                $method = PaymentMethod::find($mId);
+                if ($method) {
+                    $method->update([
+                        'min_amount' => $mData['min_amount'] ?? $method->min_amount,
+                        'max_amount' => $mData['max_amount'] ?? $method->max_amount,
+                        'fixed_fee' => $mData['fixed_fee'] ?? $method->fixed_fee,
+                        'percent_fee' => $mData['percent_fee'] ?? $method->percent_fee,
+                        'account_details' => array_merge($method->account_details ?? [], $mData['account_details'] ?? []),
+                    ]);
+                }
+            }
+        }
+
+        return back()->with('success', 'تم حفظ وتحديث جميع إعدادات المنصة وحسابات الدفع بنجاح.');
     }
 
     /**
