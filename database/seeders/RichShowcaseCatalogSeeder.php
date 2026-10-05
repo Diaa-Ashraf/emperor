@@ -47,9 +47,9 @@ class RichShowcaseCatalogSeeder extends Seeder
 
         $voiceAppsCat = Category::withTrashed()->firstOrNew(['slug' => 'apps']);
         $voiceAppsCat->fill([
-            'name' => 'تطبيقات البث والتارجت',
+            'name' => 'تطبيقات البث والمحادثات',
             'type' => CategoryType::VOICE_APPS,
-            'description' => 'شحن كوينز وسحب تارجت تيك توك، بيجو لايف، لايكي، وميكو',
+            'description' => 'شحن كوينز وماسات تيك توك، بيجو لايف، لايكي، وميكو، ويوهو',
             'icon' => 'smartphone',
             'is_active' => true,
             'sort_order' => 2,
@@ -178,22 +178,17 @@ class RichShowcaseCatalogSeeder extends Seeder
                 ]
             ],
 
-            // ── 6. TikTok (تارجت وكوينز) ──
+            // ── 6. TikTok (شحن كوينز) ──
             [
                 'category_id' => $voiceAppsCat->id,
-                'name' => 'تيك توك (TikTok Coins & Target)',
+                'name' => 'تيك توك (TikTok Coins)',
                 'slug' => 'tiktok',
-                'type' => ProductType::TARGET,
-                'description' => 'شحن عملات تيك توك وسحب أرباح التارجت للوكالات والمضيفين بدفع كاش فوري.',
+                'type' => ProductType::PLAYER_ID,
+                'description' => 'شحن عملات وكوينز تيك توك الرسمية فورياً عبر اسم المستخدم أو معرف الحساب.',
                 'image' => 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=600&auto=format&fit=crop&q=80',
                 'player_id_label' => 'يوزر الحساب في تيك توك (@username)',
                 'has_server_id' => false,
                 'sort_order' => 6,
-                'target_rates' => [
-                    ['min' => 1000, 'max' => 50000, 'rate' => 0.0150],
-                    ['min' => 50001, 'max' => 200000, 'rate' => 0.0180],
-                    ['min' => 200001, 'max' => 2000000, 'rate' => 0.0210],
-                ],
                 'tiers' => [
                     ['name' => '70 عملة تيك توك (Coins)', 'sku' => 'tt_70', 'cost' => 38, 'price' => 48],
                     ['name' => '350 عملة تيك توك (Coins)', 'sku' => 'tt_350', 'cost' => 190, 'price' => 235],
@@ -203,21 +198,17 @@ class RichShowcaseCatalogSeeder extends Seeder
                 ]
             ],
 
-            // ── 7. Bigo Live (تارجت وماسات) ──
+            // ── 7. Bigo Live (شحن ماسات) ──
             [
                 'category_id' => $voiceAppsCat->id,
                 'name' => 'بيجو لايف (Bigo Live)',
                 'slug' => 'bigo-live',
-                'type' => ProductType::TARGET,
-                'description' => 'شحن ماسات بيجو لايف الفوري وسحب فاصوليا وتارجت Bigo Live المعتمد.',
+                'type' => ProductType::PLAYER_ID,
+                'description' => 'شحن ماسات بيجو لايف الفوري والمباشر عبر الـ Bigo ID بأفضل الأسعار.',
                 'image' => 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80',
                 'player_id_label' => 'معرّف Bigo ID',
                 'has_server_id' => false,
                 'sort_order' => 7,
-                'target_rates' => [
-                    ['min' => 1000, 'max' => 25000, 'rate' => 0.0220],
-                    ['min' => 25001, 'max' => 500000, 'rate' => 0.0260],
-                ],
                 'tiers' => [
                     ['name' => '42 ماسة (Diamonds)', 'sku' => 'bigo_42', 'cost' => 45, 'price' => 55],
                     ['name' => '210 ماسة (Diamonds)', 'sku' => 'bigo_210', 'cost' => 220, 'price' => 265],
@@ -225,21 +216,17 @@ class RichShowcaseCatalogSeeder extends Seeder
                 ]
             ],
 
-            // ── 8. Likee (تارجت وماسات) ──
+            // ── 8. Likee (شحن ماسات) ──
             [
                 'category_id' => $voiceAppsCat->id,
                 'name' => 'لايكي (Likee Live)',
                 'slug' => 'likee',
-                'type' => ProductType::TARGET,
-                'description' => 'شحن ماسات لايكي وسحب أرباح التارجت ونقاط الوكالة فودافون كاش وإنستاباي.',
+                'type' => ProductType::PLAYER_ID,
+                'description' => 'شحن ماسات وجواهر تطبيق لايكي فورياً ومباشراً بالـ Likee ID.',
                 'image' => 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&auto=format&fit=crop&q=80',
                 'player_id_label' => 'معرّف حساب Likee ID',
                 'has_server_id' => false,
                 'sort_order' => 8,
-                'target_rates' => [
-                    ['min' => 1000, 'max' => 50000, 'rate' => 0.0180],
-                    ['min' => 50001, 'max' => 1000000, 'rate' => 0.0220],
-                ],
                 'tiers' => [
                     ['name' => '45 ماسة لايكي (Diamonds)', 'sku' => 'likee_45', 'cost' => 40, 'price' => 50],
                     ['name' => '225 ماسة لايكي (Diamonds)', 'sku' => 'likee_225', 'cost' => 200, 'price' => 240],
@@ -252,15 +239,12 @@ class RichShowcaseCatalogSeeder extends Seeder
                 'category_id' => $voiceAppsCat->id,
                 'name' => 'ميكو لايف (Mico Live)',
                 'slug' => 'mico-live',
-                'type' => ProductType::TARGET,
-                'description' => 'شحن كوينز ميكو وسحب تارجت المضيفين ووكالات Mico Live الرسمية.',
+                'type' => ProductType::PLAYER_ID,
+                'description' => 'شحن كوينز وعملات ميكو لايف فورياً إلى حسابك عبر الـ Mico ID.',
                 'image' => 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=600&auto=format&fit=crop&q=80',
                 'player_id_label' => 'معرّف حساب Mico ID',
                 'has_server_id' => false,
                 'sort_order' => 9,
-                'target_rates' => [
-                    ['min' => 1000, 'max' => 200000, 'rate' => 0.0140],
-                ],
                 'tiers' => [
                     ['name' => '320 كوينز (Coins)', 'sku' => 'mico_320', 'cost' => 50, 'price' => 60],
                     ['name' => '1600 كوينز (Coins)', 'sku' => 'mico_1600', 'cost' => 240, 'price' => 290],
@@ -273,15 +257,12 @@ class RichShowcaseCatalogSeeder extends Seeder
                 'category_id' => $voiceAppsCat->id,
                 'name' => 'يوهو (YoHo Voice Chat)',
                 'slug' => 'yoho',
-                'type' => ProductType::TARGET,
-                'description' => 'شحن غرف المحادثة يوهو شات وصرف تارجت وكريستالات YoHo.',
+                'type' => ProductType::PLAYER_ID,
+                'description' => 'شحن كوينز وغرف المحادثة يوهو شات فورياً عبر المعرف YoHo ID.',
                 'image' => 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&auto=format&fit=crop&q=80',
                 'player_id_label' => 'معرّف حساب YoHo ID',
                 'has_server_id' => false,
                 'sort_order' => 10,
-                'target_rates' => [
-                    ['min' => 1000, 'max' => 100000, 'rate' => 0.0160],
-                ],
                 'tiers' => [
                     ['name' => '500 عملة يوهو (Coins)', 'sku' => 'yoho_500', 'cost' => 35, 'price' => 45],
                     ['name' => '2500 عملة يوهو (Coins)', 'sku' => 'yoho_2500', 'cost' => 175, 'price' => 210],

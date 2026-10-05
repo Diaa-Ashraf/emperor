@@ -26,14 +26,11 @@ export default function ProductCard({ product }) {
         ? Number(minPrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
         : null;
 
-    const isTarget = product.type === 'target' || product.slug?.includes('target');
-    const productUrl = isTarget
-        ? `/target-orders/new?app_id=${product.id}&app_name=${encodeURIComponent(product.name)}`
-        : `/products/${product.id}`;
+    const productUrl = `/products/${product.id}`;
 
     // Check if the image seems like a generic stock image or if we should prefer the 3D App Icon
-    const isAppOrTarget = isTarget || product.category?.type === 'voice_apps' || product.type === 'voice_apps';
-    const showTargetIcon = isAppOrTarget && (!imageSrc || imgError || imageSrc.includes('unsplash') || imageSrc.includes('pexels') || imageSrc.includes('random'));
+    const isApp = product.category?.type === 'voice_apps' || product.type === 'voice_apps';
+    const showTargetIcon = isApp && (!imageSrc || imgError || imageSrc.includes('unsplash') || imageSrc.includes('pexels') || imageSrc.includes('random'));
 
     return (
         <div
@@ -252,7 +249,7 @@ export default function ProductCard({ product }) {
                                 e.currentTarget.style.boxShadow = '0 4px 15px rgba(212, 165, 55, 0.3)';
                             }}
                         >
-                            <span>{isTarget ? 'سحب التارجت' : 'شحن الآن'}</span>
+                            <span>شحن الآن</span>
                             <ChevronLeft size={15} strokeWidth={2.5} />
                         </button>
                     </Link>

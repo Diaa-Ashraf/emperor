@@ -16,17 +16,6 @@ class TargetAppsSeeder extends Seeder
      */
     public function run(): void
     {
-        // Find or create the target applications category
-        $category = Category::firstOrCreate(
-            ['slug' => 'apps'],
-            [
-                'name' => 'قسم التطبيقات',
-                'type' => 'voice_apps',
-                'is_active' => true,
-                'sort_order' => 1,
-            ]
-        );
-
         $apps = [
             [
                 'name' => 'بولا 1 (Pola Live 1)',
@@ -173,7 +162,7 @@ class TargetAppsSeeder extends Seeder
                     $product->restore();
                 }
                 $product->update([
-                    'category_id' => $category->id,
+                    'category_id' => null,
                     'name' => $appData['name'],
                     'description' => $appData['desc'],
                     'type' => ProductType::TARGET,
@@ -184,7 +173,7 @@ class TargetAppsSeeder extends Seeder
             } else {
                 $product = Product::create([
                     'slug' => $appData['slug'],
-                    'category_id' => $category->id,
+                    'category_id' => null,
                     'name' => $appData['name'],
                     'description' => $appData['desc'],
                     'type' => ProductType::TARGET,

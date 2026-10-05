@@ -28,6 +28,7 @@ class ProductController extends Controller
         $page = (int) ($request->input('page') ?: 1);
 
         $query = Product::where('is_active', true)
+            ->where('type', '!=', 'target')
             ->with([
                 'category:id,name,slug,type',
                 'activeTiers'
