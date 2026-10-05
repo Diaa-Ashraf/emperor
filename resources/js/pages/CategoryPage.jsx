@@ -172,22 +172,87 @@ export default function CategoryPage() {
 
     return (
         <MainLayout>
-            {/* Header & Breadcrumb */}
-            <div style={{ marginBottom: '28px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '13px', color: '#8E8E98' }}>
-                    <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>الرئيسية</Link>
-                    <span>/</span>
-                    <span style={{ color: '#CBD5E1' }}>{categoryTitle}</span>
-                </div>
+            {/* Header & Breadcrumb Hero */}
+            <div style={{
+                background: 'linear-gradient(135deg, #181824 0%, #101016 50%, #0B0B0E 100%)',
+                border: '1px solid rgba(212, 165, 55, 0.3)',
+                borderRadius: '24px',
+                padding: 'clamp(24px, 4vw, 36px)',
+                marginBottom: '32px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: '0 16px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 165, 55, 0.08)',
+            }}>
+                {/* Background ambient aura */}
+                <div style={{
+                    position: 'absolute',
+                    top: '-60px',
+                    left: '-60px',
+                    width: '240px',
+                    height: '240px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(212, 165, 55, 0.18) 0%, transparent 70%)',
+                    pointerEvents: 'none',
+                }} />
 
-                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
-                    <div>
-                        <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '900', color: '#FFFFFF' }}>
-                            {categoryTitle}
-                        </h1>
-                        <p style={{ margin: 0, fontSize: '14px', color: '#9E9EA8' }}>
-                            {categoryDescription}
-                        </p>
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                    {/* Breadcrumb */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', fontSize: '13px', color: '#8E8E98' }}>
+                        <Link to="/" style={{ color: '#D4A537', textDecoration: 'none', fontWeight: '700' }}>الرئيسية</Link>
+                        <span>/</span>
+                        <Link to="/category/all" style={{ color: '#8E8E98', textDecoration: 'none' }}>الأقسام والمنتجات</Link>
+                        <span>/</span>
+                        <span style={{ color: '#CBD5E1', fontWeight: '800' }}>{categoryTitle}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+                        <div>
+                            <div style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: '4px 12px',
+                                borderRadius: '8px',
+                                background: 'rgba(212, 165, 55, 0.15)',
+                                border: '1px solid rgba(212, 165, 55, 0.35)',
+                                color: '#D4A537',
+                                fontSize: '12px',
+                                fontWeight: '800',
+                                marginBottom: '10px',
+                            }}>
+                                <Sparkles size={13} />
+                                <span>شحن رسمي فوري وتلقائي</span>
+                            </div>
+
+                            <h1 style={{
+                                margin: '0 0 8px',
+                                fontSize: 'clamp(24px, 4vw, 32px)',
+                                fontWeight: '900',
+                                color: '#FFFFFF',
+                                letterSpacing: '-0.3px',
+                            }}>
+                                {categoryTitle}
+                            </h1>
+                            <p style={{ margin: 0, fontSize: '14.5px', color: '#A0A0B0', maxWidth: '650px', lineHeight: '1.6' }}>
+                                {categoryDescription}
+                            </p>
+                        </div>
+
+                        {/* Product count badge */}
+                        <div style={{
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '16px',
+                            padding: '12px 20px',
+                            textAlign: 'center',
+                        }}>
+                            <span style={{ fontSize: '11.5px', color: '#8E8E98', display: 'block', fontWeight: '700' }}>
+                                إجمالي العناصر
+                            </span>
+                            <span style={{ fontSize: '20px', fontWeight: '900', color: '#D4A537' }}>
+                                {filteredProducts.length} <small style={{ fontSize: '12px', color: '#CBD5E1' }}>منتج</small>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -202,7 +267,7 @@ export default function CategoryPage() {
                         overflowX: 'auto',
                         WebkitOverflowScrolling: 'touch',
                         paddingBottom: '12px',
-                        marginBottom: '28px',
+                        marginBottom: '26px',
                         scrollbarWidth: 'none',
                     }}
                 >
@@ -210,21 +275,22 @@ export default function CategoryPage() {
                         to={allTabLink}
                         preventScrollReset={true}
                         style={{
-                            padding: '8px 18px',
-                            borderRadius: '12px',
+                            padding: '9px 20px',
+                            borderRadius: '14px',
                             background: isAllTabActive
-                                ? 'linear-gradient(135deg, #F3E5AB 0%, #D4A537 100%)'
-                                : '#1E1E28',
-                            color: isAllTabActive ? '#0D0D0F' : '#E2E8F0',
-                            fontWeight: '700',
-                            fontSize: '14px',
+                                ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
+                                : 'rgba(24, 24, 32, 0.85)',
+                            color: isAllTabActive ? '#0A0A0E' : '#E2E8F0',
+                            fontWeight: '800',
+                            fontSize: '13.5px',
                             textDecoration: 'none',
                             whiteSpace: 'nowrap',
                             border: isAllTabActive ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+                            boxShadow: isAllTabActive ? '0 4px 15px rgba(212, 165, 55, 0.35)' : 'none',
                             transition: 'all 0.2s',
                         }}
                     >
-                        الكل
+                        الكل ({categories.length > 0 ? categories.length : '✦'})
                     </Link>
 
                     {visibleCategories.map((cat) => {
@@ -235,20 +301,21 @@ export default function CategoryPage() {
                                 to={`/category/${cat.slug || cat.id}`}
                                 preventScrollReset={true}
                                 style={{
-                                    padding: '8px 18px',
-                                    borderRadius: '12px',
+                                    padding: '9px 18px',
+                                    borderRadius: '14px',
                                     background: isActive
-                                        ? 'linear-gradient(135deg, #F3E5AB 0%, #D4A537 100%)'
-                                        : '#1E1E28',
-                                    color: isActive ? '#0D0D0F' : '#E2E8F0',
-                                    fontWeight: '700',
-                                    fontSize: '14px',
+                                        ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
+                                        : 'rgba(24, 24, 32, 0.85)',
+                                    color: isActive ? '#0A0A0E' : '#E2E8F0',
+                                    fontWeight: '800',
+                                    fontSize: '13.5px',
                                     textDecoration: 'none',
                                     whiteSpace: 'nowrap',
                                     border: isActive ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+                                    boxShadow: isActive ? '0 4px 15px rgba(212, 165, 55, 0.35)' : 'none',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '6px',
+                                    gap: '7px',
                                     transition: 'all 0.2s',
                                 }}
                             >
@@ -275,21 +342,21 @@ export default function CategoryPage() {
 
             {/* Search and Filters Bar */}
             <div style={{
-                background: 'rgba(26, 26, 36, 0.7)',
+                background: 'linear-gradient(145deg, #161622 0%, #101016 100%)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '16px',
-                padding: '16px 20px',
-                marginBottom: '32px',
+                borderRadius: '18px',
+                padding: '14px 18px',
+                marginBottom: '30px',
                 display: 'flex',
                 flexWrap: 'wrap',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                gap: '16px',
+                gap: '14px',
             }}>
-                <div style={{ flex: '1 1 280px', maxWidth: '400px' }}>
+                <div style={{ flex: '1 1 280px', maxWidth: '440px' }}>
                     <Input
                         type="text"
-                        placeholder="ابحث عن لعبة أو منتج..."
+                        placeholder="ابحث عن لعبة، تطبيق، أو بطاقة رقمية..."
                         icon={Search}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -299,17 +366,18 @@ export default function CategoryPage() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <SlidersHorizontal size={16} color="#8E8E98" />
+                        <SlidersHorizontal size={16} color="#D4A537" />
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
                             style={{
                                 background: '#121218',
-                                border: '1px solid rgba(255, 255, 255, 0.12)',
-                                borderRadius: '10px',
+                                border: '1px solid rgba(212, 165, 55, 0.3)',
+                                borderRadius: '12px',
                                 color: '#FFFFFF',
-                                padding: '8px 12px',
+                                padding: '9px 14px',
                                 fontSize: '13px',
+                                fontWeight: '700',
                                 outline: 'none',
                                 fontFamily: 'Cairo, sans-serif',
                                 cursor: 'pointer',
@@ -329,7 +397,11 @@ export default function CategoryPage() {
                         <LoadingSpinner text="جاري تحميل المنتجات والأسعار..." />
                     </div>
                 ) : filteredProducts.length > 0 ? (
-                    <div className="responsive-grid-products">
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 240px), 1fr))',
+                        gap: '20px',
+                    }}>
                         {filteredProducts.map((product) => (
                             <ProductCard key={product.id} product={product} />
                         ))}
