@@ -29,12 +29,39 @@ class TargetAppsSeeder extends Seeder
 
         $apps = [
             [
+                'name' => 'بولا 1 (Pola Live 1)',
+                'slug' => 'pola-1-target',
+                'rate' => 48.00,
+                'min' => 5,
+                'max' => 10000,
+                'order' => 1,
+                'desc' => 'بيع واستبدال تارجت تطبيق بولا 1 (Pola 1) - وكالة معتمدة واستلام كاش فوري.',
+            ],
+            [
+                'name' => 'بولا 2 (Pola Live 2)',
+                'slug' => 'pola-2-target',
+                'rate' => 48.00,
+                'min' => 5,
+                'max' => 10000,
+                'order' => 2,
+                'desc' => 'بيع واستبدال تارجت تطبيق بولا 2 (Pola 2) - وكالة معتمدة واستلام كاش فوري.',
+            ],
+            [
+                'name' => 'بولا 3 (Pola Live 3)',
+                'slug' => 'pola-3-target',
+                'rate' => 48.00,
+                'min' => 5,
+                'max' => 10000,
+                'order' => 3,
+                'desc' => 'بيع واستبدال تارجت تطبيق بولا 3 (Pola 3) - وكالة معتمدة واستلام كاش فوري.',
+            ],
+            [
                 'name' => 'بارتي استار',
                 'slug' => 'party-star-target',
                 'rate' => 48.00,
                 'min' => 5,
                 'max' => 10000,
-                'order' => 1,
+                'order' => 4,
                 'desc' => 'بيع واستبدال تارجت تطبيق بارتي استار (Party Star) واستلام كاش فوري.',
             ],
             [
@@ -43,7 +70,7 @@ class TargetAppsSeeder extends Seeder
                 'rate' => 47.50,
                 'min' => 5,
                 'max' => 10000,
-                'order' => 2,
+                'order' => 5,
                 'desc' => 'بيع واستبدال تارجت تطبيق بوتا لايف (Bouta Live) واستلام كاش فوري.',
             ],
             [
@@ -52,7 +79,7 @@ class TargetAppsSeeder extends Seeder
                 'rate' => 44.00,
                 'min' => 10,
                 'max' => 10000,
-                'order' => 3,
+                'order' => 6,
                 'desc' => 'بيع واستبدال تارجت تطبيق تامي (Tami) واستلام كاش فوري.',
             ],
             [
@@ -61,7 +88,7 @@ class TargetAppsSeeder extends Seeder
                 'rate' => 47.00,
                 'min' => 5,
                 'max' => 10000,
-                'order' => 4,
+                'order' => 7,
                 'desc' => 'بيع واستبدال تارجت تطبيق جانكو (Janko) واستلام كاش فوري.',
             ],
             [
@@ -70,7 +97,7 @@ class TargetAppsSeeder extends Seeder
                 'rate' => 46.00,
                 'min' => 5,
                 'max' => 10000,
-                'order' => 5,
+                'order' => 8,
                 'desc' => 'بيع واستبدال تارجت تطبيق زفا لايف (Zafa Live) واستلام كاش فوري.',
             ],
             [
@@ -79,7 +106,7 @@ class TargetAppsSeeder extends Seeder
                 'rate' => 47.00,
                 'min' => 5,
                 'max' => 10000,
-                'order' => 6,
+                'order' => 9,
                 'desc' => 'بيع واستبدال تارجت تطبيق صدفه (Sodfa) واستلام كاش فوري.',
             ],
             [
@@ -88,7 +115,7 @@ class TargetAppsSeeder extends Seeder
                 'rate' => 46.00,
                 'min' => 5,
                 'max' => 10000,
-                'order' => 7,
+                'order' => 10,
                 'desc' => 'بيع واستبدال تارجت تطبيق شباب شات (Shabab Chat) واستلام كاش فوري.',
             ],
             [
@@ -97,7 +124,7 @@ class TargetAppsSeeder extends Seeder
                 'rate' => 46.50,
                 'min' => 5,
                 'max' => 10000,
-                'order' => 8,
+                'order' => 11,
                 'desc' => 'بيع واستبدال تارجت تطبيق سولو استار (Solo Star) واستلام كاش فوري.',
             ],
             [
@@ -106,7 +133,7 @@ class TargetAppsSeeder extends Seeder
                 'rate' => 47.00,
                 'min' => 5,
                 'max' => 10000,
-                'order' => 9,
+                'order' => 12,
                 'desc' => 'بيع واستبدال تارجت تطبيق سو ماتش (SoMatch) واستلام كاش فوري.',
             ],
             [
@@ -115,8 +142,17 @@ class TargetAppsSeeder extends Seeder
                 'rate' => 46.00,
                 'min' => 5,
                 'max' => 10000,
-                'order' => 10,
+                'order' => 13,
                 'desc' => 'بيع واستبدال تارجت تطبيق زينا لايف (Zina Live) واستلام كاش فوري.',
+            ],
+            [
+                'name' => 'فلا لايف',
+                'slug' => 'falla-live-target',
+                'rate' => 47.00,
+                'min' => 5,
+                'max' => 10000,
+                'order' => 14,
+                'desc' => 'بيع واستبدال تارجت تطبيق فلا لايف (Falla) واستلام كاش فوري.',
             ],
             [
                 'name' => 'بيجو لايف',
@@ -124,17 +160,19 @@ class TargetAppsSeeder extends Seeder
                 'rate' => 48.50,
                 'min' => 10,
                 'max' => 10000,
-                'order' => 11,
+                'order' => 15,
                 'desc' => 'بيع واستبدال تارجت تطبيق بيجو لايف (Bigo Live) واستلام كاش فوري.',
             ],
         ];
 
         foreach ($apps as $appData) {
-            $product = Product::updateOrCreate(
-                [
-                    'slug' => $appData['slug'],
-                ],
-                [
+            $product = Product::withTrashed()->where('slug', $appData['slug'])->first();
+
+            if ($product) {
+                if ($product->trashed()) {
+                    $product->restore();
+                }
+                $product->update([
                     'category_id' => $category->id,
                     'name' => $appData['name'],
                     'description' => $appData['desc'],
@@ -142,8 +180,19 @@ class TargetAppsSeeder extends Seeder
                     'player_id_label' => 'معرّف الحساب (ID)',
                     'is_active' => true,
                     'sort_order' => $appData['order'],
-                ]
-            );
+                ]);
+            } else {
+                $product = Product::create([
+                    'slug' => $appData['slug'],
+                    'category_id' => $category->id,
+                    'name' => $appData['name'],
+                    'description' => $appData['desc'],
+                    'type' => ProductType::TARGET,
+                    'player_id_label' => 'معرّف الحساب (ID)',
+                    'is_active' => true,
+                    'sort_order' => $appData['order'],
+                ]);
+            }
 
             // Create or update default rate in target_rates table
             TargetRate::updateOrCreate(
@@ -159,5 +208,6 @@ class TargetAppsSeeder extends Seeder
                 ]
             );
         }
+
     }
 }

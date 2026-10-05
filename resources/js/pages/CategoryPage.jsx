@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Search, Filter, ArrowRight, Grid, SlidersHorizontal, Gamepad2, Layers } from 'lucide-react';
+import { Search, Filter, ArrowRight, Grid, SlidersHorizontal, Gamepad2, Layers, Sparkles } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
+
 import ProductCard from '../components/products/ProductCard';
 import Input from '../components/ui/Input';
 import EmptyState from '../components/ui/EmptyState';
