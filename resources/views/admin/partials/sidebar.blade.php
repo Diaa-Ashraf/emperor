@@ -1,17 +1,27 @@
 <aside class="sidebar" id="sidebar">
     @php
         $sidebarLogo = \App\Models\Setting::get('site_logo') ? asset(\App\Models\Setting::get('site_logo')) : asset('images/logo.png');
-        $sidebarSiteName = \App\Models\Setting::get('site_name', 'EMPEROR');
+        $rawSiteName = \App\Models\Setting::get('site_name', 'EMPEROR');
+        // Extract clean short brand name for sidebar to prevent multi-line overflow
+        $sidebarSiteName = trim(explode('|', $rawSiteName)[0] ?? 'EMPEROR');
+        if (mb_strlen($sidebarSiteName) > 16) {
+            $sidebarSiteName = mb_substr($sidebarSiteName, 0, 16);
+        }
     @endphp
     <!-- Brand Logo Area -->
     <div class="logo-area">
-        <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center gap-2 text-decoration-none">
-            <img src="{{ $sidebarLogo }}" alt="Logo" style="width: 38px; height: 38px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(212, 165, 55, 0.4));">
-            <div class="logo-text d-flex flex-column">
-                <span class="fw-bold fs-5 text-white tracking-wide">{{ $sidebarSiteName }}</span>
-                <span class="text-gold" style="font-size: 11px; margin-top: -3px; font-weight: 600;">لوحة الإدارة</span>
+        <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center gap-2 text-decoration-none min-w-0 flex-grow-1 overflow-hidden">
+            <div class="logo-icon-wrap flex-shrink-0 d-flex align-items-center justify-content-center">
+                <img src="{{ $sidebarLogo }}" alt="Logo">
+            </div>
+            <div class="logo-text d-flex flex-column min-w-0 flex-grow-1 overflow-hidden">
+                <span class="fw-bold fs-6 text-white tracking-wide text-truncate" title="{{ $rawSiteName }}">{{ $sidebarSiteName }}</span>
+                <span class="text-gold text-truncate" style="font-size: 11px; margin-top: -2px; font-weight: 600;">لوحة الإدارة</span>
             </div>
         </a>
+        <button type="button" class="btn btn-sm btn-dark-outline d-lg-none p-1 ms-auto flex-shrink-0" id="sidebarCloseBtn" title="إغلاق القائمة">
+            <i class="ti ti-x fs-5"></i>
+        </button>
     </div>
 
     <!-- Navigation List -->

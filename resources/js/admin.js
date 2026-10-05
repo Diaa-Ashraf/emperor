@@ -226,6 +226,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Mobile sidebar close button
+    const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+    if (sidebarCloseBtn) {
+        sidebarCloseBtn.addEventListener('click', () => {
+            if (sidebar) sidebar.classList.remove('mobile-show');
+            if (overlay) overlay.classList.remove('show');
+        });
+    }
+
     // Click outside overlay to close
     if (overlay) {
         overlay.addEventListener('click', () => {
