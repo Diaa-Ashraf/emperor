@@ -97,18 +97,18 @@ export default function CategoryPage() {
             .catch(() => { });
     }, []);
 
-    // Check if slug is a Type container (e.g. 'games', 'apps', 'cards')
+    // Check if slug is a Type container fallback
     const typeInfo = TYPE_CONFIG[slug] || null;
 
     const selectedCategory = useMemo(() => {
-        if (typeInfo || !slug || slug === 'all') return null;
+        if (!slug || slug === 'all') return null;
         return categories.find(c => c.slug?.toLowerCase() === slug || String(c.id) === String(slug)) || null;
-    }, [slug, categories, typeInfo]);
+    }, [slug, categories]);
 
     // Determine active type to filter visible categories tabs
     const currentActiveType = useMemo(() => {
-        if (typeInfo) return typeInfo.type;
         if (selectedCategory) return selectedCategory.type;
+        if (typeInfo) return typeInfo.type;
         return null;
     }, [typeInfo, selectedCategory]);
 
