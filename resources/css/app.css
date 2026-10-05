@@ -298,6 +298,57 @@ html.light body {
     background: #f8fafc !important;
 }
 
+/* Light Mode - Convert inline dark background cards, banners & panels to luxury gold/white cards */
+.light [style*="#181824"],
+.light [style*="#161622"],
+.light [style*="#101016"],
+.light [style*="#0B0B0E"],
+.light [style*="#0b0b0e"],
+.light [style*="#0E0E14"],
+.light [style*="#0e0e14"],
+.light [style*="#0D0D12"],
+.light [style*="#0d0d12"],
+.light [style*="#0B0B0F"],
+.light [style*="#0b0b0f"],
+.light [style*="#0C0C12"],
+.light [style*="#0c0c12"],
+.light [style*="#151522"],
+.light [style*="#121218"],
+.light [style*="#0D0D14"],
+.light [style*="#0d0d14"] {
+    background: #ffffff !important;
+    border-color: rgba(212, 165, 55, 0.35) !important;
+    box-shadow: 0 4px 20px rgba(30, 80, 140, 0.06), 0 0 15px rgba(212, 165, 55, 0.05) !important;
+}
+
+.light [style*="radial-gradient"][style*="#151522"],
+.light [style*="linear-gradient"][style*="#181824"],
+.light [style*="linear-gradient"][style*="#161622"],
+.light [style*="linear-gradient"][style*="#101016"],
+.light [style*="linear-gradient"][style*="#0B0B0E"],
+.light [style*="linear-gradient"][style*="#0E0E14"] {
+    background: linear-gradient(135deg, #FFFDF7 0%, #FEF8EA 45%, #FDF1D3 100%) !important;
+    border-color: rgba(212, 165, 55, 0.45) !important;
+    box-shadow: 0 8px 30px rgba(212, 165, 55, 0.12), 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Light mode overrides for badge/chip backgrounds that were hardcoded dark */
+.light [style*="rgba(10, 10, 14,"],
+.light [style*="rgba(24, 24, 32,"],
+.light [style*="rgba(255, 255, 255, 0.04)"],
+.light [style*="rgba(255, 255, 255, 0.05)"],
+.light [style*="rgba(255, 255, 255, 0.08)"] {
+    background: rgba(255, 255, 255, 0.92) !important;
+    border-color: rgba(212, 165, 55, 0.35) !important;
+    color: #1e293b !important;
+}
+
+/* Ensure buttons with golden gradient keep dark text */
+.light button[style*="linear-gradient"],
+.light a[style*="linear-gradient"] {
+    color: #050507 !important;
+}
+
 
 /* ═══════════════════════════════════════════════════════════════
    BASE RESET & TYPOGRAPHY

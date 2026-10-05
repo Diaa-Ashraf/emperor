@@ -10,6 +10,7 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { catalogApi } from '../api/endpoints';
 import VideoBackground from '../components/home/VideoBackground';
 import { formatImageUrl } from '../utils/imageHelper';
+import { useTheme } from '../contexts/ThemeContext';
 
 const TYPE_CONFIG = {
     games: {
@@ -50,6 +51,8 @@ let categoriesCache = null;
 export default function CategoryPage() {
     const params = useParams();
     const navigate = useNavigate();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const rawSlug = params.slug || params.id || 'all';
     const slug = rawSlug.toLowerCase();
 
@@ -175,14 +178,18 @@ export default function CategoryPage() {
         <MainLayout>
             {/* Header & Breadcrumb Hero */}
             <div style={{
-                background: 'linear-gradient(135deg, #181824 0%, #101016 50%, #0B0B0E 100%)',
-                border: '1px solid rgba(212, 165, 55, 0.3)',
+                background: isLight
+                    ? 'linear-gradient(135deg, #FFFDF7 0%, #FEF8EA 45%, #FDF1D3 100%)'
+                    : 'linear-gradient(135deg, #181824 0%, #101016 50%, #0B0B0E 100%)',
+                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.3)',
                 borderRadius: '24px',
                 padding: 'clamp(24px, 4vw, 36px)',
                 marginBottom: '32px',
                 position: 'relative',
                 overflow: 'hidden',
-                boxShadow: '0 16px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 165, 55, 0.08)',
+                boxShadow: isLight
+                    ? '0 10px 30px rgba(212, 165, 55, 0.12), 0 2px 10px rgba(0, 0, 0, 0.04)'
+                    : '0 16px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 165, 55, 0.08)',
             }}>
                 {/* Background ambient aura */}
                 <div style={{
@@ -192,18 +199,20 @@ export default function CategoryPage() {
                     width: '240px',
                     height: '240px',
                     borderRadius: '50%',
-                    background: 'radial-gradient(circle, rgba(212, 165, 55, 0.18) 0%, transparent 70%)',
+                    background: isLight
+                        ? 'radial-gradient(circle, rgba(212, 165, 55, 0.22) 0%, transparent 70%)'
+                        : 'radial-gradient(circle, rgba(212, 165, 55, 0.18) 0%, transparent 70%)',
                     pointerEvents: 'none',
                 }} />
 
                 <div style={{ position: 'relative', zIndex: 1 }}>
                     {/* Breadcrumb */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', fontSize: '13px', color: '#8E8E98' }}>
-                        <Link to="/" style={{ color: '#D4A537', textDecoration: 'none', fontWeight: '700' }}>الرئيسية</Link>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', fontSize: '13px', color: isLight ? '#64748B' : '#8E8E98' }}>
+                        <Link to="/" style={{ color: isLight ? '#9A7210' : '#D4A537', textDecoration: 'none', fontWeight: '800' }}>الرئيسية</Link>
                         <span>/</span>
-                        <Link to="/category/all" style={{ color: '#8E8E98', textDecoration: 'none' }}>الأقسام والمنتجات</Link>
+                        <Link to="/category/all" style={{ color: isLight ? '#64748B' : '#8E8E98', textDecoration: 'none', fontWeight: '600' }}>الأقسام والمنتجات</Link>
                         <span>/</span>
-                        <span style={{ color: '#CBD5E1', fontWeight: '800' }}>{categoryTitle}</span>
+                        <span style={{ color: isLight ? '#0F172A' : '#CBD5E1', fontWeight: '800' }}>{categoryTitle}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
@@ -214,9 +223,9 @@ export default function CategoryPage() {
                                 gap: '6px',
                                 padding: '4px 12px',
                                 borderRadius: '8px',
-                                background: 'rgba(212, 165, 55, 0.15)',
-                                border: '1px solid rgba(212, 165, 55, 0.35)',
-                                color: '#D4A537',
+                                background: isLight ? 'rgba(212, 165, 55, 0.18)' : 'rgba(212, 165, 55, 0.15)',
+                                border: isLight ? '1px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.35)',
+                                color: isLight ? '#9A7210' : '#D4A537',
                                 fontSize: '12px',
                                 fontWeight: '800',
                                 marginBottom: '10px',
@@ -229,29 +238,30 @@ export default function CategoryPage() {
                                 margin: '0 0 8px',
                                 fontSize: 'clamp(24px, 4vw, 32px)',
                                 fontWeight: '900',
-                                color: '#FFFFFF',
+                                color: isLight ? '#0F172A' : '#FFFFFF',
                                 letterSpacing: '-0.3px',
                             }}>
                                 {categoryTitle}
                             </h1>
-                            <p style={{ margin: 0, fontSize: '14.5px', color: '#A0A0B0', maxWidth: '650px', lineHeight: '1.6' }}>
+                            <p style={{ margin: 0, fontSize: '14.5px', color: isLight ? '#475569' : '#A0A0B0', maxWidth: '650px', lineHeight: '1.6' }}>
                                 {categoryDescription}
                             </p>
                         </div>
 
                         {/* Product count badge */}
                         <div style={{
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.05)',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(255, 255, 255, 0.1)',
                             borderRadius: '16px',
                             padding: '12px 20px',
                             textAlign: 'center',
+                            boxShadow: isLight ? '0 4px 15px rgba(212, 165, 55, 0.12)' : 'none',
                         }}>
-                            <span style={{ fontSize: '11.5px', color: '#8E8E98', display: 'block', fontWeight: '700' }}>
+                            <span style={{ fontSize: '11.5px', color: isLight ? '#64748B' : '#8E8E98', display: 'block', fontWeight: '700' }}>
                                 إجمالي العناصر
                             </span>
-                            <span style={{ fontSize: '20px', fontWeight: '900', color: '#D4A537' }}>
-                                {filteredProducts.length} <small style={{ fontSize: '12px', color: '#CBD5E1' }}>منتج</small>
+                            <span style={{ fontSize: '20px', fontWeight: '900', color: isLight ? '#9A7210' : '#D4A537' }}>
+                                {filteredProducts.length} <small style={{ fontSize: '12px', color: isLight ? '#64748B' : '#CBD5E1' }}>منتج</small>
                             </span>
                         </div>
                     </div>
@@ -280,14 +290,16 @@ export default function CategoryPage() {
                             borderRadius: '14px',
                             background: isAllTabActive
                                 ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
-                                : 'rgba(24, 24, 32, 0.85)',
-                            color: isAllTabActive ? '#0A0A0E' : '#E2E8F0',
+                                : (isLight ? '#FFFFFF' : 'rgba(24, 24, 32, 0.85)'),
+                            color: isAllTabActive ? '#0A0A0E' : (isLight ? '#1E293B' : '#E2E8F0'),
                             fontWeight: '800',
                             fontSize: '13.5px',
                             textDecoration: 'none',
                             whiteSpace: 'nowrap',
-                            border: isAllTabActive ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
-                            boxShadow: isAllTabActive ? '0 4px 15px rgba(212, 165, 55, 0.35)' : 'none',
+                            border: isAllTabActive ? 'none' : (isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)'),
+                            boxShadow: isAllTabActive 
+                                ? '0 4px 15px rgba(212, 165, 55, 0.35)' 
+                                : (isLight ? '0 2px 8px rgba(0, 0, 0, 0.04)' : 'none'),
                             transition: 'all 0.2s',
                         }}
                     >
@@ -306,14 +318,16 @@ export default function CategoryPage() {
                                     borderRadius: '14px',
                                     background: isActive
                                         ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
-                                        : 'rgba(24, 24, 32, 0.85)',
-                                    color: isActive ? '#0A0A0E' : '#E2E8F0',
+                                        : (isLight ? '#FFFFFF' : 'rgba(24, 24, 32, 0.85)'),
+                                    color: isActive ? '#0A0A0E' : (isLight ? '#1E293B' : '#E2E8F0'),
                                     fontWeight: '800',
                                     fontSize: '13.5px',
                                     textDecoration: 'none',
                                     whiteSpace: 'nowrap',
-                                    border: isActive ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
-                                    boxShadow: isActive ? '0 4px 15px rgba(212, 165, 55, 0.35)' : 'none',
+                                    border: isActive ? 'none' : (isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)'),
+                                    boxShadow: isActive 
+                                        ? '0 4px 15px rgba(212, 165, 55, 0.35)' 
+                                        : (isLight ? '0 2px 8px rgba(0, 0, 0, 0.04)' : 'none'),
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '7px',
@@ -343,8 +357,10 @@ export default function CategoryPage() {
 
             {/* Search and Filters Bar */}
             <div style={{
-                background: 'linear-gradient(145deg, #161622 0%, #101016 100%)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                background: isLight
+                    ? 'linear-gradient(145deg, #FFFFFF 0%, #FFFDF8 100%)'
+                    : 'linear-gradient(145deg, #161622 0%, #101016 100%)',
+                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: '18px',
                 padding: '14px 18px',
                 marginBottom: '30px',
@@ -353,6 +369,7 @@ export default function CategoryPage() {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: '14px',
+                boxShadow: isLight ? '0 6px 20px rgba(212, 165, 55, 0.08)' : 'none',
             }}>
                 <div style={{ flex: '1 1 280px', maxWidth: '440px' }}>
                     <Input
@@ -367,15 +384,15 @@ export default function CategoryPage() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <SlidersHorizontal size={16} color="#D4A537" />
+                        <SlidersHorizontal size={16} color={isLight ? '#9A7210' : '#D4A537'} />
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
                             style={{
-                                background: '#121218',
-                                border: '1px solid rgba(212, 165, 55, 0.3)',
+                                background: isLight ? '#FFFFFF' : '#121218',
+                                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.3)',
                                 borderRadius: '12px',
-                                color: '#FFFFFF',
+                                color: isLight ? '#0F172A' : '#FFFFFF',
                                 padding: '9px 14px',
                                 fontSize: '13px',
                                 fontWeight: '700',

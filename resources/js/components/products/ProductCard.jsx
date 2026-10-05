@@ -107,15 +107,15 @@ export default function ProductCard({ product }) {
                         bottom: '10px',
                         left: '10px',
                         zIndex: 2,
-                        background: 'rgba(10, 10, 14, 0.85)',
-                        border: '1px solid rgba(212, 165, 55, 0.3)',
-                        color: '#F5D061',
+                        background: isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(10, 10, 14, 0.85)',
+                        border: isLight ? '1px solid rgba(212, 165, 55, 0.5)' : '1px solid rgba(212, 165, 55, 0.3)',
+                        color: isLight ? '#9A7210' : '#F5D061',
                         borderRadius: '8px',
                         padding: '3px 9px',
                         fontSize: '11px',
                         fontWeight: '800',
                         backdropFilter: 'blur(8px)',
-                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+                        boxShadow: isLight ? '0 2px 8px rgba(0, 0, 0, 0.08)' : '0 4px 12px rgba(0, 0, 0, 0.5)',
                     }}>
                         {product.category.name}
                     </div>

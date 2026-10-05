@@ -6,10 +6,14 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
 import { targetApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { TargetAppIconRenderer } from '../components/target/TargetAppIcons';
 import VideoBackground from '../components/home/VideoBackground';
+
 export default function TargetAppsPage() {
     const { isRtl } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const navigate = useNavigate();
     const [apps, setApps] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -49,24 +53,24 @@ export default function TargetAppsPage() {
                             gap: '8px',
                             padding: '10px 20px',
                             borderRadius: '24px',
-                            background: 'rgba(229, 195, 120, 0.08)',
-                            border: '1.5px solid rgba(229, 195, 120, 0.4)',
-                            color: '#E5C378',
+                            background: isLight ? 'rgba(212, 165, 55, 0.14)' : 'rgba(229, 195, 120, 0.08)',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.5)' : '1.5px solid rgba(229, 195, 120, 0.4)',
+                            color: isLight ? '#9A7210' : '#E5C378',
                             fontSize: '13.5px',
                             fontWeight: '800',
                             textDecoration: 'none',
                             transition: 'all 0.25s ease',
-                            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.4)',
+                            boxShadow: isLight ? '0 4px 15px rgba(212, 165, 55, 0.15)' : '0 4px 15px rgba(0, 0, 0, 0.4)',
                         }}
                         onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = '#FFDF73';
+                            e.currentTarget.style.borderColor = isLight ? '#9A7210' : '#FFDF73';
                             e.currentTarget.style.boxShadow = '0 0 15px rgba(229, 195, 120, 0.3)';
-                            e.currentTarget.style.background = 'rgba(229, 195, 120, 0.15)';
+                            e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.22)' : 'rgba(229, 195, 120, 0.15)';
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = 'rgba(229, 195, 120, 0.4)';
-                            e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
-                            e.currentTarget.style.background = 'rgba(229, 195, 120, 0.08)';
+                            e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.5)' : 'rgba(229, 195, 120, 0.4)';
+                            e.currentTarget.style.boxShadow = isLight ? '0 4px 15px rgba(212, 165, 55, 0.15)' : '0 4px 15px rgba(0, 0, 0, 0.4)';
+                            e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.14)' : 'rgba(229, 195, 120, 0.08)';
                         }}
                     >
                         <FileText size={16} />
@@ -81,21 +85,22 @@ export default function TargetAppsPage() {
                             gap: '6px',
                             padding: '9px 18px',
                             borderRadius: '24px',
-                            background: 'rgba(255, 255, 255, 0.04)',
-                            border: '1px solid rgba(255, 255, 255, 0.12)',
-                            color: '#D1D1DB',
+                            background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.04)',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.12)',
+                            color: isLight ? '#475569' : '#D1D1DB',
                             fontSize: '13.5px',
                             fontWeight: '700',
                             cursor: 'pointer',
                             transition: 'all 0.2s ease',
+                            boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.04)' : 'none',
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.borderColor = '#E5C378';
-                            e.currentTarget.style.color = '#FFFFFF';
+                            e.currentTarget.style.color = isLight ? '#0F172A' : '#FFFFFF';
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-                            e.currentTarget.style.color = '#D1D1DB';
+                            e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(255, 255, 255, 0.12)';
+                            e.currentTarget.style.color = isLight ? '#475569' : '#D1D1DB';
                         }}
                     >
                         <span>رجوع</span>
@@ -105,11 +110,15 @@ export default function TargetAppsPage() {
 
                 {/* ═══ Ultra-Luxury Gold Frame Container Box ═══ */}
                 <div style={{
-                    background: 'radial-gradient(ellipse at 50% 0%, #151522 0%, #0C0C12 70%, #08080C 100%)',
-                    border: '2px solid #E5C378',
+                    background: isLight
+                        ? 'radial-gradient(ellipse at 50% 0%, #FFFDF8 0%, #FEF8EA 50%, #FDF1D5 100%)'
+                        : 'radial-gradient(ellipse at 50% 0%, #151522 0%, #0C0C12 70%, #08080C 100%)',
+                    border: isLight ? '2px solid rgba(212, 165, 55, 0.55)' : '2px solid #E5C378',
                     borderRadius: '28px',
                     padding: 'clamp(20px, 3.5vw, 36px)',
-                    boxShadow: '0 0 35px rgba(212, 165, 55, 0.18), 0 20px 60px rgba(0, 0, 0, 0.9)',
+                    boxShadow: isLight
+                        ? '0 12px 35px rgba(212, 165, 55, 0.15), 0 4px 15px rgba(0, 0, 0, 0.04)'
+                        : '0 0 35px rgba(212, 165, 55, 0.18), 0 20px 60px rgba(0, 0, 0, 0.9)',
                     position: 'relative',
                     overflow: 'hidden',
                 }}>
@@ -119,9 +128,9 @@ export default function TargetAppsPage() {
                         top: 0,
                         left: '15%',
                         right: '15%',
-                        height: '1px',
+                        height: '2px',
                         background: 'linear-gradient(90deg, transparent, #FFE082, transparent)',
-                        opacity: 0.8,
+                        opacity: isLight ? 0.9 : 0.8,
                     }} />
 
                     {/* Section Header: • اختر التطبيق */}
@@ -133,14 +142,14 @@ export default function TargetAppsPage() {
                         gap: '12px',
                         marginBottom: '28px',
                         paddingBottom: '16px',
-                        borderBottom: '1px solid rgba(229, 195, 120, 0.15)',
+                        borderBottom: isLight ? '1px solid rgba(212, 165, 55, 0.25)' : '1px solid rgba(229, 195, 120, 0.15)',
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <span style={{
-                                color: '#FFD700',
+                                color: isLight ? '#D4A537' : '#FFD700',
                                 fontSize: '24px',
                                 lineHeight: '1',
-                                textShadow: '0 0 12px rgba(255, 215, 0, 0.8)',
+                                textShadow: isLight ? 'none' : '0 0 12px rgba(255, 215, 0, 0.8)',
                             }}>
                                 •
                             </span>
@@ -148,7 +157,7 @@ export default function TargetAppsPage() {
                                 margin: 0,
                                 fontSize: '20px',
                                 fontWeight: '900',
-                                color: '#FFFFFF',
+                                color: isLight ? '#0F172A' : '#FFFFFF',
                                 letterSpacing: '-0.3px',
                             }}>
                                 اختر التطبيق
@@ -160,14 +169,14 @@ export default function TargetAppsPage() {
                             alignItems: 'center',
                             gap: '6px',
                             fontSize: '12.5px',
-                            fontWeight: '700',
-                            color: '#E5C378',
-                            background: 'rgba(229, 195, 120, 0.08)',
-                            border: '1px solid rgba(229, 195, 120, 0.25)',
+                            fontWeight: '800',
+                            color: isLight ? '#9A7210' : '#E5C378',
+                            background: isLight ? 'rgba(212, 165, 55, 0.18)' : 'rgba(229, 195, 120, 0.08)',
+                            border: isLight ? '1px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(229, 195, 120, 0.25)',
                             padding: '4px 12px',
                             borderRadius: '20px',
                         }}>
-                            <Sparkles size={13} color="#FFD700" />
+                            <Sparkles size={13} color={isLight ? '#9A7210' : '#FFD700'} />
                             <span>استلام فوري كاش بأعلى سعر صرف</span>
                         </div>
                     </div>
@@ -205,15 +214,15 @@ export default function TargetAppsPage() {
                                             if (iconBox) {
                                                 iconBox.style.transform = 'translateY(-6px) scale(1.04)';
                                                 iconBox.style.borderColor = '#FFE082';
-                                                iconBox.style.boxShadow = '0 14px 32px rgba(212, 165, 55, 0.45)';
+                                                iconBox.style.boxShadow = isLight ? '0 10px 25px rgba(212, 165, 55, 0.35)' : '0 14px 32px rgba(212, 165, 55, 0.45)';
                                             }
                                         }}
                                         onMouseLeave={(e) => {
                                             const iconBox = e.currentTarget.querySelector('.app-icon-frame');
                                             if (iconBox) {
                                                 iconBox.style.transform = 'translateY(0) scale(1)';
-                                                iconBox.style.borderColor = 'rgba(229, 195, 120, 0.85)';
-                                                iconBox.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.65)';
+                                                iconBox.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.7)' : 'rgba(229, 195, 120, 0.85)';
+                                                iconBox.style.boxShadow = isLight ? '0 6px 16px rgba(0, 0, 0, 0.08)' : '0 8px 24px rgba(0, 0, 0, 0.65)';
                                             }
                                         }}
                                     >
@@ -224,9 +233,9 @@ export default function TargetAppsPage() {
                                                 width: '94px',
                                                 height: '94px',
                                                 borderRadius: '24px',
-                                                border: '2.5px solid rgba(229, 195, 120, 0.85)',
-                                                background: '#0E0E14',
-                                                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.65)',
+                                                border: isLight ? '2.5px solid rgba(212, 165, 55, 0.7)' : '2.5px solid rgba(229, 195, 120, 0.85)',
+                                                background: isLight ? '#FFFFFF' : '#0E0E14',
+                                                boxShadow: isLight ? '0 6px 16px rgba(0, 0, 0, 0.08)' : '0 8px 24px rgba(0, 0, 0, 0.65)',
                                                 overflow: 'hidden',
                                                 display: 'flex',
                                                 alignItems: 'center',
@@ -239,11 +248,11 @@ export default function TargetAppsPage() {
                                             <TargetAppIconRenderer app={app} size={94} />
                                         </div>
 
-                                        {/* ── App Name in Crisp White ── */}
+                                        {/* ── App Name in Crisp Dark / White ── */}
                                         <div style={{
                                             fontSize: '14.5px',
                                             fontWeight: '800',
-                                            color: '#FFFFFF',
+                                            color: isLight ? '#0F172A' : '#FFFFFF',
                                             marginTop: '10px',
                                             marginBottom: '4px',
                                             lineHeight: '1.3',
@@ -256,9 +265,9 @@ export default function TargetAppsPage() {
                                         <div style={{
                                             fontSize: '13px',
                                             fontWeight: '800',
-                                            color: '#E5C378',
+                                            color: isLight ? '#9A7210' : '#E5C378',
                                             letterSpacing: '-0.2px',
-                                            textShadow: '0 1px 3px rgba(0, 0, 0, 0.6)',
+                                            textShadow: isLight ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.6)',
                                         }}>
                                             {app.rate_text || `${app.rate_per_unit || 48} EGP / دولار`}
                                         </div>
