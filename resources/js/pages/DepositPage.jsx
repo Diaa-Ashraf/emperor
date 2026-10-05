@@ -19,11 +19,13 @@ import {
     Lock,
     Sparkles,
     Globe,
-    Info
+    Info,
+    Flame
 } from 'lucide-react';
 import "../../css/depositePage.css";
 import MainLayout from '../layouts/MainLayout';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import PaymentBrandLogo from '../components/payments/PaymentBrandLogo';
 import { depositsApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -44,6 +46,7 @@ export default function DepositPage() {
     const [senderWallet, setSenderWallet] = useState('');
     const [transactionRef, setTransactionRef] = useState('');
     const [proofImage, setProofImage] = useState(null);
+    const [proofPreview, setProofPreview] = useState(null);
 
     const [copied, setCopied] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -61,146 +64,203 @@ export default function DepositPage() {
             .catch(() => {});
     }, []);
 
-    const getMethodIcon = (id, size = 28) => {
-        if (id?.includes('usdt') || id?.includes('binance') || id?.includes('crypto')) {
-            return <DollarSign size={size} color="#22C55E" />;
-        }
-        if (id?.includes('bank')) {
-            return <CreditCard size={size} color="#D4A537" />;
-        }
-        return <Smartphone size={size} color="#F5D061" />;
-    };
-
-    // High quality rich payment methods
+    // Comprehensive list of rich payment methods matching KA-CARDS layout
     const allPaymentMethods = [
+        // 🇪🇬 EGYPT
         {
             id: 'vodafone_cash',
             code: 'vodafone_cash',
             country: 'egypt',
             name: 'فودافون كاش',
             subName: 'VF-CASH',
-            currency: 'EGP',
+            currency: 'EGY',
             min_amount: 50,
-            account_number: '01012345678',
-            note: 'برجاء كتابة رقم العملية لضمان التنفيذ في ثوانٍ',
+            account_number: '01025515743',
+            note: 'برجاء كتابة رقم العملية لضمان التنفيذ 0 ثانيه',
             instruction: 'أقل تحويل 50 ج، يتم مراجعة الإيصال وإيداع الرصيد في محفظتك فوراً.',
-            logo: '/images/methods/vodafone.png',
-            color: '#E60000',
-            tag: 'تحويل مصر EGY',
-        },
-        {
-            id: 'instapay',
-            code: 'instapay',
-            country: 'egypt',
-            name: 'انستا بي (InstaPay)',
-            subName: 'INSTAPAY EGYPT',
-            currency: 'EGP',
-            min_amount: 50,
-            account_number: 'emperor@instapay',
-            note: 'تحويل بنكي ولحظي فوري بدون أي عمولة 0%',
-            instruction: 'حول عبر انستاباي إلى العنوان المعرف أو رقم الهاتف ثم ارفع سكرين شوت الإيصال.',
-            logo: '/images/methods/instapay.png',
-            color: '#8E24AA',
-            tag: 'تحويل مصر EGY',
+            tag: 'تحويل مصر',
         },
         {
             id: 'etisalat_cash',
             code: 'etisalat_cash',
             country: 'egypt',
             name: 'اتصالات كاش',
-            subName: 'ETISALAT CASH',
-            currency: 'EGP',
+            subName: 'اتصالات كاش',
+            currency: 'EGY',
             min_amount: 50,
             account_number: '01123456789',
-            note: 'سيتم قبول المبلغ وإيداعه في المحفظة بعد المراجعة',
+            note: 'سيتم قبول المبلغ بعد المراجعه من قبل الادارة',
             instruction: 'أقل تحويل 50 ج، التحويل متاح 24/7 عبر محفظة اتصالات كاش.',
-            logo: '/images/methods/etisalat.png',
-            color: '#78BE20',
-            tag: 'تحويل مصر EGY',
+            tag: 'تحويل مصر',
+        },
+        {
+            id: 'instapay',
+            code: 'instapay',
+            country: 'egypt',
+            name: 'انستا بي (InstaPay)',
+            subName: 'انستا بي',
+            currency: 'EGY',
+            min_amount: 50,
+            account_number: 'emperor@instapay',
+            note: 'تحويل بنكي ولحظي فوري بدون أي عمولة 0%',
+            instruction: 'حول عبر انستاباي إلى العنوان المعرف أو رقم الهاتف ثم ارفع سكرين شوت الإيصال.',
+            tag: 'تحويل مصر',
         },
         {
             id: 'orange_cash',
             code: 'orange_cash',
             country: 'egypt',
             name: 'أورنج كاش',
-            subName: 'ORANGE CASH',
-            currency: 'EGP',
+            subName: 'أورنج كاش',
+            currency: 'EGY',
             min_amount: 50,
             account_number: '01234567890',
-            note: 'اكتب رقم العملية من رسالة أورنج كاش لتسريع الطلب',
+            note: 'برجاء كتابة رقم العملية لضمان التنفيذ 0 ثانيه',
             instruction: 'أقل تحويل 50 ج، سيتم إضافة الرصيد تلقائياً بعد الفحص.',
-            logo: '/images/methods/orange.png',
-            color: '#FF6600',
-            tag: 'تحويل مصر EGY',
+            tag: 'تحويل مصر',
         },
+
+        // 🇸🇾 SYRIA
         {
-            id: 'usdt_trc20',
-            code: 'usdt_crypto',
-            country: 'crypto',
-            name: 'USDT (TRC-20)',
-            subName: 'TETHER TRC20',
+            id: 'sham_cash',
+            code: 'sham_cash',
+            country: 'syria',
+            name: 'شام كاش (Sham Cash)',
+            subName: 'شام كاش',
             currency: 'USD',
             min_amount: 5,
-            account_number: 'TYDzsYbm76DDF4nZp3eM1eF78B99Q1x2Z8',
-            binance_pay_id: '891024519',
-            note: 'تحويل دولي مشفر عبر شبكة ترون TRC20 أو باينانس',
-            instruction: 'حول عملة USDT عبر شبكة TRC20 وأدخل معرف العملية TXID ولقطة الشاشة.',
-            logo: '/images/methods/usdt.png',
-            color: '#26A17B',
-            tag: 'تحويل USDT دولي',
+            account_number: '963987654321',
+            note: 'تحويل مباشر وسريع داخل سوريا بالدولار الأمريكي',
+            instruction: 'اكتب رقم الحوالة واسم المستلم لسرعة الإيداع في المحفظة.',
+            tag: 'تحويل سوريا',
         },
+
+        // 🇯🇴 JORDAN
         {
-            id: 'binance_pay',
-            code: 'usdt_crypto',
-            country: 'crypto',
-            name: 'Binance Pay',
-            subName: 'BINANCE PAY ID',
-            currency: 'USD',
+            id: 'cliq_jordan',
+            code: 'cliq_jordan',
+            country: 'jordan',
+            name: 'كليك (CliQ Jordan)',
+            subName: 'CliQ الأردن',
+            currency: 'JOD',
             min_amount: 5,
-            account_number: '891024519',
-            note: 'دفع فوري بدون رسوم شبكة عبر باينانس باي',
-            instruction: 'افتح تطبيق Binance Pay وأرسل المبلغ للـ Pay ID الموضح.',
-            logo: '/images/methods/binance.png',
-            color: '#F3BA2F',
-            tag: 'تحويل USDT دولي',
+            account_number: 'EMPEROR_CLIQ',
+            note: 'تحويل فوري عبر نظام كليك الأردني بدون عمولات',
+            instruction: 'حول عبر اسم المستخدم أو الآيبان ثم أرفق إشعار التحويل.',
+            tag: 'تحويل الاردن',
         },
         {
-            id: 'saudi_bank',
-            code: 'saudi_bank',
+            id: 'zain_cash_jo',
+            code: 'zain_cash',
+            country: 'jordan',
+            name: 'زين كاش الأردن',
+            subName: 'زين كاش',
+            currency: 'JOD',
+            min_amount: 5,
+            account_number: '0791234567',
+            note: 'شحن فوري ومباشر عبر محفظة زين كاش',
+            instruction: 'أدخل رقم المحفظة المحول منها ورقم الإشعار.',
+            tag: 'تحويل الاردن',
+        },
+
+        // 🇸🇦 SAUDI ARABIA
+        {
+            id: 'stc_pay_sa',
+            code: 'stc_pay',
             country: 'saudi',
-            name: 'تحويل بنكي / الراجحي',
-            subName: 'SAUDI TRANSFER',
+            name: 'STC Pay / الراجحي',
+            subName: 'stc pay السعودية',
             currency: 'SAR',
             min_amount: 25,
-            account_number: 'SA0380000214589210001',
-            note: 'التحويل من بنك الراجحي أو بنوك السعودية',
+            account_number: '0501234567',
+            note: 'تحويل فوري من stc pay أو الحسابات البنكية السعودية',
             instruction: 'أقل تحويل 25 ريال، اكتب اسم المحول ورقم الحوالة بدقة.',
-            logo: null,
-            color: '#006C35',
-            tag: 'تحويل السعودية SAR',
+            tag: 'تحويل السعودية',
         },
+
+        // 🇦🇪 UAE
         {
             id: 'uae_bank',
             code: 'uae_bank',
             country: 'uae',
             name: 'تحويل الإمارات / درهم',
-            subName: 'UAE TRANSFER',
+            subName: 'درهم إماراتي',
             currency: 'AED',
             min_amount: 25,
             account_number: 'AE2503300000124587963',
-            note: 'تحويل بنكي أو محفظة إماراتية',
+            note: 'تحويل بنكي أو محفظة إماراتية معتمدة',
             instruction: 'أقل تحويل 25 درهم، التحويل فوري ومعتمد.',
-            logo: null,
-            color: '#D4A537',
-            tag: 'تحويل الإمارات AED',
+            tag: 'تحويل الامارات',
+        },
+
+        // 🇾🇪 YEMEN
+        {
+            id: 'kuraimi_ye',
+            code: 'kuraimi',
+            country: 'yemen',
+            name: 'الكريمي إكسبرس (اليمن)',
+            subName: 'الكريمي جوال',
+            currency: 'YER',
+            min_amount: 5000,
+            account_number: '12345678',
+            note: 'تحويل عبر الكريمي أو ون كاش بالريال اليمني',
+            instruction: 'أدخل رقم الحوالة ورقم هاتف المرسل بدقة.',
+            tag: 'تحويل اليمن',
+        },
+
+        // 🇹🇷 TURKEY
+        {
+            id: 'ziraat_bank',
+            code: 'ziraat_bank',
+            country: 'turkey',
+            name: 'Ziraat Bankası (تركيا)',
+            subName: 'Ziraat Bankası',
+            currency: 'TRY',
+            min_amount: 50,
+            account_number: 'TR120001000254879654123547',
+            note: 'Havale / EFT تحويل فوري ليرة تركية',
+            instruction: 'اكتب اسم المحول في خانة الملاحظات وأرفق إيصال البنك.',
+            tag: 'تحويل تركيا',
+        },
+
+        // 🌐 GLOBAL / CRYPTO
+        {
+            id: 'usdt_trc20',
+            code: 'usdt_crypto',
+            country: 'crypto',
+            name: 'USDT (TRC-20)',
+            subName: 'USDT TRC20',
+            currency: 'USD',
+            min_amount: 5,
+            account_number: 'TYDzsYbm76DDF4nZp3eM1eF78B99Q1x2Z8',
+            note: 'تحويل دولي مشفر عبر شبكة ترون TRC20',
+            instruction: 'حول عملة USDT عبر شبكة TRC20 وأدخل معرف العملية TXID ولقطة الشاشة.',
+            tag: 'تحويل USDT دولي',
+        },
+        {
+            id: 'binance_pay',
+            code: 'binance_pay',
+            country: 'crypto',
+            name: 'Binance Pay (باينانس)',
+            subName: 'BINANCE PAY ID',
+            currency: 'USD',
+            min_amount: 5,
+            account_number: '891024519',
+            note: 'دفع فوري بدون رسوم شبكة 0% عبر باينانس باي',
+            instruction: 'افتح تطبيق Binance Pay وأرسل المبلغ للـ Pay ID الموضح.',
+            tag: 'تحويل USDT دولي',
         },
     ];
 
     const countries = [
-        { id: 'egypt', name: 'تحويل مصر', currency: 'EGY', flag: '🇪🇬' },
-        { id: 'crypto', name: 'تحويل USDT دولي', currency: 'USD', flag: 'USDT' },
-        { id: 'saudi', name: 'تحويل السعودية', currency: 'SAR', flag: '🇸🇦' },
-        { id: 'uae', name: 'تحويل الإمارات', currency: 'AED', flag: '🇦🇪' },
+        { id: 'egypt', name: 'تحويل مصر', currency: 'EGY' },
+        { id: 'jordan', name: 'تحويل الاردن', currency: 'JOD' },
+        { id: 'syria', name: 'تحويل سوريا', currency: 'USD' },
+        { id: 'saudi', name: 'تحويل السعودية', currency: 'SAR' },
+        { id: 'uae', name: 'تحويل الامارات', currency: 'AED' },
+        { id: 'yemen', name: 'تحويل اليمن', currency: 'YER' },
+        { id: 'turkey', name: 'تحويل تركيا', currency: 'TRY' },
+        { id: 'crypto', name: 'تحويل USDT دولي', currency: 'USD' },
     ];
 
     const filteredMethods = allPaymentMethods.filter(m => {
@@ -217,6 +277,14 @@ export default function DepositPage() {
     };
 
     const numAmount = parseFloat(amount) || 0;
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProofImage(file);
+            setProofPreview(URL.createObjectURL(file));
+        }
+    };
 
     const handleSubmitDeposit = async (e) => {
         e.preventDefault();
@@ -241,7 +309,6 @@ export default function DepositPage() {
         try {
             const formData = new FormData();
             
-            // Match with DB payment method if possible
             const matchedDbMethod = dbMethods.find(m => m.code === selectedMethod?.code || m.id === selectedMethod?.id);
             if (matchedDbMethod) {
                 formData.append('payment_method_id', matchedDbMethod.id);
@@ -316,9 +383,9 @@ export default function DepositPage() {
 
                     <p style={{ margin: '0 0 28px', fontSize: '15px', color: '#C5C5D2', lineHeight: '1.7' }}>
                         طلب شحن محفظة رقم <strong style={{ color: '#F5D061' }}>#{submittedDeposit.id}</strong> بمبلغ{' '}
-                        <strong style={{ color: '#22C55E' }}>{Number(submittedDeposit.amount || numAmount).toLocaleString()} {submittedDeposit.currency || selectedMethod?.currency || 'EGP'}</strong>.
+                        <strong style={{ color: '#4ADE80' }}>{Number(submittedDeposit.amount || numAmount).toLocaleString()} {submittedDeposit.currency || selectedMethod?.currency || 'EGP'}</strong>.
                         <br />
-                        يقوم المشرف الآن بمطابقة التحويل وسيتم إضافة الرصيد إلى محفظتك في ثوانٍ.
+                        يقوم المشرف الآن بمطابقة التحويل وسيتم إضافة الرصيد إلى محفظتك فوراً.
                     </p>
 
                     <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -362,7 +429,7 @@ export default function DepositPage() {
 
     return (
         <MainLayout>
-            <div style={{ maxWidth: '980px', margin: '0 auto', paddingBottom: '60px' }}>
+            <div className="emperor-deposit-container">
 
                 {/* Top Action Nav Bar */}
                 <div style={{
@@ -388,7 +455,7 @@ export default function DepositPage() {
                         }}
                     >
                         <FileText size={15} />
-                        <span>سجل الطلبات والمحفظة</span>
+                        <span>سجل المعاملات والمحفظة</span>
                     </Link>
 
                     {selectedMethod ? (
@@ -408,7 +475,7 @@ export default function DepositPage() {
                                 cursor: 'pointer',
                             }}
                         >
-                            <span>الرجوع للوسائل</span>
+                            <span>الرجوع لطرق الدفع</span>
                             {isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
                         </button>
                     ) : (
@@ -434,31 +501,13 @@ export default function DepositPage() {
                     )}
                 </div>
 
-                {/* ═══ VIEW 1: SELECT PAYMENT METHOD (Matches KA-Card Screenshot 1) ═══ */}
+                {/* ═══ VIEW 1: SELECT PAYMENT METHOD (Matches KA-Card Screenshot) ═══ */}
                 {!selectedMethod && (
                     <div>
-                        {/* Hero Banner with VIP Illustration & Balance (Matches Screenshot 1) */}
-                        <div style={{
-                            background: 'radial-gradient(ellipse at top, #1F190E 0%, #0A0A0E 100%)',
-                            border: '1.5px solid #D4A537',
-                            borderRadius: '26px',
-                            padding: '28px 24px',
-                            marginBottom: '28px',
-                            position: 'relative',
-                            overflow: 'hidden',
-                            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 165, 55, 0.12)',
-                        }}>
-                            {/* Inner Crown Glow */}
-                            <div style={{
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                gap: '20px',
-                                position: 'relative',
-                                zIndex: 2,
-                            }}>
-                                {/* Right: Title & Balance */}
+                        {/* Hero Banner with VIP Illustration & Balance (Matches Screenshot) */}
+                        <div className="deposit-hero-banner">
+                            <div className="deposit-hero-content">
+                                {/* Right: Title & Intro */}
                                 <div>
                                     <div style={{
                                         display: 'inline-flex',
@@ -474,76 +523,41 @@ export default function DepositPage() {
                                         marginBottom: '10px',
                                     }}>
                                         <Wallet size={13} />
-                                        <span>المحفظة الرقمية</span>
+                                        <span>المحفظة الرقمية الملكية</span>
                                     </div>
 
-                                    <h1 style={{ margin: '0 0 6px', fontSize: '28px', fontWeight: '900', color: '#FFFFFF' }}>
+                                    <h1 className="deposit-hero-title">
+                                        <Sparkles size={24} color="#D4A537" />
                                         إضافة رصيد
                                     </h1>
-                                    <p style={{ margin: 0, fontSize: '13.5px', color: '#A0A0B0' }}>
-                                        اختر وسيلة الدفع المناسبة واشحن محفظتك فوراً بالثواني
+                                    <p className="deposit-hero-desc">
+                                        اختر وسيلة الدفع المناسبة واشحن محفظتك فوراً بالثواني بأمان كامل وبدون عمولات
                                     </p>
                                 </div>
 
                                 {/* Center/Left: Current Balance Badge */}
-                                <div style={{
-                                    background: 'rgba(0, 0, 0, 0.6)',
-                                    border: '1px solid rgba(212, 165, 55, 0.4)',
-                                    borderRadius: '16px',
-                                    padding: '12px 20px',
-                                    textAlign: 'center',
-                                    backdropFilter: 'blur(8px)',
-                                }}>
-                                    <div style={{ fontSize: '11px', color: '#8E8E98', marginBottom: '2px', fontWeight: '700' }}>
+                                <div className="deposit-balance-capsule">
+                                    <div className="deposit-balance-label">
                                         رصيدك الحالي
                                     </div>
-                                    <div style={{ fontSize: '20px', fontWeight: '900', color: '#22C55E' }}>
-                                        {Number(user?.wallet?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })} EGY
+                                    <div className="deposit-balance-val">
+                                        {Number(user?.wallet?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })} {user?.currency || 'EGY'}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Country & Currency Selector Pills (Matches Screenshot 1) */}
-                            <div style={{
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                gap: '8px',
-                                marginTop: '24px',
-                                paddingTop: '18px',
-                                borderTop: '1px solid rgba(212, 165, 55, 0.2)',
-                            }}>
+                            {/* Country & Currency Selector Pills (Matches Screenshot) */}
+                            <div className="deposit-filter-pills-row">
                                 {countries.map((c) => {
                                     const active = activeCountry === c.id;
                                     return (
                                         <button
                                             key={c.id}
                                             onClick={() => setActiveCountry(c.id)}
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
-                                                padding: '8px 16px',
-                                                borderRadius: '20px',
-                                                background: active
-                                                    ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
-                                                    : 'rgba(255, 255, 255, 0.04)',
-                                                border: `1px solid ${active ? '#D4A537' : 'rgba(255, 255, 255, 0.1)'}`,
-                                                color: active ? '#000000' : '#D1D1DB',
-                                                fontSize: '12.5px',
-                                                fontWeight: '800',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s ease',
-                                            }}
+                                            className={`deposit-filter-pill ${active ? 'active' : ''}`}
                                         >
-                                            <span>{c.flag}</span>
                                             <span>{c.name}</span>
-                                            <span style={{
-                                                fontSize: '10.5px',
-                                                opacity: 0.85,
-                                                background: active ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.08)',
-                                                padding: '2px 6px',
-                                                borderRadius: '6px',
-                                            }}>
+                                            <span className="deposit-filter-pill-cur">
                                                 {c.currency}
                                             </span>
                                         </button>
@@ -552,141 +566,57 @@ export default function DepositPage() {
                             </div>
                         </div>
 
-                        {/* Methods Grid (Matches Screenshot 1 Rich 3D Cards) */}
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 260px), 1fr))',
-                            gap: '18px',
-                        }}>
+                        {/* KA-Cards Style Luxury Crimson & Gold Cards Grid */}
+                        <div className="deposit-cards-grid">
                             {filteredMethods.map((method) => (
                                 <div
                                     key={method.id}
+                                    className="ka-deposit-card"
                                     onClick={() => setSelectedMethod(method)}
-                                    style={{
-                                        background: '#0B0B0F',
-                                        border: '1.5px solid rgba(212, 165, 55, 0.3)',
-                                        borderRadius: '22px',
-                                        overflow: 'hidden',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                                        boxShadow: '0 8px 25px rgba(0, 0, 0, 0.6)',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.borderColor = '#F5D061';
-                                        e.currentTarget.style.transform = 'translateY(-6px)';
-                                        e.currentTarget.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 165, 55, 0.2)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.3)';
-                                        e.currentTarget.style.transform = 'translateY(0)';
-                                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.6)';
-                                    }}
                                 >
-                                    {/* Top Card Header */}
-                                    <div style={{
-                                        background: 'linear-gradient(135deg, #181822 0%, #0E0E14 100%)',
-                                        padding: '16px 18px',
-                                        borderBottom: '1px solid rgba(212, 165, 55, 0.15)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                    }}>
-                                        <div style={{
-                                            fontSize: '11px',
-                                            fontWeight: '800',
-                                            color: '#F5D061',
-                                            background: 'rgba(212, 165, 55, 0.15)',
-                                            padding: '3px 10px',
-                                            borderRadius: '8px',
-                                        }}>
+                                    {/* Top Bar with Recharge & Flame */}
+                                    <div className="ka-card-top-bar">
+                                        <span className="ka-card-recharge-tag">
                                             Recharge
-                                        </div>
-                                        <div style={{
-                                            fontSize: '12px',
-                                            fontWeight: '800',
-                                            color: '#FFFFFF',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '4px',
-                                        }}>
-                                            <span>اشحن رصيدك</span>
+                                        </span>
+                                        <span className="ka-card-flame-tag">
+                                            <Flame size={14} color="#F5D061" />
+                                            اشحن رصيدك
+                                        </span>
+                                    </div>
+
+                                    {/* Elevated White Capsule with Brand Logo */}
+                                    <div className="ka-card-white-capsule">
+                                        <div className="ka-card-logo-circle">
+                                            <PaymentBrandLogo methodId={method.id} size={64} />
                                         </div>
                                     </div>
 
-                                    {/* Center Logo Area */}
-                                    <div style={{
-                                        padding: '24px 18px',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        textAlign: 'center',
-                                        background: 'radial-gradient(circle at center, rgba(212, 165, 55, 0.06) 0%, transparent 70%)',
-                                    }}>
-                                        <div style={{
-                                            width: '74px',
-                                            height: '74px',
-                                            borderRadius: '20px',
-                                            background: '#121218',
-                                            border: '1.5px solid rgba(212, 165, 55, 0.4)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            marginBottom: '14px',
-                                            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.6)',
-                                            fontSize: '34px',
-                                        }}>
-                                            {getMethodIcon(method.id, 32)}
-                                        </div>
-
-                                        <h3 style={{ margin: '0 0 4px', fontSize: '17px', fontWeight: '900', color: '#FFFFFF' }}>
-                                            {method.name}
-                                        </h3>
-                                        <div style={{ fontSize: '12px', color: '#F5D061', fontWeight: '800', marginBottom: '14px' }}>
-                                            {method.subName}
-                                        </div>
-
-                                        {/* Notes Box */}
-                                        <div style={{
-                                            width: '100%',
-                                            background: 'rgba(255, 255, 255, 0.03)',
-                                            border: '1px solid rgba(255, 255, 255, 0.06)',
-                                            borderRadius: '12px',
-                                            padding: '8px 12px',
-                                            fontSize: '11.5px',
-                                            color: '#A0A0B0',
-                                            lineHeight: '1.5',
-                                        }}>
-                                            <strong style={{ color: '#E2E2EA' }}>ملاحظة: </strong>
-                                            {method.note}
-                                        </div>
+                                    {/* Golden 0000 Pins */}
+                                    <div className="ka-card-pins-box">
+                                        0000
                                     </div>
 
-                                    {/* Bottom Footer Pill */}
-                                    <div style={{
-                                        marginTop: 'auto',
-                                        padding: '12px 18px',
-                                        background: 'rgba(0, 0, 0, 0.4)',
-                                        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                    }}>
-                                        <div style={{ fontSize: '11px', color: '#8E8E98', fontWeight: '700' }}>
-                                            {method.tag}
-                                        </div>
-                                        <div style={{
-                                            fontSize: '12px',
-                                            fontWeight: '800',
-                                            color: '#F5D061',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '4px',
-                                        }}>
-                                            <span>متابعة الشحن</span>
-                                            {isRtl ? <ArrowLeft size={13} /> : <ArrowRight size={13} />}
-                                        </div>
+                                    {/* Crimson Method Name Badge */}
+                                    <div className="ka-card-name-pill">
+                                        {method.subName || method.name}
+                                    </div>
+
+                                    {/* Translucent Note Box */}
+                                    <div className="ka-card-note-box">
+                                        <span className="ka-card-note-title">ملاحظة:</span>
+                                        <span>{method.note}</span>
+                                    </div>
+
+                                    {/* Bottom Footer Bar */}
+                                    <div className="ka-card-footer-bar">
+                                        <span className="ka-card-cur-badge">
+                                            {method.currency}
+                                        </span>
+                                        <span className="ka-card-action-text">
+                                            <span>{method.tag}</span>
+                                            {isRtl ? <ArrowLeft size={12} /> : <ArrowRight size={12} />}
+                                        </span>
                                     </div>
                                 </div>
                             ))}
@@ -694,564 +624,293 @@ export default function DepositPage() {
                     </div>
                 )}
 
-                {/* ═══ VIEW 2: TRANSFER & CONFIRMATION FORM (Matches KA-Card Screenshot 2 & 3) ═══ */}
+                {/* ═══ VIEW 2: DEPOSIT SUBMIT FORM (When Method is Selected) ═══ */}
                 {selectedMethod && (
                     <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-
-                        {/* Method Header Banner (Matches Screenshot 2) */}
-                        <div style={{
-                            background: '#0D0D12',
-                            border: '1.5px solid #D4A537',
-                            borderRadius: '22px',
-                            padding: '18px 22px',
-                            marginBottom: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.7)',
-                        }}>
-                            <div style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                background: 'rgba(34, 197, 94, 0.15)',
-                                border: '1px solid #22C55E',
-                                padding: '5px 12px',
-                                borderRadius: '12px',
-                                color: '#22C55E',
-                                fontSize: '12px',
-                                fontWeight: '800',
-                            }}>
-                                <ShieldCheck size={14} />
-                                <span>دفع آمن ومضمون {selectedMethod.currency}</span>
-                            </div>
-
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: '17px', fontWeight: '900', color: '#FFFFFF' }}>
-                                        {selectedMethod.name}
-                                    </div>
-                                    <div style={{ fontSize: '11.5px', color: '#9E9EA8' }}>
-                                        {selectedMethod.tag}
-                                    </div>
-                                </div>
-
-                                <div style={{
-                                    width: '46px',
-                                    height: '46px',
-                                    borderRadius: '14px',
-                                    background: '#14141C',
-                                    border: '1px solid #D4A537',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '24px',
-                                }}>
-                                    {getMethodIcon(selectedMethod.id, 22)}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Step Indicator (Matches Screenshot 2) */}
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '20px',
-                            marginBottom: '22px',
-                        }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#F5D061', fontWeight: '800', fontSize: '13px' }}>
-                                <div style={{
-                                    width: '24px',
-                                    height: '24px',
-                                    borderRadius: '50%',
-                                    background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
-                                    color: '#000000',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '12px',
-                                    fontWeight: '900',
-                                }}>
-                                    1
-                                </div>
-                                <span>التحويل</span>
-                            </div>
-
-                            <div style={{ width: '60px', height: '2px', background: 'rgba(212, 165, 55, 0.4)' }} />
-
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#A0A0B0', fontWeight: '700', fontSize: '13px' }}>
-                                <div style={{
-                                    width: '24px',
-                                    height: '24px',
-                                    borderRadius: '50%',
-                                    background: '#1A1A24',
-                                    border: '1px solid #444',
-                                    color: '#FFFFFF',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '12px',
-                                }}>
-                                    2
-                                </div>
-                                <span>البيانات والإيصال</span>
-                            </div>
-                        </div>
-
-                        {/* Account Details Card with Number & Copy (Matches Screenshot 2) */}
-                        <div style={{
-                            background: '#0B0B0F',
-                            border: '1.5px solid #D4A537',
-                            borderRadius: '24px',
-                            padding: '24px 20px',
-                            marginBottom: '20px',
-                            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 165, 55, 0.1)',
-                        }}>
+                        <div className="deposit-form-card">
+                            {/* Selected Header */}
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'flex-end',
-                                gap: '8px',
-                                marginBottom: '14px',
+                                gap: '16px',
+                                marginBottom: '24px',
+                                paddingBottom: '18px',
+                                borderBottom: '1px solid rgba(212, 165, 55, 0.25)',
                             }}>
-                                <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: '15px', fontWeight: '900', color: '#FFFFFF' }}>
-                                        بيانات الحساب
-                                    </div>
-                                    <div style={{ fontSize: '12px', color: '#9E9EA8' }}>
-                                        حول المبلغ إلى الرقم / العنوان التالي:
-                                    </div>
-                                </div>
                                 <div style={{
-                                    width: '34px',
-                                    height: '34px',
-                                    borderRadius: '10px',
-                                    background: 'rgba(212, 165, 55, 0.15)',
+                                    width: '64px',
+                                    height: '64px',
+                                    borderRadius: '50%',
+                                    background: '#FFFFFF',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    color: '#F5D061',
+                                    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5)',
+                                    flexShrink: 0,
                                 }}>
-                                    <CreditCard size={18} />
+                                    <PaymentBrandLogo methodId={selectedMethod.id} size={56} />
+                                </div>
+
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: '#FFFFFF' }}>
+                                            {selectedMethod.name}
+                                        </h2>
+                                        <span className="ka-card-cur-badge">
+                                            {selectedMethod.currency}
+                                        </span>
+                                    </div>
+                                    <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#A0A0B0' }}>
+                                        {selectedMethod.instruction}
+                                    </p>
                                 </div>
                             </div>
 
-                            {/* Prominent Copyable Number Box */}
-                            <div
-                                onClick={() => copyText(selectedMethod.account_number)}
-                                style={{
-                                    background: 'linear-gradient(135deg, #0A2540 0%, #001529 100%)',
-                                    border: '1.5px solid #38BDF8',
-                                    borderRadius: '18px',
-                                    padding: '16px 20px',
+                            {/* Account Details & Copy Box */}
+                            <div className="deposit-account-box">
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                    <span style={{ fontSize: '12px', fontWeight: '800', color: '#F5D061' }}>
+                                        {selectedMethod.id.includes('usdt') ? 'عنوان المحفظة (TRC-20 Address):' : (selectedMethod.id.includes('binance') ? 'Binance Pay ID:' : 'رقم الحساب / المحفظة للتحويل:')}
+                                    </span>
+                                    <span style={{ fontSize: '11px', color: '#4ADE80', fontWeight: '700' }}>
+                                        ✓ معتمد ونشط الآن
+                                    </span>
+                                </div>
+
+                                <div style={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 8px 25px rgba(56, 189, 248, 0.2)',
-                                    marginBottom: '10px',
-                                }}
-                            >
-                                <button
-                                    type="button"
-                                    style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        padding: '8px 18px',
-                                        borderRadius: '12px',
-                                        background: copied ? '#22C55E' : 'rgba(56, 189, 248, 0.2)',
-                                        border: '1px solid #38BDF8',
-                                        color: copied ? '#000000' : '#FFFFFF',
-                                        fontSize: '13px',
-                                        fontWeight: '800',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    {copied ? <Check size={14} /> : <Copy size={14} />}
-                                    <span>{copied ? 'تم النسخ' : 'نسخ'}</span>
-                                </button>
-
-                                <div style={{
-                                    fontSize: '22px',
-                                    fontWeight: '900',
-                                    color: '#FFFFFF',
-                                    fontFamily: 'monospace',
-                                    letterSpacing: '1px',
-                                    wordBreak: 'break-all',
+                                    background: '#0D0C09',
+                                    border: '1px solid rgba(212, 165, 55, 0.3)',
+                                    borderRadius: '12px',
+                                    padding: '10px 14px',
+                                    gap: '10px',
                                 }}>
-                                    {selectedMethod.account_number}
-                                </div>
-                            </div>
-
-                            <div style={{ fontSize: '12px', color: '#8E8E98', textAlign: 'center' }}>
-                                اضغط على الرقم للنسخ فوراً
-                            </div>
-                        </div>
-
-                        {/* Instructions Alert Card (Matches Screenshot 3) */}
-                        <div style={{
-                            background: '#121218',
-                            border: '1px solid #D4A537',
-                            borderRadius: '18px',
-                            padding: '16px 20px',
-                            marginBottom: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '14px',
-                            textAlign: 'right',
-                        }}>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px', marginBottom: '4px' }}>
                                     <span style={{
-                                        fontSize: '11px',
-                                        fontWeight: '800',
-                                        background: 'rgba(212, 165, 55, 0.2)',
-                                        color: '#F5D061',
-                                        padding: '2px 8px',
-                                        borderRadius: '6px',
+                                        fontSize: '17px',
+                                        fontWeight: '900',
+                                        color: '#FFFFFF',
+                                        fontFamily: 'monospace',
+                                        letterSpacing: '1px',
+                                        wordBreak: 'break-all',
                                     }}>
-                                        يرجى القراءة
+                                        {selectedMethod.account_number}
                                     </span>
-                                    <strong style={{ fontSize: '13.5px', color: '#FFFFFF' }}>
-                                        تعليمات مهمة لهذه الوسيلة:
-                                    </strong>
-                                </div>
-                                <div style={{ fontSize: '13px', color: '#C5C5D2', lineHeight: '1.6' }}>
-                                    {selectedMethod.instruction}
-                                </div>
-                            </div>
-                            <div style={{
-                                width: '38px',
-                                height: '38px',
-                                borderRadius: '12px',
-                                background: 'rgba(212, 165, 55, 0.15)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: '#F5D061',
-                                flexShrink: 0,
-                            }}>
-                                <AlertCircle size={22} />
-                            </div>
-                        </div>
 
-                        {/* Form: Payment Details (Matches Screenshot 3) */}
-                        <form onSubmit={handleSubmitDeposit}>
-                            <div style={{
-                                background: '#0B0B0F',
-                                border: '1.5px solid #D4A537',
-                                borderRadius: '24px',
-                                padding: '24px 20px',
-                                marginBottom: '24px',
-                                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.8)',
-                            }}>
-                                <div style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'flex-end',
-                                    gap: '8px',
-                                    marginBottom: '20px',
-                                    paddingBottom: '12px',
-                                    borderBottom: '1px solid rgba(212, 165, 55, 0.2)',
-                                }}>
-                                    <div style={{ textAlign: 'right' }}>
-                                        <div style={{ fontSize: '15px', fontWeight: '900', color: '#FFFFFF' }}>
-                                            تفاصيل الدفع
-                                        </div>
-                                        <div style={{ fontSize: '12px', color: '#9E9EA8' }}>
-                                            أدخل بيانات التحويل كما تظهر في الإيصال
-                                        </div>
-                                    </div>
-                                    <div style={{
-                                        width: '32px',
-                                        height: '32px',
-                                        borderRadius: '10px',
-                                        background: 'rgba(212, 165, 55, 0.15)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        color: '#F5D061',
-                                    }}>
-                                        <FileText size={16} />
-                                    </div>
-                                </div>
-
-                                {/* Field 1: المبلغ */}
-                                <div style={{ marginBottom: '20px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                                        <span style={{ fontSize: '11px', color: '#EF4444', fontWeight: '800' }}>مطلوب</span>
-                                        <label style={{ fontSize: '13.5px', fontWeight: '800', color: '#FFFFFF' }}>
-                                            المبلغ
-                                        </label>
-                                    </div>
-
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        background: '#07070A',
-                                        border: '1px solid rgba(212, 165, 55, 0.35)',
-                                        borderRadius: '14px',
-                                        overflow: 'hidden',
-                                    }}>
-                                        <div style={{
-                                            padding: '14px 20px',
-                                            background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                    <button
+                                        type="button"
+                                        onClick={() => copyText(selectedMethod.account_number)}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            padding: '8px 16px',
+                                            borderRadius: '8px',
+                                            background: copied ? '#22C55E' : 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                            border: 'none',
                                             color: '#000000',
-                                            fontSize: '15px',
-                                            fontWeight: '900',
-                                        }}>
-                                            {selectedMethod.currency}
-                                        </div>
+                                            fontSize: '13px',
+                                            fontWeight: '800',
+                                            cursor: 'pointer',
+                                            flexShrink: 0,
+                                            transition: 'all 0.2s',
+                                        }}
+                                    >
+                                        {copied ? <Check size={14} strokeWidth={3} /> : <Copy size={14} />}
+                                        <span>{copied ? 'تم النسخ!' : 'نسخ'}</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Form */}
+                            <form onSubmit={handleSubmitDeposit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                {/* Amount Input */}
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#F3F4F6', marginBottom: '8px' }}>
+                                        المبلغ المحول ({selectedMethod.currency}): <span style={{ color: '#EF4444' }}>*</span>
+                                    </label>
+                                    <div style={{ position: 'relative' }}>
                                         <input
                                             type="number"
+                                            required
+                                            min={selectedMethod.min_amount || 1}
                                             step="any"
-                                            min={selectedMethod.min_amount}
                                             value={amount}
                                             onChange={(e) => setAmount(e.target.value)}
-                                            placeholder="أدخل المبلغ"
+                                            placeholder={`أدخل المبلغ (الحد الأدنى ${selectedMethod.min_amount} ${selectedMethod.currency})`}
                                             style={{
-                                                flex: 1,
-                                                padding: '14px 18px',
-                                                background: 'transparent',
-                                                border: 'none',
+                                                width: '100%',
+                                                boxSizing: 'border-box',
+                                                background: '#0D0C09',
+                                                border: '1.5px solid rgba(255, 255, 255, 0.15)',
+                                                borderRadius: '12px',
+                                                padding: '12px 16px',
                                                 color: '#FFFFFF',
                                                 fontSize: '16px',
                                                 fontWeight: '800',
-                                                textAlign: 'right',
                                                 outline: 'none',
                                             }}
                                         />
                                     </div>
-                                </div>
 
-                                {/* Two Side-By-Side Inputs (Matches Screenshot 3) */}
-                                <div
-                                    className="flexible-grid"
-                                    style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: '1fr 1fr',
-                                        gap: '12px',
-                                        marginBottom: '20px',
-                                    }}>
-                                    {/* رقم المحفظة */}
-                                    <div>
-                                        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                                            <span style={{ fontSize: '11px', color: '#EF4444', fontWeight: '800' }}>مطلوب</span>
-                                            <label style={{ fontSize: '12px', fontWeight: '800', color: '#FFFFFF' }}>
-                                                رقم المحفظة المحول منها
-                                            </label>
-                                        </div>
-                                        <div style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            background: '#07070A',
-                                            border: '1px solid rgba(212, 165, 55, 0.35)',
-                                            borderRadius: '14px',
-                                            overflow: 'hidden',
-                                        }}>
-
-                                            <input
-                                                type="text"
-                                                value={senderWallet}
-                                                onChange={(e) => setSenderWallet(e.target.value)}
-                                                placeholder="أدخل رقم المحفظة"
-                                                style={{
-                                                    flex: 1,
-                                                    padding: '12px 14px',
-                                                    background: 'transparent',
-                                                    border: 'none',
-                                                    color: '#FFFFFF',
-                                                    fontSize: '13px',
-                                                    textAlign: 'right',
-                                                    outline: 'none',
-                                                }}
-                                            />
-                                            <div style={{
-                                                padding: '12px',
-                                                background: 'rgba(230, 0, 0, 0.2)',
-                                                color: '#FF5252',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                            }}>
-                                                <Smartphone size={16} />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* رقم العملية */}
-                                    <div>
-                                        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                                            <span style={{ fontSize: '11px', color: '#EF4444', fontWeight: '800' }}>مطلوب</span>
-                                            <label style={{ fontSize: '12px', fontWeight: '800', color: '#FFFFFF' }}>
-                                                رقم العملية (Ref / TXID)
-                                            </label>
-                                        </div>
-                                        <div style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            background: '#07070A',
-                                            border: '1px solid rgba(212, 165, 55, 0.35)',
-                                            borderRadius: '14px',
-                                            overflow: 'hidden',
-                                        }}>
-                                            <input
-                                                type="text"
-                                                value={transactionRef}
-                                                onChange={(e) => setTransactionRef(e.target.value)}
-                                                placeholder="أدخل رقم العملية"
-                                                style={{
-                                                    flex: 1,
-                                                    padding: '12px 14px',
-                                                    background: 'transparent',
-                                                    border: 'none',
-                                                    color: '#FFFFFF',
-                                                    fontSize: '13px',
-                                                    textAlign: 'right',
-                                                    outline: 'none',
-                                                }}
-                                            />
-                                            <div style={{
-                                                padding: '12px',
-                                                background: 'rgba(56, 189, 248, 0.2)',
-                                                color: '#38BDF8',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                fontWeight: '900',
-                                            }}>
-                                                #
-                                            </div>
-                                        </div>
+                                    {/* Quick Amount Preset Chips */}
+                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+                                        {[100, 250, 500, 1000, 2000].map((val) => (
+                                            <button
+                                                key={val}
+                                                type="button"
+                                                className="deposit-amount-preset-btn"
+                                                onClick={() => setAmount(String(val))}
+                                            >
+                                                +{val} {selectedMethod.currency}
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
 
-                                {/* Proof Screenshot Upload */}
-                                <div style={{ marginBottom: '22px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF' }}>
-                                            إرفاق إيصال التحويل (Screenshot)
-                                        </label>
-                                    </div>
-
-                                    <label
+                                {/* Sender Phone / Account Number */}
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#F3F4F6', marginBottom: '8px' }}>
+                                        رقم المحفظة أو الحساب المحول منه: <span style={{ color: '#EF4444' }}>*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={senderWallet}
+                                        onChange={(e) => setSenderWallet(e.target.value)}
+                                        placeholder="مثال: 01012345678 أو اسم المحول"
                                         style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            padding: proofImage ? '12px' : '20px',
-                                            borderRadius: '14px',
-                                            background: '#07070A',
-                                            border: '1.5px dashed rgba(212, 165, 55, 0.4)',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s',
+                                            width: '100%',
+                                            boxSizing: 'border-box',
+                                            background: '#0D0C09',
+                                            border: '1.5px solid rgba(255, 255, 255, 0.15)',
+                                            borderRadius: '12px',
+                                            padding: '12px 16px',
+                                            color: '#FFFFFF',
+                                            fontSize: '14px',
+                                            outline: 'none',
                                         }}
-                                    >
+                                    />
+                                </div>
+
+                                {/* Transaction Reference / ID */}
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#F3F4F6', marginBottom: '8px' }}>
+                                        رقم العملية أو المرجع (إن وجد):
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={transactionRef}
+                                        onChange={(e) => setTransactionRef(e.target.value)}
+                                        placeholder="مثال: رقم الحوالة أو الـ TXID من الرسالة"
+                                        style={{
+                                            width: '100%',
+                                            boxSizing: 'border-box',
+                                            background: '#0D0C09',
+                                            border: '1.5px solid rgba(255, 255, 255, 0.15)',
+                                            borderRadius: '12px',
+                                            padding: '12px 16px',
+                                            color: '#FFFFFF',
+                                            fontSize: '14px',
+                                            outline: 'none',
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Receipt Proof Image Upload */}
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#F3F4F6', marginBottom: '8px' }}>
+                                        صورة إيصال التحويل (Screenshot):
+                                    </label>
+                                    <label style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        padding: '20px',
+                                        border: '2px dashed rgba(212, 165, 55, 0.4)',
+                                        borderRadius: '14px',
+                                        background: 'rgba(0, 0, 0, 0.4)',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s',
+                                    }}>
                                         <input
                                             type="file"
                                             accept="image/*"
-                                            onChange={(e) => {
-                                                const file = e.target.files?.[0];
-                                                if (file) {
-                                                    setProofImage(file);
-                                                    success('تم إرفاق صورة الإيصال');
-                                                }
-                                            }}
+                                            onChange={handleFileChange}
                                             style={{ display: 'none' }}
                                         />
-
-                                        {proofImage ? (
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', justifyContent: 'space-between' }}>
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        setProofImage(null);
-                                                    }}
-                                                    style={{
-                                                        padding: '4px 10px',
-                                                        borderRadius: '8px',
-                                                        background: 'rgba(239, 68, 68, 0.2)',
-                                                        border: '1px solid #EF4444',
-                                                        color: '#EF4444',
-                                                        fontSize: '11px',
-                                                        fontWeight: '700',
-                                                        cursor: 'pointer',
-                                                    }}
-                                                >
-                                                    حذف
-                                                </button>
-                                                <span style={{ fontSize: '12px', color: '#22C55E', fontWeight: '800' }}>
-                                                    {proofImage.name}
-                                                </span>
+                                        {proofPreview ? (
+                                            <div style={{ textAlign: 'center' }}>
+                                                <img
+                                                    src={proofPreview}
+                                                    alt="إيصال التحويل"
+                                                    style={{ maxHeight: '120px', borderRadius: '8px', marginBottom: '8px' }}
+                                                />
+                                                <div style={{ color: '#4ADE80', fontSize: '12px', fontWeight: '800' }}>
+                                                    ✓ تم اختيار الصورة (انقر للتغيير)
+                                                </div>
                                             </div>
                                         ) : (
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#A0A0B0', fontSize: '13px' }}>
-                                                <Upload size={18} color="#F5D061" />
-                                                <span>اضغط هنا لرفع سكرين شوت الإيصال</span>
+                                            <div style={{ textAlign: 'center', color: '#9CA3AF' }}>
+                                                <Upload size={24} color="#D4A537" style={{ marginBottom: '6px' }} />
+                                                <div style={{ fontSize: '13px', fontWeight: '700', color: '#E2E8F0' }}>
+                                                    اضغط لرفع لقطة شاشة الإيصال
+                                                </div>
+                                                <div style={{ fontSize: '11px', marginTop: '3px' }}>
+                                                    PNG, JPG حتى 5 ميجابايت
+                                                </div>
                                             </div>
                                         )}
                                     </label>
                                 </div>
 
-                                {/* Summary Box (Matches Screenshot 3) */}
-                                <div style={{
-                                    background: '#07070A',
-                                    border: '1px solid rgba(212, 165, 55, 0.3)',
-                                    borderRadius: '16px',
-                                    padding: '16px 20px',
-                                    marginBottom: '22px',
-                                }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '8px' }}>
-                                        <span style={{ color: '#8E8E98' }}>المبلغ الأساسي:</span>
-                                        <span style={{ color: '#FFFFFF', fontWeight: '800' }}>
-                                            {numAmount.toFixed(2)} {selectedMethod.currency}
-                                        </span>
-                                    </div>
-                                    <div style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        fontSize: '16px',
-                                        fontWeight: '900',
-                                        paddingTop: '8px',
-                                        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                                    }}>
-                                        <span style={{ color: '#F5D061' }}>الإجمالي المطلوب تحويله:</span>
-                                        <span style={{ color: '#22C55E' }}>
-                                            {numAmount.toFixed(2)} {selectedMethod.currency}
-                                        </span>
-                                    </div>
-                                </div>
+                                {/* Submit & Cancel Buttons */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px', marginTop: '10px' }}>
+                                    <button
+                                        type="submit"
+                                        disabled={submitting}
+                                        style={{
+                                            padding: '14px 20px',
+                                            borderRadius: '14px',
+                                            background: 'linear-gradient(135deg, #e5c378 0%, #d4a537 50%, #b38622 100%)',
+                                            border: 'none',
+                                            color: '#0B0B0F',
+                                            fontSize: '16px',
+                                            fontWeight: '900',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '8px',
+                                            boxShadow: '0 8px 24px rgba(212, 165, 55, 0.4)',
+                                            opacity: submitting ? 0.7 : 1,
+                                        }}
+                                    >
+                                        <Zap size={18} />
+                                        <span>{submitting ? 'جاري إرسال الطلب...' : `تأكيد إيداع (${numAmount || 0} ${selectedMethod.currency})`}</span>
+                                    </button>
 
-                                {/* Big Gold Action Button (Matches Screenshot 3) */}
-                                <button
-                                    type="submit"
-                                    disabled={submitting}
-                                    style={{
-                                        width: '100%',
-                                        padding: '16px',
-                                        borderRadius: '16px',
-                                        background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 50%, #B8860B 100%)',
-                                        border: 'none',
-                                        color: '#000000',
-                                        fontSize: '16px',
-                                        fontWeight: '900',
-                                        cursor: submitting ? 'not-allowed' : 'pointer',
-                                        boxShadow: '0 8px 25px rgba(212, 165, 55, 0.35)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '8px',
-                                    }}
-                                >
-                                    <Lock size={18} />
-                                    <span>{submitting ? 'جاري تأكيد الطلب...' : 'تأكيد الدفع'}</span>
-                                </button>
-                            </div>
-                        </form>
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedMethod(null)}
+                                        style={{
+                                            padding: '14px',
+                                            borderRadius: '14px',
+                                            background: 'rgba(255, 255, 255, 0.05)',
+                                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                                            color: '#CBD5E1',
+                                            fontSize: '14px',
+                                            fontWeight: '800',
+                                            cursor: 'pointer',
+                                        }}
+                                    >
+                                        إلغاء
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 )}
             </div>
