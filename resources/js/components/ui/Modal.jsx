@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function Modal({
     isOpen,
@@ -9,6 +10,9 @@ export default function Modal({
     footer,
     maxWidth = '520px',
 }) {
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
+
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
@@ -32,7 +36,7 @@ export default function Modal({
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '20px',
-                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                backgroundColor: isLight ? 'rgba(15, 23, 42, 0.65)' : 'rgba(0, 0, 0, 0.75)',
                 backdropFilter: 'blur(8px)',
                 animation: 'fadeIn 0.2s ease-out',
                 direction: 'rtl',
@@ -41,14 +45,19 @@ export default function Modal({
         >
             <div
                 style={{
-                    background: 'linear-gradient(135deg, rgba(28, 28, 36, 0.98) 0%, rgba(18, 18, 24, 0.98) 100%)',
-                    border: '1px solid rgba(212, 165, 55, 0.25)',
+                    background: isLight
+                        ? '#FFFFFF'
+                        : 'linear-gradient(135deg, rgba(28, 28, 36, 0.98) 0%, rgba(18, 18, 24, 0.98) 100%)',
+                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.25)',
                     borderRadius: '18px',
                     width: '100%',
                     maxWidth,
-                    boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7)',
+                    boxShadow: isLight
+                        ? '0 20px 50px rgba(0, 0, 0, 0.15), 0 0 20px rgba(212, 165, 55, 0.1)'
+                        : '0 20px 50px rgba(0, 0, 0, 0.7)',
                     overflow: 'hidden',
                     animation: 'slideIn 0.25s ease-out',
+                    color: isLight ? '#0F172A' : '#FFFFFF',
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
@@ -56,25 +65,29 @@ export default function Modal({
                     <div
                         style={{
                             padding: '18px 24px',
-                            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                            borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
                         }}
                     >
-                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#D4A537' }}>
+                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: isLight ? '#9A7210' : '#D4A537' }}>
                             {title}
                         </h3>
                         <button
                             onClick={onClose}
                             style={{
-                                background: 'transparent',
-                                border: 'none',
-                                color: '#9E9EA8',
+                                background: isLight ? '#F1F5F9' : 'transparent',
+                                border: isLight ? '1px solid #CBD5E1' : 'none',
+                                borderRadius: isLight ? '8px' : '0',
+                                color: isLight ? '#475569' : '#9E9EA8',
                                 fontSize: '20px',
                                 cursor: 'pointer',
                                 padding: '4px',
                                 lineHeight: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                             }}
                         >
                             <X size={20} />
@@ -88,12 +101,12 @@ export default function Modal({
                     <div
                         style={{
                             padding: '16px 24px',
-                            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                            borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'flex-end',
                             gap: '12px',
-                            background: 'rgba(0, 0, 0, 0.2)',
+                            background: isLight ? '#F8FAFC' : 'rgba(0, 0, 0, 0.2)',
                         }}
                     >
                         {footer}

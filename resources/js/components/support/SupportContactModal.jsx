@@ -12,8 +12,11 @@ import {
     Check
 } from 'lucide-react';
 import { supportApi } from '../../api/endpoints';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function SupportContactModal({ isOpen, onClose }) {
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -143,7 +146,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '16px',
-                backgroundColor: 'rgba(5, 5, 8, 0.82)',
+                backgroundColor: isLight ? 'rgba(15, 23, 42, 0.65)' : 'rgba(5, 5, 8, 0.82)',
                 backdropFilter: 'blur(12px)',
                 WebkitBackdropFilter: 'blur(12px)',
                 animation: 'fadeInModal 0.25s ease-out forwards',
@@ -163,7 +166,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                 }
                 .support-contact-card:hover {
                     border-color: rgba(34, 197, 94, 0.6) !important;
-                    background: rgba(18, 30, 24, 0.85) !important;
+                    background: ${isLight ? '#FEFCE8' : 'rgba(18, 30, 24, 0.85)'} !important;
                     transform: translateY(-2px);
                     box-shadow: 0 8px 24px rgba(34, 197, 94, 0.15);
                 }
@@ -172,7 +175,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                 }
                 .support-contact-btn:hover {
                     background: #22C55E !important;
-                    color: #050507 !important;
+                    color: #FFFFFF !important;
                     box-shadow: 0 0 16px rgba(34, 197, 94, 0.4);
                 }
             `}</style>
@@ -186,15 +189,17 @@ export default function SupportContactModal({ isOpen, onClose }) {
                     maxWidth: '460px',
                     maxHeight: '90vh',
                     overflowY: 'auto',
-                    backgroundColor: '#0D0E12',
-                    border: '1.5px solid rgba(34, 197, 94, 0.35)',
+                    backgroundColor: isLight ? '#FFFFFF' : '#0D0E12',
+                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1.5px solid rgba(34, 197, 94, 0.35)',
                     borderRadius: '24px',
                     padding: 'clamp(16px, 4vw, 24px)',
-                    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(34, 197, 94, 0.12)',
+                    boxShadow: isLight
+                        ? '0 20px 60px rgba(0, 0, 0, 0.12), 0 0 30px rgba(212, 165, 55, 0.1)'
+                        : '0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(34, 197, 94, 0.12)',
                     animation: 'scaleUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                     fontFamily: 'var(--font-cairo, Cairo, sans-serif)',
                     direction: 'rtl',
-                    color: '#FFFFFF',
+                    color: isLight ? '#0F172A' : '#FFFFFF',
                     boxSizing: 'border-box',
                 }}
             >
@@ -217,22 +222,22 @@ export default function SupportContactModal({ isOpen, onClose }) {
                             width: '36px',
                             height: '36px',
                             borderRadius: '12px',
-                            background: 'rgba(255, 255, 255, 0.06)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            color: '#A0A0B0',
+                            background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.06)',
+                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.1)',
+                            color: isLight ? '#475569' : '#A0A0B0',
                             cursor: 'pointer',
                             transition: 'all 0.2s ease',
                             flexShrink: 0,
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.color = '#FFFFFF';
-                            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
-                            e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.85)';
+                            e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.9)';
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.color = '#A0A0B0';
-                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
-                            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                            e.currentTarget.style.color = isLight ? '#475569' : '#A0A0B0';
+                            e.currentTarget.style.background = isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.06)';
+                            e.currentTarget.style.borderColor = isLight ? '#CBD5E1' : 'rgba(255, 255, 255, 0.1)';
                         }}
                     >
                         <X size={20} />
@@ -242,7 +247,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                         margin: 0,
                         fontSize: 'clamp(16px, 4vw, 18px)',
                         fontWeight: '900',
-                        color: '#FFFFFF',
+                        color: isLight ? '#0F172A' : '#FFFFFF',
                         letterSpacing: '-0.2px',
                         display: 'flex',
                         alignItems: 'center',
@@ -264,7 +269,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                     margin: '0 0 18px',
                     fontSize: '13.5px',
                     fontWeight: '700',
-                    color: '#9E9EA8',
+                    color: isLight ? '#475569' : '#9E9EA8',
                     textAlign: 'right',
                 }}>
                     اختر القناة أو الشخص الذي تريد التواصل معه مباشرة:
@@ -290,8 +295,8 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                     justifyContent: 'space-between',
                                     padding: '12px 14px',
                                     borderRadius: '16px',
-                                    background: 'rgba(15, 18, 16, 0.75)',
-                                    border: '1.5px solid rgba(34, 197, 94, 0.22)',
+                                    background: isLight ? '#F8FAFC' : 'rgba(15, 18, 16, 0.75)',
+                                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1.5px solid rgba(34, 197, 94, 0.22)',
                                     gap: '10px',
                                     boxSizing: 'border-box',
                                     width: '100%',
@@ -307,16 +312,17 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                         display: 'inline-flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        padding: '7px 14px',
+                                        padding: '7px 16px',
                                         borderRadius: '10px',
                                         border: '1.5px solid #22C55E',
-                                        color: '#4ADE80',
-                                        background: 'transparent',
+                                        color: isLight ? '#FFFFFF' : '#4ADE80',
+                                        background: isLight ? '#22C55E' : 'transparent',
                                         fontSize: '13px',
-                                        fontWeight: '800',
+                                        fontWeight: '900',
                                         textDecoration: 'none',
                                         cursor: 'pointer',
                                         flexShrink: 0,
+                                        boxShadow: isLight ? '0 2px 8px rgba(34, 197, 94, 0.3)' : 'none',
                                     }}
                                 >
                                     تواصل
@@ -350,7 +356,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                             <span style={{
                                                 fontSize: '13.5px',
                                                 fontWeight: '900',
-                                                color: '#FFFFFF',
+                                                color: isLight ? '#0F172A' : '#FFFFFF',
                                                 lineHeight: '1.4',
                                                 wordBreak: 'break-word',
                                             }}>
@@ -360,8 +366,8 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                                 <span style={{
                                                     fontSize: '10.5px',
                                                     fontWeight: '800',
-                                                    color: contact.badge_color || (isPrimary ? '#F59E0B' : '#38BDF8'),
-                                                    background: 'rgba(255, 255, 255, 0.06)',
+                                                    color: contact.badge_color || (isPrimary ? (isLight ? '#B45309' : '#F59E0B') : (isLight ? '#0369A1' : '#38BDF8')),
+                                                    background: isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.06)',
                                                     padding: '2px 7px',
                                                     borderRadius: '6px',
                                                     whiteSpace: 'nowrap',
@@ -377,7 +383,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 gap: '5px',
-                                                color: '#A0A0B0',
+                                                color: isLight ? '#475569' : '#A0A0B0',
                                                 fontSize: '12px',
                                                 fontWeight: '700',
                                                 direction: 'ltr',
@@ -419,12 +425,12 @@ export default function SupportContactModal({ isOpen, onClose }) {
                 <div style={{
                     marginTop: '16px',
                     paddingTop: '12px',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                    borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.06)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '6px',
-                    color: '#6B7280',
+                    color: isLight ? '#64748B' : '#6B7280',
                     fontSize: '11.5px',
                     fontWeight: '700',
                 }}>
