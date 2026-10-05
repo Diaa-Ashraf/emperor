@@ -184,15 +184,18 @@ export default function SupportContactModal({ isOpen, onClose }) {
                     position: 'relative',
                     width: '100%',
                     maxWidth: '460px',
+                    maxHeight: '90vh',
+                    overflowY: 'auto',
                     backgroundColor: '#0D0E12',
                     border: '1.5px solid rgba(34, 197, 94, 0.35)',
                     borderRadius: '24px',
-                    padding: '24px 20px 22px',
+                    padding: 'clamp(16px, 4vw, 24px)',
                     boxShadow: '0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(34, 197, 94, 0.12)',
                     animation: 'scaleUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                     fontFamily: 'var(--font-cairo, Cairo, sans-serif)',
                     direction: 'rtl',
                     color: '#FFFFFF',
+                    boxSizing: 'border-box',
                 }}
             >
                 {/* Header: Close Button & Title */}
@@ -201,6 +204,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     marginBottom: '16px',
+                    gap: '10px',
                 }}>
                     <button
                         type="button"
@@ -218,6 +222,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                             color: '#A0A0B0',
                             cursor: 'pointer',
                             transition: 'all 0.2s ease',
+                            flexShrink: 0,
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.color = '#FFFFFF';
@@ -235,7 +240,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
 
                     <h2 style={{
                         margin: 0,
-                        fontSize: '18px',
+                        fontSize: 'clamp(16px, 4vw, 18px)',
                         fontWeight: '900',
                         color: '#FFFFFF',
                         letterSpacing: '-0.2px',
@@ -256,13 +261,13 @@ export default function SupportContactModal({ isOpen, onClose }) {
 
                 {/* Subtitle */}
                 <p style={{
-                    margin: '0 0 20px',
-                    fontSize: '14px',
+                    margin: '0 0 18px',
+                    fontSize: '13.5px',
                     fontWeight: '700',
                     color: '#9E9EA8',
                     textAlign: 'right',
                 }}>
-                    اختر الشخص الذي تريد التواصل معه عبر واتساب
+                    اختر القناة أو الشخص الذي تريد التواصل معه مباشرة:
                 </p>
 
                 {/* Contact List */}
@@ -283,11 +288,13 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
-                                    padding: '14px 16px',
-                                    borderRadius: '18px',
+                                    padding: '12px 14px',
+                                    borderRadius: '16px',
                                     background: 'rgba(15, 18, 16, 0.75)',
                                     border: '1.5px solid rgba(34, 197, 94, 0.22)',
-                                    gap: '12px',
+                                    gap: '10px',
+                                    boxSizing: 'border-box',
+                                    width: '100%',
                                 }}
                             >
                                 {/* Left: Action "تواصل" Button */}
@@ -300,8 +307,8 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                         display: 'inline-flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        padding: '7px 18px',
-                                        borderRadius: '12px',
+                                        padding: '7px 14px',
+                                        borderRadius: '10px',
                                         border: '1.5px solid #22C55E',
                                         color: '#4ADE80',
                                         background: 'transparent',
@@ -319,39 +326,43 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                 <div style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '12px',
+                                    gap: '10px',
                                     minWidth: 0,
                                     flex: 1,
+                                    justifyContent: 'flex-end',
                                 }}>
                                     {/* Text Info (Name, Badge, Phone) */}
                                     <div style={{
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        gap: '4px',
+                                        gap: '3px',
                                         minWidth: 0,
                                         flex: 1,
+                                        textAlign: 'right',
                                     }}>
                                         <div style={{
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '8px',
+                                            justifyContent: 'flex-start',
+                                            gap: '6px',
                                             flexWrap: 'wrap',
                                         }}>
                                             <span style={{
-                                                fontSize: '15px',
+                                                fontSize: '13.5px',
                                                 fontWeight: '900',
                                                 color: '#FFFFFF',
-                                                whiteSpace: 'nowrap',
+                                                lineHeight: '1.4',
+                                                wordBreak: 'break-word',
                                             }}>
                                                 {contact.name}
                                             </span>
                                             {contact.role_badge && (
                                                 <span style={{
-                                                    fontSize: '11px',
+                                                    fontSize: '10.5px',
                                                     fontWeight: '800',
                                                     color: contact.badge_color || (isPrimary ? '#F59E0B' : '#38BDF8'),
-                                                    background: 'rgba(255, 255, 255, 0.05)',
-                                                    padding: '2px 8px',
+                                                    background: 'rgba(255, 255, 255, 0.06)',
+                                                    padding: '2px 7px',
                                                     borderRadius: '6px',
                                                     whiteSpace: 'nowrap',
                                                 }}>
@@ -360,36 +371,43 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                             )}
                                         </div>
 
-                                        {/* Phone */}
-                                        <div style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '6px',
-                                            color: '#A0A0B0',
-                                            fontSize: '13px',
-                                            fontWeight: '700',
-                                            direction: 'ltr',
-                                            justifyContent: 'flex-end',
-                                        }}>
-                                            <span>{contact.phone || contact.value}</span>
-                                            <Phone size={13} color="#22C55E" />
-                                        </div>
+                                        {/* Phone or ID */}
+                                        {(contact.phone || contact.value) && (
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '5px',
+                                                color: '#A0A0B0',
+                                                fontSize: '12px',
+                                                fontWeight: '700',
+                                                direction: 'ltr',
+                                                justifyContent: 'flex-end',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                            }}>
+                                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                    {contact.phone || contact.value}
+                                                </span>
+                                                <Phone size={11} color="#22C55E" style={{ flexShrink: 0 }} />
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* WhatsApp Circular Icon on Right */}
                                     <div style={{
-                                        width: '44px',
-                                        height: '44px',
+                                        width: '40px',
+                                        height: '40px',
                                         borderRadius: '50%',
                                         background: 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         color: '#FFFFFF',
-                                        boxShadow: '0 0 16px rgba(34, 197, 94, 0.4)',
+                                        boxShadow: '0 0 14px rgba(34, 197, 94, 0.35)',
                                         flexShrink: 0,
                                     }}>
-                                        <MessageCircle size={24} fill="#FFFFFF" color="#22C55E" />
+                                        <MessageCircle size={20} fill="#FFFFFF" color="#22C55E" />
                                     </div>
                                 </div>
                             </div>
@@ -399,7 +417,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
 
                 {/* Bottom VIP Note */}
                 <div style={{
-                    marginTop: '18px',
+                    marginTop: '16px',
                     paddingTop: '12px',
                     borderTop: '1px solid rgba(255, 255, 255, 0.06)',
                     display: 'flex',
@@ -407,7 +425,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                     justifyContent: 'center',
                     gap: '6px',
                     color: '#6B7280',
-                    fontSize: '12px',
+                    fontSize: '11.5px',
                     fontWeight: '700',
                 }}>
                     <ShieldCheck size={14} color="#22C55E" />

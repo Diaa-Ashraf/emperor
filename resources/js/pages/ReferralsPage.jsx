@@ -298,9 +298,9 @@ export default function ReferralsPage() {
             </div>
 
             {/* Stats Row */}
-            <div style={{
+            <div className="referral-stats-grid" style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
                 gap: '18px',
                 marginBottom: '40px',
             }}>
