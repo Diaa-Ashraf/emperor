@@ -73,6 +73,36 @@ export default function HomeBannerSlider() {
 
     const activeList = banners.length > 0 ? banners : defaultBanners;
 
+    // Touch swipe gesture handlers for mobile
+    const [touchStartX, setTouchStartX] = useState(null);
+    const [touchEndX, setTouchEndX] = useState(null);
+    const minSwipeDistance = 40;
+
+    const onTouchStart = (e) => {
+        setTouchEndX(null);
+        setTouchStartX(e.targetTouches[0].clientX);
+    };
+
+    const onTouchMove = (e) => {
+        setTouchEndX(e.targetTouches[0].clientX);
+    };
+
+    const onTouchEnd = () => {
+        if (!touchStartX || !touchEndX) return;
+        const distance = touchStartX - touchEndX;
+        if (Math.abs(distance) < minSwipeDistance) return;
+
+        if (distance > minSwipeDistance) {
+            // Swiped left
+            if (isRtl) handlePrev();
+            else handleNext();
+        } else if (distance < -minSwipeDistance) {
+            // Swiped right
+            if (isRtl) handleNext();
+            else handlePrev();
+        }
+    };
+
     // Auto-advance slider every 6s unless hovered
     useEffect(() => {
         if (activeList.length <= 1 || isHovered) return;
@@ -102,11 +132,14 @@ export default function HomeBannerSlider() {
             style={{
                 position: 'relative',
                 maxWidth: '1120px',
-                margin: '0 auto 26px',
+                margin: '16px auto 28px',
                 width: '100%',
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
         >
             {/* Main Luxury Banner Frame - Exact KA CARD Style */}
             <div
@@ -125,6 +158,8 @@ export default function HomeBannerSlider() {
                     justifyContent: 'center',
                     cursor: currentBanner?.link ? 'pointer' : 'default',
                     transition: 'all 0.3s ease',
+                    userSelect: 'none',
+                    touchAction: 'pan-y',
                 }}
             >
                 {/* Clickable Banner Wrapper */}

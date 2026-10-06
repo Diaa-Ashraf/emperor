@@ -87,38 +87,8 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
             iconColor: '#08080A'
         },
         {
-            path: '/deposit',
-            label: 'شحن المحفظة (إيداع كاش / USDT)',
-            icon: Wallet,
-            iconBg: '#22C55E',
-            iconColor: '#08080A'
-        },
-        {
-            path: '/wallet',
-            label: 'محفظتي وسجل الحركات',
-            icon: Wallet,
-            iconBg: '#D4A537',
-            iconColor: '#08080A',
-            authRequired: true
-        },
-        {
-            path: '/target/sell',
-            label: 'بيع واستبدال التارجت',
-            icon: Target,
-            iconBg: '#F5D061',
-            iconColor: '#08080A'
-        },
-        {
-            path: '/orders',
-            label: 'طلباتي السابقة',
-            icon: FileText,
-            iconBg: '#D4A537',
-            iconColor: '#08080A',
-            authRequired: true
-        },
-        {
             path: '/profile',
-            label: 'حسابي وبياناتي',
+            label: 'حسابي',
             icon: User,
             iconBg: '#D4A537',
             iconColor: '#08080A',
@@ -126,7 +96,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
         },
         {
             path: '/settings',
-            label: 'حماية وأمان الحساب',
+            label: 'حماية الحساب',
             icon: Shield,
             iconBg: '#D4A537',
             iconColor: '#08080A',
@@ -134,47 +104,65 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
         },
         {
             path: '/referrals',
-            label: 'برنامج الإحالة والأرباح',
+            label: 'رابط الإحالة اكسب واسحب',
             icon: Share2,
             iconBg: '#D4A537',
             iconColor: '#08080A',
             authRequired: true
         },
         {
-            path: '/developer',
-            label: 'الربط البرمجي للمتاجر (B2B API)',
-            icon: Key,
-            iconBg: '#3B82F6',
-            iconColor: '#FFFFFF',
+            path: '/orders',
+            label: 'طلباتي',
+            icon: FileText,
+            iconBg: '#D4A537',
+            iconColor: '#08080A',
             authRequired: true
         },
         {
-            path: '/account-issues',
-            label: 'مشاكل الحساب والشكاوى',
-            icon: Headphones,
-            iconBg: '#EF4444',
-            iconColor: '#FFFFFF'
-        },
-        {
-            path: '/about',
-            label: 'من نحن (عن إمبراطور)',
-            icon: Sparkles,
-            iconBg: '#D4A537',
+            path: '/target/apps',
+            label: 'بيع التارجت',
+            icon: Target,
+            iconBg: '#F5D061',
             iconColor: '#08080A'
         },
         {
+            path: '/wallet',
+            label: 'التحويلات المالية',
+            icon: Wallet,
+            iconBg: '#D4A537',
+            iconColor: '#08080A',
+            authRequired: true
+        },
+        {
+            path: '/developer',
+            label: 'API للمطورين',
+            icon: Key,
+            iconBg: '#3B82F6',
+            iconColor: '#FFFFFF',
+            authRequired: true,
+            condition: (u) => Boolean(u?.has_api_access || u?.api_access_status === 'active' || u?.is_admin || u?.role === 'admin' || u?.role === 'api_client')
+        },
+        {
             path: '/created-by',
-            label: 'فريق التطوير والبرمجة',
-            icon: Shield,
+            label: 'تم الإنشاء بواسطة',
+            icon: Code,
             iconBg: '#D4A537',
             iconColor: '#08080A'
         },
         {
             path: '/support',
-            label: 'الدعم الفني المباشر',
+            label: 'اتصل بنا',
             icon: Headphones,
             iconBg: '#22C55E',
             iconColor: '#08080A'
+        },
+        {
+            path: '/settings',
+            label: 'الإعدادات',
+            icon: Settings,
+            iconBg: '#D4A537',
+            iconColor: '#08080A',
+            authRequired: true
         },
     ];
 
@@ -575,6 +563,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                 <nav style={{ flex: 1, padding: '0 14px 20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {navItems.map((item) => {
                         if (item.authRequired && !isAuthenticated) return null;
+                        if (item.condition && !item.condition(user)) return null;
                         const active = isActive(item.path);
 
                         return (

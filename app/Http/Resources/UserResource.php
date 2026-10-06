@@ -17,6 +17,8 @@ class UserResource extends JsonResource
             'role' => $this->role?->value ?? 'customer',
             'role_label' => $this->role?->label() ?? 'عميل',
             'is_admin' => (bool) ($this->isAdmin() || ($this->role?->value ?? $this->role) === 'admin'),
+            'api_access_status' => $this->api_access_status ?? ($this->role?->value === 'api_client' || $this->role?->value === 'admin' ? 'active' : 'inactive'),
+            'has_api_access' => (bool) (($this->api_access_status ?? '') === 'active' || ($this->role?->value ?? $this->role) === 'api_client' || $this->isAdmin()),
             'status' => $this->status?->value ?? 'active',
             'currency' => $this->currency ?? 'EGP',
             'country' => $this->country,

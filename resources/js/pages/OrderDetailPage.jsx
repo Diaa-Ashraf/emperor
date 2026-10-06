@@ -300,6 +300,66 @@ export default function OrderDetailPage() {
                         </div>
                     </div>
 
+                    {/* WhatsApp Complaint / Support Banner */}
+                    <div style={{
+                        background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)',
+                        border: '1px solid rgba(34, 197, 94, 0.3)',
+                        borderRadius: '16px',
+                        padding: '16px 20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '14px',
+                        flexWrap: 'wrap',
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{
+                                width: '42px',
+                                height: '42px',
+                                borderRadius: '12px',
+                                background: '#22c55e',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#ffffff',
+                                flexShrink: 0,
+                                boxShadow: '0 4px 12px rgba(34, 197, 94, 0.35)',
+                            }}>
+                                <MessageCircle size={22} />
+                            </div>
+                            <div>
+                                <h4 style={{ margin: '0 0 2px', fontSize: '15px', fontWeight: '800', color: '#FFFFFF' }}>
+                                    تواجه مشكلة في هذا الطلب؟
+                                </h4>
+                                <p style={{ margin: 0, fontSize: '12.5px', color: '#94a3b8' }}>
+                                    خدمة العملاء متواجدة لمساعدتك وحل أي استفسار فوراً
+                                </p>
+                            </div>
+                        </div>
+
+                        <a
+                            href={`https://wa.me/201026042456?text=${encodeURIComponent(`مرحباً خدمة العملاء، لدي استفسار/شكوى بخصوص الطلب رقم: ${orderPublicId}`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                background: '#22c55e',
+                                color: '#FFFFFF',
+                                fontWeight: '800',
+                                fontSize: '13.5px',
+                                padding: '10px 18px',
+                                borderRadius: '10px',
+                                textDecoration: 'none',
+                                boxShadow: '0 4px 14px rgba(34, 197, 94, 0.3)',
+                                transition: 'all 0.2s',
+                            }}
+                        >
+                            <span>للشكوى أو الاستفسار اضغط هنا</span>
+                        </a>
+                    </div>
+
                     {/* Support & Repeat Actions */}
                     <div style={{ display: 'flex', gap: '12px' }}>
                         {order.product?.id && (
@@ -312,7 +372,7 @@ export default function OrderDetailPage() {
 
                         <Link to="/support" style={{ textDecoration: 'none' }}>
                             <Button variant="secondary" size="lg" icon={MessageCircle}>
-                                مساعدة الدعم
+                                تذكرة دعم
                             </Button>
                         </Link>
                     </div>

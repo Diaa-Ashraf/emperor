@@ -101,8 +101,23 @@ class DepositController extends Controller
     {
         $user = $request->user();
 
-        $query = DepositRequest::where('user_id', $user->id)
-            ->with('paymentMethod')
+        $baseQuery = DepositRequest::where('user_id', $user->id);
+
+        // Filter last 5 days by default unless 'all_time' is requested
+        $days = $request->input('days', 5);
+        if ($days && $days > 0 && !$request->boolean('all_time')) {
+            $baseQuery->where('created_at', '>=', now()->subDays((int)$days)->startOfDay());
+        }
+
+        // Summary stats for badges
+        $stats = [
+            'total' => (clone $baseQuery)->count(),
+            'pending' => (clone $baseQuery)->whereIn('status', ['pending', 'reviewing'])->count(),
+            'approved' => (clone $baseQuery)->whereIn('status', ['approved', 'completed'])->count(),
+            'rejected' => (clone $baseQuery)->where('status', 'rejected')->count(),
+        ];
+
+        $query = (clone $baseQuery)->with('paymentMethod')
             ->select([
                 'id', 'user_id', 'payment_method_id', 'amount', 'fee', 'final_amount',
                 'currency', 'status', 'sender_account', 'transaction_reference',
@@ -110,13 +125,31 @@ class DepositController extends Controller
             ]);
 
         if ($status = $request->input('status')) {
-            $query->where('status', $status);
+            if ($status === 'approved' || $status === 'completed') {
+                $query->whereIn('status', ['approved', 'completed']);
+            } elseif ($status === 'pending') {
+                $query->whereIn('status', ['pending', 'reviewing']);
+            } elseif ($status !== 'all') {
+                $query->where('status', $status);
+            }
         }
 
-        $deposits = $query->latest('id')->paginate(15);
+        $perPage = (int) $request->input('per_page', 10);
+        $deposits = $query->latest('id')->paginate($perPage);
         $deposits->through(fn($item) => new DepositResource($item));
 
-        return $this->paginatedResponse($deposits, 'تم جلب سجل طلبات الإيداع بنجاح');
+        return response()->json([
+            'success' => true,
+            'message' => 'تم جلب سجل طلبات التحويلات والإيداع بنجاح',
+            'data' => $deposits->items(),
+            'stats' => $stats,
+            'meta' => [
+                'current_page' => $deposits->currentPage(),
+                'last_page' => $deposits->lastPage(),
+                'per_page' => $deposits->perPage(),
+                'total' => $deposits->total(),
+            ]
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -134,3 +167,4 @@ class DepositController extends Controller
         );
     }
 }
+
