@@ -189,13 +189,13 @@ export default function MainLayout({ children, showBanner = true }) {
             label: t('whatsappChannel', 'قناة الواتساب'),
             icon: MessageCircle,
             isExternal: true,
-            badge: 'تحديثات'
+            badge: language === 'en' ? 'Updates' : 'تحديثات'
         },
         {
             to: '/target/apps',
             label: t('targetSelling', 'بيع التارجت'),
             icon: TrendingUp,
-            badge: 'كاش فوري',
+            badge: language === 'en' ? 'Instant Cash' : 'كاش فوري',
             isSpecial: true
         },
         { to: '/deposit', label: t('chargeWallet', 'شحن المحفظة'), icon: Wallet },
@@ -294,7 +294,7 @@ export default function MainLayout({ children, showBanner = true }) {
                                     letterSpacing: '0.4px',
                                     whiteSpace: 'nowrap',
                                 }}>
-                                    إمبراطور للشحن الرقمي
+                                    {t('tagline', 'إمبراطور للشحن الرقمي')}
                                 </span>
                             </div>
                         </Link>
@@ -478,7 +478,7 @@ export default function MainLayout({ children, showBanner = true }) {
                         {/* Theme Toggle (Sun / Moon) */}
                         <button
                             onClick={toggleTheme}
-                            title={theme === 'dark' ? 'الوضع النهاري' : 'الوضع الليلي'}
+                            title={theme === 'dark' ? t('lightMode', 'الوضع النهاري') : t('darkMode', 'الوضع الليلي')}
                             className="header-action-circle-btn header-theme-btn"
                             style={{
                                 width: '36px',
@@ -512,7 +512,7 @@ export default function MainLayout({ children, showBanner = true }) {
                         {/* Notifications Bell */}
                         <Link
                             to={isAuthenticated ? "/notifications" : "/login"}
-                            title="الإشعارات"
+                            title={t('notifications', 'الإشعارات')}
                             className="header-action-circle-btn header-notifications-btn"
                             style={{
                                 width: '36px',
@@ -581,7 +581,7 @@ export default function MainLayout({ children, showBanner = true }) {
                         }}>
                             <Link
                                 to={isAuthenticated ? "/wallet" : "/login"}
-                                title="المحفظة والرصيد"
+                                title={t('wallet', 'المحفظة والرصيد')}
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
@@ -610,7 +610,7 @@ export default function MainLayout({ children, showBanner = true }) {
 
                             <Link
                                 to="/deposit"
-                                title="شحن رصيد المحفظة"
+                                title={t('chargeWallet', 'شحن رصيد المحفظة')}
                                 className="header-recharge-btn"
                                 style={{
                                     display: 'inline-flex',
@@ -637,7 +637,7 @@ export default function MainLayout({ children, showBanner = true }) {
                                 }}
                             >
                                 <Plus size={12} strokeWidth={3} />
-                                <span className="recharge-btn-text">اشحن</span>
+                                <span className="recharge-btn-text">{t('recharge', 'اشحن')}</span>
                             </Link>
                         </div>
 
@@ -646,7 +646,7 @@ export default function MainLayout({ children, showBanner = true }) {
                             <Link
                                 to="/profile"
                                 className="user-profile-header-btn"
-                                title="الملف الشخصي"
+                                title={t('myAccount', 'الملف الشخصي')}
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
@@ -693,7 +693,7 @@ export default function MainLayout({ children, showBanner = true }) {
                                     whiteSpace: 'nowrap',
                                     color: isLight ? '#0f172a' : '#FFFFFF',
                                 }}>
-                                    {user?.name?.split(' ')[0] || 'حسابي'}
+                                    {user?.name?.split(' ')[0] || t('myAccount', 'حسابي')}
                                 </span>
                             </Link>
                         ) : (
@@ -717,14 +717,14 @@ export default function MainLayout({ children, showBanner = true }) {
                                 }}
                             >
                                 <LogIn size={14} />
-                                <span>دخول</span>
+                                <span>{t('login', 'دخول')}</span>
                             </Link>
                         )}
 
                         {/* Dedicated Hamburger / Drawer Toggle Button (ALWAYS VISIBLE) */}
                         <button
                             onClick={() => setDrawerOpen(true)}
-                            title="القائمة الكاملة"
+                            title={t('mainMenu', 'القائمة الكاملة')}
                             className="header-hamburger-btn"
                             style={{
                                 width: '36px',
@@ -788,25 +788,25 @@ export default function MainLayout({ children, showBanner = true }) {
                 <BottomNavItem
                     to="/"
                     icon={Home}
-                    label="الرئيسية"
+                    label={t('home', 'الرئيسية')}
                     active={isActive('/')}
                 />
                 <BottomNavItem
                     to="/category/games"
                     icon={Gamepad2}
-                    label="الألعاب"
+                    label={t('games', 'الألعاب')}
                     active={isActive('/category/games')}
                 />
                 <BottomNavItem
                     to="/target/apps"
                     icon={Target}
-                    label="بيع التارجت"
+                    label={t('targetSelling', 'بيع التارجت')}
                     active={isActive('/target/apps')}
                 />
                 <BottomNavItem
                     to="/deposit"
                     icon={Wallet}
-                    label="شحن المحفظة"
+                    label={t('chargeWallet', 'شحن المحفظة')}
                     active={isActive('/deposit')}
                 />
                 <button
@@ -814,7 +814,7 @@ export default function MainLayout({ children, showBanner = true }) {
                     className={`emperor-bottom-nav-item${drawerOpen ? ' active' : ''}`}
                 >
                     <User size={19} />
-                    <span>{isAuthenticated ? 'حسابي' : 'دخول'}</span>
+                    <span>{isAuthenticated ? t('myAccount', 'حسابي') : t('login', 'دخول')}</span>
                 </button>
             </nav>
 

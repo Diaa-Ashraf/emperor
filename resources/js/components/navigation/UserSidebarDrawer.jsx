@@ -85,14 +85,14 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
     const navItems = [
         {
             path: '/',
-            label: 'الرئيسية',
+            label: t('home', 'الرئيسية'),
             icon: Home,
             iconBadgeBg: '#0284c7',
             iconBadgeColor: '#ffffff'
         },
         {
             path: '/profile',
-            label: 'حسابي',
+            label: t('myAccount', 'حسابي'),
             icon: User,
             iconBadgeBg: '#0284c7',
             iconBadgeColor: '#ffffff',
@@ -100,7 +100,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
         },
         {
             path: '/settings',
-            label: 'حماية الحساب',
+            label: t('security', 'حماية الحساب'),
             icon: Shield,
             iconBadgeBg: '#0284c7',
             iconBadgeColor: '#ffffff',
@@ -108,7 +108,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
         },
         {
             path: '/referrals',
-            label: 'رابط الإحالة',
+            label: t('referrals', 'رابط الإحالة'),
             icon: Share2,
             iconBadgeBg: '#0284c7',
             iconBadgeColor: '#ffffff',
@@ -116,7 +116,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
         },
         {
             path: '/orders',
-            label: 'طلباتي',
+            label: t('myOrders', 'طلباتي'),
             icon: FileText,
             iconBadgeBg: '#0284c7',
             iconBadgeColor: '#ffffff',
@@ -124,14 +124,14 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
         },
         {
             path: '/target/apps',
-            label: 'بيع التارجت',
+            label: t('targetSelling', 'بيع التارجت'),
             icon: Target,
             iconBadgeBg: '#D4A537',
             iconBadgeColor: '#000000'
         },
         {
             path: '/wallet',
-            label: 'التحويلات المالية',
+            label: t('financialTransfers', 'التحويلات المالية'),
             icon: Wallet,
             iconBadgeBg: '#0284c7',
             iconBadgeColor: '#ffffff',
@@ -139,7 +139,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
         },
         {
             path: '/developer',
-            label: 'API للمطورين',
+            label: t('developerApi', 'API للمطورين'),
             icon: Key,
             iconBadgeBg: '#3B82F6',
             iconBadgeColor: '#FFFFFF',
@@ -148,21 +148,21 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
         },
         {
             path: '/created-by',
-            label: 'تم الإنشاء بواسطة',
+            label: t('createdBy', 'تم الإنشاء بواسطة'),
             icon: Code,
             iconBadgeBg: '#64748B',
             iconBadgeColor: '#FFFFFF'
         },
         {
             path: '/support',
-            label: 'اتصل بنا',
+            label: t('support', 'اتصل بنا'),
             icon: Headphones,
             iconBadgeBg: '#22C55E',
             iconBadgeColor: '#FFFFFF'
         },
         {
             path: '/settings',
-            label: 'الإعدادات',
+            label: t('settings', 'الإعدادات'),
             icon: Settings,
             iconBadgeBg: '#0284c7',
             iconBadgeColor: '#ffffff',
@@ -224,7 +224,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                     {/* Collapse Drawer Arrow Button (Circle) */}
                     <button
                         onClick={onClose}
-                        title="إغلاق"
+                        title={t('close', 'إغلاق')}
                         style={{
                             width: '36px',
                             height: '36px',
@@ -280,7 +280,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                     {/* Theme Toggle Button */}
                     <button
                         onClick={toggleTheme}
-                        title={theme === 'dark' ? 'الوضع الفاتح' : 'الوضع الليلي'}
+                        title={theme === 'dark' ? t('lightMode', 'الوضع الفاتح') : t('darkMode', 'الوضع الليلي')}
                         style={{
                             width: '36px',
                             height: '36px',
@@ -364,7 +364,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             }}>
                                 <button
                                     onClick={copyUserId}
-                                    title="نسخ معرف المستخدم"
+                                    title={t('copyUserId', 'نسخ معرف المستخدم')}
                                     style={{
                                         display: 'inline-flex',
                                         alignItems: 'center',
@@ -430,14 +430,14 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                     }}>
-                                        {user?.name || 'Diaa Elshafey'}
+                                        {user?.name || 'User'}
                                     </h4>
                                     <span style={{
                                         fontSize: '11.5px',
                                         fontWeight: '800',
                                         color: isLight ? '#0284c7' : '#38bdf8',
                                     }}>
-                                        عضو المتجر
+                                        {user?.role === 'admin' ? t('vipMember', 'عميل إمبراطور VIP') : t('storeMember', 'عضو المتجر')}
                                     </span>
                                 </div>
                             </div>
@@ -451,7 +451,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             textAlign: 'center',
                         }}>
                             <p style={{ margin: '0 0 12px', fontSize: '13px', color: isLight ? '#64748b' : '#A0A0B0', fontWeight: '600' }}>
-                                سجل دخولك للوصول إلى محفظتك والشحن الفوري
+                                {t('loginPrompt', 'سجل دخولك للوصول إلى محفظتك والشحن الفوري')}
                             </p>
                             <div style={{ display: 'flex', gap: '8px' }}>
                                 <Link
@@ -469,7 +469,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         textDecoration: 'none',
                                     }}
                                 >
-                                    تسجيل الدخول
+                                    {t('login', 'تسجيل الدخول')}
                                 </Link>
                                 <Link
                                     to="/register"
@@ -485,7 +485,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         textDecoration: 'none',
                                     }}
                                 >
-                                    حساب جديد
+                                    {t('register', 'حساب جديد')}
                                 </Link>
                             </div>
                         </div>
@@ -537,7 +537,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     color: isLight ? '#9a7210' : '#F5D061',
                                     marginBottom: '2px',
                                 }}>
-                                    رصيد المحفظة
+                                    {t('walletBalance', 'رصيد المحفظة')}
                                 </div>
                                 <div style={{
                                     fontSize: '19px',
@@ -546,7 +546,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     letterSpacing: '0.5px',
                                     fontFamily: 'var(--font-cairo)',
                                 }}>
-                                    EGY {Number(user?.wallet?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
+                                    {language === 'en' ? 'EGP' : 'ج.م'} {Number(user?.wallet?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
                                 </div>
                             </div>
                         </div>
@@ -581,7 +581,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                 e.currentTarget.style.boxShadow = '0 4px 16px rgba(2, 132, 199, 0.45)';
                             }}
                         >
-                            <span>↗ اشحن الآن</span>
+                            <span>↗ {t('chargeNow', 'اشحن الآن')}</span>
                         </Link>
                     </div>
                 </div>
@@ -596,7 +596,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                     fontWeight: '800',
                     color: isLight ? '#64748B' : '#8E8E98',
                 }}>
-                    <span>الحساب</span>
+                    <span>{t('account', 'الحساب')}</span>
                     <ChevronDown size={14} />
                 </div>
 
@@ -609,7 +609,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
 
                         return (
                             <Link
-                                key={item.label}
+                                key={item.path + item.label}
                                 to={item.path}
                                 onClick={(e) => {
                                     onClose();
@@ -708,7 +708,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             }}
                         >
                             <LogOut size={17} />
-                            <span>تسجيل الخروج</span>
+                            <span>{t('logout', 'تسجيل الخروج')}</span>
                         </button>
                     )}
                 </nav>

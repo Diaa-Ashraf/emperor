@@ -44,10 +44,37 @@ export default function CategoryPage() {
     const params = useParams();
     const navigate = useNavigate();
     const { theme } = useTheme();
-    const { isRtl } = useLanguage();
+    const { t, isRtl } = useLanguage();
     const isLight = theme === 'light';
     const rawSlug = params.slug || params.id || 'all';
     const slug = rawSlug.toLowerCase();
+
+    const TYPE_CONFIG = useMemo(() => ({
+        games: {
+            type: 'games',
+            title: t('electronicGames', 'قسم الألعاب الإلكترونية'),
+        },
+        apps: {
+            type: 'voice_apps',
+            title: t('apps', 'قسم التطبيقات'),
+        },
+        voice_apps: {
+            type: 'voice_apps',
+            title: t('apps', 'قسم التطبيقات'),
+        },
+        cards: {
+            type: 'cards',
+            title: t('giftCards', 'قسم البطاقات الرقمية'),
+        },
+        telecom: {
+            type: 'telecom',
+            title: t('telecomCategory', 'قسم شبكات الاتصالات'),
+        },
+        all: {
+            type: null,
+            title: t('allCategories', 'جميع الأقسام والتطبيقات'),
+        },
+    }), [t]);
 
     // Redirect to target apps if target slug is accessed
     useEffect(() => {
@@ -141,7 +168,7 @@ export default function CategoryPage() {
 
     const categoryTitle = selectedCategory
         ? selectedCategory.name
-        : (typeInfo?.title || 'جميع التطبيقات والألعاب');
+        : (typeInfo?.title || t('allCategories', 'جميع التطبيقات والألعاب'));
 
     const allTabLink = currentActiveType && currentActiveType !== 'all'
         ? (currentActiveType === 'voice_apps' ? '/category/apps' : `/category/${currentActiveType}`)
@@ -163,7 +190,7 @@ export default function CategoryPage() {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="ابحث عن منتج وسيظهر مباشرة أسفل البحث..."
+                        placeholder={t('searchProductPrompt', 'ابحث عن منتج وسيظهر مباشرة أسفل البحث...')}
                         style={{
                             width: '100%',
                             boxSizing: 'border-box',
@@ -223,7 +250,7 @@ export default function CategoryPage() {
                                 textDecoration: 'none',
                             }}
                         >
-                            الرئيسية
+                            {t('home', 'الرئيسية')}
                         </Link>
                         <span style={{ color: isLight ? '#94A3B8' : '#5A5A6A', fontSize: '12px' }}>›</span>
                         <span style={{ color: isLight ? '#0F172A' : '#FFFFFF' }}>
@@ -240,7 +267,7 @@ export default function CategoryPage() {
                         padding: '3px 10px',
                         borderRadius: '8px',
                     }}>
-                        {filteredProducts.length} عنصر
+                        {filteredProducts.length} {t('items', 'عنصر')}
                     </span>
                 </div>
 
@@ -277,7 +304,7 @@ export default function CategoryPage() {
                                 transition: 'all 0.2s ease',
                             }}
                         >
-                            الكل ({categories.length})
+                            {t('all', 'الكل')} ({categories.length})
                         </Link>
 
                         {visibleCategories.map((cat) => {
@@ -331,7 +358,7 @@ export default function CategoryPage() {
                 {/* ── 4. Products Grid (3 columns on mobile, square poster cards) ── */}
                 {loading ? (
                     <div style={{ padding: '60px 0' }}>
-                        <LoadingSpinner text="جاري تحميل المنتجات..." />
+                        <LoadingSpinner text={t('loadingProducts', 'جاري تحميل المنتجات...')} />
                     </div>
                 ) : filteredProducts.length > 0 ? (
                     <div className="emperor-products-grid">
@@ -341,9 +368,9 @@ export default function CategoryPage() {
                     </div>
                 ) : (
                     <EmptyState
-                        title="لم يتم العثور على منتجات"
-                        description={debouncedSearch ? `لا توجد نتائج مطابقة لـ "${debouncedSearch}"` : 'لا توجد منتجات متاحة في هذا القسم حالياً'}
-                        actionText="تصفح جميع المنتجات"
+                        title={t('noProductsFound', 'لم يتم العثور على منتجات')}
+                        description={debouncedSearch ? `${t('noMatchesFor', 'لا توجد نتائج مطابقة لـ')} "${debouncedSearch}"` : t('noProductsInCat', 'لا توجد منتجات متاحة في هذا القسم حالياً')}
+                        actionText={t('browseAllProducts', 'تصفح جميع المنتجات')}
                         onAction={() => setSearchQuery('')}
                     />
                 )}
