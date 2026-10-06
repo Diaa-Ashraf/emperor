@@ -946,15 +946,15 @@ body {
 
 .drawer-panel {
     position: fixed;
-    top: 14px;
-    bottom: 14px;
-    height: calc(100dvh - 28px);
-    max-height: calc(100dvh - 28px);
-    width: 360px;
-    max-width: calc(100vw - 28px);
-    background: radial-gradient(ellipse at 50% 0%, #161624 0%, #09090E 100%);
+    top: 12px;
+    bottom: 12px;
+    height: calc(100dvh - 24px);
+    max-height: calc(100dvh - 24px);
+    width: 320px;
+    max-width: min(84vw, 320px);
+    background: radial-gradient(ellipse at 50% 0%, #151520 0%, #09090E 100%);
     border: 1.5px solid rgba(212, 165, 55, 0.45);
-    border-radius: 26px;
+    border-radius: 24px;
     z-index: 99999 !important;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -971,35 +971,35 @@ body {
 }
 
 .drawer-panel.rtl {
-    right: 14px;
+    right: 12px;
     left: auto;
     animation: drawerSlideRTL 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .drawer-panel.ltr {
-    left: 14px;
+    left: 12px;
     right: auto;
     animation: drawerSlideLTR 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @media (max-width: 480px) {
     .drawer-panel {
-        top: 10px;
-        bottom: 10px;
-        height: calc(100dvh - 20px);
-        max-height: calc(100dvh - 20px);
-        width: calc(100vw - 20px);
-        max-width: calc(100vw - 20px);
-        border-radius: 22px;
+        top: 8px;
+        bottom: 8px;
+        height: calc(100dvh - 16px);
+        max-height: calc(100dvh - 16px);
+        width: min(84vw, 300px) !important;
+        max-width: min(84vw, 300px) !important;
+        border-radius: 20px;
     }
 
     .drawer-panel.rtl {
-        right: 10px;
+        right: 8px;
         left: auto;
     }
 
     .drawer-panel.ltr {
-        left: 10px;
+        left: 8px;
         right: auto;
     }
 }
