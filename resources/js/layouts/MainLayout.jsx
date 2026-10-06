@@ -179,6 +179,8 @@ export default function MainLayout({ children, showBanner = true }) {
         ? Number(user.wallet.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
         : '0.00';
 
+    const currency = language === 'en' ? 'EGP' : 'ج.م';
+
     const desktopNavLinks = [
         { to: '/', label: t('home', 'الرئيسية'), icon: Home },
         {
