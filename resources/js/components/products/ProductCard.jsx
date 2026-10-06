@@ -17,7 +17,7 @@ export default function ProductCard({ product }) {
     const productUrl = `/products/${product.id}`;
 
     const isApp = product.category?.type === 'voice_apps' || product.type === 'voice_apps';
-    const showTargetIcon = isApp && (!imageSrc || imgError || imageSrc.includes('unsplash') || imageSrc.includes('pexels') || imageSrc.includes('random'));
+    const showTargetIcon = isApp && (!imageSrc || imgError || (typeof imageSrc === 'string' && (imageSrc.includes('unsplash') || imageSrc.includes('pexels') || imageSrc.includes('random'))));
 
     return (
         <Link

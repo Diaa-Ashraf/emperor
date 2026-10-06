@@ -24,7 +24,8 @@ import {
     FileText,
     HelpCircle,
     ShieldCheck,
-    Headphones
+    Headphones,
+    MessageCircle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -39,7 +40,7 @@ import AppSplashScreen from '../components/ui/AppSplashScreen';
 import HomeBannerSlider from '../components/home/HomeBannerSlider';
 import PromotionalPopup from '../components/ui/PromotionalPopup';
 import { playNotificationSound } from '../utils/soundHelper';
-import { getSiteLogo, getSiteName } from '../utils/settingsHelper';
+import { getSiteLogo, getSiteName, getWhatsAppChannel } from '../utils/settingsHelper';
 
 export default function MainLayout({ children, showBanner = true }) {
     const { user, isAuthenticated } = useAuth();
