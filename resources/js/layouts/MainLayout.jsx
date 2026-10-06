@@ -806,15 +806,38 @@ export default function MainLayout({ children, showBanner = true }) {
                 <BottomNavItem
                     to="/deposit"
                     icon={Wallet}
-                    label={t('chargeWallet', 'شحن المحفظة')}
+                    label={t('chargeWallet', 'شحن رصيد')}
                     active={isActive('/deposit')}
                 />
                 <button
+                    type="button"
                     onClick={() => setDrawerOpen(true)}
                     className={`emperor-bottom-nav-item${drawerOpen ? ' active' : ''}`}
+                    style={{
+                        outline: 'none',
+                        border: 'none',
+                        background: 'transparent',
+                        color: drawerOpen ? '#F5D061' : '#8E8E98',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        WebkitTapHighlightColor: 'transparent',
+                    }}
                 >
-                    <User size={19} />
-                    <span>{isAuthenticated ? t('myAccount', 'حسابي') : t('login', 'دخول')}</span>
+                    <User size={20} color={drawerOpen ? '#F5D061' : '#8E8E98'} />
+                    <span style={{
+                        fontSize: '11px',
+                        fontWeight: drawerOpen ? '800' : '600',
+                        whiteSpace: 'nowrap',
+                        lineHeight: 1.1,
+                        fontFamily: 'var(--font-cairo)',
+                    }}>
+                        {isAuthenticated ? t('myAccount', 'حسابي') : t('login', 'دخول')}
+                    </span>
                 </button>
             </nav>
 
@@ -832,10 +855,28 @@ function BottomNavItem({ to, icon: Icon, label, active }) {
             style={{
                 textDecoration: 'none',
                 color: active ? '#F5D061' : '#8E8E98',
+                outline: 'none',
+                border: 'none',
+                background: 'transparent',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '4px',
+                userSelect: 'none',
+                WebkitTapHighlightColor: 'transparent',
             }}
         >
-            <Icon size={19} color={active ? '#F5D061' : '#8E8E98'} />
-            <span style={{ fontSize: '11px', fontWeight: active ? '800' : '600' }}>{label}</span>
+            <Icon size={20} color={active ? '#F5D061' : '#8E8E98'} />
+            <span style={{
+                fontSize: '11px',
+                fontWeight: active ? '800' : '600',
+                whiteSpace: 'nowrap',
+                lineHeight: 1.1,
+                fontFamily: 'var(--font-cairo)',
+            }}>
+                {label}
+            </span>
         </Link>
     );
 }

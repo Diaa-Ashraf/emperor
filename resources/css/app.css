@@ -949,6 +949,16 @@ body {
     max-width: 80px;
 }
 
+.emperor-bottom-nav-item,
+.emperor-bottom-nav-item:focus,
+.emperor-bottom-nav-item:focus-visible,
+.emperor-bottom-nav-item:active {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
 .light .emperor-bottom-nav-item {
     color: #64748b;
 }
