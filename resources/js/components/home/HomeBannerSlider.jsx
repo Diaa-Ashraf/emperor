@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { bannersApi } from '../../api/endpoints';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -132,7 +131,7 @@ export default function HomeBannerSlider() {
             style={{
                 position: 'relative',
                 maxWidth: '1120px',
-                margin: '16px auto 28px',
+                margin: '8px auto 16px',
                 width: '100%',
             }}
             onMouseEnter={() => setIsHovered(true)}
@@ -141,17 +140,19 @@ export default function HomeBannerSlider() {
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
         >
-            {/* Main Luxury Banner Frame - Exact KA CARD Style */}
+            {/* Main Luxury Banner Frame - Exact KA CARD Style (Compact Widescreen) */}
             <div
                 className="emperor-hero-slider"
                 style={{
                     position: 'relative',
-                    borderRadius: '24px',
+                    borderRadius: '18px',
                     overflow: 'hidden',
-                    border: '1.5px solid rgba(212, 165, 55, 0.45)',
+                    border: '1.2px solid rgba(212, 165, 55, 0.45)',
                     background: '#0B0B0F',
-                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.75), 0 0 25px rgba(212, 165, 55, 0.18)',
-                    height: 'clamp(210px, 29vw, 390px)',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.65), 0 0 20px rgba(212, 165, 55, 0.15)',
+                    height: 'clamp(140px, 20vw, 220px)',
+                    aspectRatio: '2.3 / 1',
+                    maxHeight: '230px',
                     width: '100%',
                     display: 'flex',
                     alignItems: 'center',
@@ -244,80 +245,19 @@ export default function HomeBannerSlider() {
                     </div>
                 )}
 
-                {/* Left/Right Navigation Chevrons */}
-                {activeList.length > 1 && (
-                    <>
-                        <button
-                            onClick={handlePrev}
-                            aria-label="Previous Banner"
-                            className="emperor-slider-nav-btn"
-                            style={{
-                                position: 'absolute',
-                                top: '50%',
-                                [isRtl ? 'right' : 'left']: '14px',
-                                transform: 'translateY(-50%)',
-                                zIndex: 4,
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '50%',
-                                background: 'rgba(10, 10, 15, 0.75)',
-                                backdropFilter: 'blur(10px)',
-                                WebkitBackdropFilter: 'blur(10px)',
-                                border: '1.5px solid rgba(212, 165, 55, 0.4)',
-                                color: '#F5D061',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                transition: 'all 0.25s ease',
-                            }}
-                        >
-                            {isRtl ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
-                        </button>
-
-                        <button
-                            onClick={handleNext}
-                            aria-label="Next Banner"
-                            className="emperor-slider-nav-btn"
-                            style={{
-                                position: 'absolute',
-                                top: '50%',
-                                [isRtl ? 'left' : 'right']: '14px',
-                                transform: 'translateY(-50%)',
-                                zIndex: 4,
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '50%',
-                                background: 'rgba(10, 10, 15, 0.75)',
-                                backdropFilter: 'blur(10px)',
-                                WebkitBackdropFilter: 'blur(10px)',
-                                border: '1.5px solid rgba(212, 165, 55, 0.4)',
-                                color: '#F5D061',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                transition: 'all 0.25s ease',
-                            }}
-                        >
-                            {isRtl ? <ChevronLeft size={22} /> : <ChevronRight size={22} />}
-                        </button>
-                    </>
-                )}
-
-                {/* Slider Indicator Dots & Progress */}
+                {/* Slider Indicator Dots (Clean and subtle without blocking arrows) */}
                 {activeList.length > 1 && (
                     <div style={{
                         position: 'absolute',
-                        bottom: '14px',
+                        bottom: '10px',
                         left: '50%',
                         transform: 'translateX(-50%)',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px',
+                        gap: '5px',
                         zIndex: 4,
-                        background: 'rgba(0, 0, 0, 0.65)',
-                        padding: '5px 12px',
+                        background: 'rgba(0, 0, 0, 0.6)',
+                        padding: '4px 10px',
                         borderRadius: '20px',
                         backdropFilter: 'blur(8px)',
                         WebkitBackdropFilter: 'blur(8px)',
@@ -333,9 +273,9 @@ export default function HomeBannerSlider() {
                                 }}
                                 aria-label={`Go to slide ${i + 1}`}
                                 style={{
-                                    width: i === currentIndex ? '26px' : '7px',
-                                    height: '7px',
-                                    borderRadius: '4px',
+                                    width: i === currentIndex ? '20px' : '6px',
+                                    height: '6px',
+                                    borderRadius: '3px',
                                     background: i === currentIndex
                                         ? 'linear-gradient(90deg, #F5D061 0%, #D4A537 100%)'
                                         : 'rgba(255, 255, 255, 0.35)',
@@ -358,9 +298,9 @@ export default function HomeBannerSlider() {
                             position: 'absolute',
                             bottom: 0,
                             left: 0,
-                            height: '3px',
+                            height: '2.5px',
                             background: 'linear-gradient(90deg, #D4A537 0%, #F5D061 100%)',
-                            boxShadow: '0 0 8px rgba(212, 165, 55, 0.8)',
+                            boxShadow: '0 0 6px rgba(212, 165, 55, 0.8)',
                             zIndex: 5,
                         }}
                     />
