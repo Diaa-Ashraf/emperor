@@ -185,32 +185,14 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
             <div
                 className="drawer-backdrop"
                 onClick={onClose}
-                style={{
-                    position: 'fixed',
-                    inset: 0,
-                    zIndex: 99998,
-                }}
             />
 
             {/* Slide-in Panel (Exact KA CARD Layout) */}
             <aside
                 className={`drawer-panel ${isRtl ? 'rtl' : 'ltr'}`}
                 style={{
-                    zIndex: 99999,
-                    background: isLight
-                        ? '#f8fafc'
-                        : 'linear-gradient(180deg, #101015 0%, #08080C 100%)',
-                    borderLeft: isRtl ? (isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)') : 'none',
-                    borderRight: !isRtl ? (isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)') : 'none',
-                    width: '360px',
-                    maxWidth: '88vw',
                     paddingTop: 'env(safe-area-inset-top, 0px)',
                     paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    boxShadow: isLight
-                        ? '0 10px 40px rgba(0, 0, 0, 0.15)'
-                        : '0 0 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 165, 55, 0.12)',
                 }}
             >
                 {/* ── 1. Top Header: Collapse Arrow + Brand Logo + Theme Switcher ── */}
