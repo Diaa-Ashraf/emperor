@@ -30,7 +30,7 @@ class ProductResource extends JsonResource
             'type' => $this->type?->value,
             'type_label' => $this->type?->label(),
             'description' => $this->description,
-            'image_url' => $resolveUrl($this->image),
+            'image_url' => $resolveUrl($this->image ?: $this->parent?->image),
             'player_id_label' => $this->player_id_label ?: 'معرّف الحساب / Player ID',
             'player_id_validation_regex' => $this->player_id_validation_regex,
             'player_id_guide_image' => $resolveUrl($this->player_id_guide_image),

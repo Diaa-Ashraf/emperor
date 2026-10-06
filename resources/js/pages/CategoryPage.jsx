@@ -434,41 +434,35 @@ export default function CategoryPage() {
                         <LoadingSpinner text={t('loadingProducts', 'جاري تحميل المنتجات...')} />
                     </div>
                 ) : selectedParentApp ? (
-                    /* ── VIEW 2: Sub-Products / Servers View (Screenshot 3) ── */
+                    /* ── VIEW 2: Sub-Products / Servers View (Matching KA-Card Screenshot 1) ── */
                     <div style={{ width: '100%' }}>
-                        {/* Parent App Banner Pill */}
+                        {/* Parent App Full-Width Banner Card */}
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
+                            justifyContent: 'flex-start',
                             gap: '14px',
-                            background: isLight ? '#FFFFFF' : 'rgba(20, 20, 28, 0.95)',
-                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.5)' : '1.5px solid rgba(212, 165, 55, 0.4)',
+                            background: isLight ? '#FFFFFF' : 'linear-gradient(90deg, rgba(22, 22, 30, 0.95) 0%, rgba(14, 14, 20, 0.98) 100%)',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.35)',
                             borderRadius: '20px',
-                            padding: '12px 28px',
-                            margin: '0 auto 28px',
-                            width: 'fit-content',
-                            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 165, 55, 0.12)'
+                            padding: '12px 20px',
+                            marginBottom: '24px',
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(212, 165, 55, 0.08)'
                         }}>
-                            <h2 style={{
-                                fontSize: '18px',
-                                fontWeight: '900',
-                                color: isLight ? '#0F172A' : '#FFFFFF',
-                                margin: 0,
-                                fontFamily: 'var(--font-cairo)'
-                            }}>
-                                {selectedParentApp.name}
-                            </h2>
                             <div style={{
-                                width: '44px',
-                                height: '44px',
-                                borderRadius: '12px',
+                                width: '48px',
+                                height: '48px',
+                                borderRadius: '50%',
                                 overflow: 'hidden',
-                                border: '1.5px solid #D4A537',
+                                border: '2px solid #D4A537',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                background: '#0B0B0F'
+                                background: '#0B0B0F',
+                                flexShrink: 0,
+                                boxShadow: '0 0 12px rgba(212, 165, 55, 0.35)'
                             }}>
                                 {(() => {
                                     const parentImg = formatImageUrl(selectedParentApp.image_url || selectedParentApp.image);
@@ -479,10 +473,20 @@ export default function CategoryPage() {
                                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />
                                     ) : (
-                                        <TargetAppIconRenderer app={selectedParentApp} size={36} />
+                                        <TargetAppIconRenderer app={selectedParentApp} size={38} />
                                     );
                                 })()}
                             </div>
+
+                            <h2 style={{
+                                fontSize: '18px',
+                                fontWeight: '900',
+                                color: isLight ? '#0F172A' : '#FFFFFF',
+                                margin: 0,
+                                fontFamily: 'var(--font-cairo)'
+                            }}>
+                                {selectedParentApp.name}
+                            </h2>
                         </div>
 
                         {/* Variants Grid (e.g. هلين شات 4, هلين شات 2, هلين شات 1) */}
