@@ -792,10 +792,11 @@ export default function MainLayout({ children, showBanner = true }) {
                     active={isActive('/')}
                 />
                 <BottomNavItem
-                    to="/category/games"
-                    icon={Gamepad2}
-                    label={t('games', 'الألعاب')}
-                    active={isActive('/category/games')}
+                    href={getWhatsAppChannel()}
+                    icon={MessageCircle}
+                    label={t('whatsappChannel', 'قناة الواتساب')}
+                    isExternal={true}
+                    color="#25D366"
                 />
                 <BottomNavItem
                     to="/target/apps"
@@ -847,7 +848,44 @@ export default function MainLayout({ children, showBanner = true }) {
     );
 }
 
-function BottomNavItem({ to, icon: Icon, label, active }) {
+function BottomNavItem({ to, href, icon: Icon, label, active, isExternal, color }) {
+    if (href || isExternal) {
+        return (
+            <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="emperor-bottom-nav-item"
+                style={{
+                    textDecoration: 'none',
+                    color: color || '#8E8E98',
+                    outline: 'none',
+                    border: 'none',
+                    background: 'transparent',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '4px',
+                    userSelect: 'none',
+                    WebkitTapHighlightColor: 'transparent',
+                }}
+            >
+                <Icon size={20} color={color || '#8E8E98'} />
+                <span style={{
+                    fontSize: '11px',
+                    fontWeight: '700',
+                    whiteSpace: 'nowrap',
+                    lineHeight: 1.1,
+                    fontFamily: 'var(--font-cairo)',
+                    color: color || '#8E8E98',
+                }}>
+                    {label}
+                </span>
+            </a>
+        );
+    }
+
     return (
         <Link
             to={to}
