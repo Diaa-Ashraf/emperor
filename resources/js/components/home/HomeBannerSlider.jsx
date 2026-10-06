@@ -139,51 +139,59 @@ export default function HomeBannerSlider() {
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
         >
-            {/* ── 1. Security / 2FA Pill Header (Matching KA-Cards Screenshot) ── */}
-            <div style={{
+            {/* ── 1. Security / 2FA Pill Header (Matching KA-Cards Responsive Layout) ── */}
+            <div className="emperor-2fa-pill" style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 background: 'rgba(16, 185, 129, 0.08)',
                 border: '1px solid rgba(16, 185, 129, 0.35)',
                 borderRadius: '16px',
-                padding: '10px 18px',
-                marginBottom: '18px',
+                padding: '9px 16px',
+                marginBottom: '16px',
                 width: '100%',
                 boxSizing: 'border-box',
-                gap: '10px',
+                gap: '8px',
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
                     <span style={{ color: '#10B981', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-                        <ShieldCheck size={18} />
+                        <ShieldCheck size={17} />
                     </span>
-                    <span style={{
-                        fontSize: '13px',
+                    <span className="emperor-2fa-text-full" style={{
+                        fontSize: '12.5px',
                         fontWeight: '700',
                         color: '#E2E8F0',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
+                        lineHeight: 1.3,
                     }}>
                         حماية إضافية لحسابك: فعّل المصادقة الثنائية في أقل من دقيقة.
+                    </span>
+                    <span className="emperor-2fa-text-mobile" style={{
+                        fontSize: '11.5px',
+                        fontWeight: '700',
+                        color: '#E2E8F0',
+                        lineHeight: 1.3,
+                        display: 'none',
+                    }}>
+                        حماية الحساب: فعّل المصادقة الثنائية
                     </span>
                 </div>
                 <Link
                     to="/settings"
                     style={{
-                        background: 'rgba(16, 185, 129, 0.18)',
+                        background: 'rgba(16, 185, 129, 0.2)',
                         border: '1px solid rgba(16, 185, 129, 0.5)',
                         borderRadius: '10px',
-                        padding: '4px 12px',
+                        padding: '4px 10px',
                         color: '#34D399',
                         textDecoration: 'none',
-                        fontSize: '12px',
+                        fontSize: '11.5px',
                         fontWeight: '800',
                         whiteSpace: 'nowrap',
                         flexShrink: 0,
+                        transition: 'all 0.2s',
                     }}
                 >
-                    تفعيل الحماية ↗
+                    تفعيل ↗
                 </Link>
             </div>
 
@@ -390,6 +398,17 @@ export default function HomeBannerSlider() {
                 @media (max-width: 768px) {
                     .emperor-hero-slider {
                         border-radius: 18px !important;
+                    }
+                    .emperor-2fa-text-full {
+                        display: none !important;
+                    }
+                    .emperor-2fa-text-mobile {
+                        display: inline !important;
+                    }
+                    .emperor-2fa-pill {
+                        padding: 7px 12px !important;
+                        border-radius: 12px !important;
+                        margin-bottom: 12px !important;
                     }
                 }
 
