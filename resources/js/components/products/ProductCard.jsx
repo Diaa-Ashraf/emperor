@@ -5,7 +5,7 @@ import { formatImageUrl } from '../../utils/imageHelper';
 import { useTheme } from '../../contexts/ThemeContext';
 import '../../../css/visualCategory.css';
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, onClick }) {
     if (!product) return null;
 
     const { theme } = useTheme();
@@ -19,10 +19,15 @@ export default function ProductCard({ product }) {
     const isApp = product.category?.type === 'voice_apps' || product.type === 'voice_apps';
     const showTargetIcon = isApp && (!imageSrc || imgError || (typeof imageSrc === 'string' && (imageSrc.includes('unsplash') || imageSrc.includes('pexels') || imageSrc.includes('random'))));
 
-    return (
-        <Link
-            to={productUrl}
+    const cardContent = (
+        <div
             className="emperor-product-poster-card"
+            onClick={(e) => {
+                if (onClick) {
+                    e.preventDefault();
+                    onClick(product);
+                }
+            }}
             style={{
                 textDecoration: 'none',
                 display: 'flex',
@@ -105,6 +110,16 @@ export default function ProductCard({ product }) {
             >
                 {product.name}
             </span>
+        </div>
+    );
+
+    if (onClick) {
+        return cardContent;
+    }
+
+    return (
+        <Link to={productUrl} style={{ textDecoration: 'none', width: '100%', display: 'block' }}>
+            {cardContent}
         </Link>
     );
 }

@@ -21,6 +21,7 @@ class ProductController extends Controller
     {
         $catId = $request->input('category_id');
         $catSlug = $request->input('category_slug');
+        $parentId = $request->input('parent_id');
         $type = $request->input('type');
         $search = trim((string) $request->input('search'));
         $perPage = (int) ($request->input('limit') ?: $request->input('per_page') ?: 24);
@@ -31,15 +32,30 @@ class ProductController extends Controller
             ->where('type', '!=', 'target')
             ->with([
                 'category:id,name,slug,type',
-                'activeTiers'
+                'activeTiers',
+                'variants' => function ($q) {
+                    $q->where('is_active', true)
+                      ->with('activeTiers')
+                      ->orderBy('sort_order', 'asc');
+                }
+            ])
+            ->withCount([
+                'variants' => fn($q) => $q->where('is_active', true)
             ])
             ->select([
-                'id', 'category_id', 'name', 'slug', 'description', 'image',
+                'id', 'category_id', 'parent_id', 'name', 'slug', 'description', 'image',
                 'type', 'player_id_label', 'player_id_validation_regex',
                 'player_id_guide_image', 'has_server_id', 'server_id_label',
                 'server_options', 'requires_account_region', 'region_options',
                 'sort_order'
             ]);
+
+        if ($parentId !== null && $parentId !== '') {
+            $query->where('parent_id', $parentId);
+        } elseif ($search === '') {
+            // When not searching and no parent_id specified, show only parent products
+            $query->whereNull('parent_id');
+        }
 
         if ($catId) {
             $query->where('category_id', $catId);
@@ -81,7 +97,7 @@ class ProductController extends Controller
 
         // Cache default requests without search for 5 minutes
         if ($search === '') {
-            $cacheKey = "api_products_list_v2_c{$catId}_cs{$catSlug}_t{$type}_p{$page}_l{$perPage}";
+            $cacheKey = "api_products_list_v3_c{$catId}_cs{$catSlug}_p{$parentId}_t{$type}_pg{$page}_l{$perPage}";
             $products = Cache::remember($cacheKey, 300, function () use ($query, $perPage) {
                 return $query->orderBy('sort_order', 'asc')->paginate($perPage);
             });
@@ -100,11 +116,19 @@ class ProductController extends Controller
      */
     public function show(string|int $id): JsonResponse
     {
-        $cacheKey = "api_product_detail_{$id}";
+        $cacheKey = "api_product_detail_v3_{$id}";
         $product = Cache::remember($cacheKey, 900, function () use ($id) {
             $query = Product::where('is_active', true)->with([
                 'category:id,name,slug,type',
-                'activeTiers'
+                'parent:id,name,slug,image',
+                'activeTiers',
+                'variants' => function ($q) {
+                    $q->where('is_active', true)
+                      ->with('activeTiers')
+                      ->orderBy('sort_order', 'asc');
+                }
+            ])->withCount([
+                'variants' => fn($q) => $q->where('is_active', true)
             ]);
 
             if (is_numeric($id)) {

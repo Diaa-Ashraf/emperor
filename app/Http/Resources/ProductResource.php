@@ -22,6 +22,7 @@ class ProductResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'parent_id' => $this->parent_id,
             'category_id' => $this->category_id,
             'category_name' => $this->category?->name,
             'name' => $this->name,
@@ -38,6 +39,8 @@ class ProductResource extends JsonResource
             'server_options' => $this->server_options,
             'requires_account_region' => (bool) $this->requires_account_region,
             'region_options' => $this->region_options,
+            'variants_count' => $this->variants_count ?? $this->whenLoaded('variants', fn() => $this->variants->count(), 0),
+            'variants' => ProductResource::collection($this->whenLoaded('variants')),
             'tiers' => ProductTierResource::collection($this->whenLoaded('activeTiers', function () {
                 return $this->activeTiers;
             }, function () {

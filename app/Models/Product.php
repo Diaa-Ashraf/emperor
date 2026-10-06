@@ -16,6 +16,7 @@ class Product extends Model
 
     protected $fillable = [
         'category_id',
+        'parent_id',
         'catalog_source_id',
         'external_product_id',
         'name',
@@ -70,6 +71,16 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'parent_id');
+    }
+
+    public function variants(): HasMany
+    {
+        return $this->hasMany(Product::class, 'parent_id')->where('is_active', true)->orderBy('sort_order');
     }
 
     public function catalogSource(): BelongsTo

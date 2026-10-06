@@ -1,53 +1,31 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Search, Layers, Sparkles, ChevronLeft } from 'lucide-react';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Search, Layers, Sparkles, ArrowRight, ArrowLeft } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 import ProductCard from '../components/products/ProductCard';
+import ProductRechargeModal from '../components/products/ProductRechargeModal';
 import EmptyState from '../components/ui/EmptyState';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { catalogApi } from '../api/endpoints';
 import { formatImageUrl } from '../utils/imageHelper';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { TargetAppIconRenderer } from '../components/target/TargetAppIcons';
 import '../../css/visualCategory.css';
-
-const TYPE_CONFIG = {
-    games: {
-        type: 'games',
-        title: 'قسم الألعاب الإلكترونية',
-    },
-    apps: {
-        type: 'voice_apps',
-        title: 'قسم التطبيقات',
-    },
-    voice_apps: {
-        type: 'voice_apps',
-        title: 'قسم التطبيقات',
-    },
-    cards: {
-        type: 'cards',
-        title: 'قسم البطاقات الرقمية',
-    },
-    telecom: {
-        type: 'telecom',
-        title: 'قسم شبكات الاتصالات',
-    },
-    all: {
-        type: null,
-        title: 'جميع الأقسام والتطبيقات',
-    },
-};
 
 let categoriesCache = null;
 
 export default function CategoryPage() {
     const params = useParams();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const { theme } = useTheme();
     const { t, isRtl } = useLanguage();
     const isLight = theme === 'light';
     const rawSlug = params.slug || params.id || 'all';
     const slug = rawSlug.toLowerCase();
+
+    const appParam = searchParams.get('app');
 
     const TYPE_CONFIG = useMemo(() => ({
         games: {
@@ -88,6 +66,9 @@ export default function CategoryPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
+
+    const [selectedParentApp, setSelectedParentApp] = useState(null);
+    const [activeRechargeProduct, setActiveRechargeProduct] = useState(null);
 
     // Debounce search input
     useEffect(() => {
@@ -148,19 +129,43 @@ export default function CategoryPage() {
 
         catalogApi.getProducts(queryParams)
             .then(res => {
+                let items = [];
                 if (res?.data?.data) {
-                    setProducts(res.data.data);
+                    items = res.data.data;
                 } else if (Array.isArray(res?.data)) {
-                    setProducts(res.data);
-                } else {
-                    setProducts([]);
+                    items = res.data;
                 }
+                setProducts(items);
             })
             .catch(() => {
                 setProducts([]);
             })
             .finally(() => setLoading(false));
     }, [slug, debouncedSearch]);
+
+    // Synchronize parent app from URL search parameter
+    useEffect(() => {
+        if (!appParam) {
+            setSelectedParentApp(null);
+            return;
+        }
+
+        if (products.length > 0) {
+            const found = products.find(p => p.slug === appParam || String(p.id) === String(appParam));
+            if (found) {
+                setSelectedParentApp(found);
+            } else {
+                // Fetch product directly by id/slug if not in current page list
+                catalogApi.getProduct(appParam)
+                    .then(res => {
+                        if (res?.data) {
+                            setSelectedParentApp(res.data);
+                        }
+                    })
+                    .catch(() => {});
+            }
+        }
+    }, [appParam, products]);
 
     const filteredProducts = useMemo(() => {
         return [...products].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
@@ -175,6 +180,25 @@ export default function CategoryPage() {
         : '/category/all';
 
     const isAllTabActive = !selectedCategory;
+
+    const handleProductClick = (product) => {
+        const hasVariants = (product.variants && product.variants.length > 0) || (product.variants_count && product.variants_count > 0);
+        if (hasVariants) {
+            setSelectedParentApp(product);
+            const newParams = new URLSearchParams(searchParams);
+            newParams.set('app', product.slug || product.id);
+            setSearchParams(newParams);
+        } else {
+            setActiveRechargeProduct(product);
+        }
+    };
+
+    const handleBackToApps = () => {
+        setSelectedParentApp(null);
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete('app');
+        setSearchParams(newParams);
+    };
 
     return (
         <MainLayout>
@@ -258,21 +282,46 @@ export default function CategoryPage() {
                         </span>
                     </div>
 
-                    {/* Count badge */}
-                    <span style={{
-                        fontSize: '12px',
-                        fontWeight: '800',
-                        color: 'var(--gold-400, #D4A537)',
-                        background: 'rgba(212, 165, 55, 0.12)',
-                        padding: '3px 10px',
-                        borderRadius: '8px',
-                    }}>
-                        {filteredProducts.length} {t('items', 'عنصر')}
-                    </span>
+                    {/* Return button if inside a parent app */}
+                    {selectedParentApp ? (
+                        <button
+                            type="button"
+                            onClick={handleBackToApps}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                background: 'linear-gradient(135deg, rgba(212, 165, 55, 0.2) 0%, rgba(212, 165, 55, 0.08) 100%)',
+                                border: '1px solid rgba(212, 165, 55, 0.4)',
+                                borderRadius: '10px',
+                                padding: '6px 14px',
+                                color: '#F5D061',
+                                fontSize: '13px',
+                                fontWeight: '800',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                fontFamily: 'var(--font-cairo)',
+                            }}
+                        >
+                            <span>الرجوع للأقسام</span>
+                            {isRtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+                        </button>
+                    ) : (
+                        <span style={{
+                            fontSize: '12px',
+                            fontWeight: '800',
+                            color: 'var(--gold-400, #D4A537)',
+                            background: 'rgba(212, 165, 55, 0.12)',
+                            padding: '3px 10px',
+                            borderRadius: '8px',
+                        }}>
+                            {filteredProducts.length} {t('items', 'عنصر')}
+                        </span>
+                    )}
                 </div>
 
-                {/* ── 3. Horizontal Category Chips ── */}
-                {visibleCategories.length > 0 && (
+                {/* ── 3. Horizontal Category Chips (Only if not inside a parent app) ── */}
+                {!selectedParentApp && visibleCategories.length > 0 && (
                     <div
                         className="no-scrollbar"
                         style={{
@@ -355,15 +404,106 @@ export default function CategoryPage() {
                     </div>
                 )}
 
-                {/* ── 4. Products Grid (3 columns on mobile, square poster cards) ── */}
+                {/* ── 4. Main Products OR Sub-Variants Content (Matching KA-Card Screenshots) ── */}
                 {loading ? (
                     <div style={{ padding: '60px 0' }}>
                         <LoadingSpinner text={t('loadingProducts', 'جاري تحميل المنتجات...')} />
                     </div>
+                ) : selectedParentApp ? (
+                    /* ── VIEW 2: Sub-Products / Servers View (Screenshot 3) ── */
+                    <div style={{ width: '100%' }}>
+                        {/* Parent App Banner Pill */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '14px',
+                            background: isLight ? '#FFFFFF' : 'rgba(20, 20, 28, 0.95)',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.5)' : '1.5px solid rgba(212, 165, 55, 0.4)',
+                            borderRadius: '20px',
+                            padding: '12px 28px',
+                            margin: '0 auto 28px',
+                            width: 'fit-content',
+                            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 165, 55, 0.12)'
+                        }}>
+                            <h2 style={{
+                                fontSize: '18px',
+                                fontWeight: '900',
+                                color: isLight ? '#0F172A' : '#FFFFFF',
+                                margin: 0,
+                                fontFamily: 'var(--font-cairo)'
+                            }}>
+                                {selectedParentApp.name}
+                            </h2>
+                            <div style={{
+                                width: '44px',
+                                height: '44px',
+                                borderRadius: '12px',
+                                overflow: 'hidden',
+                                border: '1.5px solid #D4A537',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: '#0B0B0F'
+                            }}>
+                                {(() => {
+                                    const parentImg = formatImageUrl(selectedParentApp.image_url || selectedParentApp.image);
+                                    return parentImg ? (
+                                        <img
+                                            src={parentImg}
+                                            alt={selectedParentApp.name}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
+                                    ) : (
+                                        <TargetAppIconRenderer app={selectedParentApp} size={36} />
+                                    );
+                                })()}
+                            </div>
+                        </div>
+
+                        {/* Variants Grid (e.g. هلين شات 4, هلين شات 2, هلين شات 1) */}
+                        {selectedParentApp.variants && selectedParentApp.variants.length > 0 ? (
+                            <div className="emperor-products-grid">
+                                {selectedParentApp.variants.map((variant) => (
+                                    <ProductCard
+                                        key={variant.id}
+                                        product={variant}
+                                        onClick={() => setActiveRechargeProduct(variant)}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveRechargeProduct(selectedParentApp)}
+                                    style={{
+                                        background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                        color: '#0A0A0E',
+                                        border: 'none',
+                                        borderRadius: '14px',
+                                        padding: '14px 28px',
+                                        fontSize: '15px',
+                                        fontWeight: '900',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 6px 20px rgba(212, 165, 55, 0.35)',
+                                        fontFamily: 'var(--font-cairo)',
+                                    }}
+                                >
+                                    فتح نموذج الشحن الفوري لـ {selectedParentApp.name}
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 ) : filteredProducts.length > 0 ? (
+                    /* ── VIEW 1: Main Apps Grid (Screenshot 2) ── */
                     <div className="emperor-products-grid">
                         {filteredProducts.map((product) => (
-                            <ProductCard key={product.id} product={product} />
+                            <ProductCard
+                                key={product.id}
+                                product={product}
+                                onClick={handleProductClick}
+                            />
                         ))}
                     </div>
                 ) : (
@@ -375,6 +515,17 @@ export default function CategoryPage() {
                     />
                 )}
             </div>
+
+            {/* ── VIEW 3: Recharge Modal / Drawer (Screenshot 4) ── */}
+            <ProductRechargeModal
+                isOpen={!!activeRechargeProduct}
+                onClose={() => setActiveRechargeProduct(null)}
+                product={activeRechargeProduct}
+                onOrderSuccess={(order) => {
+                    setActiveRechargeProduct(null);
+                    navigate(`/orders/${order.id || order.public_id || ''}`);
+                }}
+            />
         </MainLayout>
     );
 }
