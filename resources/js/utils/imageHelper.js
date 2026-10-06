@@ -20,17 +20,30 @@ export const formatImageUrl = (src) => {
 
     // Already properly prefixed with /storage/
     if (trimmed.startsWith('/storage/')) {
+        const withoutPrefix = trimmed.replace(/^\/storage\//, '');
+        if (!withoutPrefix.includes('/') && !/\.(png|jpe?g|svg|webp|gif|ico|avif)$/i.test(withoutPrefix)) {
+            return null;
+        }
         return trimmed;
     }
 
     // Starts with storage/ without leading slash
     if (trimmed.startsWith('storage/')) {
+        const withoutPrefix = trimmed.replace(/^storage\//, '');
+        if (!withoutPrefix.includes('/') && !/\.(png|jpe?g|svg|webp|gif|ico|avif)$/i.test(withoutPrefix)) {
+            return null;
+        }
         return '/' + trimmed;
     }
 
     // Starts with a root slash but not storage (e.g. /images/...)
     if (trimmed.startsWith('/')) {
         return trimmed;
+    }
+
+    // If it's just a raw icon keyword like "gamepad-2", "credit-card", "phone", etc.
+    if (!trimmed.includes('/') && !/\.(png|jpe?g|svg|webp|gif|ico|avif)$/i.test(trimmed)) {
+        return null;
     }
 
     // Relative storage paths (e.g. "products/xyz.jpg", "categories/abc.png", "banners/...")

@@ -1,1 +1,0 @@
-const s=r=>{if(!r||typeof r!="string")return null;const t=r.trim();return t?t.startsWith("http://")||t.startsWith("https://")||t.startsWith("data:")||t.startsWith("blob:")||t.startsWith("/storage/")?t:t.startsWith("storage/")?"/"+t:t.startsWith("/")?t:`/storage/${t}`:null};export{s as f};

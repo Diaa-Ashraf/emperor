@@ -17,6 +17,10 @@ class CategoryResource extends JsonResource
             if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
                 return $path;
             }
+            // If it's just an icon name (no slash and no image extension), it's an icon identifier, not a file URL
+            if (!str_contains($path, '/') && !preg_match('/\.(png|jpe?g|svg|webp|gif|ico|avif)$/i', $path)) {
+                return null;
+            }
             return '/storage/' . ltrim($path, '/');
         };
 
@@ -26,6 +30,7 @@ class CategoryResource extends JsonResource
             'slug' => $this->slug,
             'type' => $this->type?->value,
             'type_label' => $this->type?->label(),
+            'icon' => $this->icon,
             'icon_url' => $resolveUrl($this->icon),
             'banner_url' => $resolveUrl($this->banner),
             'description' => $this->description,
