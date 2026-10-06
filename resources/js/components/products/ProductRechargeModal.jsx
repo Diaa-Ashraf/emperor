@@ -6,14 +6,10 @@ import {
     User,
     Server,
     Globe,
-    Zap,
-    Sparkles,
     Layers,
-    Check,
     ChevronDown,
-    Plus,
-    Minus,
-    ShieldCheck
+    FileText,
+    Check
 } from 'lucide-react';
 import { formatImageUrl } from '../../utils/imageHelper';
 import { ordersApi, walletApi } from '../../api/endpoints';
@@ -41,6 +37,7 @@ export default function ProductRechargeModal({
 
     const [selectedTier, setSelectedTier] = useState(tiers.length > 0 ? tiers[0] : null);
     const [quantity, setQuantity] = useState(1);
+    const [quantityInput, setQuantityInput] = useState('1');
     const [playerId, setPlayerId] = useState('');
     const [serverId, setServerId] = useState('');
     const [accountRegion, setAccountRegion] = useState('');
@@ -59,10 +56,12 @@ export default function ProductRechargeModal({
             setSelectedTier(null);
         }
         setQuantity(1);
+        setQuantityInput('1');
         setPlayerId('');
         setServerId('');
         setAccountRegion('');
         setErrors({});
+        setShowPackageGrid(false);
     }, [product]);
 
     useEffect(() => {
@@ -77,8 +76,30 @@ export default function ProductRechargeModal({
         }
     }, [isAuthenticated]);
 
-    const handleQuantityChange = (delta) => {
-        setQuantity(prev => Math.max(1, Math.min(9999999, prev + delta)));
+    // Handle direct quantity input
+    const handleQuantityInputChange = (e) => {
+        const valStr = e.target.value;
+        setQuantityInput(valStr);
+        const parsed = parseInt(valStr, 10);
+        if (!isNaN(parsed) && parsed > 0) {
+            setQuantity(Math.min(9999, parsed));
+        } else if (valStr === '') {
+            setQuantity(1);
+        }
+    };
+
+    const handleQuantityInputBlur = () => {
+        const parsed = parseInt(quantityInput, 10);
+        if (isNaN(parsed) || parsed < 1) {
+            setQuantity(1);
+            setQuantityInput('1');
+        } else if (parsed > 9999) {
+            setQuantity(9999);
+            setQuantityInput('9999');
+        } else {
+            setQuantity(parsed);
+            setQuantityInput(String(parsed));
+        }
     };
 
     // Calculate total price based on tier or unit rate
@@ -89,6 +110,9 @@ export default function ProductRechargeModal({
         if (product.unit_price) {
             return Number(product.unit_price);
         }
+        if (product.price) {
+            return Number(product.price);
+        }
         return 0;
     }, [selectedTier, product]);
 
@@ -96,10 +120,24 @@ export default function ProductRechargeModal({
         return unitPrice * quantity;
     }, [unitPrice, quantity]);
 
-    const formattedTotal = totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const approxUsd = (totalPrice / 50.5).toFixed(2);
+    // Format with commas and exact precision
+    const formattedTotal = totalPrice.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 3
+    });
 
-    const productImage = formatImageUrl(product.image_url || product.image || product.banner_url || product.icon_url);
+    const approxUsd = (totalPrice / 50.5).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 3
+    });
+
+    const productImage = formatImageUrl(
+        product.image_url || product.image || product.banner_url || product.icon_url
+    );
+
+    const displayName = selectedTier?.name && tiers.length === 1
+        ? selectedTier.name
+        : product.name;
 
     const handlePreSubmit = (e) => {
         e.preventDefault();
@@ -116,8 +154,8 @@ export default function ProductRechargeModal({
             newErrors.tier = 'يرجى اختيار باقة الشحن المطلوبة';
         }
 
-        if (product.player_id_label && !playerId.trim()) {
-            newErrors.playerId = `يرجى إدخال ${product.player_id_label}`;
+        if (!playerId.trim()) {
+            newErrors.playerId = `يرجى إدخال ${product.player_id_label || 'معرف المستخدم (Player ID)'}`;
         }
 
         if (product.has_server_id && !serverId.trim()) {
@@ -178,9 +216,9 @@ export default function ProductRechargeModal({
                 style={{
                     position: 'fixed',
                     inset: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.78)',
-                    backdropFilter: 'blur(6px)',
-                    WebkitBackdropFilter: 'blur(6px)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.82)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
                     zIndex: 9999,
                     display: 'flex',
                     alignItems: 'center',
@@ -199,27 +237,27 @@ export default function ProductRechargeModal({
                     style={{
                         position: 'relative',
                         width: '100%',
-                        maxWidth: '430px',
+                        maxWidth: '460px',
                         maxHeight: '92vh',
                         overflowY: 'auto',
-                        background: '#0B0B0F',
-                        border: '1.5px solid rgba(212, 165, 55, 0.4)',
+                        background: 'linear-gradient(180deg, #141310 0%, #0c0b08 100%)',
+                        border: '1.5px solid rgba(212, 165, 55, 0.45)',
                         borderRadius: '24px',
-                        padding: '20px 18px 22px',
-                        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 165, 55, 0.12)',
+                        padding: '22px 20px 24px',
+                        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(212, 165, 55, 0.15)',
                         fontFamily: 'var(--font-cairo)',
                         boxSizing: 'border-box',
                         margin: 'auto',
                     }}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {/* Header Row: Close Button & Title with Avatar & Status */}
+                    {/* Top Bar: Close Button (Top-Left) & VIP Badge (Top-Right) */}
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        marginBottom: '16px',
-                        gap: '12px'
+                        width: '100%',
+                        marginBottom: '6px'
                     }}>
                         {/* Close button */}
                         <button
@@ -230,7 +268,7 @@ export default function ProductRechargeModal({
                                 height: '34px',
                                 borderRadius: '50%',
                                 background: 'rgba(255, 255, 255, 0.08)',
-                                border: '1px solid rgba(255, 255, 255, 0.12)',
+                                border: '1px solid rgba(255, 255, 255, 0.15)',
                                 color: '#CBD5E1',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -243,91 +281,122 @@ export default function ProductRechargeModal({
                             <X size={18} />
                         </button>
 
-                        {/* Title & Status Badge */}
-                        <div style={{ textAlign: 'center', flex: 1 }}>
-                            <h2 style={{
-                                fontSize: '18px',
-                                fontWeight: '900',
-                                color: '#FFFFFF',
-                                margin: '0 0 4px',
-                                lineHeight: 1.2
-                            }}>
-                                {product.name}
-                            </h2>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                                <span style={{
-                                    display: 'inline-block',
-                                    width: '7px',
-                                    height: '7px',
-                                    borderRadius: '50%',
-                                    background: '#10B981',
-                                    boxShadow: '0 0 6px #10B981'
-                                }} />
-                                <span style={{
-                                    fontSize: '11.5px',
-                                    fontWeight: '800',
-                                    color: '#10B981'
-                                }}>
-                                    متاح
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* App Thumbnail */}
+                        {/* KA / Emperor VIP Crest Badge */}
                         <div style={{
-                            width: '46px',
-                            height: '46px',
-                            borderRadius: '12px',
-                            border: '1.5px solid rgba(212, 165, 55, 0.5)',
-                            overflow: 'hidden',
-                            background: '#121218',
+                            width: '38px',
+                            height: '38px',
+                            borderRadius: '10px',
+                            background: 'linear-gradient(135deg, rgba(212, 165, 55, 0.25) 0%, rgba(212, 165, 55, 0.08) 100%)',
+                            border: '1px solid rgba(212, 165, 55, 0.5)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
+                            boxShadow: '0 0 12px rgba(212, 165, 55, 0.2)'
+                        }}>
+                            <span style={{
+                                color: '#F5D061',
+                                fontWeight: '900',
+                                fontSize: '15px',
+                                letterSpacing: '-0.5px'
+                            }}>
+                                KA
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Centered Avatar Header */}
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                        marginBottom: '16px'
+                    }}>
+                        {/* Circular Avatar */}
+                        <div style={{
+                            width: '78px',
+                            height: '78px',
+                            borderRadius: '50%',
+                            border: '2px solid #D4A537',
+                            boxShadow: '0 0 20px rgba(212, 165, 55, 0.4), inset 0 0 10px rgba(0, 0, 0, 0.6)',
+                            overflow: 'hidden',
+                            background: '#0B0B0F',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: '10px',
                             flexShrink: 0
                         }}>
                             {productImage ? (
                                 <img
                                     src={productImage}
-                                    alt={product.name}
+                                    alt={displayName}
                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                 />
                             ) : (
-                                <TargetAppIconRenderer app={product} size={36} />
+                                <TargetAppIconRenderer app={product} size={50} />
                             )}
+                        </div>
+
+                        {/* Title with Gold Accent Underline */}
+                        <h2 style={{
+                            fontSize: '20px',
+                            fontWeight: '900',
+                            color: '#FFFFFF',
+                            margin: '0 0 4px',
+                            lineHeight: 1.25,
+                            letterSpacing: '-0.3px'
+                        }}>
+                            {displayName}
+                        </h2>
+
+                        <div style={{
+                            width: '56px',
+                            height: '2px',
+                            background: 'linear-gradient(90deg, transparent, #D4A537, transparent)',
+                            marginBottom: '8px'
+                        }} />
+
+                        {/* Status Badge: متاح */}
+                        <div style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            background: 'rgba(34, 197, 94, 0.14)',
+                            border: '1px solid rgba(34, 197, 94, 0.4)',
+                            padding: '3px 14px',
+                            borderRadius: '9999px',
+                            boxShadow: '0 0 12px rgba(34, 197, 94, 0.15)'
+                        }}>
+                            <span style={{
+                                width: '6px',
+                                height: '6px',
+                                borderRadius: '50%',
+                                background: '#22C55E',
+                                boxShadow: '0 0 8px #22C55E'
+                            }} />
+                            <span style={{
+                                fontSize: '12px',
+                                fontWeight: '800',
+                                color: '#4ADE80'
+                            }}>
+                                متاح
+                            </span>
                         </div>
                     </div>
 
-                    {/* Instant Speed Banner */}
-                    <div style={{
-                        background: 'linear-gradient(90deg, rgba(212, 165, 55, 0.12) 0%, rgba(212, 165, 55, 0.05) 100%)',
-                        border: '1px solid rgba(212, 165, 55, 0.3)',
-                        borderRadius: '14px',
-                        padding: '10px 14px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px',
-                        marginBottom: '16px',
-                        color: 'var(--gold-400, #F5D061)',
-                        fontWeight: '800',
-                        fontSize: '13.5px',
-                    }}>
-                        <Zap size={18} fill="currentColor" />
-                        <span>الشحن 0 ثانيه (متاح للتنفيذ الفوري)</span>
-                    </div>
-
                     <form onSubmit={handlePreSubmit}>
-                        {/* If product has tiers: Package Selection Bar */}
+                        {/* If product has multiple tiers: Package Selector Bar */}
                         {tiers.length > 0 && (
                             <div style={{ marginBottom: '14px' }}>
                                 <div
                                     onClick={() => setShowPackageGrid(prev => !prev)}
                                     style={{
-                                        background: 'rgba(20, 20, 28, 0.95)',
-                                        border: '1px solid rgba(212, 165, 55, 0.35)',
-                                        borderRadius: '14px',
-                                        padding: '12px 14px',
+                                        background: 'linear-gradient(90deg, rgba(46, 33, 58, 0.6) 0%, rgba(26, 26, 36, 0.85) 100%)',
+                                        border: '1px solid rgba(212, 165, 55, 0.4)',
+                                        borderRadius: '12px',
+                                        padding: '10px 14px',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
@@ -336,14 +405,14 @@ export default function ProductRechargeModal({
                                     }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <Layers size={16} color="#D4A537" />
+                                        <FileText size={16} color="#D4A537" />
                                         <span style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF' }}>
                                             {selectedTier ? selectedTier.name : 'اختر باقة الشحن المطلوبة'}
                                         </span>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         {selectedTier && (
-                                            <span style={{ fontSize: '12.5px', fontWeight: '800', color: '#F5D061' }}>
+                                            <span style={{ fontSize: '12.5px', fontWeight: '900', color: '#F5D061' }}>
                                                 {Number(selectedTier.price_egp || selectedTier.price || 0).toFixed(2)} EGP
                                             </span>
                                         )}
@@ -364,9 +433,9 @@ export default function ProductRechargeModal({
                                         gridTemplateColumns: 'repeat(2, 1fr)',
                                         gap: '8px',
                                         marginTop: '10px',
-                                        maxHeight: '160px',
+                                        maxHeight: '180px',
                                         overflowY: 'auto',
-                                        padding: '2px',
+                                        padding: '4px',
                                     }}>
                                         {tiers.map((t) => {
                                             const isSelected = selectedTier?.id === t.id;
@@ -378,12 +447,13 @@ export default function ProductRechargeModal({
                                                         setShowPackageGrid(false);
                                                     }}
                                                     style={{
-                                                        background: isSelected ? 'rgba(212, 165, 55, 0.16)' : 'rgba(15, 15, 22, 0.9)',
-                                                        border: isSelected ? '1.5px solid #F5D061' : '1px solid rgba(255, 255, 255, 0.08)',
+                                                        background: isSelected ? 'rgba(212, 165, 55, 0.2)' : 'rgba(18, 17, 14, 0.95)',
+                                                        border: isSelected ? '1.5px solid #F5D061' : '1px solid rgba(255, 255, 255, 0.1)',
                                                         borderRadius: '10px',
                                                         padding: '8px 10px',
                                                         cursor: 'pointer',
                                                         textAlign: 'center',
+                                                        transition: 'all 0.15s ease'
                                                     }}
                                                 >
                                                     <div style={{ fontSize: '12px', fontWeight: '800', color: isSelected ? '#F5D061' : '#FFFFFF' }}>
@@ -400,17 +470,17 @@ export default function ProductRechargeModal({
                             </div>
                         )}
 
-                        {/* Metric Boxes: Total Required & Quantity */}
+                        {/* Metric Boxes: [الإجمالي] on Left, [الكمية] on Right (Matching KA Screenshots) */}
                         <div style={{
                             display: 'grid',
-                            gridTemplateColumns: '1.1fr 0.9fr',
-                            gap: '10px',
+                            gridTemplateColumns: '1.15fr 0.85fr',
+                            gap: '12px',
                             marginBottom: '16px'
                         }}>
-                            {/* Total Box */}
+                            {/* Box 1: الإجمالي */}
                             <div style={{
-                                background: 'rgba(18, 18, 26, 0.9)',
-                                border: '1px solid rgba(212, 165, 55, 0.25)',
+                                background: 'rgba(18, 17, 14, 0.95)',
+                                border: '1px solid rgba(212, 165, 55, 0.3)',
                                 borderRadius: '16px',
                                 padding: '12px 10px',
                                 textAlign: 'center',
@@ -419,21 +489,49 @@ export default function ProductRechargeModal({
                                 alignItems: 'center',
                                 justifyContent: 'center'
                             }}>
-                                <span style={{ fontSize: '12px', fontWeight: '700', color: '#9CA3AF', marginBottom: '4px' }}>
-                                    الإجمالي المطلوب
+                                <span style={{
+                                    fontSize: '12px',
+                                    fontWeight: '800',
+                                    color: '#9CA3AF',
+                                    marginBottom: '4px'
+                                }}>
+                                    الإجمالي
                                 </span>
-                                <div style={{ fontSize: '19px', fontWeight: '900', color: '#F5D061', lineHeight: 1.2 }}>
-                                    {formattedTotal} <small style={{ fontSize: '11px', color: '#D4A537' }}>EGY</small>
+                                
+                                <div style={{
+                                    fontSize: '18px',
+                                    fontWeight: '900',
+                                    color: '#FFFFFF',
+                                    lineHeight: 1.2,
+                                    direction: 'ltr',
+                                    display: 'flex',
+                                    alignItems: 'baseline',
+                                    justifyContent: 'center',
+                                    gap: '4px'
+                                }}>
+                                    <span>{formattedTotal}</span>
+                                    <span style={{ fontSize: '13px', color: '#D4A537', fontWeight: '800' }}>Egy</span>
                                 </div>
-                                <span style={{ fontSize: '11px', fontWeight: '700', color: '#10B981', marginTop: '2px' }}>
-                                    ~ ${approxUsd}
-                                </span>
+
+                                <div style={{
+                                    marginTop: '4px',
+                                    background: 'rgba(34, 197, 94, 0.12)',
+                                    border: '1px solid rgba(34, 197, 94, 0.35)',
+                                    borderRadius: '6px',
+                                    padding: '1px 8px',
+                                    fontSize: '11px',
+                                    fontWeight: '800',
+                                    color: '#4ADE80',
+                                    direction: 'ltr'
+                                }}>
+                                    {approxUsd} $
+                                </div>
                             </div>
 
-                            {/* Quantity Box */}
+                            {/* Box 2: الكمية */}
                             <div style={{
-                                background: 'rgba(18, 18, 26, 0.9)',
-                                border: '1px solid rgba(212, 165, 55, 0.25)',
+                                background: 'rgba(18, 17, 14, 0.95)',
+                                border: '1px solid rgba(212, 165, 55, 0.3)',
                                 borderRadius: '16px',
                                 padding: '12px 10px',
                                 textAlign: 'center',
@@ -442,87 +540,62 @@ export default function ProductRechargeModal({
                                 alignItems: 'center',
                                 justifyContent: 'center'
                             }}>
-                                <span style={{ fontSize: '12px', fontWeight: '700', color: '#9CA3AF', marginBottom: '4px' }}>
+                                <span style={{
+                                    fontSize: '12px',
+                                    fontWeight: '800',
+                                    color: '#9CA3AF',
+                                    marginBottom: '4px'
+                                }}>
                                     الكمية
                                 </span>
-                                <div style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '6px',
-                                    width: '100%'
-                                }}>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleQuantityChange(-1)}
-                                        style={{
-                                            width: '24px',
-                                            height: '24px',
-                                            borderRadius: '6px',
-                                            background: 'rgba(255, 255, 255, 0.08)',
-                                            border: 'none',
-                                            color: '#FFFFFF',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        <Minus size={12} />
-                                    </button>
+
+                                <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                                     <input
                                         type="number"
                                         min="1"
-                                        max="9999999"
-                                        value={quantity}
-                                        onChange={(e) => {
-                                            const val = parseInt(e.target.value, 10);
-                                            if (isNaN(val) || val <= 0) {
-                                                setQuantity(1);
-                                            } else {
-                                                setQuantity(val);
-                                            }
-                                        }}
+                                        max="9999"
+                                        value={quantityInput}
+                                        onChange={handleQuantityInputChange}
+                                        onBlur={handleQuantityInputBlur}
                                         style={{
-                                            width: '50px',
-                                            textAlign: 'center',
-                                            background: 'transparent',
-                                            border: 'none',
+                                            width: '85%',
+                                            background: '#07070A',
+                                            border: '1.5px solid rgba(212, 165, 55, 0.4)',
+                                            borderRadius: '10px',
+                                            padding: '4px 6px',
                                             color: '#FFFFFF',
-                                            fontSize: '17px',
+                                            fontSize: '18px',
                                             fontWeight: '900',
+                                            textAlign: 'center',
                                             outline: 'none',
-                                            padding: 0
+                                            boxShadow: 'inset 0 2px 6px rgba(0, 0, 0, 0.8)',
+                                            fontFamily: 'var(--font-cairo)',
+                                        }}
+                                        onFocus={(e) => {
+                                            e.currentTarget.style.borderColor = '#F5D061';
+                                            e.currentTarget.style.boxShadow = '0 0 10px rgba(212, 165, 55, 0.3)';
+                                        }}
+                                        onBlurCapture={(e) => {
+                                            e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.4)';
+                                            e.currentTarget.style.boxShadow = 'inset 0 2px 6px rgba(0, 0, 0, 0.8)';
                                         }}
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => handleQuantityChange(1)}
-                                        style={{
-                                            width: '24px',
-                                            height: '24px',
-                                            borderRadius: '6px',
-                                            background: 'rgba(255, 255, 255, 0.08)',
-                                            border: 'none',
-                                            color: '#FFFFFF',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        <Plus size={12} />
-                                    </button>
                                 </div>
-                                <span style={{ fontSize: '10px', color: '#6B7280', marginTop: '2px' }}>
+
+                                <span style={{
+                                    fontSize: '10.5px',
+                                    color: '#71717A',
+                                    marginTop: '4px',
+                                    fontFamily: 'monospace'
+                                }}>
                                     1 — 9,999
                                 </span>
                             </div>
                         </div>
 
-                        {/* Player ID Input */}
+                        {/* Player ID / معرف المستخدم Input Card */}
                         <div style={{
-                            background: 'rgba(18, 18, 26, 0.9)',
+                            background: 'rgba(18, 17, 14, 0.95)',
                             border: '1px solid rgba(212, 165, 55, 0.25)',
                             borderRadius: '16px',
                             padding: '12px 14px',
@@ -538,10 +611,10 @@ export default function ProductRechargeModal({
                                 marginBottom: '8px'
                             }}>
                                 <User size={15} color="#D4A537" />
-                                <span>{product.player_id_label || 'معرف المستخدم (Player ID)'}</span>
+                                <span>{product.player_id_label || 'معرف المستخدم'}</span>
                             </label>
 
-                            <div style={{ position: 'relative' }}>
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                                 <input
                                     type="text"
                                     required
@@ -550,19 +623,37 @@ export default function ProductRechargeModal({
                                         setPlayerId(e.target.value);
                                         if (errors.playerId) setErrors(prev => ({ ...prev, playerId: null }));
                                     }}
-                                    placeholder={product.player_id_label ? `أدخل ${product.player_id_label}` : 'أدخل معرف الحساب / Player ID'}
+                                    placeholder="معرف المستخدم"
                                     style={{
                                         width: '100%',
                                         boxSizing: 'border-box',
-                                        background: '#09090D',
-                                        border: '1px solid rgba(212, 165, 55, 0.3)',
+                                        background: '#07070A',
+                                        border: '1.5px solid rgba(255, 255, 255, 0.1)',
                                         borderRadius: '12px',
-                                        padding: '11px 14px',
+                                        padding: '11px 40px 11px 14px',
                                         color: '#FFFFFF',
                                         fontSize: '14px',
                                         fontWeight: '700',
                                         outline: 'none',
                                         fontFamily: 'var(--font-cairo)',
+                                        transition: 'all 0.2s ease',
+                                    }}
+                                    onFocus={(e) => {
+                                        e.currentTarget.style.borderColor = '#D4A537';
+                                        e.currentTarget.style.boxShadow = '0 0 12px rgba(212, 165, 55, 0.25)';
+                                    }}
+                                    onBlur={(e) => {
+                                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                                        e.currentTarget.style.boxShadow = 'none';
+                                    }}
+                                />
+                                <User
+                                    size={17}
+                                    color="#64748B"
+                                    style={{
+                                        position: 'absolute',
+                                        right: '12px',
+                                        pointerEvents: 'none'
                                     }}
                                 />
                             </div>
@@ -591,7 +682,7 @@ export default function ProductRechargeModal({
                                         style={{
                                             width: '100%',
                                             boxSizing: 'border-box',
-                                            background: '#09090D',
+                                            background: '#07070A',
                                             border: '1px solid rgba(212, 165, 55, 0.3)',
                                             borderRadius: '12px',
                                             padding: '11px 14px',
@@ -626,7 +717,7 @@ export default function ProductRechargeModal({
                                         style={{
                                             width: '100%',
                                             boxSizing: 'border-box',
-                                            background: '#09090D',
+                                            background: '#07070A',
                                             border: '1px solid rgba(212, 165, 55, 0.3)',
                                             borderRadius: '12px',
                                             padding: '11px 14px',
@@ -651,10 +742,10 @@ export default function ProductRechargeModal({
                             )}
                         </div>
 
-                        {/* Actions Row: Buy (Gold) + Cancel (Dark) */}
+                        {/* Actions Row: [شراء] (Gold with lock) + [إلغاء] (Dark) */}
                         <div style={{
                             display: 'grid',
-                            gridTemplateColumns: '1.4fr 1fr',
+                            gridTemplateColumns: '1.5fr 1fr',
                             gap: '10px'
                         }}>
                             <button
@@ -665,7 +756,7 @@ export default function ProductRechargeModal({
                                     border: 'none',
                                     borderRadius: '14px',
                                     padding: '13px 16px',
-                                    fontSize: '14px',
+                                    fontSize: '15px',
                                     fontWeight: '900',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -678,7 +769,7 @@ export default function ProductRechargeModal({
                                 }}
                             >
                                 <Lock size={16} />
-                                <span>شراء ({formattedTotal} EGP)</span>
+                                <span>شراء</span>
                             </button>
 
                             <button
