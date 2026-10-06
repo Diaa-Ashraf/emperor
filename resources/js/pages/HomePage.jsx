@@ -10,7 +10,6 @@ import {
 import MainLayout from '../layouts/MainLayout';
 import VisualCategoryCards from '../components/home/VisualCategoryCards';
 import GoldenTargetBanner from '../components/home/GoldenTargetBanner';
-import FaqAccordion from '../components/home/FaqAccordion';
 import CommunityTelegramBanner from '../components/home/CommunityTelegramBanner';
 import { catalogApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -200,10 +199,7 @@ export default function HomePage() {
             {/* ═══ 3. TARGET CALLOUT BANNER (سحب واستبدال التارجت) ═══ */}
             <GoldenTargetBanner />
 
-            {/* ═══ 4. FAQ ACCORDION (الأسئلة الشائعة) ═══ */}
-            <FaqAccordion />
-
-            {/* ═══ 5. TELEGRAM / WHATSAPP COMMUNITY BANNER ═══ */}
+            {/* ═══ 4. TELEGRAM / WHATSAPP COMMUNITY BANNER ═══ */}
             <CommunityTelegramBanner />
         </MainLayout>
     );
