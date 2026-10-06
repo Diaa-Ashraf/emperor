@@ -47,6 +47,7 @@ export const depositsApi = {
         });
     },
     getDeposits: (params = {}) => api.get('/deposits', { params }),
+    getHistory: (params = {}) => api.get('/deposits', { params }),
     getDeposit: (id) => api.get(`/deposits/${id}`),
 };
 

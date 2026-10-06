@@ -53,26 +53,31 @@ export default function WalletPage() {
             params.status = status;
         }
 
-        depositsApi.getHistory(params)
-            .then(res => {
-                const resData = res?.data || res;
-                if (resData?.data && Array.isArray(resData.data)) {
-                    setDeposits(resData.data);
-                    setMeta(resData.meta || { current_page: page, last_page: resData.last_page || 1, total: resData.total });
-                } else if (Array.isArray(resData)) {
-                    setDeposits(resData);
-                } else {
-                    setDeposits([]);
-                }
+        const fetcher = depositsApi.getHistory || depositsApi.getDeposits;
+        if (typeof fetcher === 'function') {
+            fetcher(params)
+                .then(res => {
+                    const resData = res?.data || res;
+                    if (resData?.data && Array.isArray(resData.data)) {
+                        setDeposits(resData.data);
+                        setMeta(resData.meta || { current_page: page, last_page: resData.last_page || 1, total: resData.total });
+                    } else if (Array.isArray(resData)) {
+                        setDeposits(resData);
+                    } else {
+                        setDeposits([]);
+                    }
 
-                if (resData?.stats) {
-                    setDepositStats(resData.stats);
-                }
-            })
-            .catch(() => {
-                setDeposits([]);
-            })
-            .finally(() => setLoadingDeposits(false));
+                    if (resData?.stats) {
+                        setDepositStats(resData.stats);
+                    }
+                })
+                .catch(() => {
+                    setDeposits([]);
+                })
+                .finally(() => setLoadingDeposits(false));
+        } else {
+            setLoadingDeposits(false);
+        }
     };
 
     useEffect(() => {
