@@ -169,6 +169,7 @@ export default function MainLayout({ children, showBanner = true }) {
     }, [isAuthenticated, addToast]);
 
     const isActive = (path) => {
+        if (!path || typeof path !== 'string' || path.startsWith('#')) return false;
         if (path === '/' && location.pathname === '/') return true;
         if (path !== '/' && location.pathname.startsWith(path)) return true;
         return false;
@@ -181,6 +182,7 @@ export default function MainLayout({ children, showBanner = true }) {
     const desktopNavLinks = [
         { to: '/', label: t('home', 'الرئيسية'), icon: Home },
         {
+            to: '#whatsapp-channel',
             href: getWhatsAppChannel(),
             label: t('whatsappChannel', 'قناة الواتساب'),
             icon: MessageCircle,

@@ -4,7 +4,7 @@ import { RefreshCw, AlertTriangle } from 'lucide-react';
 export default class ErrorBoundary extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { hasError: false, error: null };
+        this.state = { hasError: false, error: null, errorInfo: null };
     }
 
     static getDerivedStateFromError(error) {
@@ -13,10 +13,11 @@ export default class ErrorBoundary extends React.Component {
 
     componentDidCatch(error, errorInfo) {
         console.error('React ErrorBoundary caught error:', error, errorInfo);
+        this.setState({ errorInfo });
     }
 
     handleReload = () => {
-        this.setState({ hasError: false, error: null });
+        this.setState({ hasError: false, error: null, errorInfo: null });
         window.location.reload();
     };
 
@@ -57,6 +58,25 @@ export default class ErrorBoundary extends React.Component {
                     <p style={{ fontSize: '14px', color: '#9E9EA8', maxWidth: '480px', marginBottom: '24px', lineHeight: '1.6' }}>
                         يرجى إعادة تحميل الصفحة أو العودة للصفحة الرئيسية. تم تسجيل الخطأ لمعالجته تلقائياً.
                     </p>
+
+                    {this.state.error && (
+                        <div style={{
+                            maxWidth: '600px',
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            border: '1px solid rgba(239, 68, 68, 0.3)',
+                            borderRadius: '12px',
+                            padding: '12px 16px',
+                            marginBottom: '24px',
+                            fontSize: '12px',
+                            color: '#FCA5A5',
+                            textAlign: 'left',
+                            direction: 'ltr',
+                            fontFamily: 'monospace',
+                            wordBreak: 'break-all',
+                        }}>
+                            {this.state.error.toString()}
+                        </div>
+                    )}
 
                     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
                         <button
