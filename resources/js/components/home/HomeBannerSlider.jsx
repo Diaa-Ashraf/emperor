@@ -128,12 +128,6 @@ export default function HomeBannerSlider() {
     return (
         <div
             className="emperor-global-banner-container"
-            style={{
-                position: 'relative',
-                maxWidth: '1120px',
-                margin: '8px auto 16px',
-                width: '100%',
-            }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onTouchStart={onTouchStart}
