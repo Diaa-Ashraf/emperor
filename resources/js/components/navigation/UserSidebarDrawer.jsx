@@ -24,13 +24,16 @@ import {
     ArrowUpRight,
     Crown,
     Code,
-    Key
+    Key,
+    Globe,
+    ChevronDown,
+    ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useToast } from '../../contexts/ToastContext';
-import { getSiteLogo } from '../../utils/settingsHelper';
+import { getSiteLogo, getSiteName } from '../../utils/settingsHelper';
 
 export default function UserSidebarDrawer({ isOpen, onClose }) {
     const { user, isAuthenticated, logout } = useAuth();
@@ -64,11 +67,12 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
 
     if (!isOpen) return null;
 
+    const userDisplayId = user?.id ? `${String(user.id).padStart(6, '0')}f39e...` : '9705f39e...';
     const copyUserId = () => {
         const idToCopy = user?.id ? `EMP-${user.id}` : 'EMP-9705F';
         navigator.clipboard.writeText(idToCopy);
         setCopiedId(true);
-        success(t('copied') || 'تم النسخ');
+        success(t('copied') || 'تم النسخ بنجاح');
         setTimeout(() => setCopiedId(false), 2000);
     };
 
@@ -83,62 +87,62 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
             path: '/',
             label: 'الرئيسية',
             icon: Home,
-            iconBg: '#D4A537',
-            iconColor: '#08080A'
+            iconBadgeBg: '#0284c7',
+            iconBadgeColor: '#ffffff'
         },
         {
             path: '/profile',
             label: 'حسابي',
             icon: User,
-            iconBg: '#D4A537',
-            iconColor: '#08080A',
+            iconBadgeBg: '#0284c7',
+            iconBadgeColor: '#ffffff',
             authRequired: true
         },
         {
             path: '/settings',
             label: 'حماية الحساب',
             icon: Shield,
-            iconBg: '#D4A537',
-            iconColor: '#08080A',
+            iconBadgeBg: '#0284c7',
+            iconBadgeColor: '#ffffff',
             authRequired: true
         },
         {
             path: '/referrals',
-            label: 'رابط الإحالة اكسب واسحب',
+            label: 'رابط الإحالة',
             icon: Share2,
-            iconBg: '#D4A537',
-            iconColor: '#08080A',
+            iconBadgeBg: '#0284c7',
+            iconBadgeColor: '#ffffff',
             authRequired: true
         },
         {
             path: '/orders',
             label: 'طلباتي',
             icon: FileText,
-            iconBg: '#D4A537',
-            iconColor: '#08080A',
+            iconBadgeBg: '#0284c7',
+            iconBadgeColor: '#ffffff',
             authRequired: true
         },
         {
             path: '/target/apps',
             label: 'بيع التارجت',
             icon: Target,
-            iconBg: '#F5D061',
-            iconColor: '#08080A'
+            iconBadgeBg: '#D4A537',
+            iconBadgeColor: '#000000'
         },
         {
             path: '/wallet',
             label: 'التحويلات المالية',
             icon: Wallet,
-            iconBg: '#D4A537',
-            iconColor: '#08080A',
+            iconBadgeBg: '#0284c7',
+            iconBadgeColor: '#ffffff',
             authRequired: true
         },
         {
             path: '/developer',
             label: 'API للمطورين',
             icon: Key,
-            iconBg: '#3B82F6',
-            iconColor: '#FFFFFF',
+            iconBadgeBg: '#3B82F6',
+            iconBadgeColor: '#FFFFFF',
             authRequired: true,
             condition: (u) => Boolean(u?.has_api_access || u?.api_access_status === 'active' || u?.is_admin || u?.role === 'admin' || u?.role === 'api_client')
         },
@@ -146,27 +150,28 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
             path: '/created-by',
             label: 'تم الإنشاء بواسطة',
             icon: Code,
-            iconBg: '#D4A537',
-            iconColor: '#08080A'
+            iconBadgeBg: '#64748B',
+            iconBadgeColor: '#FFFFFF'
         },
         {
             path: '/support',
             label: 'اتصل بنا',
             icon: Headphones,
-            iconBg: '#22C55E',
-            iconColor: '#08080A'
+            iconBadgeBg: '#22C55E',
+            iconBadgeColor: '#FFFFFF'
         },
         {
             path: '/settings',
             label: 'الإعدادات',
             icon: Settings,
-            iconBg: '#D4A537',
-            iconColor: '#08080A',
+            iconBadgeBg: '#0284c7',
+            iconBadgeColor: '#ffffff',
             authRequired: true
         },
     ];
 
     const isActive = (path) => {
+        if (!path || typeof path !== 'string' || path.startsWith('#')) return false;
         if (path === '/' && location.pathname === '/') return true;
         if (path !== '/' && location.pathname.startsWith(path)) return true;
         return false;
@@ -187,259 +192,265 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                 }}
             />
 
-            {/* Slide-in Panel */}
+            {/* Slide-in Panel (Exact KA CARD Layout) */}
             <aside
                 className={`drawer-panel ${isRtl ? 'rtl' : 'ltr'}`}
                 style={{
                     zIndex: 99999,
                     background: isLight
                         ? '#f8fafc'
-                        : 'radial-gradient(ellipse at 50% 0%, #151522 0%, #0A0A0F 100%)',
+                        : 'linear-gradient(180deg, #101015 0%, #08080C 100%)',
+                    borderLeft: isRtl ? (isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)') : 'none',
+                    borderRight: !isRtl ? (isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)') : 'none',
+                    width: '360px',
+                    maxWidth: '88vw',
                     paddingTop: 'env(safe-area-inset-top, 0px)',
                     paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    boxShadow: isLight
+                        ? '0 10px 40px rgba(0, 0, 0, 0.15)'
+                        : '0 0 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 165, 55, 0.12)',
                 }}
             >
-                {/* Top Bar with Close Button & Theme/Lang */}
+                {/* ── 1. Top Header: Collapse Arrow + Brand Logo + Theme Switcher ── */}
                 <div style={{
-                    padding: 'max(14px, env(safe-area-inset-top, 14px)) 16px 12px',
+                    padding: '16px 18px 12px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    borderBottom: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)',
-                    background: isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(12, 12, 16, 0.95)',
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 10,
+                    position: 'relative',
                 }}>
+                    {/* Collapse Drawer Arrow Button (Circle) */}
                     <button
                         onClick={onClose}
+                        title="إغلاق"
                         style={{
-                            background: isLight ? '#ffffff' : 'rgba(212, 165, 55, 0.15)',
-                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1.5px solid rgba(212, 165, 55, 0.4)',
-                            borderRadius: '12px',
-                            padding: '6px 12px',
-                            height: '38px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            color: isLight ? '#b45309' : '#F5D061',
-                            cursor: 'pointer',
-                            fontSize: '13px',
-                            fontWeight: '800',
-                            transition: 'all 0.2s',
-                        }}
-                    >
-                        <X size={18} />
-                        <span>إغلاق</span>
-                    </button>
-
-                    {/* Logo in Drawer */}
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                    }}>
-                        <div style={{
                             width: '36px',
                             height: '36px',
+                            borderRadius: '50%',
+                            background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.05)',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(255, 255, 255, 0.12)',
+                            color: isLight ? '#0F172A' : '#CBD5E1',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = '#D4A537';
+                            e.currentTarget.style.color = '#F5D061';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.4)' : 'rgba(255, 255, 255, 0.12)';
+                            e.currentTarget.style.color = isLight ? '#0F172A' : '#CBD5E1';
+                        }}
+                    >
+                        {isRtl ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+                    </button>
+
+                    {/* Centered Brand Logo */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{
+                            width: '38px',
+                            height: '38px',
                             borderRadius: '10px',
                             overflow: 'hidden',
-                            border: '1.2px solid rgba(212, 165, 55, 0.5)',
-                            boxShadow: '0 0 12px rgba(212, 165, 55, 0.35)',
+                            border: '1.2px solid rgba(212, 165, 55, 0.6)',
+                            boxShadow: '0 0 15px rgba(212, 165, 55, 0.4)',
                             background: isLight ? '#ffffff' : '#050508',
                         }}>
                             <img
                                 src={getSiteLogo()}
-                                alt="EMPEROR CARD"
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'contain',
-                                }}
+                                alt="EMPEROR"
+                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                             />
                         </div>
                         <span style={{
-                            fontSize: '17px',
+                            fontSize: '18px',
                             fontWeight: '900',
-                            color: isLight ? '#0f172a' : '#FFFFFF',
-                            letterSpacing: '0.5px',
+                            color: isLight ? '#0F172A' : '#FFFFFF',
+                            letterSpacing: '1px',
                         }}>
                             EMPEROR
                         </span>
                     </div>
 
-                    {/* Theme Toggle in Drawer */}
+                    {/* Theme Toggle Button */}
                     <button
                         onClick={toggleTheme}
                         title={theme === 'dark' ? 'الوضع الفاتح' : 'الوضع الليلي'}
                         style={{
-                            background: isLight ? '#ffffff' : 'rgba(212, 165, 55, 0.1)',
-                            border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)',
-                            borderRadius: '10px',
                             width: '36px',
                             height: '36px',
+                            borderRadius: '50%',
+                            background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.05)',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(255, 255, 255, 0.12)',
+                            color: isLight ? '#b45309' : '#D4A537',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: isLight ? '#b45309' : '#D4A537',
                             cursor: 'pointer',
                         }}
                     >
-                        {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                        {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
                     </button>
                 </div>
 
-                {/* Language Switcher Pill (EN | AR) */}
-                <div style={{ padding: '14px 20px 10px' }}>
+                {/* ── 2. Language Switcher Pill (EN | AR 🌐) ── */}
+                <div style={{ padding: '0 20px 14px', display: 'flex', justifyContent: 'center' }}>
                     <div style={{
-                        display: 'flex',
+                        display: 'inline-flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        background: isLight ? '#edf5fd' : '#121217',
-                        border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.2)',
-                        borderRadius: '24px',
-                        padding: '4px',
-                        gap: '4px',
+                        background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.03)',
+                        border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
+                        borderRadius: '20px',
+                        padding: '3px 12px',
+                        gap: '8px',
+                        fontSize: '12px',
+                        fontWeight: '800',
+                        color: isLight ? '#475569' : '#94A3B8',
                     }}>
                         <button
                             onClick={() => switchLanguage('en')}
                             style={{
-                                flex: 1,
-                                padding: '6px 12px',
-                                borderRadius: '20px',
+                                background: 'none',
                                 border: 'none',
-                                background: language === 'en' ? 'linear-gradient(135deg, #F8E8B8 0%, #D4A537 100%)' : 'transparent',
-                                color: language === 'en' ? '#08080A' : (isLight ? '#64748b' : '#A0A0B0'),
-                                fontWeight: '800',
-                                fontSize: '13px',
+                                color: language === 'en' ? 'var(--gold-400, #D4A537)' : (isLight ? '#475569' : '#94A3B8'),
+                                fontWeight: language === 'en' ? '900' : '700',
+                                fontSize: '12px',
                                 cursor: 'pointer',
-                                transition: 'all 0.2s ease',
+                                padding: 0,
                             }}
                         >
                             EN
                         </button>
-                        <span style={{ color: isLight ? '#cbd5e1' : '#40404A', fontSize: '12px' }}>|</span>
+                        <span style={{ color: 'rgba(255, 255, 255, 0.2)', fontSize: '11px' }}>|</span>
                         <button
                             onClick={() => switchLanguage('ar')}
                             style={{
-                                flex: 1,
-                                padding: '6px 12px',
-                                borderRadius: '20px',
+                                background: 'none',
                                 border: 'none',
-                                background: language === 'ar' ? 'linear-gradient(135deg, #F8E8B8 0%, #D4A537 100%)' : 'transparent',
-                                color: language === 'ar' ? '#08080A' : (isLight ? '#64748b' : '#A0A0B0'),
-                                fontWeight: '800',
-                                fontSize: '13px',
+                                color: language === 'ar' ? 'var(--gold-400, #D4A537)' : (isLight ? '#475569' : '#94A3B8'),
+                                fontWeight: language === 'ar' ? '900' : '700',
+                                fontSize: '12px',
                                 cursor: 'pointer',
-                                transition: 'all 0.2s ease',
+                                padding: 0,
                             }}
                         >
-                            AR (عربي)
+                            AR
                         </button>
+                        <Globe size={13} color="var(--gold-400, #D4A537)" />
                     </div>
                 </div>
 
-                {/* User Profile Card (KA-Card Exact Match) */}
-                <div style={{ padding: '0 20px 12px' }}>
+                {/* ── 3. User Profile Card (Matches KA CARD Sidebar) ── */}
+                <div style={{ padding: '0 18px 14px' }}>
                     {isAuthenticated ? (
                         <div style={{
-                            background: isLight ? '#ffffff' : '#101016',
-                            border: isLight ? '1px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.3)',
-                            borderRadius: '16px',
+                            background: isLight ? '#ffffff' : 'rgba(18, 18, 24, 0.85)',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.22)',
+                            borderRadius: '18px',
                             padding: '14px 16px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            gap: '12px',
-                            boxShadow: isLight ? '0 4px 16px rgba(15, 23, 42, 0.05)' : '0 4px 20px rgba(0, 0, 0, 0.5)',
+                            position: 'relative',
+                            boxShadow: isLight ? '0 4px 16px rgba(0, 0, 0, 0.04)' : '0 6px 20px rgba(0, 0, 0, 0.4)',
                         }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                {/* Avatar with Green Dot */}
-                                <div style={{ position: 'relative' }}>
+                            {/* Copy User ID Pill on Top Corner */}
+                            <div style={{
+                                position: 'absolute',
+                                top: '10px',
+                                [isRtl ? 'left' : 'right']: '12px',
+                            }}>
+                                <button
+                                    onClick={copyUserId}
+                                    title="نسخ معرف المستخدم"
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                        background: isLight ? '#f1f5f9' : 'rgba(2, 132, 199, 0.15)',
+                                        border: isLight ? '1px solid #cbd5e1' : '1px solid rgba(2, 132, 199, 0.35)',
+                                        borderRadius: '8px',
+                                        padding: '2px 7px',
+                                        color: isLight ? '#0284c7' : '#38bdf8',
+                                        fontSize: '10.5px',
+                                        fontWeight: '800',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    <span>{userDisplayId}</span>
+                                    {copiedId ? <Check size={11} color="#22C55E" /> : <Copy size={11} />}
+                                </button>
+                            </div>
+
+                            {/* User details row */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '12px' }}>
+                                {/* Avatar with active status green circle */}
+                                <div style={{ position: 'relative', flexShrink: 0 }}>
                                     <div style={{
-                                        width: '42px',
-                                        height: '42px',
-                                        borderRadius: '12px',
+                                        width: '46px',
+                                        height: '46px',
+                                        borderRadius: '14px',
                                         background: isLight
-                                            ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)'
-                                            : 'linear-gradient(135deg, #2A2415 0%, #151410 100%)',
-                                        border: '1px solid #D4A537',
+                                            ? 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)'
+                                            : 'linear-gradient(135deg, #0c4a6e 0%, #0369a1 100%)',
+                                        border: '1.5px solid rgba(56, 189, 248, 0.6)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: isLight ? '#92400e' : '#D4A537',
+                                        color: '#FFFFFF',
                                         fontSize: '18px',
-                                        fontWeight: '800',
+                                        fontWeight: '900',
+                                        boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)',
                                     }}>
                                         {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                                     </div>
+                                    {/* Green Active Dot */}
                                     <span style={{
                                         position: 'absolute',
                                         bottom: '-2px',
-                                        right: '-2px',
+                                        [isRtl ? 'left' : 'right']: '-2px',
                                         width: '12px',
                                         height: '12px',
                                         borderRadius: '50%',
-                                        background: '#22C55E',
-                                        border: isLight ? '2px solid #ffffff' : '2px solid #0B0B0E',
-                                        boxShadow: '0 0 6px #22C55E',
+                                        background: '#22c55e',
+                                        border: isLight ? '2px solid #ffffff' : '2px solid #101015',
+                                        boxShadow: '0 0 8px #22c55e',
                                     }} />
                                 </div>
 
-                                <div>
+                                <div style={{ minWidth: 0 }}>
                                     <h4 style={{
                                         margin: '0 0 2px',
-                                        fontSize: '14px',
-                                        fontWeight: '800',
-                                        color: isLight ? '#0f172a' : '#FFFFFF',
+                                        fontSize: '14.5px',
+                                        fontWeight: '900',
+                                        color: isLight ? '#0F172A' : '#FFFFFF',
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
                                     }}>
-                                        {user?.name || 'عضو إمبراطور'}
+                                        {user?.name || 'Diaa Elshafey'}
                                     </h4>
                                     <span style={{
-                                        fontSize: '11px',
-                                        color: isLight ? '#b45309' : '#D4A537',
-                                        fontWeight: '700',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
+                                        fontSize: '11.5px',
+                                        fontWeight: '800',
+                                        color: isLight ? '#0284c7' : '#38bdf8',
                                     }}>
-                                        <Sparkles size={11} /> عضو معتمد
+                                        عضو المتجر
                                     </span>
                                 </div>
                             </div>
-
-                            {/* Copy User ID Button */}
-                            <button
-                                onClick={copyUserId}
-                                title="نسخ معرف المستخدم"
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    background: isLight ? '#f1f5f9' : 'rgba(255, 255, 255, 0.05)',
-                                    border: isLight ? '1px solid #e2e8f0' : '1px solid rgba(255, 255, 255, 0.1)',
-                                    borderRadius: '8px',
-                                    padding: '4px 8px',
-                                    color: isLight ? '#475569' : '#A0A0B0',
-                                    fontSize: '11px',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s ease',
-                                }}
-                            >
-                                <span>{user?.id ? `EMP-${user.id}` : 'EMP-9705'}</span>
-                                {copiedId ? <Check size={12} color="#22C55E" /> : <Copy size={12} />}
-                            </button>
                         </div>
                     ) : (
                         <div style={{
-                            background: isLight ? '#ffffff' : '#101016',
-                            border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)',
+                            background: isLight ? '#ffffff' : 'rgba(18, 18, 24, 0.85)',
+                            border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.22)',
                             borderRadius: '16px',
                             padding: '16px',
                             textAlign: 'center',
-                            boxShadow: isLight ? '0 4px 16px rgba(15, 23, 42, 0.05)' : 'none',
                         }}>
-                            <p style={{ margin: '0 0 12px', fontSize: '13px', color: isLight ? '#64748b' : '#A0A0B0' }}>
+                            <p style={{ margin: '0 0 12px', fontSize: '13px', color: isLight ? '#64748b' : '#A0A0B0', fontWeight: '600' }}>
                                 سجل دخولك للوصول إلى محفظتك والشحن الفوري
                             </p>
                             <div style={{ display: 'flex', gap: '8px' }}>
@@ -448,13 +459,13 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     onClick={onClose}
                                     style={{
                                         flex: 1,
-                                        padding: '8px',
-                                        borderRadius: '8px',
-                                        background: isLight ? 'rgba(212, 165, 55, 0.15)' : 'rgba(212, 165, 55, 0.15)',
-                                        border: isLight ? '1px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.3)',
-                                        color: isLight ? '#92400e' : '#F8E8B8',
+                                        padding: '9px',
+                                        borderRadius: '10px',
+                                        background: 'rgba(212, 165, 55, 0.15)',
+                                        border: '1px solid rgba(212, 165, 55, 0.4)',
+                                        color: isLight ? '#9a7210' : '#F5D061',
                                         fontSize: '13px',
-                                        fontWeight: '700',
+                                        fontWeight: '800',
                                         textDecoration: 'none',
                                     }}
                                 >
@@ -465,12 +476,12 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     onClick={onClose}
                                     style={{
                                         flex: 1,
-                                        padding: '8px',
-                                        borderRadius: '8px',
-                                        background: 'linear-gradient(135deg, #F8E8B8 0%, #D4A537 100%)',
-                                        color: '#08080A',
+                                        padding: '9px',
+                                        borderRadius: '10px',
+                                        background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                        color: '#000000',
                                         fontSize: '13px',
-                                        fontWeight: '800',
+                                        fontWeight: '900',
                                         textDecoration: 'none',
                                     }}
                                 >
@@ -481,48 +492,66 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                     )}
                 </div>
 
-                {/* Wallet Balance & Recharge Box (Matches KA-Card Sidebar Exactly) */}
-                <div style={{ padding: '0 20px 18px' }}>
+                {/* ── 4. Wallet Card (Exact KA CARD Gradient & Blue Charge Button) ── */}
+                <div style={{ padding: '0 18px 16px' }}>
                     <div style={{
                         background: isLight
-                            ? 'linear-gradient(145deg, #ffffff 0%, #edf5fe 100%)'
-                            : 'linear-gradient(145deg, #14141E 0%, #0B0B0F 100%)',
-                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.5)' : '1px solid #D4A537',
+                            ? 'linear-gradient(145deg, #ffffff 0%, #f0f9ff 100%)'
+                            : 'linear-gradient(145deg, #161622 0%, #0e0e16 100%)',
+                        border: isLight ? '1.5px solid rgba(2, 132, 199, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)',
                         borderRadius: '18px',
-                        padding: '16px 18px',
+                        padding: '16px',
                         boxShadow: isLight
-                            ? '0 8px 25px rgba(15, 23, 42, 0.06), 0 0 15px rgba(212, 165, 55, 0.1)'
-                            : '0 8px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 165, 55, 0.1)',
+                            ? '0 6px 20px rgba(0, 0, 0, 0.05)'
+                            : '0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(2, 132, 199, 0.08)',
                     }}>
+                        {/* Top row: Wallet Icon & Balance Text */}
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            marginBottom: '12px',
+                            marginBottom: '14px',
                         }}>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '11px', color: isLight ? '#64748b' : '#8E8E98', fontWeight: '700', marginBottom: '2px' }}>
-                                    رصيد المحفظة
-                                </div>
-                                <div style={{ fontSize: '18px', fontWeight: '900', color: isLight ? '#0f172a' : '#FFFFFF', letterSpacing: '0.5px' }}>
-                                    EGY {Number(user?.wallet?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
-                                </div>
-                            </div>
+                            {/* Blue Rounded Wallet Icon Frame */}
                             <div style={{
-                                width: '38px',
-                                height: '38px',
+                                width: '40px',
+                                height: '40px',
                                 borderRadius: '12px',
-                                background: isLight ? 'rgba(212, 165, 55, 0.2)' : 'rgba(212, 165, 55, 0.15)',
-                                border: isLight ? '1px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.4)',
+                                background: 'linear-gradient(135deg, #0284c7 0%, #1e40af 100%)',
+                                border: '1px solid rgba(56, 189, 248, 0.5)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: isLight ? '#b45309' : '#F5D061',
+                                color: '#FFFFFF',
+                                boxShadow: '0 4px 12px rgba(2, 132, 199, 0.4)',
+                                flexShrink: 0,
                             }}>
                                 <Wallet size={20} />
                             </div>
+
+                            {/* Balance Info */}
+                            <div style={{ textAlign: isRtl ? 'left' : 'right' }}>
+                                <div style={{
+                                    fontSize: '11px',
+                                    fontWeight: '800',
+                                    color: isLight ? '#9a7210' : '#F5D061',
+                                    marginBottom: '2px',
+                                }}>
+                                    رصيد المحفظة
+                                </div>
+                                <div style={{
+                                    fontSize: '19px',
+                                    fontWeight: '900',
+                                    color: isLight ? '#0F172A' : '#FFFFFF',
+                                    letterSpacing: '0.5px',
+                                    fontFamily: 'var(--font-cairo)',
+                                }}>
+                                    EGY {Number(user?.wallet?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
+                                </div>
+                            </div>
                         </div>
 
+                        {/* Cyan/Blue Glossy Action Button: ↗ اشحن الآن */}
                         <Link
                             to="/deposit"
                             onClick={onClose}
@@ -530,17 +559,26 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '8px',
+                                gap: '6px',
                                 width: '100%',
-                                padding: '12px',
+                                padding: '10px 14px',
                                 borderRadius: '12px',
-                                background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
-                                color: '#000000',
-                                fontSize: '14px',
+                                background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                                color: '#FFFFFF',
+                                fontSize: '13.5px',
                                 fontWeight: '900',
                                 textDecoration: 'none',
-                                boxShadow: '0 4px 15px rgba(212, 165, 55, 0.3)',
+                                boxShadow: '0 4px 16px rgba(2, 132, 199, 0.45)',
                                 boxSizing: 'border-box',
+                                transition: 'all 0.2s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 6px 20px rgba(2, 132, 199, 0.65)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 4px 16px rgba(2, 132, 199, 0.45)';
                             }}
                         >
                             <span>↗ اشحن الآن</span>
@@ -548,19 +586,22 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                     </div>
                 </div>
 
-                {/* Section Divider / Label */}
+                {/* ── 5. Navigation Section Header: الحساب ⌄ ── */}
                 <div style={{
-                    padding: '0 24px 8px',
+                    padding: '0 22px 8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                     fontSize: '12px',
-                    fontWeight: '700',
-                    color: isLight ? '#64748b' : '#8E8E98',
-                    textTransform: 'uppercase',
+                    fontWeight: '800',
+                    color: isLight ? '#64748B' : '#8E8E98',
                 }}>
-                    القائمة الرئيسية
+                    <span>الحساب</span>
+                    <ChevronDown size={14} />
                 </div>
 
-                {/* Navigation Items */}
-                <nav style={{ flex: 1, padding: '0 14px 20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {/* ── 6. Navigation Items (Sleek Dark Rounded Pills with Blue Icon Boxes) ── */}
+                <nav style={{ flex: 1, padding: '0 14px 20px', display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto' }}>
                     {navItems.map((item) => {
                         if (item.authRequired && !isAuthenticated) return null;
                         if (item.condition && !item.condition(user)) return null;
@@ -581,75 +622,92 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
-                                    padding: '12px 14px',
-                                    borderRadius: '12px',
+                                    padding: '10px 14px',
+                                    borderRadius: '14px',
                                     textDecoration: 'none',
                                     background: active
                                         ? (isLight
-                                            ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.22) 0%, rgba(255, 255, 255, 0.95) 100%)'
-                                            : 'linear-gradient(135deg, rgba(212, 165, 55, 0.18) 0%, rgba(20, 20, 26, 0.9) 100%)')
-                                        : (isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.02)'),
+                                            ? 'linear-gradient(135deg, rgba(2, 132, 199, 0.12) 0%, rgba(255, 255, 255, 0.95) 100%)'
+                                            : 'linear-gradient(135deg, rgba(2, 132, 199, 0.22) 0%, rgba(18, 18, 24, 0.95) 100%)')
+                                        : (isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.03)'),
                                     border: active
-                                        ? (isLight ? '1.5px solid rgba(212, 165, 55, 0.6)' : '1px solid rgba(212, 165, 55, 0.4)')
-                                        : (isLight ? '1px solid rgba(226, 232, 240, 0.9)' : '1px solid transparent'),
+                                        ? (isLight ? '1.5px solid rgba(2, 132, 199, 0.6)' : '1px solid rgba(2, 132, 199, 0.5)')
+                                        : (isLight ? '1px solid rgba(226, 232, 240, 0.9)' : '1px solid rgba(255, 255, 255, 0.04)'),
                                     color: active
-                                        ? (isLight ? '#b45309' : '#D4A537')
-                                        : (isLight ? '#1e293b' : '#D1D1DB'),
-                                    fontWeight: active ? '800' : '700',
+                                        ? (isLight ? '#0284c7' : '#38bdf8')
+                                        : (isLight ? '#1E293B' : '#FFFFFF'),
+                                    fontWeight: active ? '900' : '800',
                                     fontSize: '14px',
                                     transition: 'all 0.2s ease',
                                     boxShadow: active
-                                        ? (isLight ? '0 4px 16px rgba(212, 165, 55, 0.18)' : '0 0 15px rgba(212, 165, 55, 0.15)')
-                                        : (isLight ? '0 2px 8px rgba(15, 23, 42, 0.03)' : 'none'),
+                                        ? '0 4px 14px rgba(2, 132, 199, 0.15)'
+                                        : 'none',
                                 }}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    {/* Rounded blue icon badge */}
                                     <div style={{
-                                        width: '32px',
-                                        height: '32px',
-                                        borderRadius: '8px',
-                                        background: isLight ? 'rgba(212, 165, 55, 0.18)' : 'rgba(212, 165, 55, 0.12)',
-                                        border: isLight ? '1px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.25)',
+                                        width: '34px',
+                                        height: '34px',
+                                        borderRadius: '10px',
+                                        background: active
+                                            ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)'
+                                            : (isLight ? 'rgba(2, 132, 199, 0.1)' : 'rgba(2, 132, 199, 0.15)'),
+                                        border: active
+                                            ? '1px solid rgba(56, 189, 248, 0.6)'
+                                            : (isLight ? '1px solid rgba(2, 132, 199, 0.2)' : '1px solid rgba(2, 132, 199, 0.25)'),
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: isLight ? '#92400e' : '#F5D061',
+                                        color: active ? '#FFFFFF' : (isLight ? '#0284c7' : '#38bdf8'),
+                                        flexShrink: 0,
                                     }}>
-                                        <item.icon size={16} />
+                                        <item.icon size={17} />
                                     </div>
                                     <span>{item.label}</span>
                                 </div>
+
                                 {isRtl ? (
-                                    <ChevronLeft size={16} color={isLight ? '#94a3b8' : '#6E6E78'} />
+                                    <ChevronLeft size={16} color={isLight ? '#94A3B8' : '#64748B'} />
                                 ) : (
-                                    <ChevronRight size={16} color={isLight ? '#94a3b8' : '#6E6E78'} />
+                                    <ChevronRight size={16} color={isLight ? '#94A3B8' : '#64748B'} />
                                 )}
                             </Link>
                         );
                     })}
 
-                    {/* Logout Button */}
+                    {/* ── 7. Logout Button (Matches KA CARD Gold Framed Card) ── */}
                     {isAuthenticated && (
                         <button
                             onClick={handleLogout}
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '12px',
+                                justifyContent: 'center',
+                                gap: '10px',
                                 width: '100%',
-                                padding: '12px 14px',
-                                marginTop: '10px',
-                                borderRadius: '12px',
-                                border: '1px solid rgba(239, 68, 68, 0.25)',
-                                background: isLight ? 'rgba(239, 68, 68, 0.08)' : 'rgba(239, 68, 68, 0.06)',
-                                color: '#EF4444',
-                                fontWeight: '700',
-                                fontSize: '14px',
+                                padding: '13px 16px',
+                                marginTop: '12px',
+                                borderRadius: '16px',
+                                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.6)' : '1px solid rgba(212, 165, 55, 0.4)',
+                                background: isLight ? '#FFFDF8' : 'rgba(18, 18, 24, 0.95)',
+                                color: isLight ? '#9a7210' : '#F5D061',
+                                fontWeight: '900',
+                                fontSize: '14.5px',
                                 cursor: 'pointer',
-                                textAlign: 'right',
+                                boxShadow: isLight ? '0 4px 14px rgba(212, 165, 55, 0.15)' : '0 6px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(212, 165, 55, 0.1)',
+                                transition: 'all 0.2s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.borderColor = '#F5D061';
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.6)' : 'rgba(212, 165, 55, 0.4)';
+                                e.currentTarget.style.transform = 'translateY(0)';
                             }}
                         >
-                            <LogOut size={16} />
+                            <LogOut size={17} />
                             <span>تسجيل الخروج</span>
                         </button>
                     )}
