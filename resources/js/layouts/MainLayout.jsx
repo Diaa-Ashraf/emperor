@@ -177,22 +177,25 @@ export default function MainLayout({ children, showBanner = true }) {
         ? Number(user.wallet.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
         : '0.00';
 
-    const currency = language === 'en' ? 'EGP' : 'ج.م';
-
     const desktopNavLinks = [
-        { to: '/', label: 'الرئيسية', icon: Home },
-        { to: '#support', label: 'خدمة العملاء', icon: Headphones, isModalTrigger: true },
-        { to: '/category/apps', label: 'تطبيقات البث', icon: Smartphone },
+        { to: '/', label: t('home', 'الرئيسية'), icon: Home },
+        {
+            href: getWhatsAppChannel(),
+            label: t('whatsappChannel', 'قناة الواتساب'),
+            icon: MessageCircle,
+            isExternal: true,
+            badge: 'تحديثات'
+        },
         {
             to: '/target/apps',
-            label: 'بيع التارجت',
+            label: t('targetSelling', 'بيع التارجت'),
             icon: TrendingUp,
             badge: 'كاش فوري',
             isSpecial: true
         },
-        { to: '/deposit', label: 'شحن المحفظة', icon: Wallet },
-        { to: '/orders', label: 'طلباتي', icon: FileText, authRequired: true },
-        { to: '/account-issues', label: 'الشكاوى', icon: HelpCircle },
+        { to: '/deposit', label: t('chargeWallet', 'شحن المحفظة'), icon: Wallet },
+        { to: '/orders', label: t('myOrders', 'طلباتي'), icon: FileText, authRequired: true },
+        { to: '/account-issues', label: t('support', 'الشكاوى'), icon: HelpCircle },
     ];
 
     const isLight = theme === 'light';
@@ -302,8 +305,59 @@ export default function MainLayout({ children, showBanner = true }) {
                         >
                             {desktopNavLinks.map((link) => {
                                 if (link.authRequired && !isAuthenticated) return null;
-                                const active = !link.isModalTrigger && isActive(link.to);
+                                const active = !link.isModalTrigger && !link.isExternal && isActive(link.to);
                                 const isExtra = link.to === '/orders' || link.to === '/account-issues' || link.to === '/deposit';
+
+                                if (link.isExternal) {
+                                    return (
+                                        <a
+                                            key={link.label}
+                                            href={link.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="nav-link-item"
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '5px',
+                                                padding: '7px 11px',
+                                                borderRadius: '12px',
+                                                textDecoration: 'none',
+                                                fontSize: '13px',
+                                                fontWeight: '800',
+                                                color: '#22c55e',
+                                                background: 'rgba(34, 197, 94, 0.08)',
+                                                border: '1px solid rgba(34, 197, 94, 0.25)',
+                                                transition: 'all 0.2s',
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = 'rgba(34, 197, 94, 0.16)';
+                                                e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.5)';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = 'rgba(34, 197, 94, 0.08)';
+                                                e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.25)';
+                                            }}
+                                        >
+                                            <link.icon size={14} color="#22c55e" />
+                                            <span>{link.label}</span>
+                                            {link.badge && (
+                                                <span style={{
+                                                    fontSize: '9.5px',
+                                                    fontWeight: '900',
+                                                    background: '#22c55e',
+                                                    color: '#FFFFFF',
+                                                    padding: '1px 5px',
+                                                    borderRadius: '5px',
+                                                    marginRight: '2px',
+                                                }}>
+                                                    {link.badge}
+                                                </span>
+                                            )}
+                                        </a>
+                                    );
+                                }
 
                                 if (link.isModalTrigger) {
                                     return (
@@ -389,6 +443,7 @@ export default function MainLayout({ children, showBanner = true }) {
                                     >
                                         <link.icon size={14} color={active || link.isSpecial ? (isLight ? '#b45309' : '#F5D061') : (isLight ? '#64748b' : '#A0A0B0')} />
                                         <span>{link.label}</span>
+
                                         {link.badge && (
                                             <span style={{
                                                 fontSize: '9.5px',

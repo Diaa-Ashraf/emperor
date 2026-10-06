@@ -1,57 +1,50 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Search, Filter, ArrowRight, Grid, SlidersHorizontal, Gamepad2, Layers, Sparkles } from 'lucide-react';
+import { Search, Layers, Sparkles, ChevronLeft } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
-
 import ProductCard from '../components/products/ProductCard';
-import Input from '../components/ui/Input';
 import EmptyState from '../components/ui/EmptyState';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { catalogApi } from '../api/endpoints';
-import VideoBackground from '../components/home/VideoBackground';
 import { formatImageUrl } from '../utils/imageHelper';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import '../../css/visualCategory.css';
 
 const TYPE_CONFIG = {
     games: {
         type: 'games',
-        title: 'شحن الألعاب والبطاقات',
-        description: 'اختر لعبتك المفضلة أو باقتك للشحن الفوري بأسعار الجملة والتسليم التلقائي',
+        title: 'قسم الألعاب الإلكترونية',
     },
     apps: {
         type: 'voice_apps',
-        title: 'تطبيقات البث والشات الصوتي',
-        description: 'شحن العملات والكوينز لبرامج البث الصوتي وتطبيقات التعارف والشات',
+        title: 'قسم التطبيقات',
     },
     voice_apps: {
         type: 'voice_apps',
-        title: 'تطبيقات البث والشات الصوتي',
-        description: 'شحن العملات والكوينز لبرامج البث الصوتي وتطبيقات التعارف والشات',
+        title: 'قسم التطبيقات',
     },
     cards: {
         type: 'cards',
-        title: 'البطاقات الرقمية والاشتراكات',
-        description: 'بطاقات الهدايا، شحن الاشتراكات، والأكواد الرقمية المباشرة',
+        title: 'قسم البطاقات الرقمية',
     },
     telecom: {
         type: 'telecom',
-        title: 'شحن شبكات الاتصالات',
-        description: 'رصيد وكروت شحن باقات الهواتف والإنترنت لجميع الشبكات',
+        title: 'قسم شبكات الاتصالات',
     },
     all: {
         type: null,
-        title: 'جميع المنتجات والألعاب',
-        description: 'تصفح كل الخدمات والألعاب والبطاقات الرقمية المتاحة على المنصة',
+        title: 'جميع الأقسام والتطبيقات',
     },
 };
 
-// In-memory module cache for categories
 let categoriesCache = null;
 
 export default function CategoryPage() {
     const params = useParams();
     const navigate = useNavigate();
     const { theme } = useTheme();
+    const { isRtl } = useLanguage();
     const isLight = theme === 'light';
     const rawSlug = params.slug || params.id || 'all';
     const slug = rawSlug.toLowerCase();
@@ -68,14 +61,12 @@ export default function CategoryPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
-    const [sortBy, setSortBy] = useState('sort_order');
-    const [filterType, setFilterType] = useState('all');
 
-    // Debounce search input for high performance
+    // Debounce search input
     useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedSearch(searchQuery);
-        }, 250);
+        }, 200);
         return () => clearTimeout(handler);
     }, [searchQuery]);
 
@@ -97,7 +88,6 @@ export default function CategoryPage() {
             .catch(() => { });
     }, []);
 
-    // Check if slug is a Type container fallback
     const typeInfo = TYPE_CONFIG[slug] || null;
 
     const selectedCategory = useMemo(() => {
@@ -105,7 +95,6 @@ export default function CategoryPage() {
         return categories.find(c => c.slug?.toLowerCase() === slug || String(c.id) === String(slug)) || null;
     }, [slug, categories]);
 
-    // Determine active type to filter visible categories tabs
     const currentActiveType = useMemo(() => {
         if (selectedCategory) return selectedCategory.type;
         if (typeInfo) return typeInfo.type;
@@ -117,7 +106,7 @@ export default function CategoryPage() {
         return categories.filter(c => c.type === currentActiveType);
     }, [categories, currentActiveType]);
 
-    // Fetch products in parallel / direct query
+    // Fetch products
     useEffect(() => {
         setLoading(true);
         const queryParams = {};
@@ -128,10 +117,6 @@ export default function CategoryPage() {
 
         if (debouncedSearch.trim()) {
             queryParams.search = debouncedSearch.trim();
-        }
-
-        if (filterType !== 'all') {
-            queryParams.type = filterType;
         }
 
         catalogApi.getProducts(queryParams)
@@ -148,25 +133,15 @@ export default function CategoryPage() {
                 setProducts([]);
             })
             .finally(() => setLoading(false));
-    }, [slug, debouncedSearch, filterType]);
+    }, [slug, debouncedSearch]);
 
-    // Filter & Sort products in memory using useMemo
     const filteredProducts = useMemo(() => {
-        return [...products].sort((a, b) => {
-            if (sortBy === 'name') {
-                return (a.name || '').localeCompare(b.name || '', 'ar');
-            }
-            return (a.sort_order || 0) - (b.sort_order || 0);
-        });
-    }, [products, sortBy]);
+        return [...products].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    }, [products]);
 
-    const categoryTitle = selectedCategory 
-        ? selectedCategory.name 
-        : (typeInfo?.title || 'جميع المنتجات والألعاب');
-
-    const categoryDescription = selectedCategory
-        ? (selectedCategory.description || 'اختر باقتك المفضلة للشحن الفوري بأسعار الجملة')
-        : (typeInfo?.description || 'اختر لعبتك المفضلة أو باقتك للشحن الفوري بأسعار الجملة');
+    const categoryTitle = selectedCategory
+        ? selectedCategory.name
+        : (typeInfo?.title || 'جميع التطبيقات والألعاب');
 
     const allTabLink = currentActiveType && currentActiveType !== 'all'
         ? (currentActiveType === 'voice_apps' ? '/category/apps' : `/category/${currentActiveType}`)
@@ -176,244 +151,187 @@ export default function CategoryPage() {
 
     return (
         <MainLayout>
-            {/* Header & Breadcrumb Hero */}
-            <div style={{
-                background: isLight
-                    ? 'linear-gradient(135deg, #FFFDF7 0%, #FEF8EA 45%, #FDF1D3 100%)'
-                    : 'linear-gradient(135deg, #181824 0%, #101016 50%, #0B0B0E 100%)',
-                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.3)',
-                borderRadius: '24px',
-                padding: 'clamp(24px, 4vw, 36px)',
-                marginBottom: '32px',
-                position: 'relative',
-                overflow: 'hidden',
-                boxShadow: isLight
-                    ? '0 10px 30px rgba(212, 165, 55, 0.12), 0 2px 10px rgba(0, 0, 0, 0.04)'
-                    : '0 16px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 165, 55, 0.08)',
-            }}>
-                {/* Background ambient aura */}
+            <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: '0 4px 60px' }}>
+                
+                {/* ── 1. Search Bar (Matching KA-Card Screenshot) ── */}
                 <div style={{
-                    position: 'absolute',
-                    top: '-60px',
-                    left: '-60px',
-                    width: '240px',
-                    height: '240px',
-                    borderRadius: '50%',
-                    background: isLight
-                        ? 'radial-gradient(circle, rgba(212, 165, 55, 0.22) 0%, transparent 70%)'
-                        : 'radial-gradient(circle, rgba(212, 165, 55, 0.18) 0%, transparent 70%)',
-                    pointerEvents: 'none',
-                }} />
-
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                    {/* Breadcrumb */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', fontSize: '13px', color: isLight ? '#64748B' : '#8E8E98' }}>
-                        <Link to="/" style={{ color: isLight ? '#9A7210' : '#D4A537', textDecoration: 'none', fontWeight: '800' }}>الرئيسية</Link>
-                        <span>/</span>
-                        <Link to="/category/all" style={{ color: isLight ? '#64748B' : '#8E8E98', textDecoration: 'none', fontWeight: '600' }}>الأقسام والمنتجات</Link>
-                        <span>/</span>
-                        <span style={{ color: isLight ? '#0F172A' : '#CBD5E1', fontWeight: '800' }}>{categoryTitle}</span>
-                    </div>
-
-                    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
-                        <div>
-                            <div style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                padding: '4px 12px',
-                                borderRadius: '8px',
-                                background: isLight ? 'rgba(212, 165, 55, 0.18)' : 'rgba(212, 165, 55, 0.15)',
-                                border: isLight ? '1px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.35)',
-                                color: isLight ? '#9A7210' : '#D4A537',
-                                fontSize: '12px',
-                                fontWeight: '800',
-                                marginBottom: '10px',
-                            }}>
-                                <Sparkles size={13} />
-                                <span>شحن رسمي فوري وتلقائي</span>
-                            </div>
-
-                            <h1 style={{
-                                margin: '0 0 8px',
-                                fontSize: 'clamp(24px, 4vw, 32px)',
-                                fontWeight: '900',
-                                color: isLight ? '#0F172A' : '#FFFFFF',
-                                letterSpacing: '-0.3px',
-                            }}>
-                                {categoryTitle}
-                            </h1>
-                            <p style={{ margin: 0, fontSize: '14.5px', color: isLight ? '#475569' : '#A0A0B0', maxWidth: '650px', lineHeight: '1.6' }}>
-                                {categoryDescription}
-                            </p>
-                        </div>
-
-                        {/* Product count badge */}
-                        <div style={{
-                            background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.05)',
-                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(255, 255, 255, 0.1)',
-                            borderRadius: '16px',
-                            padding: '12px 20px',
-                            textAlign: 'center',
-                            boxShadow: isLight ? '0 4px 15px rgba(212, 165, 55, 0.12)' : 'none',
-                        }}>
-                            <span style={{ fontSize: '11.5px', color: isLight ? '#64748B' : '#8E8E98', display: 'block', fontWeight: '700' }}>
-                                إجمالي العناصر
-                            </span>
-                            <span style={{ fontSize: '20px', fontWeight: '900', color: isLight ? '#9A7210' : '#D4A537' }}>
-                                {filteredProducts.length} <small style={{ fontSize: '12px', color: isLight ? '#64748B' : '#CBD5E1' }}>منتج</small>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Categories Filter Tabs */}
-            {visibleCategories.length > 0 && (
-                <div
-                    className="no-scrollbar"
-                    style={{
-                        display: 'flex',
-                        gap: '10px',
-                        overflowX: 'auto',
-                        WebkitOverflowScrolling: 'touch',
-                        paddingBottom: '12px',
-                        marginBottom: '26px',
-                        scrollbarWidth: 'none',
-                    }}
-                >
-                    <Link
-                        to={allTabLink}
-                        preventScrollReset={true}
-                        style={{
-                            padding: '9px 20px',
-                            borderRadius: '14px',
-                            background: isAllTabActive
-                                ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
-                                : (isLight ? '#FFFFFF' : 'rgba(24, 24, 32, 0.85)'),
-                            color: isAllTabActive ? '#0A0A0E' : (isLight ? '#1E293B' : '#E2E8F0'),
-                            fontWeight: '800',
-                            fontSize: '13.5px',
-                            textDecoration: 'none',
-                            whiteSpace: 'nowrap',
-                            border: isAllTabActive ? 'none' : (isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)'),
-                            boxShadow: isAllTabActive 
-                                ? '0 4px 15px rgba(212, 165, 55, 0.35)' 
-                                : (isLight ? '0 2px 8px rgba(0, 0, 0, 0.04)' : 'none'),
-                            transition: 'all 0.2s',
-                        }}
-                    >
-                        الكل ({categories.length > 0 ? categories.length : '✦'})
-                    </Link>
-
-                    {visibleCategories.map((cat) => {
-                        const isActive = selectedCategory?.id === cat.id || slug === cat.slug?.toLowerCase();
-                        return (
-                            <Link
-                                key={cat.id}
-                                to={`/category/${cat.slug || cat.id}`}
-                                preventScrollReset={true}
-                                style={{
-                                    padding: '9px 18px',
-                                    borderRadius: '14px',
-                                    background: isActive
-                                        ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
-                                        : (isLight ? '#FFFFFF' : 'rgba(24, 24, 32, 0.85)'),
-                                    color: isActive ? '#0A0A0E' : (isLight ? '#1E293B' : '#E2E8F0'),
-                                    fontWeight: '800',
-                                    fontSize: '13.5px',
-                                    textDecoration: 'none',
-                                    whiteSpace: 'nowrap',
-                                    border: isActive ? 'none' : (isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)'),
-                                    boxShadow: isActive 
-                                        ? '0 4px 15px rgba(212, 165, 55, 0.35)' 
-                                        : (isLight ? '0 2px 8px rgba(0, 0, 0, 0.04)' : 'none'),
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '7px',
-                                    transition: 'all 0.2s',
-                                }}
-                            >
-                                {(() => {
-                                    const iconSrc = formatImageUrl(cat.icon_url || cat.icon);
-                                    return iconSrc ? (
-                                        <img
-                                            src={iconSrc}
-                                            alt=""
-                                            loading="lazy"
-                                            decoding="async"
-                                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                                            style={{ width: '18px', height: '18px', objectFit: 'contain', borderRadius: '4px' }}
-                                        />
-                                    ) : (
-                                        <Layers size={16} />
-                                    );
-                                })()}
-                                <span>{cat.name}</span>
-                            </Link>
-                        );
-                    })}
-                </div>
-            )}
-
-            {/* Search and Filters Bar */}
-            <div style={{
-                background: isLight
-                    ? 'linear-gradient(145deg, #FFFFFF 0%, #FFFDF8 100%)'
-                    : 'linear-gradient(145deg, #161622 0%, #101016 100%)',
-                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '18px',
-                padding: '14px 18px',
-                marginBottom: '30px',
-                display: 'flex',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '14px',
-                boxShadow: isLight ? '0 6px 20px rgba(212, 165, 55, 0.08)' : 'none',
-            }}>
-                <div style={{ flex: '1 1 280px', maxWidth: '440px' }}>
-                    <Input
+                    position: 'relative',
+                    width: '100%',
+                    marginBottom: '20px',
+                }}>
+                    <input
                         type="text"
-                        placeholder="ابحث عن لعبة، تطبيق، أو بطاقة رقمية..."
-                        icon={Search}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        containerStyle={{ marginBottom: 0 }}
+                        placeholder="ابحث عن منتج وسيظهر مباشرة أسفل البحث..."
+                        style={{
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            background: isLight ? '#FFFFFF' : '#0e0e14',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.25)',
+                            borderRadius: '16px',
+                            padding: isRtl ? '14px 44px 14px 16px' : '14px 16px 14px 44px',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: isLight ? '#0F172A' : '#FFFFFF',
+                            outline: 'none',
+                            boxShadow: isLight ? '0 4px 16px rgba(0, 0, 0, 0.04)' : '0 6px 20px rgba(0, 0, 0, 0.4)',
+                            transition: 'all 0.25s ease',
+                            fontFamily: 'var(--font-cairo)',
+                        }}
+                        onFocus={(e) => {
+                            e.currentTarget.style.borderColor = '#F5D061';
+                            e.currentTarget.style.boxShadow = '0 0 0 2px rgba(212, 165, 55, 0.25)';
+                        }}
+                        onBlur={(e) => {
+                            e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.45)' : 'rgba(212, 165, 55, 0.25)';
+                            e.currentTarget.style.boxShadow = isLight ? '0 4px 16px rgba(0, 0, 0, 0.04)' : '0 6px 20px rgba(0, 0, 0, 0.4)';
+                        }}
+                    />
+                    <Search
+                        size={19}
+                        style={{
+                            position: 'absolute',
+                            [isRtl ? 'right' : 'left']: '16px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            color: 'var(--gold-400, #D4A537)',
+                            pointerEvents: 'none',
+                        }}
                     />
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <SlidersHorizontal size={16} color={isLight ? '#9A7210' : '#D4A537'} />
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
+                {/* ── 2. Category Breadcrumb & Filter Header (Matching KA-Card) ── */}
+                <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '12px',
+                    marginBottom: '20px',
+                    padding: '8px 12px',
+                    borderRadius: '14px',
+                    background: isLight ? 'rgba(255, 255, 255, 0.6)' : 'rgba(18, 18, 24, 0.5)',
+                    border: isLight ? '1px solid rgba(212, 165, 55, 0.2)' : '1px solid rgba(255, 255, 255, 0.05)',
+                }}>
+                    {/* Breadcrumb path */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13.5px', fontWeight: '800' }}>
+                        <Link
+                            to="/"
                             style={{
-                                background: isLight ? '#FFFFFF' : '#121218',
-                                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.3)',
-                                borderRadius: '12px',
-                                color: isLight ? '#0F172A' : '#FFFFFF',
-                                padding: '9px 14px',
-                                fontSize: '13px',
-                                fontWeight: '700',
-                                outline: 'none',
-                                fontFamily: 'Cairo, sans-serif',
-                                cursor: 'pointer',
+                                color: 'var(--gold-400, #D4A537)',
+                                textDecoration: 'none',
                             }}
                         >
-                            <option value="sort_order">الترتيب الافتراضي</option>
-                            <option value="name">الاسم أبجدياً</option>
-                        </select>
+                            الرئيسية
+                        </Link>
+                        <span style={{ color: isLight ? '#94A3B8' : '#5A5A6A', fontSize: '12px' }}>›</span>
+                        <span style={{ color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                            {categoryTitle}
+                        </span>
                     </div>
-                </div>
-            </div>
 
-            {/* Products Grid */}
-            <VideoBackground>
+                    {/* Count badge */}
+                    <span style={{
+                        fontSize: '12px',
+                        fontWeight: '800',
+                        color: 'var(--gold-400, #D4A537)',
+                        background: 'rgba(212, 165, 55, 0.12)',
+                        padding: '3px 10px',
+                        borderRadius: '8px',
+                    }}>
+                        {filteredProducts.length} عنصر
+                    </span>
+                </div>
+
+                {/* ── 3. Horizontal Category Chips ── */}
+                {visibleCategories.length > 0 && (
+                    <div
+                        className="no-scrollbar"
+                        style={{
+                            display: 'flex',
+                            gap: '8px',
+                            overflowX: 'auto',
+                            WebkitOverflowScrolling: 'touch',
+                            paddingBottom: '14px',
+                            marginBottom: '16px',
+                            scrollbarWidth: 'none',
+                        }}
+                    >
+                        <Link
+                            to={allTabLink}
+                            preventScrollReset={true}
+                            style={{
+                                padding: '7px 16px',
+                                borderRadius: '12px',
+                                background: isAllTabActive
+                                    ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
+                                    : (isLight ? '#FFFFFF' : 'rgba(24, 24, 32, 0.85)'),
+                                color: isAllTabActive ? '#0A0A0E' : (isLight ? '#1E293B' : '#E2E8F0'),
+                                fontWeight: '800',
+                                fontSize: '12.5px',
+                                textDecoration: 'none',
+                                whiteSpace: 'nowrap',
+                                border: isAllTabActive ? 'none' : (isLight ? '1px solid rgba(212, 165, 55, 0.3)' : '1px solid rgba(255, 255, 255, 0.08)'),
+                                boxShadow: isAllTabActive ? '0 4px 12px rgba(212, 165, 55, 0.35)' : 'none',
+                                transition: 'all 0.2s ease',
+                            }}
+                        >
+                            الكل ({categories.length})
+                        </Link>
+
+                        {visibleCategories.map((cat) => {
+                            const isActive = selectedCategory?.id === cat.id || slug === cat.slug?.toLowerCase();
+                            return (
+                                <Link
+                                    key={cat.id}
+                                    to={`/category/${cat.slug || cat.id}`}
+                                    preventScrollReset={true}
+                                    style={{
+                                        padding: '7px 14px',
+                                        borderRadius: '12px',
+                                        background: isActive
+                                            ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
+                                            : (isLight ? '#FFFFFF' : 'rgba(24, 24, 32, 0.85)'),
+                                        color: isActive ? '#0A0A0E' : (isLight ? '#1E293B' : '#E2E8F0'),
+                                        fontWeight: '800',
+                                        fontSize: '12.5px',
+                                        textDecoration: 'none',
+                                        whiteSpace: 'nowrap',
+                                        border: isActive ? 'none' : (isLight ? '1px solid rgba(212, 165, 55, 0.3)' : '1px solid rgba(255, 255, 255, 0.08)'),
+                                        boxShadow: isActive ? '0 4px 12px rgba(212, 165, 55, 0.35)' : 'none',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        transition: 'all 0.2s ease',
+                                    }}
+                                >
+                                    {(() => {
+                                        const iconSrc = formatImageUrl(cat.icon_url || cat.icon);
+                                        return iconSrc ? (
+                                            <img
+                                                src={iconSrc}
+                                                alt=""
+                                                loading="lazy"
+                                                decoding="async"
+                                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                                style={{ width: '16px', height: '16px', objectFit: 'contain', borderRadius: '4px' }}
+                                            />
+                                        ) : (
+                                            <Layers size={14} />
+                                        );
+                                    })()}
+                                    <span>{cat.name}</span>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* ── 4. Products Grid (3 columns on mobile, square poster cards) ── */}
                 {loading ? (
                     <div style={{ padding: '60px 0' }}>
-                        <LoadingSpinner text="جاري تحميل المنتجات والأسعار..." />
+                        <LoadingSpinner text="جاري تحميل المنتجات..." />
                     </div>
                 ) : filteredProducts.length > 0 ? (
                     <div className="emperor-products-grid">
@@ -426,12 +344,10 @@ export default function CategoryPage() {
                         title="لم يتم العثور على منتجات"
                         description={debouncedSearch ? `لا توجد نتائج مطابقة لـ "${debouncedSearch}"` : 'لا توجد منتجات متاحة في هذا القسم حالياً'}
                         actionText="تصفح جميع المنتجات"
-                        onAction={() => {
-                            setSearchQuery('');
-                        }}
+                        onAction={() => setSearchQuery('')}
                     />
                 )}
-            </VideoBackground>
+            </div>
         </MainLayout>
     );
 }

@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import {
     Gift,
     Users,
+    UserPlus,
     DollarSign,
-    Percent,
     Copy,
     Check,
     Share2,
@@ -12,23 +12,26 @@ import {
     Send,
     Sparkles,
     ShieldCheck,
-    CheckCircle2
+    ArrowLeft,
+    FileText,
+    TrendingUp,
+    Clock,
+    Link as LinkIcon
 } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
-import StatsCard from '../components/referrals/StatsCard';
-import InvitedUserItem from '../components/referrals/InvitedUserItem';
-import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import EmptyState from '../components/ui/EmptyState';
 import Pagination from '../components/ui/Pagination';
 import { referralsApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import VideoBackground from '../components/home/VideoBackground';
+import { useLanguage } from '../contexts/LanguageContext';
+
 export default function ReferralsPage() {
     const { user } = useAuth();
     const { success } = useToast();
+    const { t, isRtl } = useLanguage();
 
+    const [activeTab, setActiveTab] = useState('code'); // 'code' | 'sub_agent'
     const [stats, setStats] = useState(null);
     const [invitedUsers, setInvitedUsers] = useState([]);
     const [loadingStats, setLoadingStats] = useState(true);
@@ -68,314 +71,747 @@ export default function ReferralsPage() {
             .finally(() => setLoadingUsers(false));
     }, [currentPage]);
 
-    const referralCode = stats?.referral_code || user?.referral_code || 'EMP2026';
+    const referralCode = stats?.referral_code || user?.referral_code || (user?.id ? `CTW${user.id}GY7YAW` : 'CTW6GY7YAW');
     const referralLink = stats?.referral_link || `${window.location.origin}/register?ref=${referralCode}`;
-    const commissionPercent = stats?.referral_percentage || 2;
-    const totalEarned = Number(stats?.total_earned || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const totalEarned = Number(stats?.total_earned || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
     const totalInvited = Number(stats?.total_invited || 0);
 
     const handleCopyCode = () => {
         navigator.clipboard.writeText(referralCode);
         setCopiedCode(true);
-        success('تم نسخ كود الإحالة بنجاح');
-        setTimeout(() => setCopiedCode(false), 3000);
+        success(t('copied', 'تم النسخ بنجاح!'));
+        setTimeout(() => setCopiedCode(false), 2500);
     };
 
     const handleCopyLink = () => {
         navigator.clipboard.writeText(referralLink);
         setCopiedLink(true);
-        success('تم نسخ رابط الدعوة بنجاح');
-        setTimeout(() => setCopiedLink(false), 3000);
+        success(t('copied', 'تم النسخ بنجاح!'));
+        setTimeout(() => setCopiedLink(false), 2500);
     };
 
-    const shareMessage = `انضم الآن إلى منصة إمبراطور لشحن الألعاب والتارجت بأفضل أسعار الجملة والشحن الفوري! سجل عبر الرابط التالي: ${referralLink}`;
+    const shareMessage = `انضم الآن إلى منصة إمبراطور لشحن الألعاب والتطبيقات واستلم عروض وهدايا فورية! سجل عبر الرابط التالي: ${referralLink}`;
 
     const handleWhatsAppShare = () => {
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareMessage)}`, '_blank');
     };
 
     const handleTelegramShare = () => {
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('اشحن ألعابك بأفضل سعر في مصر مع إمبراطور!')}`, '_blank');
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('سجل في منصة إمبراطور واشحن ألعابك بأفضل الأسعار!')}`, '_blank');
+    };
+
+    const handleNativeShare = () => {
+        if (navigator.share) {
+            navigator.share({
+                title: 'منصة إمبراطور للشحن الرقمي',
+                text: shareMessage,
+                url: referralLink,
+            }).catch(() => {});
+        } else {
+            handleCopyLink();
+        }
     };
 
     return (
         <MainLayout>
-            {/* Header */}
-            <div style={{ marginBottom: '28px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '13px', color: '#8E8E98' }}>
-                    <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>الرئيسية</Link>
-                    <span>/</span>
-                    <span style={{ color: '#CBD5E1' }}>برنامج الإحالات والأرباح</span>
-                </div>
-
-                <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '900', color: '#FFFFFF' }}>
-                    برنامج دعوة الأصدقاء والأرباح
-                </h1>
-                <p style={{ margin: 0, fontSize: '14px', color: '#9E9EA8' }}>
-                    شارك كود الدعوة مع أصدقائك واكسب كاش يضاف لمحفظتك تلقائياً على كل عملية يقومون بها
-                </p>
+            {/* Top Navigation & Back button */}
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '20px',
+            }}>
+                <Link
+                    to="/"
+                    style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: 'rgba(255, 255, 255, 0.06)',
+                        border: '1px solid var(--border-medium)',
+                        borderRadius: '20px',
+                        padding: '6px 16px',
+                        fontSize: '13px',
+                        fontWeight: '700',
+                        color: 'var(--text-primary)',
+                        textDecoration: 'none',
+                    }}
+                >
+                    <span>{t('back', 'رجوع')}</span>
+                    <ArrowLeft size={16} />
+                </Link>
             </div>
 
-            {/* Big Referral Hero Card */}
+            {/* Top Referral Hero Poster Banner */}
             <div style={{
-                background: 'linear-gradient(135deg, #1C1917 0%, #2A1F0D 50%, #171108 100%)',
+                background: 'linear-gradient(135deg, #1C1917 0%, #2A1F0D 50%, #151108 100%)',
                 border: '1px solid rgba(212, 165, 55, 0.4)',
                 borderRadius: '24px',
-                padding: '36px 32px',
-                marginBottom: '36px',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 165, 55, 0.15)',
+                padding: '24px',
+                marginBottom: '20px',
                 position: 'relative',
                 overflow: 'hidden',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '20px',
             }}>
+                <div style={{ zIndex: 1, maxWidth: '480px' }}>
+                    <span style={{
+                        display: 'inline-block',
+                        background: 'linear-gradient(135deg, #F3E5AB 0%, #D4A537 100%)',
+                        color: '#000',
+                        fontSize: '11px',
+                        fontWeight: '900',
+                        padding: '3px 10px',
+                        borderRadius: '12px',
+                        marginBottom: '8px',
+                    }}>
+                        {t('referrals', 'رابط الإحالة')}
+                    </span>
+                    <h2 style={{ margin: '0 0 8px', fontSize: '26px', fontWeight: '900', color: '#FFFFFF', lineHeight: 1.2 }}>
+                        {t('referralTitle', 'اكسب فلوس واسحبها')}
+                    </h2>
+                    <p style={{ margin: 0, fontSize: '13.5px', color: '#CBD5E1', lineHeight: 1.5 }}>
+                        فايدك من التلفون • سحب فوري كاش • دعم فني على مدار الساعة
+                    </p>
+                </div>
+
                 <div style={{
-                    position: 'absolute',
-                    top: '-40px',
-                    left: '-40px',
-                    width: '260px',
-                    height: '260px',
-                    borderRadius: '50%',
-                    background: 'radial-gradient(circle, rgba(212, 165, 55, 0.25) 0%, transparent 70%)',
-                    pointerEvents: 'none',
-                }} />
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    zIndex: 1,
+                }}>
+                    <div style={{
+                        width: '58px',
+                        height: '58px',
+                        borderRadius: '18px',
+                        background: 'rgba(212, 165, 55, 0.2)',
+                        border: '1px solid rgba(212, 165, 55, 0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#D4A537',
+                    }}>
+                        <Gift size={32} />
+                    </div>
+                </div>
+            </div>
+
+            {/* 2 Tabs Switcher (كود الإحالة vs وكيل فرعي) */}
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '4px',
+                background: 'var(--bg-card, #12131A)',
+                border: '1px solid var(--border-medium, rgba(255, 255, 255, 0.08))',
+                borderRadius: '16px',
+                padding: '4px',
+                marginBottom: '24px',
+            }}>
+                {/* Referral Code Tab */}
+                <button
+                    onClick={() => setActiveTab('code')}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        padding: '12px',
+                        borderRadius: '12px',
+                        background: activeTab === 'code'
+                            ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                            : 'transparent',
+                        color: activeTab === 'code' ? '#0D0D0F' : 'var(--text-secondary, #94a3b8)',
+                        border: 'none',
+                        fontSize: '14.5px',
+                        fontWeight: '800',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                    }}
+                >
+                    <Gift size={18} />
+                    <span>{t('referralCode', 'كود الإحالة')}</span>
+                </button>
+
+                {/* Sub Agent Tab */}
+                <button
+                    onClick={() => setActiveTab('sub_agent')}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        padding: '12px',
+                        borderRadius: '12px',
+                        background: activeTab === 'sub_agent'
+                            ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                            : 'transparent',
+                        color: activeTab === 'sub_agent' ? '#0D0D0F' : 'var(--text-secondary, #94a3b8)',
+                        border: 'none',
+                        fontSize: '14.5px',
+                        fontWeight: '800',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                    }}
+                >
+                    <UserPlus size={18} />
+                    <span>{t('subAgent', 'وكيل فرعي')}</span>
+                </button>
+            </div>
+
+            {/* Main Invite Box (شارك واربح - دعوتك الخاصة) */}
+            <div style={{
+                background: 'var(--bg-card, #FFFFFF)',
+                border: '1px solid var(--border-medium, rgba(0, 0, 0, 0.08))',
+                borderRadius: '24px',
+                padding: '24px',
+                marginBottom: '24px',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+            }}>
+                {/* Header Badge */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                    <div style={{
+                        width: '42px',
+                        height: '42px',
+                        borderRadius: '50%',
+                        background: 'rgba(212, 165, 55, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#D4A537',
+                    }}>
+                        <Gift size={22} />
+                    </div>
+
+                    <div style={{ textAlign: isRtl ? 'right' : 'left', flex: 1, padding: isRtl ? '0 14px 0 0' : '0 0 0 14px' }}>
+                        <span style={{ fontSize: '12px', color: '#D4A537', fontWeight: '800', display: 'block' }}>
+                            {t('shareEarn', 'شارك واربح')}
+                        </span>
+                        <h3 style={{ margin: '2px 0 0', fontSize: '19px', fontWeight: '900', color: 'var(--text-primary)' }}>
+                            {t('yourInvite', 'دعوتك الخاصة')}
+                        </h3>
+                        <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--text-secondary, #64748b)' }}>
+                            {t('inviteDescription', 'انسخ الكود أو الرابط وشاركه مع أصدقائك')}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Box 1: Referral Code */}
+                <div style={{
+                    background: 'rgba(56, 189, 248, 0.08)',
+                    border: '1px solid rgba(56, 189, 248, 0.25)',
+                    borderRadius: '18px',
+                    padding: '16px 20px',
+                    marginBottom: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '12px',
+                }}>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary, #64748b)', fontWeight: '700' }}>
+                        {t('referralCode', 'كود الدعوة')}
+                    </span>
+                    <div style={{
+                        fontSize: '24px',
+                        fontWeight: '900',
+                        color: 'var(--text-primary, #0f172a)',
+                        letterSpacing: '4px',
+                        fontFamily: 'monospace',
+                    }}>
+                        {referralCode}
+                    </div>
+
+                    <button
+                        onClick={handleCopyCode}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            width: '100%',
+                            padding: '10px 16px',
+                            borderRadius: '12px',
+                            background: 'rgba(212, 165, 55, 0.15)',
+                            border: '1px solid rgba(212, 165, 55, 0.35)',
+                            color: 'var(--gold-400, #D4A537)',
+                            fontSize: '13.5px',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                        }}
+                    >
+                        {copiedCode ? <Check size={16} color="#22c55e" /> : <Copy size={16} />}
+                        <span>{copiedCode ? t('copied', 'تم النسخ!') : t('copyCode', 'نسخ الكود')}</span>
+                    </button>
+                </div>
+
+                {/* Box 2: Referral Link */}
+                <div style={{
+                    background: 'rgba(168, 85, 247, 0.08)',
+                    border: '1px solid rgba(168, 85, 247, 0.25)',
+                    borderRadius: '18px',
+                    padding: '16px 20px',
+                    marginBottom: '20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '12px',
+                }}>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary, #64748b)', fontWeight: '700' }}>
+                        {t('copyLink', 'رابط الدعوة')}
+                    </span>
+                    <div style={{
+                        width: '100%',
+                        background: 'var(--bg-elevated, #f8fafc)',
+                        border: '1px solid var(--border-subtle, #e2e8f0)',
+                        borderRadius: '10px',
+                        padding: '8px 12px',
+                        fontSize: '12.5px',
+                        color: 'var(--text-secondary, #64748b)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        direction: 'ltr',
+                        textAlign: 'left',
+                        boxSizing: 'border-box',
+                    }}>
+                        {referralLink}
+                    </div>
+
+                    <button
+                        onClick={handleCopyLink}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            width: '100%',
+                            padding: '10px 16px',
+                            borderRadius: '12px',
+                            background: '#0f172a',
+                            border: 'none',
+                            color: '#FFFFFF',
+                            fontSize: '13.5px',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                        }}
+                    >
+                        {copiedLink ? <Check size={16} color="#22c55e" /> : <Copy size={16} />}
+                        <span>{copiedLink ? t('copied', 'تم النسخ!') : t('copyLink', 'نسخ الرابط')}</span>
+                    </button>
+                </div>
+
+                {/* Social Share Buttons (واتساب، تيليجرام، مشاركة) */}
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: '10px',
+                }}>
+                    <button
+                        onClick={handleWhatsAppShare}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '6px',
+                            padding: '10px 8px',
+                            borderRadius: '12px',
+                            background: '#22c55e',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            fontSize: '13px',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)',
+                        }}
+                    >
+                        <MessageCircle size={16} />
+                        <span>{t('whatsapp', 'واتساب')}</span>
+                    </button>
+
+                    <button
+                        onClick={handleTelegramShare}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '6px',
+                            padding: '10px 8px',
+                            borderRadius: '12px',
+                            background: '#0284c7',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            fontSize: '13px',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)',
+                        }}
+                    >
+                        <Send size={16} />
+                        <span>{t('telegram', 'تيليجرام')}</span>
+                    </button>
+
+                    <button
+                        onClick={handleNativeShare}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '6px',
+                            padding: '10px 8px',
+                            borderRadius: '12px',
+                            background: 'rgba(56, 189, 248, 0.15)',
+                            color: '#0284c7',
+                            border: '1px solid rgba(56, 189, 248, 0.3)',
+                            fontSize: '13px',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        <Share2 size={16} />
+                        <span>{t('share', 'مشاركة')}</span>
+                    </button>
+                </div>
+            </div>
+
+            {/* Joined Customers Container (العملاء المنضمون) */}
+            <div style={{
+                background: 'var(--bg-card, #FFFFFF)',
+                border: '1px solid var(--border-medium, rgba(0, 0, 0, 0.08))',
+                borderRadius: '24px',
+                padding: '24px',
+                marginBottom: '24px',
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+                    <div style={{
+                        padding: '4px 10px',
+                        borderRadius: '10px',
+                        background: 'rgba(56, 189, 248, 0.12)',
+                        color: '#0284c7',
+                        fontWeight: '800',
+                        fontSize: '13px',
+                    }}>
+                        {totalInvited}
+                    </div>
+
+                    <div style={{ textAlign: isRtl ? 'right' : 'left', flex: 1, padding: isRtl ? '0 12px 0 0' : '0 0 0 12px' }}>
+                        <h4 style={{ margin: '0 0 2px', fontSize: '17px', fontWeight: '900', color: 'var(--text-primary)' }}>
+                            {t('joinedCustomers', 'العملاء المنضمون')}
+                        </h4>
+                        <span style={{ fontSize: '12.5px', color: 'var(--text-muted, #94a3b8)' }}>
+                            {t('joinedCustomersSub', 'المبالغ المضافة وأرباحك من كل عميل')}
+                        </span>
+                    </div>
+
+                    <div style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '10px',
+                        background: 'rgba(56, 189, 248, 0.1)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#0284c7',
+                    }}>
+                        <Users size={18} />
+                    </div>
+                </div>
+
+                {/* Empty State / Users List */}
+                {loadingUsers ? (
+                    <div style={{ padding: '30px 0' }}>
+                        <LoadingSpinner text="جاري جلب قائمة العملاء..." />
+                    </div>
+                ) : invitedUsers && invitedUsers.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {invitedUsers.map((u, i) => (
+                            <div key={u.id || i} style={{
+                                padding: '12px 16px',
+                                borderRadius: '12px',
+                                background: 'var(--bg-elevated, #f8fafc)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                            }}>
+                                <div>
+                                    <strong style={{ display: 'block', fontSize: '14px', color: 'var(--text-primary)' }}>{u.name || 'مستخدم مسجل'}</strong>
+                                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{u.created_at || 'مؤخراً'}</span>
+                                </div>
+                                <span style={{ color: '#22c55e', fontWeight: '800', fontSize: '14px' }}>+{u.earned_commission || 0} ج.م</span>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div style={{
+                        padding: '36px 16px',
+                        textAlign: 'center',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '10px',
+                    }}>
+                        <Users size={36} color="var(--text-muted, #cbd5e1)" />
+                        <h5 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)' }}>
+                            {t('noJoinedCustomers', 'لا يوجد عملاء منضمون حتى الآن')}
+                        </h5>
+                        <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted, #94a3b8)', maxWidth: '320px' }}>
+                            ستظهر هنا بيانات العملاء وأرباحك بعد انضمامهم وشحنهم للمحفظة.
+                        </p>
+                    </div>
+                )}
+            </div>
+
+            {/* Total Earnings Banner (إجمالي أرباحك 0 EGY) */}
+            <Link
+                to="/wallet"
+                style={{
+                    background: 'linear-gradient(135deg, #0d3b4c 0%, #064e3b 100%)',
+                    borderRadius: '20px',
+                    padding: '20px 24px',
+                    marginBottom: '24px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    textDecoration: 'none',
+                    color: '#FFFFFF',
+                    boxShadow: '0 8px 24px rgba(6, 78, 59, 0.25)',
+                }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{
+                        width: '42px',
+                        height: '42px',
+                        borderRadius: '50%',
+                        background: 'rgba(255, 255, 255, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <DollarSign size={22} />
+                    </div>
+                    <div>
+                        <span style={{ fontSize: '12px', opacity: 0.85, display: 'block' }}>
+                            {t('totalEarnings', 'إجمالي أرباحك')}
+                        </span>
+                        <div style={{ fontSize: '22px', fontWeight: '900' }}>
+                            {totalEarned} EGY
+                        </div>
+                    </div>
+                </div>
+
+                <div style={{ textAlign: isRtl ? 'left' : 'right' }}>
+                    <span style={{ fontSize: '12px', color: '#FDE047', fontWeight: '700' }}>
+                        {t('viewEarningsAndWithdraw', 'اضغط لعرض الأرباح وطرق السحب')}
+                    </span>
+                </div>
+            </Link>
+
+            {/* How Referral Works (كيف تعمل الإحالة؟ - 4 خطوات) */}
+            <div style={{
+                background: 'var(--bg-card, #FFFFFF)',
+                border: '1px solid var(--border-medium, rgba(0, 0, 0, 0.08))',
+                borderRadius: '24px',
+                padding: '24px',
+                marginBottom: '24px',
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                    <div style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '10px',
+                        background: 'rgba(212, 165, 55, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#D4A537',
+                    }}>
+                        <ShieldCheck size={20} />
+                    </div>
+                    <div>
+                        <h4 style={{ margin: '0 0 2px', fontSize: '17px', fontWeight: '900', color: 'var(--text-primary)' }}>
+                            {t('howReferralWorks', 'كيف تعمل الإحالة؟')}
+                        </h4>
+                        <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
+                            {t('fourSimpleSteps', 'أربع خطوات بسيطة')}
+                        </span>
+                    </div>
+                </div>
 
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
-                    gap: '28px',
-                    alignItems: 'center',
-                    position: 'relative',
-                    zIndex: 1,
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                    gap: '12px',
                 }}>
-                    {/* Left: Info */}
-                    <div>
-                        <div style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            padding: '4px 12px',
-                            background: 'rgba(212, 165, 55, 0.15)',
-                            border: '1px solid rgba(212, 165, 55, 0.3)',
-                            borderRadius: '20px',
-                            color: '#D4A537',
-                            fontSize: '13px',
-                            fontWeight: '700',
-                            marginBottom: '14px',
-                        }}>
-                            <Sparkles size={14} />
-                            <span>اربح {commissionPercent}% عمولة نقدية مباشرة</span>
-                        </div>
-
-                        <h2 style={{
-                            margin: '0 0 10px',
-                            fontSize: 'clamp(22px, 3.5vw, 28px)',
-                            fontWeight: '900',
-                            color: '#FFFFFF',
-                            lineHeight: '1.3',
-                        }}>
-                            أرباحك بدون حد أقصى مدى الحياة!
-                        </h2>
-
-                        <p style={{
-                            margin: '0 0 24px',
-                            fontSize: '14px',
-                            color: '#CBD5E1',
-                            lineHeight: '1.6',
-                        }}>
-                            عندما يقوم صديقك بالتسجيل عبر رابطك وإيداع رصيد أو شحن أي لعبة، يتم إضافة {commissionPercent}% من قيمة الإيداع إلى محفظتك كاش بشكل فوري.
-                        </p>
-
-                        {/* Social Share Buttons */}
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                            <Button
-                                variant="primary"
-                                size="md"
-                                icon={MessageCircle}
-                                onClick={handleWhatsAppShare}
-                                style={{
-                                    background: 'linear-gradient(135deg, #22C55E 0%, #15803D 100%)',
-                                    border: 'none',
-                                    boxShadow: '0 4px 15px rgba(34, 197, 94, 0.3)',
-                                }}
-                            >
-                                مشاركة عبر واتساب
-                            </Button>
-
-                            <Button
-                                variant="secondary"
-                                size="md"
-                                icon={Send}
-                                onClick={handleTelegramShare}
-                                style={{
-                                    background: 'rgba(56, 189, 248, 0.15)',
-                                    borderColor: 'rgba(56, 189, 248, 0.3)',
-                                    color: '#38BDF8',
-                                }}
-                            >
-                                تليجرام
-                            </Button>
-                        </div>
-                    </div>
-
-                    {/* Right: Copy Boxes */}
-                    <div className="referral-copy-stack" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        {/* Referral Code Box */}
-                        <div className="referral-copy-box referral-code-box" style={{
-                            background: 'rgba(18, 18, 24, 0.8)',
-                            border: '1px solid rgba(212, 165, 55, 0.3)',
-                            borderRadius: '16px',
-                            padding: '16px 20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            gap: '12px',
-                        }}>
-                            <div className="referralCode referral-code-content">
-                                <span className="referral-copy-label" style={{ fontSize: '11px', color: '#8E8E98', display: 'block', marginBottom: '2px' }}>
-                                    كود الدعوة الخاص بك:
-                                </span>
-                                <strong className="referral-code-value" style={{
-                                    fontSize: '22px',
-                                    color: '#D4A537',
-                                    letterSpacing: '2px',
-                                    fontFamily: 'monospace',
-                                }}>
-                                    {referralCode}
-                                </strong>
-                            </div>
-
-                            <Button
-                                className='copy-button referral-copy-button'
-                                variant="outline"
-                                size="sm"
-                                icon={copiedCode ? Check : Copy}
-                                onClick={handleCopyCode}
-                            >
-                                {copiedCode ? 'تم النسخ' : 'نسخ الكود'}
-                            </Button>
-                        </div>
-
-                        {/* Referral Link Box */}
-                        <div className="referral-copy-box referral-link-box" style={{
-                            background: 'rgba(18, 18, 24, 0.8)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            borderRadius: '16px',
-                            padding: '16px 20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            gap: '12px',
-                        }}>
-                            <div className="referral-link-content" style={{ flex: 1, overflow: 'hidden' }}>
-                                <span className="referral-copy-label" style={{ fontSize: '11px', color: '#8E8E98', display: 'block', marginBottom: '2px' }}>
-                                    رابط الدعوة المباشر:
-                                </span>
-                                <span className="referral-link-value" style={{
-                                    fontSize: '13px',
-                                    color: '#CBD5E1',
-                                    display: 'block',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                    direction: 'ltr',
-                                    textAlign: 'left',
-                                }}>
-                                    {referralLink}
-                                </span>
-                            </div>
-
-                            <Button
-                                className="referral-copy-button"
-                                variant="outline"
-                                size="sm"
-                                icon={copiedLink ? Check : Copy}
-                                onClick={handleCopyLink}
-                            >
-                                {copiedLink ? 'تم النسخ' : 'نسخ الرابط'}
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Stats Row */}
-            <div className="referral-stats-grid" style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
-                gap: '18px',
-                marginBottom: '40px',
-            }}>
-                <StatsCard
-                    icon={Users}
-                    title="إجمالي الأصدقاء المدعوين"
-                    value={totalInvited}
-                    unit="صديق"
-                    color="#D4A537"
-                    bg="rgba(212, 165, 55, 0.15)"
-                />
-
-                <StatsCard
-                    icon={DollarSign}
-                    title="إجمالي الأرباح المكتسبة"
-                    value={totalEarned}
-                    unit="ج.م"
-                    color="#22C55E"
-                    bg="rgba(34, 197, 94, 0.15)"
-                />
-
-                <StatsCard
-                    icon={Percent}
-                    title="نسبة العمولة الممنوحة"
-                    value={`${commissionPercent}%`}
-                    unit="كاش فوري"
-                    color="#38BDF8"
-                    bg="rgba(56, 189, 248, 0.15)"
-                />
-            </div>
-
-            {/* Invited Users List */}
-            <div style={{ marginBottom: '32px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+                    {/* Step 1 */}
                     <div style={{
-                        width: '8px',
-                        height: '24px',
-                        borderRadius: '4px',
-                        background: 'linear-gradient(180deg, #F3E5AB 0%, #D4A537 100%)',
-                    }} />
-                    <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>
-                        قائمة الأصدقاء المسجلين من خلالك
-                    </h3>
-                </div>
-                <VideoBackground>
-                    {loadingUsers ? (
-                        <div style={{ padding: '60px 0' }}>
-                            <LoadingSpinner text="جاري جلب قائمة المدعوين..." />
+                        background: 'var(--bg-elevated, #f8fafc)',
+                        border: '1px solid var(--border-subtle, #e2e8f0)',
+                        borderRadius: '16px',
+                        padding: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                    }}>
+                        <div style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            background: '#0f172a',
+                            color: '#FFFFFF',
+                            fontSize: '12px',
+                            fontWeight: '900',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                        }}>
+                            1
                         </div>
-                    ) : invitedUsers.length > 0 ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            {invitedUsers.map((invUser) => (
-                                <InvitedUserItem key={invUser.id} invitedUser={invUser} />
-                            ))}
+                        <span style={{ fontSize: '13.5px', fontWeight: '800', color: 'var(--text-primary)' }}>
+                            {t('step1', 'انسخ كود دعوتك')}
+                        </span>
+                    </div>
 
-                            {meta && meta.last_page > 1 && (
-                                <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
-                                    <Pagination
-                                        currentPage={currentPage}
-                                        lastPage={meta.last_page}
-                                        onPageChange={(p) => setCurrentPage(p)}
-                                    />
-                                </div>
-                            )}
+                    {/* Step 2 */}
+                    <div style={{
+                        background: 'var(--bg-elevated, #f8fafc)',
+                        border: '1px solid var(--border-subtle, #e2e8f0)',
+                        borderRadius: '16px',
+                        padding: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                    }}>
+                        <div style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            background: '#0f172a',
+                            color: '#FFFFFF',
+                            fontSize: '12px',
+                            fontWeight: '900',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                        }}>
+                            2
                         </div>
-                    ) : (
-                        <EmptyState
-                            title="لم تقم بدعوة أي أصدقاء بعد"
-                            description="ابدأ بمشاركة كود دعوتك الآن واربح عمولات غير محدودة على كل عملية إيداع وشحن!"
-                            actionText="نسخ رابط الدعوة"
-                            onAction={handleCopyLink}
-                        />
-                    )}
-                </VideoBackground>
+                        <span style={{ fontSize: '13.5px', fontWeight: '800', color: 'var(--text-primary)' }}>
+                            {t('step2', 'شاركه مع أصدقائك')}
+                        </span>
+                    </div>
+
+                    {/* Step 3 */}
+                    <div style={{
+                        background: 'var(--bg-elevated, #f8fafc)',
+                        border: '1px solid var(--border-subtle, #e2e8f0)',
+                        borderRadius: '16px',
+                        padding: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                    }}>
+                        <div style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            background: '#0f172a',
+                            color: '#FFFFFF',
+                            fontSize: '12px',
+                            fontWeight: '900',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                        }}>
+                            3
+                        </div>
+                        <span style={{ fontSize: '13.5px', fontWeight: '800', color: 'var(--text-primary)' }}>
+                            {t('step3', 'تابع العملاء المنضمين ومكافآتك')}
+                        </span>
+                    </div>
+
+                    {/* Step 4 */}
+                    <div style={{
+                        background: 'var(--bg-elevated, #f8fafc)',
+                        border: '1px solid var(--border-subtle, #e2e8f0)',
+                        borderRadius: '16px',
+                        padding: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                    }}>
+                        <div style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            background: '#0f172a',
+                            color: '#FFFFFF',
+                            fontSize: '12px',
+                            fontWeight: '900',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                        }}>
+                            4
+                        </div>
+                        <span style={{ fontSize: '13.5px', fontWeight: '800', color: 'var(--text-primary)' }}>
+                            {t('step4', 'تستمر المكافآت 30 يوماً لكل مستخدم تتم إضافته')}
+                        </span>
+                    </div>
+                </div>
             </div>
+
+            {/* Bottom Card: Transfers Status (حالة التحويلات) */}
+            <Link
+                to="/wallet"
+                style={{
+                    background: 'var(--bg-card, #FFFFFF)',
+                    border: '1px solid var(--border-medium, rgba(0, 0, 0, 0.08))',
+                    borderRadius: '20px',
+                    padding: '18px 24px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    textDecoration: 'none',
+                    color: 'var(--text-primary)',
+                    boxShadow: '0 4px 14px rgba(0, 0, 0, 0.04)',
+                }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '10px',
+                        background: 'rgba(56, 189, 248, 0.12)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#0284c7',
+                    }}>
+                        <FileText size={20} />
+                    </div>
+                    <div>
+                        <h4 style={{ margin: '0 0 2px', fontSize: '16px', fontWeight: '900' }}>
+                            {t('transferStatus', 'حالة التحويلات')}
+                        </h4>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                            {t('transferStatusDesc', 'تابع طلبات السحب واطلع على التفاصيل')}
+                        </span>
+                    </div>
+                </div>
+
+                <div style={{ color: 'var(--gold-400)' }}>
+                    <ArrowLeft size={18} />
+                </div>
+            </Link>
         </MainLayout>
     );
 }

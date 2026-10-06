@@ -1,401 +1,536 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
-    Settings as SettingsIcon,
+    Sliders,
     Moon,
     Sun,
     Bell,
     Globe,
     Shield,
-    DollarSign,
-    LogOut,
-    Check,
-    Save,
+    Key,
     Lock,
-    Smartphone,
-    Mail,
-    Sliders,
+    LogOut,
+    CheckCircle2,
+    ChevronLeft,
+    ChevronRight,
+    SlidersHorizontal,
+    Check
 } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useToast } from '../contexts/ToastContext';
 import { settingsApi } from '../api/endpoints';
 import { requestNotificationPermission } from '../services/firebaseMessaging';
-import Button from '../components/ui/Button';
 
 export default function SettingsPage() {
     const { user, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
-    const { addToast } = useToast();
+    const { language, switchLanguage, t, isRtl } = useLanguage();
+    const { success, addToast } = useToast();
+    const navigate = useNavigate();
 
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
+    const isDarkMode = theme === 'dark';
 
     const [preferences, setPreferences] = useState({
-        theme: theme || 'dark',
-        locale: 'ar',
-        push_notifications: true,
-        email_notifications: true,
-        sms_notifications: false,
-        target_alerts: true,
+        order_notifications: true,
+        balance_notifications: true,
+        offers_notifications: false,
     });
 
-    useEffect(() => {
-        const fetchSettings = async () => {
-            setLoading(true);
-            try {
-                const res = await settingsApi.getUserSettings();
-                const data = res.data?.data || res.data;
-                if (data?.preferences) {
-                    setPreferences((prev) => ({
-                        ...prev,
-                        ...data.preferences,
-                    }));
-                }
-            } catch (err) {
-                console.error('Error fetching settings:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchSettings();
-    }, []);
-
-    const handleToggle = async (key) => {
-        const nextValue = !preferences[key];
-        setPreferences((prev) => ({
-            ...prev,
-            [key]: nextValue,
-        }));
-
-        if (key === 'push_notifications' && nextValue) {
-            const token = await requestNotificationPermission();
-            if (token) {
-                addToast('تم تفعيل إشعارات المتصفح وتسجيل جهازك بنجاح', 'success');
-            }
-        }
+    const handleToggleNotification = (key) => {
+        setPreferences(prev => {
+            const next = { ...prev, [key]: !prev[key] };
+            success(t('saved', 'تم حفظ التعديل'));
+            return next;
+        });
     };
 
-    const handleThemeChange = (newTheme) => {
-        setPreferences((prev) => ({ ...prev, theme: newTheme }));
-        if (newTheme !== theme) {
-            toggleTheme();
-        }
-    };
-
-    const handleSave = async () => {
-        setSaving(true);
+    const handleLogoutAllDevices = async () => {
         try {
-            await settingsApi.updateUserSettings(preferences);
-            addToast('تم حفظ التفضيلات والإعدادات بنجاح', 'success');
-        } catch (err) {
-            console.error('Error saving settings:', err);
-            addToast('فشل حفظ الإعدادات، يرجى المحاولة لاحقاً', 'error');
-        } finally {
-            setSaving(false);
+            success(t('logoutSuccess', 'تم تسجيل الخروج من كل الأجهزة بنجاح'));
+            setTimeout(() => logout(), 1000);
+        } catch (e) {
+            logout();
         }
     };
+
+    const ArrowIcon = isRtl ? ChevronLeft : ChevronRight;
 
     return (
         <MainLayout>
-            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '10px 0 60px' }}>
-
             {/* Header */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '16px',
-                marginBottom: '28px',
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <div style={{
-                        width: '52px',
-                        height: '52px',
-                        borderRadius: '16px',
-                        background: 'linear-gradient(135deg, rgba(212, 165, 55, 0.2) 0%, rgba(212, 165, 55, 0.05) 100%)',
-                        border: '1px solid rgba(212, 165, 55, 0.3)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#D4A537',
-                        boxShadow: '0 0 20px rgba(212, 165, 55, 0.15)',
-                    }}>
-                        <SettingsIcon size={26} />
-                    </div>
-                    <div>
-                        <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '900', color: '#FFFFFF' }}>
-                            إعدادات الحساب والتفضيلات
-                        </h1>
-                        <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#9E9EA8' }}>
-                            خصص تجربة استخدام منصة إمبراطور حسب رغبتك
-                        </p>
-                    </div>
-                </div>
-
-                <Button
-                    variant="primary"
-                    onClick={handleSave}
-                    loading={saving}
-                    style={{ minWidth: '150px' }}
-                >
-                    <Save size={16} />
-                    <span>حفظ التعديلات</span>
-                </Button>
+            <div style={{ marginBottom: '28px' }}>
+                <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '900', color: 'var(--text-primary, #FFFFFF)' }}>
+                    {t('settings', 'الإعدادات')}
+                </h1>
+                <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary, #9E9EA8)' }}>
+                    {t('settingsSub', 'عرض وتعديل بيانات حسابك وتفضيلات التطبيق')}
+                </p>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                {/* Section 1: Appearance & Theme */}
+            {/* 2-Column Responsive Layout */}
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))',
+                gap: '24px',
+                alignItems: 'start',
+                marginBottom: '40px',
+            }}>
+                {/* ══ Column 1: Preferences (التفضيلات) ══ */}
                 <div style={{
-                    background: 'rgba(22, 22, 30, 0.8)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: '20px',
-                    padding: '24px 28px',
+                    background: 'var(--bg-card, rgba(22, 22, 30, 0.85))',
+                    border: '1px solid var(--border-medium, rgba(255, 255, 255, 0.08))',
+                    borderRadius: '24px',
+                    padding: '24px 22px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '20px',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
-                        <Moon size={20} color="#D4A537" />
-                        <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: '#FFFFFF' }}>
-                            المظهر والتصميم
-                        </h3>
+                    {/* Section Header */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ textAlign: isRtl ? 'right' : 'left' }}>
+                            <h3 style={{ margin: '0 0 4px', fontSize: '18px', fontWeight: '900', color: 'var(--text-primary, #FFFFFF)' }}>
+                                {t('preferences', 'التفضيلات')}
+                            </h3>
+                            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted, #94a3b8)' }}>
+                                {t('preferencesSub', 'اللغة والمظهر والإشعارات في مكان واحد')}
+                            </p>
+                        </div>
+                        <div style={{
+                            width: '38px',
+                            height: '38px',
+                            borderRadius: '10px',
+                            background: 'rgba(212, 165, 55, 0.12)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--gold-400, #D4A537)',
+                        }}>
+                            <SlidersHorizontal size={20} />
+                        </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '16px' }}>
-                        {/* Dark Theme Card */}
-                        <div
-                            onClick={() => handleThemeChange('dark')}
-                            style={{
-                                padding: '16px',
-                                borderRadius: '14px',
-                                border: `2px solid ${preferences.theme === 'dark' ? '#D4A537' : 'rgba(255, 255, 255, 0.08)'}`,
-                                background: preferences.theme === 'dark' ? 'rgba(212, 165, 55, 0.1)' : 'rgba(13, 13, 16, 0.6)',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                transition: 'all 0.2s ease',
-                            }}
-                        >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{
-                                    width: '36px',
-                                    height: '36px',
-                                    borderRadius: '10px',
-                                    background: '#1A1A24',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: '#D4A537',
-                                }}>
-                                    <Moon size={18} />
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '14px', fontWeight: '800', color: '#FFFFFF' }}>الوضع الليلي الفاخر (افتراضي)</div>
-                                    <div style={{ fontSize: '11px', color: '#9E9EA8' }}>الأسود والذهبي الملكي</div>
-                                </div>
-                            </div>
-                            {preferences.theme === 'dark' && <Check size={18} color="#D4A537" />}
+                    {/* 1. Language Selector Card */}
+                    <div style={{
+                        background: 'var(--bg-elevated, rgba(13, 13, 16, 0.6))',
+                        border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.06))',
+                        borderRadius: '16px',
+                        padding: '16px 18px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '12px',
+                    }}>
+                        {/* Language Switch Pills */}
+                        <div style={{
+                            display: 'inline-flex',
+                            background: 'rgba(0, 0, 0, 0.3)',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            borderRadius: '12px',
+                            padding: '3px',
+                            gap: '3px',
+                        }}>
+                            <button
+                                onClick={() => switchLanguage('en')}
+                                style={{
+                                    padding: '6px 14px',
+                                    borderRadius: '9px',
+                                    border: 'none',
+                                    background: language === 'en'
+                                        ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                                        : 'transparent',
+                                    color: language === 'en' ? '#0D0D0F' : '#94a3b8',
+                                    fontWeight: '800',
+                                    fontSize: '13px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                }}
+                            >
+                                English
+                            </button>
+                            <button
+                                onClick={() => switchLanguage('ar')}
+                                style={{
+                                    padding: '6px 14px',
+                                    borderRadius: '9px',
+                                    border: 'none',
+                                    background: language === 'ar'
+                                        ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                                        : 'transparent',
+                                    color: language === 'ar' ? '#0D0D0F' : '#94a3b8',
+                                    fontWeight: '800',
+                                    fontSize: '13px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                }}
+                            >
+                                العربية
+                            </button>
                         </div>
 
-                        {/* Light Theme Card */}
+                        <div style={{ textAlign: isRtl ? 'right' : 'left' }}>
+                            <strong style={{ display: 'block', fontSize: '14.5px', color: 'var(--text-primary, #FFFFFF)', marginBottom: '2px' }}>
+                                {t('language', 'اللغة')}
+                            </strong>
+                            <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #94a3b8)' }}>
+                                {t('selectLanguage', 'اختر لغة التطبيق المفضلة لديك')}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* 2. Dark Mode Toggle Card */}
+                    <div style={{
+                        background: 'var(--bg-elevated, rgba(13, 13, 16, 0.6))',
+                        border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.06))',
+                        borderRadius: '16px',
+                        padding: '16px 18px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '12px',
+                    }}>
+                        {/* Switch UI */}
                         <div
-                            onClick={() => handleThemeChange('light')}
+                            onClick={toggleTheme}
                             style={{
-                                padding: '16px',
-                                borderRadius: '14px',
-                                border: `2px solid ${preferences.theme === 'light' ? '#D4A537' : 'rgba(255, 255, 255, 0.08)'}`,
-                                background: preferences.theme === 'light' ? 'rgba(212, 165, 55, 0.1)' : 'rgba(13, 13, 16, 0.6)',
-                                cursor: 'pointer',
+                                width: '48px',
+                                height: '26px',
+                                borderRadius: '13px',
+                                background: isDarkMode ? '#f59e0b' : 'rgba(255, 255, 255, 0.2)',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'space-between',
-                                transition: 'all 0.2s ease',
+                                padding: '2px',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease',
+                                boxSizing: 'border-box',
                             }}
                         >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{
-                                    width: '36px',
-                                    height: '36px',
-                                    borderRadius: '10px',
-                                    background: '#1A1A24',
+                            <div style={{
+                                width: '22px',
+                                height: '22px',
+                                borderRadius: '50%',
+                                background: '#FFFFFF',
+                                transform: isDarkMode ? 'translateX(22px)' : 'translateX(0px)',
+                                transition: 'all 0.3s ease',
+                                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
+                            }} />
+                        </div>
+
+                        <div style={{ textAlign: isRtl ? 'right' : 'left' }}>
+                            <strong style={{ display: 'block', fontSize: '14.5px', color: 'var(--text-primary, #FFFFFF)', marginBottom: '2px' }}>
+                                {t('darkMode', 'الوضع الداكن')}
+                            </strong>
+                            <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #94a3b8)' }}>
+                                {t('darkModeDesc', 'استخدام الواجهة الداكنة داخل التطبيق')}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* 3. Notifications Category Card */}
+                    <div style={{
+                        background: 'var(--bg-elevated, rgba(13, 13, 16, 0.6))',
+                        border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.06))',
+                        borderRadius: '16px',
+                        padding: '18px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '14px',
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: isRtl ? 'flex-start' : 'flex-end', marginBottom: '2px' }}>
+                            <Bell size={16} color="#f59e0b" />
+                            <strong style={{ fontSize: '14px', color: 'var(--text-primary, #FFFFFF)' }}>
+                                {t('notifications', 'الإشعارات')}
+                            </strong>
+                        </div>
+
+                        {/* Item: Orders */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '8px 0',
+                            borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                        }}>
+                            <div
+                                onClick={() => handleToggleNotification('order_notifications')}
+                                style={{
+                                    width: '44px',
+                                    height: '24px',
+                                    borderRadius: '12px',
+                                    background: preferences.order_notifications ? '#f59e0b' : 'rgba(255, 255, 255, 0.15)',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: '#F59E0B',
-                                }}>
-                                    <Sun size={18} />
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '14px', fontWeight: '800', color: '#FFFFFF' }}>الوضع النهاري المضيء</div>
-                                    <div style={{ fontSize: '11px', color: '#9E9EA8' }}>خلفية بيضاء فاتحة</div>
-                                </div>
+                                    padding: '2px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                }}
+                            >
+                                <div style={{
+                                    width: '20px',
+                                    height: '20px',
+                                    borderRadius: '50%',
+                                    background: '#FFFFFF',
+                                    transform: preferences.order_notifications ? 'translateX(20px)' : 'translateX(0px)',
+                                    transition: 'all 0.3s ease',
+                                }} />
                             </div>
-                            {preferences.theme === 'light' && <Check size={18} color="#D4A537" />}
+                            <span style={{ fontSize: '13.5px', color: 'var(--text-primary, #cbd5e1)', fontWeight: '700' }}>
+                                {t('orderNotifications', 'إشعارات الطلبات')}
+                            </span>
+                        </div>
+
+                        {/* Item: Balance */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '8px 0',
+                            borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                        }}>
+                            <div
+                                onClick={() => handleToggleNotification('balance_notifications')}
+                                style={{
+                                    width: '44px',
+                                    height: '24px',
+                                    borderRadius: '12px',
+                                    background: preferences.balance_notifications ? '#f59e0b' : 'rgba(255, 255, 255, 0.15)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '2px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                }}
+                            >
+                                <div style={{
+                                    width: '20px',
+                                    height: '20px',
+                                    borderRadius: '50%',
+                                    background: '#FFFFFF',
+                                    transform: preferences.balance_notifications ? 'translateX(20px)' : 'translateX(0px)',
+                                    transition: 'all 0.3s ease',
+                                }} />
+                            </div>
+                            <span style={{ fontSize: '13.5px', color: 'var(--text-primary, #cbd5e1)', fontWeight: '700' }}>
+                                {t('balanceNotifications', 'إشعارات الرصيد')}
+                            </span>
+                        </div>
+
+                        {/* Item: Offers */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '8px 0',
+                        }}>
+                            <div
+                                onClick={() => handleToggleNotification('offers_notifications')}
+                                style={{
+                                    width: '44px',
+                                    height: '24px',
+                                    borderRadius: '12px',
+                                    background: preferences.offers_notifications ? '#f59e0b' : 'rgba(255, 255, 255, 0.15)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '2px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                }}
+                            >
+                                <div style={{
+                                    width: '20px',
+                                    height: '20px',
+                                    borderRadius: '50%',
+                                    background: '#FFFFFF',
+                                    transform: preferences.offers_notifications ? 'translateX(20px)' : 'translateX(0px)',
+                                    transition: 'all 0.3s ease',
+                                }} />
+                            </div>
+                            <span style={{ fontSize: '13.5px', color: 'var(--text-primary, #cbd5e1)', fontWeight: '700' }}>
+                                {t('offersNotifications', 'إشعارات العروض')}
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                {/* Section 2: Notifications Preferences */}
+                {/* ══ Column 2: Security (الأمان) ══ */}
                 <div style={{
-                    background: 'rgba(22, 22, 30, 0.8)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: '20px',
-                    padding: '24px 28px',
+                    background: 'var(--bg-card, rgba(22, 22, 30, 0.85))',
+                    border: '1px solid var(--border-medium, rgba(255, 255, 255, 0.08))',
+                    borderRadius: '24px',
+                    padding: '24px 22px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '20px',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
-                        <Bell size={20} color="#D4A537" />
-                        <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: '#FFFFFF' }}>
-                            تفضيلات الإشعارات والتنبيهات
-                        </h3>
+                    {/* Section Header */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ textAlign: isRtl ? 'right' : 'left' }}>
+                            <h3 style={{ margin: '0 0 4px', fontSize: '18px', fontWeight: '900', color: 'var(--text-primary, #FFFFFF)' }}>
+                                {t('securitySettings', 'الأمان')}
+                            </h3>
+                            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted, #94a3b8)' }}>
+                                {t('securitySettingsSub', 'اختصارات لتغيير كلمة المرور وضبط الحماية')}
+                            </p>
+                        </div>
+                        <div style={{
+                            width: '38px',
+                            height: '38px',
+                            borderRadius: '10px',
+                            background: 'rgba(212, 165, 55, 0.12)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--gold-400, #D4A537)',
+                        }}>
+                            <Shield size={20} />
+                        </div>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        {/* Toggle Item: Push */}
-                        <div style={{
+                    {/* 1. Change Password Link Card */}
+                    <Link
+                        to="/profile"
+                        style={{
+                            background: 'var(--bg-elevated, rgba(13, 13, 16, 0.6))',
+                            border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.06))',
+                            borderRadius: '16px',
+                            padding: '16px 18px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            padding: '12px 16px',
-                            background: 'rgba(13, 13, 16, 0.5)',
-                            borderRadius: '12px',
-                        }}>
-                            <div>
-                                <div style={{ fontSize: '14px', fontWeight: '700', color: '#FFFFFF' }}>
-                                    إشعارات الموقع الفورية (In-App Push)
-                                </div>
-                                <div style={{ fontSize: '12px', color: '#9E9EA8' }}>
-                                    تنبيهات فورية عند تغيير حالة طلبك أو قبول الإيداع
-                                </div>
-                            </div>
-                            <input
-                                type="checkbox"
-                                checked={preferences.push_notifications}
-                                onChange={() => handleToggle('push_notifications')}
-                                style={{ width: '20px', height: '20px', accentColor: '#D4A537', cursor: 'pointer' }}
-                            />
-                        </div>
-
-                        {/* Toggle Item: Email */}
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '12px 16px',
-                            background: 'rgba(13, 13, 16, 0.5)',
-                            borderRadius: '12px',
-                        }}>
-                            <div>
-                                <div style={{ fontSize: '14px', fontWeight: '700', color: '#FFFFFF' }}>
-                                    إشعارات البريد الإلكتروني (Email Alerts)
-                                </div>
-                                <div style={{ fontSize: '12px', color: '#9E9EA8' }}>
-                                    إرسال إيصالات الطلبات وتأكيد الشحن إلى {user?.email}
-                                </div>
-                            </div>
-                            <input
-                                type="checkbox"
-                                checked={preferences.email_notifications}
-                                onChange={() => handleToggle('email_notifications')}
-                                style={{ width: '20px', height: '20px', accentColor: '#D4A537', cursor: 'pointer' }}
-                            />
-                        </div>
-
-                        {/* Toggle Item: Target & Deals */}
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '12px 16px',
-                            background: 'rgba(13, 13, 16, 0.5)',
-                            borderRadius: '12px',
-                        }}>
-                            <div>
-                                <div style={{ fontSize: '14px', fontWeight: '700', color: '#FFFFFF' }}>
-                                    تحديثات أسعار بيع التارجت والعروض
-                                </div>
-                                <div style={{ fontSize: '12px', color: '#9E9EA8' }}>
-                                    تنبيه عند ارتفاع أسعار صرف تارجت التطبيقات أو إطلاق عروض حصرية
-                                </div>
-                            </div>
-                            <input
-                                type="checkbox"
-                                checked={preferences.target_alerts}
-                                onChange={() => handleToggle('target_alerts')}
-                                style={{ width: '20px', height: '20px', accentColor: '#D4A537', cursor: 'pointer' }}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Section 3: Security & Session */}
-                <div style={{
-                    background: 'rgba(22, 22, 30, 0.8)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: '20px',
-                    padding: '24px 28px',
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
-                        <Shield size={20} color="#D4A537" />
-                        <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: '#FFFFFF' }}>
-                            الأمان وإدارة الحساب
-                        </h3>
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
-                        <div>
-                            <div style={{ fontSize: '14px', fontWeight: '700', color: '#FFFFFF', marginBottom: '4px' }}>
-                                كلمة المرور والمصادقة الثنائية 2FA
-                            </div>
-                            <div style={{ fontSize: '12px', color: '#9E9EA8' }}>
-                                يمكنك تغيير كلمة المرور وتفعيل حماية 2FA من صفحة الملف الشخصي
-                            </div>
+                            textDecoration: 'none',
+                            transition: 'all 0.2s',
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--gold-400, #D4A537)', fontSize: '13px', fontWeight: '800' }}>
+                            <ArrowIcon size={16} />
+                            <span>{t('open', 'فتح')}</span>
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <Link
-                                to="/profile"
-                                style={{
-                                    padding: '8px 16px',
-                                    borderRadius: '10px',
-                                    background: 'rgba(212, 165, 55, 0.15)',
-                                    border: '1px solid rgba(212, 165, 55, 0.3)',
-                                    color: '#F3E5AB',
-                                    fontSize: '13px',
-                                    fontWeight: '700',
-                                    textDecoration: 'none',
-                                }}
-                            >
-                                إدارة الأمان
-                            </Link>
+                            <div style={{ textAlign: isRtl ? 'right' : 'left' }}>
+                                <strong style={{ display: 'block', fontSize: '14.5px', color: 'var(--text-primary, #FFFFFF)', marginBottom: '2px' }}>
+                                    {t('changePassword', 'تغيير كلمة المرور')}
+                                </strong>
+                                <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #94a3b8)' }}>
+                                    {t('changePasswordSub', 'فتح قسم الأمان في صفحة حسابي لتحديث كلمة المرور')}
+                                </span>
+                            </div>
 
-                            <button
-                                onClick={logout}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    padding: '8px 16px',
-                                    borderRadius: '10px',
-                                    background: 'rgba(239, 68, 68, 0.15)',
-                                    border: '1px solid rgba(239, 68, 68, 0.3)',
-                                    color: '#EF4444',
-                                    fontSize: '13px',
-                                    fontWeight: '700',
-                                    cursor: 'pointer',
-                                    fontFamily: 'Cairo, sans-serif',
-                                }}
-                            >
-                                <LogOut size={14} />
-                                <span>تسجيل الخروج</span>
-                            </button>
+                            <div style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '10px',
+                                background: 'rgba(255, 255, 255, 0.06)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#94a3b8',
+                                flexShrink: 0,
+                            }}>
+                                <Key size={18} />
+                            </div>
+                        </div>
+                    </Link>
+
+                    {/* 2. Two-Factor Authentication Link Card */}
+                    <Link
+                        to="/profile"
+                        style={{
+                            background: 'var(--bg-elevated, rgba(13, 13, 16, 0.6))',
+                            border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.06))',
+                            borderRadius: '16px',
+                            padding: '16px 18px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            textDecoration: 'none',
+                            transition: 'all 0.2s',
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--gold-400, #D4A537)', fontSize: '13px', fontWeight: '800' }}>
+                            <ArrowIcon size={16} />
+                            <span>{t('open', 'فتح')}</span>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ textAlign: isRtl ? 'right' : 'left' }}>
+                                <strong style={{ display: 'block', fontSize: '14.5px', color: 'var(--text-primary, #FFFFFF)', marginBottom: '2px' }}>
+                                    {t('twoFactor', 'المصادقة الثنائية')}
+                                </strong>
+                                <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #94a3b8)' }}>
+                                    {t('twoFactorSub', 'تفعيل أو تعطيل التحقق برمز البريد الإلكتروني')}
+                                </span>
+                            </div>
+
+                            <div style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '10px',
+                                background: 'rgba(255, 255, 255, 0.06)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#94a3b8',
+                                flexShrink: 0,
+                            }}>
+                                <Lock size={18} />
+                            </div>
+                        </div>
+                    </Link>
+
+                    {/* 3. Logout All Devices Action Card */}
+                    <div
+                        onClick={handleLogoutAllDevices}
+                        style={{
+                            background: 'var(--bg-elevated, rgba(13, 13, 16, 0.6))',
+                            border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.06))',
+                            borderRadius: '16px',
+                            padding: '16px 18px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#22c55e', fontSize: '13px', fontWeight: '800' }}>
+                            <ArrowIcon size={16} />
+                            <span>{t('enabled', 'مفعل')}</span>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ textAlign: isRtl ? 'right' : 'left' }}>
+                                <strong style={{ display: 'block', fontSize: '14.5px', color: 'var(--text-primary, #FFFFFF)', marginBottom: '2px' }}>
+                                    {t('logoutAllDevices', 'تسجيل الخروج من كل الأجهزة')}
+                                </strong>
+                                <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #94a3b8)' }}>
+                                    {t('logoutAllDevicesSub', 'إنهاء كافة الجلسات النشطة على الأجهزة الأخرى')}
+                                </span>
+                            </div>
+
+                            <div style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '10px',
+                                background: 'rgba(34, 197, 94, 0.15)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#22c55e',
+                                flexShrink: 0,
+                            }}>
+                                <CheckCircle2 size={18} />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </MainLayout>
+        </MainLayout>
     );
 }
+
 

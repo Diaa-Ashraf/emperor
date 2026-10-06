@@ -28,8 +28,13 @@ export function getFooterSlogan() {
 }
 
 export function getWhatsAppSupport() {
-    return window.__APP_SETTINGS__?.whatsapp_support || '+201000000000';
+    return window.__APP_SETTINGS__?.whatsapp_support || '+201026042456';
 }
+
+export function getWhatsAppChannel() {
+    return window.__APP_SETTINGS__?.whatsapp_channel || 'https://whatsapp.com/channel/0029Vb7b7oQ8KMqoJcK0H81F';
+}
+
 
 export function getTelegramSupport() {
     return window.__APP_SETTINGS__?.telegram_support || 'EmperorSupport';
