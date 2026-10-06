@@ -4,7 +4,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import "../../../css/faqAccordion.css";
 export default function FaqAccordion() {
-    const { isRtl } = useLanguage();
+    const { isRtl, language, t } = useLanguage();
     const { theme } = useTheme();
     const faqListRef = useRef(null);
     const questionRefs = useRef([]);
@@ -12,7 +12,85 @@ export default function FaqAccordion() {
     const [activeIndex, setActiveIndex] = useState(-1);
     const [cursorTop, setCursorTop] = useState(0);
 
-    const faqs = [
+    const isEn = language === 'en';
+
+    const faqs = isEn ? [
+        {
+            q: 'How long does it take for UC, Diamonds, or Card codes to arrive?',
+            a: 'Top-up on Emperor is powered by an Automated Instant Delivery system. In most cases, balance arrives to your account or codes appear on your orders page within 10 to 30 seconds after payment confirmation.',
+        },
+        {
+            q: 'How can I sell Live & Voice Chat app targets (e.g. Migo, Poppo, Azumi)?',
+            a: 'Navigate to "Sell Target", select your app, and enter your coins or points. You will immediately see the cash payout in EGP. Upon submitting, cash is transferred instantly via InstaPay, Vodafone Cash, or platform wallet within under 5 minutes.',
+        },
+        {
+            q: 'What payment methods are supported for deposits and direct orders?',
+            a: 'We support all major Egyptian and Arab payment gateways: InstaPay, Vodafone Cash & mobile wallets (Orange Cash, WE Pay, Etisalat Cash), bank cards (Visa / MasterCard / Meeza), and internal platform wallet balance.',
+        },
+        {
+            q: 'Are Emperor cards and game recharges 100% official and safe from bans?',
+            a: 'All our products are 100% genuine and sourced directly from authorized distributors and official game servers. Zero risk of bans or policy violations, backed by a full money-back guarantee.',
+        },
+        {
+            q: 'I run an online store or platform. How can I integrate with Emperor API?',
+            a: 'We provide merchants and distributors with a REST API to sync catalog prices, automate recharge orders, and deduct balance directly from your wallet. Reach out to developer support to get your API key.',
+        },
+        {
+            q: 'Who developed Emperor Platform, and how can I request a custom system?',
+            a: (
+                <div>
+                    <span>Designed and engineered with top-tier security and speed by </span>
+                    <strong style={{ color: 'var(--gold-400)' }}>Diaa Elshafey</strong>
+                    <span> and the </span>
+                    <strong style={{ color: 'var(--gold-400)' }}>Stackway</strong> team.
+                    <br />
+                    <span>For custom digital recharge platforms, SaaS stores, or enterprise software:</span>
+                    <div style={{ marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+                        <a
+                            href="https://wa.me/201202325201"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: '7px 14px',
+                                borderRadius: '10px',
+                                background: 'rgba(34, 197, 94, 0.15)',
+                                border: '1px solid rgba(34, 197, 94, 0.4)',
+                                color: '#22C55E',
+                                textDecoration: 'none',
+                                fontWeight: '800',
+                                fontSize: '13px',
+                            }}
+                        >
+                            <span>WhatsApp: +201202325201</span>
+                        </a>
+                        <a
+                            href="https://portfolio.stackway.cloud"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: '7px 14px',
+                                borderRadius: '10px',
+                                background: 'rgba(212, 165, 55, 0.15)',
+                                border: '1px solid rgba(212, 165, 55, 0.4)',
+                                color: 'var(--gold-400)',
+                                textDecoration: 'none',
+                                fontWeight: '800',
+                                fontSize: '13px',
+                            }}
+                        >
+                            <span>Portfolio (Stackway Cloud)</span>
+                        </a>
+                    </div>
+                </div>
+            ),
+        },
+    ] : [
         {
             q: 'كم يستغرق وصول الشدات، الجواهر، أو أكواد البطاقات؟',
             a: 'الشحن في منصة إمبراطور يتم بنظام آلي مباشر (Automated Instant Delivery). في معظم الحالات يصل الشحن إلى حسابك أو يظهر الكود في صفحة طلباتك خلال 10 إلى 30 ثانية فقط بعد إتمام الدفع بنجاح.',
@@ -124,7 +202,7 @@ export default function FaqAccordion() {
                 <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 32px' }}>
                     <div className="emperor-badge" style={{ margin: '0 auto 12px' }}>
                         <HelpCircle size={13} color="var(--gold-400)" />
-                        <span>إجابات واضحة ومباشرة</span>
+                        <span>{t('faqBadge', 'إجابات واضحة ومباشرة')}</span>
                     </div>
                     <h2 style={{
                         fontSize: 'clamp(22px, 3.5vw, 28px)',
@@ -132,14 +210,14 @@ export default function FaqAccordion() {
                         color: theme === 'light' ? 'var(--gold-700)' : 'var(--text-primary)',
                         marginBottom: '8px',
                     }}>
-                        الأسئلة الأكثر شيوعاً
+                        {t('faqTitle', 'الأسئلة الأكثر شيوعاً')}
                     </h2>
                     <p style={{
                         fontSize: '13.5px',
                         color: 'var(--text-secondary)',
                         margin: 0,
                     }}>
-                        كل ما تحتاج معرفته عن خدمات الشحن، سحب التارجت، وطرق الدفع
+                        {t('faqSubtitle', 'كل ما تحتاج معرفته عن خدمات الشحن، سحب التارجت، وطرق الدفع')}
                     </p>
                 </div>
                 <div ref={faqListRef} className="faq-list" style={{ maxWidth: '820px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>

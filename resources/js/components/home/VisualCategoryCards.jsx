@@ -6,7 +6,7 @@ import { formatImageUrl } from '../../utils/imageHelper';
 import "../../../css/visualCategory.css";
 
 export default function VisualCategoryCards() {
-    const { isRtl } = useLanguage();
+    const { isRtl, language } = useLanguage();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -34,17 +34,35 @@ export default function VisualCategoryCards() {
         <div style={{ marginBottom: '44px' }}>
             <div className="emperor-category-poster-grid">
                 {categories.map((cat, i) => (
-                    <CategoryPosterCard key={cat.id || i} cat={cat} isRtl={isRtl} index={i} />
+                    <CategoryPosterCard key={cat.id || i} cat={cat} isRtl={isRtl} language={language} index={i} />
                 ))}
             </div>
         </div>
     );
 }
 
-function CategoryPosterCard({ cat, isRtl, index }) {
+function getCategoryDisplayName(cat, language) {
+    if (language !== 'en') return cat.name;
+    if (cat.name_en) return cat.name_en;
+    const s = (cat.name || '').toLowerCase();
+    const slug = (cat.slug || '').toLowerCase();
+    
+    if (slug === 'games' || s.includes('ألعاب') || s.includes('العاب')) return 'Electronic Games';
+    if (slug === 'apps' || slug === 'voice_apps' || s.includes('تطبيقات') || s.includes('بث') || s.includes('شات')) return 'Live & Chat Apps';
+    if (slug === 'cards' || slug === 'gift-cards' || s.includes('بطاقات') || s.includes('اشتراكات')) return 'Digital Cards & Subs';
+    if (slug === 'telecom' || s.includes('اتصالات') || s.includes('شبكات')) return 'Telecom Recharge';
+    if (slug === 'target' || s.includes('تارجت') || s.includes('سحب')) return 'Sell Target';
+    if (s.includes('ببجي') || s.includes('pubg')) return 'PUBG Mobile';
+    if (s.includes('فري فاير') || s.includes('free fire')) return 'Free Fire';
+    if (s.includes('روبلوكس') || s.includes('roblox')) return 'Roblox';
+    return cat.name;
+}
+
+function CategoryPosterCard({ cat, isRtl, language, index }) {
     const [hovered, setHovered] = useState(false);
     const isTarget = cat.slug === 'target' || cat.slug === 'target-apps' || cat.isTarget;
     const categoryLink = isTarget ? '/target/apps' : `/category/${cat.slug || cat.id}`;
+    const displayName = getCategoryDisplayName(cat, language);
 
     // Resolve artwork image with high-definition defaults
     const rawImg = cat.banner_url || cat.banner || cat.image_url || cat.image || cat.icon_url || cat.icon;
@@ -142,7 +160,7 @@ function CategoryPosterCard({ cat, isRtl, index }) {
                     transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
                 }}
             >
-                {cat.name}
+                {displayName}
             </h3>
         </Link>
     );

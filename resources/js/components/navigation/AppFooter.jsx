@@ -13,10 +13,12 @@ import {
 } from 'lucide-react';
 import { catalogApi, depositsApi, supportApi } from '../../api/endpoints';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { getSiteLogo, getSiteName, getSiteDescription, getFooterSlogan } from '../../utils/settingsHelper';
 
 export default function AppFooter() {
     const { theme } = useTheme();
+    const { t, isRtl, language } = useLanguage();
     const isLight = theme === 'light';
 
     const [categories, setCategories] = useState([]);
@@ -162,7 +164,7 @@ export default function AppFooter() {
                             fontWeight: '700',
                         }}>
                             <ShieldCheck size={16} />
-                            <span>نظام مشفر بالكامل — حماية 100% للبيانات</span>
+                            <span>{t('fullyEncrypted', 'نظام مشفر بالكامل — حماية 100% للبيانات')}</span>
                         </div>
                         <div style={{
                             display: 'flex',
@@ -173,7 +175,7 @@ export default function AppFooter() {
                             fontWeight: '700',
                         }}>
                             <Zap size={16} />
-                            <span>تنفيذ فوري للطلبات على مدار 24 ساعة</span>
+                            <span>{t('instant247Execution', 'تنفيذ فوري للطلبات على مدار 24 ساعة')}</span>
                         </div>
                     </div>
                 </div>
@@ -190,7 +192,7 @@ export default function AppFooter() {
                         gap: '6px',
                     }}>
                         <Layers size={16} />
-                        <span>أقسام المتجر المتاحة</span>
+                        <span>{t('availableCategories', 'أقسام المتجر المتاحة')}</span>
                     </h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {displayCategories.map(cat => (
@@ -210,7 +212,7 @@ export default function AppFooter() {
                                 }}
                                 onMouseEnter={e => {
                                     e.currentTarget.style.color = isLight ? '#b45309' : '#F5D061';
-                                    e.currentTarget.style.transform = 'translateX(-4px)';
+                                    e.currentTarget.style.transform = isRtl ? 'translateX(-4px)' : 'translateX(4px)';
                                 }}
                                 onMouseLeave={e => {
                                     e.currentTarget.style.color = isLight ? '#475569' : '#94A3B8';
@@ -218,8 +220,8 @@ export default function AppFooter() {
                                 }}
                             >
                                 <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <ChevronLeft size={13} style={{ opacity: 0.6 }} />
-                                    {cat.name}
+                                    <ChevronLeft size={13} style={{ opacity: 0.6, transform: isRtl ? 'none' : 'rotate(180deg)' }} />
+                                    {language === 'en' && cat.name_en ? cat.name_en : cat.name}
                                 </span>
                                 {typeof cat.products_count === 'number' && cat.products_count > 0 && (
                                     <span style={{
@@ -231,7 +233,7 @@ export default function AppFooter() {
                                         color: isLight ? '#92400e' : '#F5D061',
                                         border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.2)',
                                     }}>
-                                        {cat.products_count} منتج
+                                        {cat.products_count} {t('items', 'منتج')}
                                     </span>
                                 )}
                             </Link>
@@ -247,17 +249,17 @@ export default function AppFooter() {
                         fontWeight: '800',
                         marginBottom: '14px',
                     }}>
-                        خدمات المنصة وروابط سريعة
+                        {t('quickLinks', 'خدمات المنصة وروابط سريعة')}
                     </h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {[
-                            { to: '/target/apps', label: 'سحب وبيع التارجت للوكالات' },
-                            { to: '/deposit', label: 'شحن رصيد المحفظة (إيداع)' },
-                            { to: '/referrals', label: 'برنامج الإحالة والأرباح' },
-                            { to: '/wallet', label: 'التحويلات والعمليات المالية' },
-                            { to: '/about', label: 'عن منصة إمبراطور (من نحن)' },
-                            { to: '/account-issues', label: 'مركز الشكاوى ومشاكل الحساب' },
-                            { to: '/support', label: 'الأسئلة الشائعة والدعم المباشر' },
+                            { to: '/target/apps', label: t('targetSelling', 'سحب وبيع التارجت للوكالات') },
+                            { to: '/deposit', label: t('chargeWallet', 'شحن رصيد المحفظة (إيداع)') },
+                            { to: '/referrals', label: t('referrals', 'برنامج الإحالة والأرباح') },
+                            { to: '/wallet', label: t('financialTransfers', 'التحويلات والعمليات المالية') },
+                            { to: '/about', label: t('aboutUs', 'عن منصة إمبراطور (من نحن)') },
+                            { to: '/account-issues', label: t('complaintsCenter', 'مركز الشكاوى ومشاكل الحساب') },
+                            { to: '/support', label: t('liveSupportFaq', 'الأسئلة الشائعة والدعم المباشر') },
                         ].map(link => (
                             <Link
                                 key={link.to}
@@ -275,14 +277,14 @@ export default function AppFooter() {
                                 }}
                                 onMouseEnter={e => {
                                     e.currentTarget.style.color = isLight ? '#b45309' : '#F5D061';
-                                    e.currentTarget.style.transform = 'translateX(-4px)';
+                                    e.currentTarget.style.transform = isRtl ? 'translateX(-4px)' : 'translateX(4px)';
                                 }}
                                 onMouseLeave={e => {
                                     e.currentTarget.style.color = isLight ? '#475569' : '#94A3B8';
                                     e.currentTarget.style.transform = 'translateX(0)';
                                 }}
                             >
-                                <ChevronLeft size={13} style={{ opacity: 0.6 }} />
+                                <ChevronLeft size={13} style={{ opacity: 0.6, transform: isRtl ? 'none' : 'rotate(180deg)' }} />
                                 <span>{link.label}</span>
                             </Link>
                         ))}
@@ -301,7 +303,7 @@ export default function AppFooter() {
                         gap: '6px',
                     }}>
                         <CreditCard size={16} />
-                        <span>طرق الدفع والإيداع المعتمدة</span>
+                        <span>{t('acceptedPaymentMethods', 'طرق الدفع والإيداع المعتمدة')}</span>
                     </h4>
                     
                     <div style={{
@@ -345,7 +347,7 @@ export default function AppFooter() {
                                 gap: '6px',
                             }}>
                                 <Headphones size={14} />
-                                <span>قنوات الدعم الفني المباشر</span>
+                                <span>{t('supportChannels', 'قنوات الدعم الفني المباشر')}</span>
                             </h5>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                                 {supportContacts.slice(0, 4).map(sc => (
@@ -402,7 +404,7 @@ export default function AppFooter() {
                 color: isLight ? '#64748b' : '#8E8E98',
             }}>
                 <div>
-                    جميع الحقوق محفوظة © {new Date().getFullYear()} — منصة إمبراطور كارد
+                    {t('rights', `جميع الحقوق محفوظة © ${new Date().getFullYear()} — منصة إمبراطور`)}
                 </div>
                 <div>
                     <Link
@@ -416,7 +418,7 @@ export default function AppFooter() {
                             gap: '4px',
                         }}
                     >
-                        <span>تم التطوير بواسطة فريق العمل</span>
+                        <span>{t('developedByTeam', 'تم التطوير بواسطة فريق العمل')}</span>
                         <ExternalLink size={12} />
                     </Link>
                 </div>

@@ -5,7 +5,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { formatImageUrl } from '../../utils/imageHelper';
 
 export default function GoldenTargetBanner() {
-    const { isRtl } = useLanguage();
+    const { isRtl, language, t } = useLanguage();
     const [hovered, setHovered] = useState(false);
     const [customBanner, setCustomBanner] = useState(null);
 
@@ -32,7 +32,9 @@ export default function GoldenTargetBanner() {
         : '/images/artwork/hero_banner.jpg';
 
     const bannerLink = customBanner?.link || '/target/apps';
-    const bannerTitle = customBanner?.title || 'بيع تارجت';
+    const bannerTitle = customBanner?.title
+        ? (language === 'en' && (customBanner.title.includes('تارجت') || customBanner.title.includes('بيع')) ? t('sellTargetBannerTitle', 'Sell Live App Target & Coins') : customBanner.title)
+        : t('sellTargetBannerTitle', 'بيع تارجت');
 
     return (
         <div style={{

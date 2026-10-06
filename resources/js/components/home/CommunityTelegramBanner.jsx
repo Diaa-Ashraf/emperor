@@ -5,7 +5,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { formatImageUrl } from '../../utils/imageHelper';
 
 export default function CommunityTelegramBanner() {
-    const { isRtl } = useLanguage();
+    const { isRtl, language, t } = useLanguage();
     const [hovered, setHovered] = useState(false);
     const [customBanner, setCustomBanner] = useState(null);
 
@@ -32,7 +32,9 @@ export default function CommunityTelegramBanner() {
         : defaultImage;
 
     const bannerLink = customBanner?.link || defaultLink;
-    const bannerTitle = customBanner?.title || 'انضم إلى مجتمعنا على الواتساب وتابع أحدث العروض والتحديثات';
+    const bannerTitle = customBanner?.title
+        ? (language === 'en' && (customBanner.title.includes('واتساب') || customBanner.title.includes('مجتمعنا')) ? t('whatsappCommunityTitle', 'Join our WhatsApp Community for latest deals & instant updates') : customBanner.title)
+        : t('whatsappCommunityTitle', 'انضم إلى مجتمعنا على الواتساب وتابع أحدث العروض والتحديثات');
 
     return (
         <div style={{

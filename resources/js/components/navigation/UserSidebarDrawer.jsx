@@ -87,62 +87,62 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
             path: '/',
             label: t('home', 'الرئيسية'),
             icon: Home,
-            iconBadgeBg: '#0284c7',
-            iconBadgeColor: '#ffffff'
+            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
+            iconBadgeColor: 'var(--gold-400, #D4A537)'
         },
         {
             path: '/profile',
             label: t('myAccount', 'حسابي'),
             icon: User,
-            iconBadgeBg: '#0284c7',
-            iconBadgeColor: '#ffffff',
+            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
+            iconBadgeColor: 'var(--gold-400, #D4A537)',
             authRequired: true
         },
         {
             path: '/settings',
             label: t('security', 'حماية الحساب'),
             icon: Shield,
-            iconBadgeBg: '#0284c7',
-            iconBadgeColor: '#ffffff',
+            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
+            iconBadgeColor: 'var(--gold-400, #D4A537)',
             authRequired: true
         },
         {
             path: '/referrals',
             label: t('referrals', 'رابط الإحالة'),
             icon: Share2,
-            iconBadgeBg: '#0284c7',
-            iconBadgeColor: '#ffffff',
+            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
+            iconBadgeColor: 'var(--gold-400, #D4A537)',
             authRequired: true
         },
         {
             path: '/orders',
             label: t('myOrders', 'طلباتي'),
             icon: FileText,
-            iconBadgeBg: '#0284c7',
-            iconBadgeColor: '#ffffff',
+            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
+            iconBadgeColor: 'var(--gold-400, #D4A537)',
             authRequired: true
         },
         {
             path: '/target/apps',
             label: t('targetSelling', 'بيع التارجت'),
             icon: Target,
-            iconBadgeBg: '#D4A537',
+            iconBadgeBg: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
             iconBadgeColor: '#000000'
         },
         {
             path: '/wallet',
             label: t('financialTransfers', 'التحويلات المالية'),
             icon: Wallet,
-            iconBadgeBg: '#0284c7',
-            iconBadgeColor: '#ffffff',
+            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
+            iconBadgeColor: 'var(--gold-400, #D4A537)',
             authRequired: true
         },
         {
             path: '/developer',
             label: t('developerApi', 'API للمطورين'),
             icon: Key,
-            iconBadgeBg: '#3B82F6',
-            iconBadgeColor: '#FFFFFF',
+            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
+            iconBadgeColor: 'var(--gold-400, #D4A537)',
             authRequired: true,
             condition: (u) => Boolean(u?.has_api_access || u?.api_access_status === 'active' || u?.is_admin || u?.role === 'admin' || u?.role === 'api_client')
         },
@@ -150,22 +150,22 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
             path: '/created-by',
             label: t('createdBy', 'تم الإنشاء بواسطة'),
             icon: Code,
-            iconBadgeBg: '#64748B',
-            iconBadgeColor: '#FFFFFF'
+            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
+            iconBadgeColor: 'var(--gold-400, #D4A537)'
         },
         {
             path: '/support',
             label: t('support', 'اتصل بنا'),
             icon: Headphones,
-            iconBadgeBg: '#22C55E',
-            iconBadgeColor: '#FFFFFF'
+            iconBadgeBg: 'rgba(34, 197, 94, 0.15)',
+            iconBadgeColor: '#22C55E'
         },
         {
             path: '/settings',
             label: t('settings', 'الإعدادات'),
             icon: Settings,
-            iconBadgeBg: '#0284c7',
-            iconBadgeColor: '#ffffff',
+            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
+            iconBadgeColor: 'var(--gold-400, #D4A537)',
             authRequired: true
         },
     ];
@@ -351,11 +351,11 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         display: 'inline-flex',
                                         alignItems: 'center',
                                         gap: '4px',
-                                        background: isLight ? '#f1f5f9' : 'rgba(2, 132, 199, 0.15)',
-                                        border: isLight ? '1px solid #cbd5e1' : '1px solid rgba(2, 132, 199, 0.35)',
+                                        background: isLight ? 'rgba(212, 165, 55, 0.15)' : 'rgba(212, 165, 55, 0.12)',
+                                        border: isLight ? '1px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.35)',
                                         borderRadius: '8px',
                                         padding: '2px 7px',
-                                        color: isLight ? '#0284c7' : '#38bdf8',
+                                        color: isLight ? '#9A7210' : '#F5D061',
                                         fontSize: '10.5px',
                                         fontWeight: '800',
                                         cursor: 'pointer',
@@ -374,17 +374,15 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         width: '46px',
                                         height: '46px',
                                         borderRadius: '14px',
-                                        background: isLight
-                                            ? 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)'
-                                            : 'linear-gradient(135deg, #0c4a6e 0%, #0369a1 100%)',
-                                        border: '1.5px solid rgba(56, 189, 248, 0.6)',
+                                        background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                        border: '1.5px solid rgba(212, 165, 55, 0.8)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: '#FFFFFF',
+                                        color: '#08080A',
                                         fontSize: '18px',
                                         fontWeight: '900',
-                                        boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)',
+                                        boxShadow: '0 4px 15px rgba(212, 165, 55, 0.35)',
                                     }}>
                                         {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                                     </div>
@@ -417,7 +415,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     <span style={{
                                         fontSize: '11.5px',
                                         fontWeight: '800',
-                                        color: isLight ? '#0284c7' : '#38bdf8',
+                                        color: isLight ? '#9A7210' : '#F5D061',
                                     }}>
                                         {user?.role === 'admin' ? t('vipMember', 'عميل إمبراطور VIP') : t('storeMember', 'عضو المتجر')}
                                     </span>
@@ -474,18 +472,18 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                     )}
                 </div>
 
-                {/* ── 4. Wallet Card (Exact KA CARD Gradient & Blue Charge Button) ── */}
+                {/* ── 4. Wallet Card (Exact Emperor Gold Palette & Top Up Button) ── */}
                 <div style={{ padding: '0 18px 16px' }}>
                     <div style={{
                         background: isLight
-                            ? 'linear-gradient(145deg, #ffffff 0%, #f0f9ff 100%)'
+                            ? 'linear-gradient(145deg, #ffffff 0%, #FFFDF5 100%)'
                             : 'linear-gradient(145deg, #161622 0%, #0e0e16 100%)',
-                        border: isLight ? '1.5px solid rgba(2, 132, 199, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)',
+                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.35)',
                         borderRadius: '18px',
                         padding: '16px',
                         boxShadow: isLight
                             ? '0 6px 20px rgba(0, 0, 0, 0.05)'
-                            : '0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(2, 132, 199, 0.08)',
+                            : '0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(212, 165, 55, 0.12)',
                     }}>
                         {/* Top row: Wallet Icon & Balance Text */}
                         <div style={{
@@ -494,18 +492,18 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             justifyContent: 'space-between',
                             marginBottom: '14px',
                         }}>
-                            {/* Blue Rounded Wallet Icon Frame */}
+                            {/* Gold Rounded Wallet Icon Frame */}
                             <div style={{
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '12px',
-                                background: 'linear-gradient(135deg, #0284c7 0%, #1e40af 100%)',
-                                border: '1px solid rgba(56, 189, 248, 0.5)',
+                                background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                border: '1px solid rgba(212, 165, 55, 0.6)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: '#FFFFFF',
-                                boxShadow: '0 4px 12px rgba(2, 132, 199, 0.4)',
+                                color: '#08080A',
+                                boxShadow: '0 4px 14px rgba(212, 165, 55, 0.35)',
                                 flexShrink: 0,
                             }}>
                                 <Wallet size={20} />
@@ -533,7 +531,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             </div>
                         </div>
 
-                        {/* Cyan/Blue Glossy Action Button: ↗ اشحن الآن */}
+                        {/* Gold Glossy Action Button: ↗ اشحن الآن */}
                         <Link
                             to="/deposit"
                             onClick={onClose}
@@ -545,22 +543,22 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                 width: '100%',
                                 padding: '10px 14px',
                                 borderRadius: '12px',
-                                background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-                                color: '#FFFFFF',
+                                background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                color: '#08080A',
                                 fontSize: '13.5px',
                                 fontWeight: '900',
                                 textDecoration: 'none',
-                                boxShadow: '0 4px 16px rgba(2, 132, 199, 0.45)',
+                                boxShadow: '0 4px 16px rgba(212, 165, 55, 0.35)',
                                 boxSizing: 'border-box',
                                 transition: 'all 0.2s ease',
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow = '0 6px 20px rgba(2, 132, 199, 0.65)';
+                                e.currentTarget.style.boxShadow = '0 6px 22px rgba(212, 165, 55, 0.55)';
                             }}
                             onMouseLeave={(e) => {
                                 e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 4px 16px rgba(2, 132, 199, 0.45)';
+                                e.currentTarget.style.boxShadow = '0 4px 16px rgba(212, 165, 55, 0.35)';
                             }}
                         >
                             <span>↗ {t('chargeNow', 'اشحن الآن')}</span>
@@ -582,7 +580,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                     <ChevronDown size={14} />
                 </div>
 
-                {/* ── 6. Navigation Items (Sleek Dark Rounded Pills with Blue Icon Boxes) ── */}
+                {/* ── 6. Navigation Items (Sleek Dark Rounded Pills with Gold Accents) ── */}
                 <nav style={{ flex: 1, padding: '0 14px 20px', display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto' }}>
                     {navItems.map((item) => {
                         if (item.authRequired && !isAuthenticated) return null;
@@ -609,39 +607,39 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     textDecoration: 'none',
                                     background: active
                                         ? (isLight
-                                            ? 'linear-gradient(135deg, rgba(2, 132, 199, 0.12) 0%, rgba(255, 255, 255, 0.95) 100%)'
-                                            : 'linear-gradient(135deg, rgba(2, 132, 199, 0.22) 0%, rgba(18, 18, 24, 0.95) 100%)')
+                                            ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.16) 0%, rgba(255, 255, 255, 0.95) 100%)'
+                                            : 'linear-gradient(135deg, rgba(212, 165, 55, 0.22) 0%, rgba(18, 18, 24, 0.95) 100%)')
                                         : (isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.03)'),
                                     border: active
-                                        ? (isLight ? '1.5px solid rgba(2, 132, 199, 0.6)' : '1px solid rgba(2, 132, 199, 0.5)')
+                                        ? (isLight ? '1.5px solid rgba(212, 165, 55, 0.65)' : '1px solid rgba(212, 165, 55, 0.55)')
                                         : (isLight ? '1px solid rgba(226, 232, 240, 0.9)' : '1px solid rgba(255, 255, 255, 0.04)'),
                                     color: active
-                                        ? (isLight ? '#0284c7' : '#38bdf8')
+                                        ? (isLight ? '#9A7210' : '#F5D061')
                                         : (isLight ? '#1E293B' : '#FFFFFF'),
                                     fontWeight: active ? '900' : '800',
                                     fontSize: '14px',
                                     transition: 'all 0.2s ease',
                                     boxShadow: active
-                                        ? '0 4px 14px rgba(2, 132, 199, 0.15)'
+                                        ? '0 4px 14px rgba(212, 165, 55, 0.2)'
                                         : 'none',
                                 }}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    {/* Rounded blue icon badge */}
+                                    {/* Rounded gold icon badge */}
                                     <div style={{
                                         width: '34px',
                                         height: '34px',
                                         borderRadius: '10px',
                                         background: active
-                                            ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)'
-                                            : (isLight ? 'rgba(2, 132, 199, 0.1)' : 'rgba(2, 132, 199, 0.15)'),
+                                            ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
+                                            : (isLight ? 'rgba(212, 165, 55, 0.12)' : 'rgba(212, 165, 55, 0.15)'),
                                         border: active
-                                            ? '1px solid rgba(56, 189, 248, 0.6)'
-                                            : (isLight ? '1px solid rgba(2, 132, 199, 0.2)' : '1px solid rgba(2, 132, 199, 0.25)'),
+                                            ? '1px solid rgba(212, 165, 55, 0.8)'
+                                            : (isLight ? '1px solid rgba(212, 165, 55, 0.25)' : '1px solid rgba(212, 165, 55, 0.25)'),
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: active ? '#FFFFFF' : (isLight ? '#0284c7' : '#38bdf8'),
+                                        color: active ? '#08080A' : (isLight ? '#9A7210' : '#F5D061'),
                                         flexShrink: 0,
                                     }}>
                                         <item.icon size={17} />

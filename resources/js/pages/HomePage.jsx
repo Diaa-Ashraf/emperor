@@ -91,7 +91,7 @@ export default function HomePage() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onFocus={() => setSearchFocused(true)}
                         onBlur={() => setTimeout(() => setSearchFocused(false), 250)}
-                        placeholder="ابحث عن لعبة، بطاقة، باقة شحن، أو تطبيق..."
+                        placeholder={t('searchPlaceholder', 'ابحث عن لعبة، بطاقة، باقة شحن، أو تطبيق...')}
                         style={{
                             flex: 1,
                             background: 'transparent',
@@ -121,7 +121,7 @@ export default function HomePage() {
                                 transition: 'all 0.2s ease',
                             }}
                         >
-                            مسح
+                            {t('clear', 'مسح')}
                         </button>
                     )}
                 </form>
@@ -143,7 +143,7 @@ export default function HomePage() {
                         overflowY: 'auto',
                     }}>
                         <div style={{ fontSize: '12px', color: 'var(--gold-400)', fontWeight: '800', padding: '6px 12px 10px' }}>
-                            نتائج البحث المباشرة ({filteredItems.length})
+                            {t('liveSearchResults', 'نتائج البحث المباشرة')} ({filteredItems.length})
                         </div>
                         {filteredItems.length > 0 ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -179,7 +179,7 @@ export default function HomePage() {
                                                 <span style={{ fontSize: '13.5px', fontWeight: '700', color: '#FFFFFF' }}>{item.name}</span>
                                             </div>
                                             <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--gold-300)' }}>
-                                                {item.price_egp ? `${item.price_egp} ج.م` : 'عرض الباقات'}
+                                                {item.price_egp ? `${item.price_egp} ${t('currency', 'ج.م')}` : t('viewPackages', 'عرض الباقات')}
                                             </span>
                                         </Link>
                                     );
@@ -187,7 +187,7 @@ export default function HomePage() {
                             </div>
                         ) : (
                             <div style={{ padding: '20px', textAlign: 'center', color: '#888', fontSize: '13px' }}>
-                                لا توجد منتجات مطابقة لـ "{searchQuery}"
+                                {t('noMatchesFor', 'لا توجد منتجات مطابقة لـ')} "{searchQuery}"
                             </div>
                         )}
                     </div>

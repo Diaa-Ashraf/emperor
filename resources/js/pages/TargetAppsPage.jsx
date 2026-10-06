@@ -74,7 +74,7 @@ export default function TargetAppsPage() {
                         }}
                     >
                         <FileText size={16} />
-                        <span>سجل الطلبات</span>
+                        <span>{t('ordersHistory', 'سجل الطلبات')}</span>
                     </Link>
 
                     <button
@@ -103,7 +103,7 @@ export default function TargetAppsPage() {
                             e.currentTarget.style.color = isLight ? '#475569' : '#D1D1DB';
                         }}
                     >
-                        <span>رجوع</span>
+                        <span>{t('back', 'رجوع')}</span>
                         {isRtl ? <ArrowLeft size={15} /> : <ArrowRight size={15} />}
                     </button>
                 </div>
@@ -160,7 +160,7 @@ export default function TargetAppsPage() {
                                 color: isLight ? '#0F172A' : '#FFFFFF',
                                 letterSpacing: '-0.3px',
                             }}>
-                                اختر التطبيق
+                                {t('selectApp', 'اختر التطبيق')}
                             </h2>
                         </div>
 
@@ -177,19 +177,19 @@ export default function TargetAppsPage() {
                             borderRadius: '20px',
                         }}>
                             <Sparkles size={13} color={isLight ? '#9A7210' : '#FFD700'} />
-                            <span>استلام فوري كاش بأعلى سعر صرف</span>
+                            <span>{t('instantCashTopRate', 'استلام فوري كاش بأعلى سعر صرف')}</span>
                         </div>
                     </div>
                     <VideoBackground>
                         {loading ? (
                             <div style={{ padding: '70px 0' }}>
-                                <LoadingSpinner text="جاري تحميل التطبيقات وأسعار الصرف من قاعدة البيانات..." />
+                                <LoadingSpinner text={t('loadingTargetApps', 'جاري تحميل التطبيقات وأسعار الصرف من قاعدة البيانات...')} />
                             </div>
                         ) : apps.length === 0 ? (
                             <EmptyState
-                                title="لا توجد تطبيقات تارجت حالياً"
-                                description="لم يتم تفعيل أو إضافة أي تطبيقات بيع تارجت في لوحة التحكم بعد"
-                                actionText="تحديث الصفحة"
+                                title={t('noTargetApps', 'لا توجد تطبيقات تارجت حالياً')}
+                                description={t('noTargetAppsDesc', 'لم يتم تفعيل أو إضافة أي تطبيقات بيع تارجت في لوحة التحكم بعد')}
+                                actionText={t('refreshPage', 'تحديث الصفحة')}
                                 onAction={() => window.location.reload()}
                             />
                         ) : (
