@@ -836,39 +836,61 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 90;
-    background: var(--glass-bg-heavy);
-    backdrop-filter: var(--glass-blur-heavy);
-    -webkit-backdrop-filter: var(--glass-blur-heavy);
-    border-top: 1px solid var(--border-subtle);
-    height: 68px;
+    z-index: 900;
+    background: rgba(10, 10, 15, 0.92);
+    backdrop-filter: blur(20px) saturate(1.8);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    border-top: 1px solid rgba(212, 165, 55, 0.25);
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 0 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+    box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.6);
+}
+
+.light .emperor-bottom-nav {
+    background: rgba(255, 255, 255, 0.96) !important;
+    border-top: 1px solid rgba(212, 165, 55, 0.4) !important;
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08) !important;
 }
 
 .emperor-bottom-nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 3px;
     text-decoration: none;
     color: var(--text-muted);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
-    padding: 6px 12px;
+    padding: 6px 10px;
     border-radius: var(--radius-md);
-    transition: all 0.25s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     background: transparent;
     border: none;
     cursor: pointer;
     font-family: var(--font-cairo);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    flex: 1;
+    max-width: 80px;
+}
+
+.light .emperor-bottom-nav-item {
+    color: #64748b;
 }
 
 .emperor-bottom-nav-item.active {
     color: var(--gold-400);
+}
+
+.light .emperor-bottom-nav-item.active {
+    color: #b45309;
 }
 
 .emperor-bottom-nav-item.active::after {
@@ -877,11 +899,11 @@ body {
     bottom: 2px;
     left: 50%;
     transform: translateX(-50%);
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: var(--gold-400);
-    box-shadow: 0 0 8px var(--gold-400);
+    box-shadow: 0 0 10px var(--gold-400);
 }
 
 /* ── Drawer ── */
@@ -1788,25 +1810,59 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   EMPEROR RESPONSIVE 2-COL PRODUCTS GRID
+   EMPEROR RESPONSIVE PRODUCTS & CATEGORY POSTER GRIDS
    ═══════════════════════════════════════════════════════════════ */
-.emperor-products-grid {
+.emperor-products-grid,
+.emperor-category-poster-grid,
+.emperor-products-poster-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    width: 100%;
 }
 
-@media (min-width: 640px) {
-    .emperor-products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 16px;
+@media (min-width: 1400px) {
+    .emperor-products-grid,
+    .emperor-category-poster-grid,
+    .emperor-products-poster-grid {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 18px;
     }
 }
 
-@media (min-width: 1024px) {
-    .emperor-products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
+@media (max-width: 1199px) {
+    .emperor-products-grid,
+    .emperor-category-poster-grid,
+    .emperor-products-poster-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+    }
+}
+
+@media (max-width: 900px) {
+    .emperor-products-grid,
+    .emperor-category-poster-grid,
+    .emperor-products-poster-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 10px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .emperor-products-grid,
+    .emperor-category-poster-grid,
+    .emperor-products-poster-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .emperor-products-grid,
+    .emperor-category-poster-grid,
+    .emperor-products-poster-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 5px !important;
     }
 }
 
