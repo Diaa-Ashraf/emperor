@@ -123,6 +123,20 @@
             <span class="nav-text">الإحالات والتسويق</span>
         </a>
 
+        <div class="nav-section-title">المشرفين والصلاحيات (Spatie)</div>
+        <a href="{{ route('admin.admins.index') }}" class="nav-link {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}">
+            <i class="ti ti-user-shield"></i>
+            <span class="nav-text">طاقم المشرفين والمدراء</span>
+            @php $adminsCount = \App\Models\User::where('role', \App\Enums\UserRole::ADMIN)->count(); @endphp
+            @if($adminsCount > 0)
+                <span class="badge rounded-pill bg-info text-white ms-auto font-monospace">{{ $adminsCount }}</span>
+            @endif
+        </a>
+        <a href="{{ route('admin.roles.index') }}" class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
+            <i class="ti ti-shield-lock"></i>
+            <span class="nav-text">الأدوار والصلاحيات</span>
+        </a>
+
         <div class="nav-section-title">إعدادات المنصة والتسويق</div>
         <a href="{{ route('admin.notifications.scheduled.index') }}" class="nav-link {{ request()->routeIs('admin.notifications.scheduled.*') ? 'active' : '' }}">
             <i class="ti ti-speakerphone"></i>

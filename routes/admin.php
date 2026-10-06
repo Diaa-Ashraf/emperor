@@ -171,4 +171,11 @@ Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admi
     Route::post('/notifications-scheduled', [App\Http\Controllers\Admin\ScheduledNotificationController::class, 'store'])->name('notifications.scheduled.store');
     Route::post('/notifications-scheduled/{id}/send-now', [App\Http\Controllers\Admin\ScheduledNotificationController::class, 'sendNow'])->name('notifications.scheduled.send-now');
     Route::delete('/notifications-scheduled/{id}', [App\Http\Controllers\Admin\ScheduledNotificationController::class, 'destroy'])->name('notifications.scheduled.destroy');
+
+    // Spatie Roles & Permissions Matrix
+    Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
+
+    // Admin & Staff Management (Granular Spatie Permissions)
+    Route::post('/admins/{id}/toggle-status', [App\Http\Controllers\Admin\AdminStaffController::class, 'toggleStatus'])->name('admins.toggle-status');
+    Route::resource('admins', App\Http\Controllers\Admin\AdminStaffController::class);
 });

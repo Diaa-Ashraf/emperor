@@ -254,7 +254,7 @@ export default function AppFooter() {
                             { to: '/target/apps', label: 'سحب وبيع التارجت للوكالات' },
                             { to: '/deposit', label: 'شحن رصيد المحفظة (إيداع)' },
                             { to: '/referrals', label: 'برنامج الإحالة والأرباح' },
-                            { to: '/developer/api', label: 'ربط المطورين ومفتاح API' },
+                            { to: '/wallet', label: 'التحويلات والعمليات المالية' },
                             { to: '/about', label: 'عن منصة إمبراطور (من نحن)' },
                             { to: '/account-issues', label: 'مركز الشكاوى ومشاكل الحساب' },
                             { to: '/support', label: 'الأسئلة الشائعة والدعم المباشر' },
