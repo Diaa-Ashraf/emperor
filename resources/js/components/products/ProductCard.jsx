@@ -67,9 +67,13 @@ export default function ProductCard({ product }) {
                         decoding="async"
                         onError={() => setImgError(true)}
                         style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
                             width: '100%',
                             height: '100%',
                             objectFit: 'cover',
+                            objectPosition: 'center',
                             display: 'block',
                         }}
                     />

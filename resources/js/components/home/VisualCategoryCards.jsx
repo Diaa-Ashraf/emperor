@@ -89,12 +89,14 @@ function CategoryPosterCard({ cat, isRtl, language, index }) {
                 flexDirection: 'column',
                 alignItems: 'center',
                 cursor: 'pointer',
+                width: '100%',
+                minWidth: 0,
                 transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
-            {/* ── Square Full-Bleed Poster Card Frame ── */}
+            {/* ── Strict 1:1 Square Poster Frame ── */}
             <div
                 className="category-poster-frame"
                 style={{
@@ -110,6 +112,7 @@ function CategoryPosterCard({ cat, isRtl, language, index }) {
                         : '0 8px 24px rgba(0, 0, 0, 0.65), 0 0 15px rgba(212, 165, 55, 0.1)',
                     transform: hovered ? 'translateY(-6px) scale(1.02)' : 'translateY(0) scale(1)',
                     transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                    boxSizing: 'border-box',
                 }}
             >
                 <img
@@ -121,6 +124,9 @@ function CategoryPosterCard({ cat, isRtl, language, index }) {
                         e.currentTarget.src = '/images/artwork/cat_games.jpg';
                     }}
                     style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
                         width: '100%',
                         height: '100%',
                         objectFit: 'cover',
