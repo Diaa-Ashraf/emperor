@@ -204,25 +204,26 @@ export default function CategoryPage() {
         <MainLayout>
             <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: '0 4px 60px' }}>
                 
-                {/* ── 1. Search Bar (Matching KA-Card Screenshot) ── */}
+                {/* ── 1. Search Bar (Responsive Luxury Input) ── */}
                 <div style={{
                     position: 'relative',
                     width: '100%',
-                    marginBottom: '20px',
+                    marginBottom: '16px',
+                    boxSizing: 'border-box',
                 }}>
                     <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={t('searchProductPrompt', 'ابحث عن منتج وسيظهر مباشرة أسفل البحث...')}
+                        placeholder={t('searchProductPrompt', 'ابحث عن منتج أو لعبة...')}
                         style={{
                             width: '100%',
                             boxSizing: 'border-box',
                             background: isLight ? '#FFFFFF' : '#0e0e14',
                             border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.25)',
                             borderRadius: '16px',
-                            padding: isRtl ? '14px 44px 14px 16px' : '14px 16px 14px 44px',
-                            fontSize: '14px',
+                            padding: isRtl ? '12px 42px 12px 14px' : '12px 14px 12px 42px',
+                            fontSize: '13.5px',
                             fontWeight: '600',
                             color: isLight ? '#0F172A' : '#FFFFFF',
                             outline: 'none',
@@ -240,10 +241,10 @@ export default function CategoryPage() {
                         }}
                     />
                     <Search
-                        size={19}
+                        size={18}
                         style={{
                             position: 'absolute',
-                            [isRtl ? 'right' : 'left']: '16px',
+                            [isRtl ? 'right' : 'left']: '14px',
                             top: '50%',
                             transform: 'translateY(-50%)',
                             color: 'var(--gold-400, #D4A537)',
@@ -252,32 +253,49 @@ export default function CategoryPage() {
                     />
                 </div>
 
-                {/* ── 2. Category Breadcrumb & Filter Header (Matching KA-Card) ── */}
+                {/* ── 2. Category Breadcrumb & Filter Header ── */}
                 <div style={{
                     display: 'flex',
-                    flexWrap: 'wrap',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    gap: '12px',
-                    marginBottom: '20px',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                    marginBottom: '16px',
                     padding: '8px 12px',
                     borderRadius: '14px',
                     background: isLight ? 'rgba(255, 255, 255, 0.6)' : 'rgba(18, 18, 24, 0.5)',
                     border: isLight ? '1px solid rgba(212, 165, 55, 0.2)' : '1px solid rgba(255, 255, 255, 0.05)',
+                    boxSizing: 'border-box',
                 }}>
                     {/* Breadcrumb path */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13.5px', fontWeight: '800' }}>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontSize: '13px',
+                        fontWeight: '800',
+                        minWidth: 0,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                    }}>
                         <Link
                             to="/"
                             style={{
                                 color: 'var(--gold-400, #D4A537)',
                                 textDecoration: 'none',
+                                flexShrink: 0
                             }}
                         >
                             {t('home', 'الرئيسية')}
                         </Link>
-                        <span style={{ color: isLight ? '#94A3B8' : '#5A5A6A', fontSize: '12px' }}>›</span>
-                        <span style={{ color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                        <span style={{ color: isLight ? '#94A3B8' : '#5A5A6A', fontSize: '11px', flexShrink: 0 }}>‹</span>
+                        <span style={{
+                            color: isLight ? '#0F172A' : '#FFFFFF',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                        }}>
                             {categoryTitle}
                         </span>
                     </div>
@@ -294,26 +312,28 @@ export default function CategoryPage() {
                                 background: 'linear-gradient(135deg, rgba(212, 165, 55, 0.2) 0%, rgba(212, 165, 55, 0.08) 100%)',
                                 border: '1px solid rgba(212, 165, 55, 0.4)',
                                 borderRadius: '10px',
-                                padding: '6px 14px',
+                                padding: '5px 12px',
                                 color: '#F5D061',
-                                fontSize: '13px',
+                                fontSize: '12px',
                                 fontWeight: '800',
                                 cursor: 'pointer',
                                 transition: 'all 0.2s ease',
                                 fontFamily: 'var(--font-cairo)',
+                                flexShrink: 0
                             }}
                         >
                             <span>الرجوع للأقسام</span>
-                            {isRtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+                            {isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
                         </button>
                     ) : (
                         <span style={{
-                            fontSize: '12px',
+                            fontSize: '11.5px',
                             fontWeight: '800',
                             color: 'var(--gold-400, #D4A537)',
                             background: 'rgba(212, 165, 55, 0.12)',
-                            padding: '3px 10px',
-                            borderRadius: '8px',
+                            padding: '2px 8px',
+                            borderRadius: '6px',
+                            flexShrink: 0
                         }}>
                             {filteredProducts.length} {t('items', 'عنصر')}
                         </span>
@@ -329,28 +349,31 @@ export default function CategoryPage() {
                             gap: '8px',
                             overflowX: 'auto',
                             WebkitOverflowScrolling: 'touch',
-                            paddingBottom: '14px',
+                            paddingBottom: '10px',
                             marginBottom: '16px',
                             scrollbarWidth: 'none',
+                            maxWidth: '100%',
+                            boxSizing: 'border-box'
                         }}
                     >
                         <Link
                             to={allTabLink}
                             preventScrollReset={true}
                             style={{
-                                padding: '7px 16px',
+                                padding: '6px 14px',
                                 borderRadius: '12px',
                                 background: isAllTabActive
                                     ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
                                     : (isLight ? '#FFFFFF' : 'rgba(24, 24, 32, 0.85)'),
                                 color: isAllTabActive ? '#0A0A0E' : (isLight ? '#1E293B' : '#E2E8F0'),
                                 fontWeight: '800',
-                                fontSize: '12.5px',
+                                fontSize: '12px',
                                 textDecoration: 'none',
                                 whiteSpace: 'nowrap',
                                 border: isAllTabActive ? 'none' : (isLight ? '1px solid rgba(212, 165, 55, 0.3)' : '1px solid rgba(255, 255, 255, 0.08)'),
                                 boxShadow: isAllTabActive ? '0 4px 12px rgba(212, 165, 55, 0.35)' : 'none',
                                 transition: 'all 0.2s ease',
+                                flexShrink: 0
                             }}
                         >
                             {t('all', 'الكل')} ({categories.length})
@@ -364,14 +387,14 @@ export default function CategoryPage() {
                                     to={`/category/${cat.slug || cat.id}`}
                                     preventScrollReset={true}
                                     style={{
-                                        padding: '7px 14px',
+                                        padding: '6px 12px',
                                         borderRadius: '12px',
                                         background: isActive
                                             ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
                                             : (isLight ? '#FFFFFF' : 'rgba(24, 24, 32, 0.85)'),
                                         color: isActive ? '#0A0A0E' : (isLight ? '#1E293B' : '#E2E8F0'),
                                         fontWeight: '800',
-                                        fontSize: '12.5px',
+                                        fontSize: '12px',
                                         textDecoration: 'none',
                                         whiteSpace: 'nowrap',
                                         border: isActive ? 'none' : (isLight ? '1px solid rgba(212, 165, 55, 0.3)' : '1px solid rgba(255, 255, 255, 0.08)'),
@@ -380,6 +403,7 @@ export default function CategoryPage() {
                                         alignItems: 'center',
                                         gap: '6px',
                                         transition: 'all 0.2s ease',
+                                        flexShrink: 0
                                     }}
                                 >
                                     {(() => {
@@ -391,10 +415,10 @@ export default function CategoryPage() {
                                                 loading="lazy"
                                                 decoding="async"
                                                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                                                style={{ width: '16px', height: '16px', objectFit: 'contain', borderRadius: '4px' }}
+                                                style={{ width: '15px', height: '15px', objectFit: 'contain', borderRadius: '4px' }}
                                             />
                                         ) : (
-                                            <Layers size={14} />
+                                            <Layers size={13} />
                                         );
                                     })()}
                                     <span>{cat.name}</span>

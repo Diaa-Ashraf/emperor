@@ -1908,6 +1908,27 @@ body {
     }
 }
 
+.emperor-main-container {
+    width: 100%;
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 0 16px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+    .emperor-main-container {
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .emperor-main-container {
+        padding: 0 6px;
+    }
+}
+
 /* ═══════════════════════════════════════════════════════════════
    EMPEROR RESPONSIVE PRODUCTS & CATEGORY POSTER GRIDS
    ═══════════════════════════════════════════════════════════════ */
@@ -1915,16 +1936,17 @@ body {
 .emperor-category-poster-grid,
 .emperor-products-poster-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 16px;
     width: 100%;
+    box-sizing: border-box;
 }
 
 @media (min-width: 1400px) {
     .emperor-products-grid,
     .emperor-category-poster-grid,
     .emperor-products-poster-grid {
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(6, minmax(0, 1fr));
         gap: 18px;
     }
 }
@@ -1933,7 +1955,7 @@ body {
     .emperor-products-grid,
     .emperor-category-poster-grid,
     .emperor-products-poster-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 14px;
     }
 }
@@ -1942,7 +1964,7 @@ body {
     .emperor-products-grid,
     .emperor-category-poster-grid,
     .emperor-products-poster-grid {
-        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
         gap: 10px !important;
     }
 }
@@ -1951,17 +1973,17 @@ body {
     .emperor-products-grid,
     .emperor-category-poster-grid,
     .emperor-products-poster-grid {
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 8px !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 8px 6px !important;
     }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 340px) {
     .emperor-products-grid,
     .emperor-category-poster-grid,
     .emperor-products-poster-grid {
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 5px !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
     }
 }
 
