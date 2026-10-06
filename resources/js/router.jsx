@@ -2,32 +2,51 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 
-// Placeholder Pages (will be replaced by full pages in Phase 9 & 10)
-const HomePage = React.lazy(() => import('./pages/HomePage'));
-const LoginPage = React.lazy(() => import('./pages/auth/LoginPage'));
-const RegisterPage = React.lazy(() => import('./pages/auth/RegisterPage'));
-const CompleteProfilePage = React.lazy(() => import('./pages/auth/CompleteProfilePage'));
-const CategoryPage = React.lazy(() => import('./pages/CategoryPage'));
-const ProductDetailPage = React.lazy(() => import('./pages/ProductDetailPage'));
-const WalletPage = React.lazy(() => import('./pages/WalletPage'));
-const DepositPage = React.lazy(() => import('./pages/DepositPage'));
-const DepositDetailPage = React.lazy(() => import('./pages/DepositDetailPage'));
-const OrdersPage = React.lazy(() => import('./pages/OrdersPage'));
-const OrderDetailPage = React.lazy(() => import('./pages/OrderDetailPage'));
-const TargetAppsPage = React.lazy(() => import('./pages/TargetAppsPage'));
-const TargetOrderPage = React.lazy(() => import('./pages/TargetOrderPage'));
-const TargetOrdersPage = React.lazy(() => import('./pages/TargetOrdersPage'));
-const TargetOrderDetailPage = React.lazy(() => import('./pages/TargetOrderDetailPage'));
-const ReferralsPage = React.lazy(() => import('./pages/ReferralsPage'));
-const NotificationsPage = React.lazy(() => import('./pages/NotificationsPage'));
-const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
-const SettingsPage = React.lazy(() => import('./pages/SettingsPage'));
-const SupportPage = React.lazy(() => import('./pages/SupportPage'));
-const CreatedByPage = React.lazy(() => import('./pages/CreatedByPage'));
-const AccountIssuesPage = React.lazy(() => import('./pages/AccountIssuesPage'));
-const AboutPage = React.lazy(() => import('./pages/AboutPage'));
-const DeveloperApiPage = React.lazy(() => import('./pages/DeveloperApiPage'));
-const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
+// Helper to gracefully retry or refresh if a lazy chunk failed to load (e.g. after a new build)
+function lazyRetry(componentImport) {
+    return React.lazy(async () => {
+        const hasRefreshed = window.sessionStorage.getItem('chunk_retry_refreshed');
+        try {
+            const module = await componentImport();
+            window.sessionStorage.removeItem('chunk_retry_refreshed');
+            return module;
+        } catch (error) {
+            if (!hasRefreshed) {
+                window.sessionStorage.setItem('chunk_retry_refreshed', 'true');
+                window.location.reload();
+                return { default: () => null };
+            }
+            throw error;
+        }
+    });
+}
+
+// Pages with lazy retry support
+const HomePage = lazyRetry(() => import('./pages/HomePage'));
+const LoginPage = lazyRetry(() => import('./pages/auth/LoginPage'));
+const RegisterPage = lazyRetry(() => import('./pages/auth/RegisterPage'));
+const CompleteProfilePage = lazyRetry(() => import('./pages/auth/CompleteProfilePage'));
+const CategoryPage = lazyRetry(() => import('./pages/CategoryPage'));
+const ProductDetailPage = lazyRetry(() => import('./pages/ProductDetailPage'));
+const WalletPage = lazyRetry(() => import('./pages/WalletPage'));
+const DepositPage = lazyRetry(() => import('./pages/DepositPage'));
+const DepositDetailPage = lazyRetry(() => import('./pages/DepositDetailPage'));
+const OrdersPage = lazyRetry(() => import('./pages/OrdersPage'));
+const OrderDetailPage = lazyRetry(() => import('./pages/OrderDetailPage'));
+const TargetAppsPage = lazyRetry(() => import('./pages/TargetAppsPage'));
+const TargetOrderPage = lazyRetry(() => import('./pages/TargetOrderPage'));
+const TargetOrdersPage = lazyRetry(() => import('./pages/TargetOrdersPage'));
+const TargetOrderDetailPage = lazyRetry(() => import('./pages/TargetOrderDetailPage'));
+const ReferralsPage = lazyRetry(() => import('./pages/ReferralsPage'));
+const NotificationsPage = lazyRetry(() => import('./pages/NotificationsPage'));
+const ProfilePage = lazyRetry(() => import('./pages/ProfilePage'));
+const SettingsPage = lazyRetry(() => import('./pages/SettingsPage'));
+const SupportPage = lazyRetry(() => import('./pages/SupportPage'));
+const CreatedByPage = lazyRetry(() => import('./pages/CreatedByPage'));
+const AccountIssuesPage = lazyRetry(() => import('./pages/AccountIssuesPage'));
+const AboutPage = lazyRetry(() => import('./pages/AboutPage'));
+const DeveloperApiPage = lazyRetry(() => import('./pages/DeveloperApiPage'));
+const NotFoundPage = lazyRetry(() => import('./pages/NotFoundPage'));
 
 // Protected Route Guard
 export function ProtectedRoute({ children }) {

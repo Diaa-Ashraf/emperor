@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
     Wallet,
     ArrowRight,
+    ArrowLeft,
     CheckCircle2,
     Clock,
     XCircle,
@@ -20,10 +21,12 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
 import Modal from '../components/ui/Modal';
 import { depositsApi } from '../api/endpoints';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function DepositDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { isRtl, t, language } = useLanguage();
 
     const [deposit, setDeposit] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -47,7 +50,7 @@ export default function DepositDetailPage() {
         return (
             <MainLayout>
                 <div style={{ padding: '80px 0' }}>
-                    <LoadingSpinner text="جاري تحميل بيانات الإيداع..." />
+                    <LoadingSpinner text={t('loadingDepositDetails', 'جاري تحميل بيانات الإيداع...')} />
                 </div>
             </MainLayout>
         );
@@ -57,9 +60,9 @@ export default function DepositDetailPage() {
         return (
             <MainLayout>
                 <EmptyState
-                    title="طلب الإيداع غير موجود"
-                    description="لم يتم العثور على طلب الإيداع المطلوب أو ليس لديك صلاحية لعرضه."
-                    actionText="العودة للمحفظة"
+                    title={t('depositNotFound', 'طلب الإيداع غير موجود')}
+                    description={t('depositNotFoundDesc', 'لم يتم العثور على طلب الإيداع المطلوب أو ليس لديك صلاحية لعرضه.')}
+                    actionText={t('backToWallet', 'العودة للمحفظة')}
                     onAction={() => navigate('/wallet')}
                 />
             </MainLayout>
@@ -71,26 +74,26 @@ export default function DepositDetailPage() {
             case 'approved':
                 return {
                     variant: 'success',
-                    label: 'مكتمل ومعتمد',
+                    label: t('completedAndApproved', 'مكتمل ومعتمد'),
                     icon: CheckCircle2,
                     color: '#22C55E',
-                    desc: 'تمت مراجعة الإيصال واعتماد الإيداع وإضافة الرصيد إلى محفظتك بنجاح.',
+                    desc: language === 'en' ? 'The receipt has been verified, deposit approved, and balance successfully added to your wallet.' : 'تمت مراجعة الإيصال واعتماد الإيداع وإضافة الرصيد إلى محفظتك بنجاح.',
                 };
             case 'rejected':
                 return {
                     variant: 'danger',
-                    label: 'مرفوض',
+                    label: t('rejected', 'مرفوض'),
                     icon: XCircle,
                     color: '#EF4444',
-                    desc: deposit.rejection_reason || deposit.admin_notes || 'تم رفض طلب الإيداع. يرجى مراجعة السبب أو التواصل مع الدعم الفني.',
+                    desc: deposit.rejection_reason || deposit.admin_notes || (language === 'en' ? 'Deposit request was rejected. Please review the reason or contact technical support.' : 'تم رفض طلب الإيداع. يرجى مراجعة السبب أو التواصل مع الدعم الفني.'),
                 };
             default:
                 return {
                     variant: 'warning',
-                    label: 'قيد المراجعة',
+                    label: t('underReview', 'قيد المراجعة'),
                     icon: Clock,
                     color: '#F59E0B',
-                    desc: 'طلبك قيد الفحص والمراجعة الآن من قِبل المشرفين، سيتم إضافة الرصيد فور مطابقة الإيصال.',
+                    desc: language === 'en' ? 'Your request is currently being reviewed by administrators. Balance will be added once verified.' : 'طلبك قيد الفحص والمراجعة الآن من قِبل المشرفين، سيتم إضافة الرصيد فور مطابقة الإيصال.',
                 };
         }
     };
@@ -98,25 +101,26 @@ export default function DepositDetailPage() {
     const statusInfo = getStatusInfo(deposit.status);
     const StatusIcon = statusInfo.icon;
 
-    const amount = Number(deposit.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const fee = Number(deposit.fee || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const finalAmount = Number(deposit.final_amount || deposit.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const currencySymbol = language === 'en' ? 'EGP' : 'ج.م';
+    const amount = Number(deposit.amount || 0).toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fee = Number(deposit.fee || 0).toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const finalAmount = Number(deposit.final_amount || deposit.amount || 0).toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     return (
         <MainLayout>
             {/* Breadcrumbs */}
             <div style={{ marginBottom: '24px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '13px', color: '#8E8E98' }}>
-                    <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>الرئيسية</Link>
+                    <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>{t('home', 'الرئيسية')}</Link>
                     <span>/</span>
-                    <Link to="/wallet" style={{ color: '#D4A537', textDecoration: 'none' }}>المحفظة</Link>
+                    <Link to="/wallet" style={{ color: '#D4A537', textDecoration: 'none' }}>{t('wallet', 'المحفظة')}</Link>
                     <span>/</span>
-                    <span style={{ color: '#CBD5E1' }}>تفاصيل طلب الإيداع #{deposit.id}</span>
+                    <span style={{ color: '#CBD5E1' }}>{t('depositRequestDetails', 'تفاصيل طلب الإيداع')} #{deposit.id}</span>
                 </div>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
                     <h1 style={{ margin: 0, fontSize: '26px', fontWeight: '900', color: '#FFFFFF' }}>
-                        طلب إيداع #{deposit.id}
+                        {t('depositRequest', 'طلب إيداع')} #{deposit.id}
                     </h1>
 
                     <Badge variant={statusInfo.variant} size="lg">
@@ -162,18 +166,18 @@ export default function DepositDetailPage() {
                     gap: '14px',
                 }}>
                     <h3 style={{ margin: '0 0 4px', fontSize: '17px', fontWeight: '800', color: '#FFFFFF' }}>
-                        البيانات المالية للعملية
+                        {t('financialTransactionData', 'البيانات المالية للعملية')}
                     </h3>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                        <span style={{ color: '#8E8E98' }}>المبلغ المودع:</span>
-                        <strong style={{ color: '#FFFFFF' }}>{amount} ج.م</strong>
+                        <span style={{ color: '#8E8E98' }}>{t('depositedAmount', 'المبلغ المودع')}:</span>
+                        <strong style={{ color: '#FFFFFF' }}>{amount} {currencySymbol}</strong>
                     </div>
 
                     {Number(deposit.fee) > 0 && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                            <span style={{ color: '#8E8E98' }}>رسوم المعاملة:</span>
-                            <span style={{ color: '#F87171' }}>-{fee} ج.م</span>
+                            <span style={{ color: '#8E8E98' }}>{t('fees', 'رسوم المعاملة')}:</span>
+                            <span style={{ color: '#F87171' }}>-{fee} {currencySymbol}</span>
                         </div>
                     )}
 
@@ -184,16 +188,16 @@ export default function DepositDetailPage() {
                         justifyContent: 'space-between',
                         alignItems: 'baseline',
                     }}>
-                        <span style={{ color: '#CBD5E1', fontWeight: '700' }}>الرصيد المضاف للمحفظة:</span>
+                        <span style={{ color: '#CBD5E1', fontWeight: '700' }}>{t('addedWalletBalance', 'الرصيد المضاف للمحفظة')}:</span>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
                             <strong style={{ fontSize: '24px', color: '#4ADE80' }}>{finalAmount}</strong>
-                            <span style={{ fontSize: '13px', color: '#4ADE80' }}>ج.م</span>
+                            <span style={{ fontSize: '13px', color: '#4ADE80' }}>{currencySymbol}</span>
                         </div>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginTop: '6px' }}>
-                        <span style={{ color: '#8E8E98' }}>تاريخ تقديم الطلب:</span>
-                        <span style={{ color: '#CBD5E1' }}>{deposit.created_at || 'الآن'}</span>
+                        <span style={{ color: '#8E8E98' }}>{t('orderDate', 'تاريخ تقديم الطلب')}:</span>
+                        <span style={{ color: '#CBD5E1' }}>{deposit.created_at || t('now', 'الآن')}</span>
                     </div>
                 </div>
 
@@ -208,24 +212,24 @@ export default function DepositDetailPage() {
                     gap: '14px',
                 }}>
                     <h3 style={{ margin: '0 0 4px', fontSize: '17px', fontWeight: '800', color: '#FFFFFF' }}>
-                        بيانات وسيلة التحويل
+                        {t('transferMethodData', 'بيانات وسيلة التحويل')}
                     </h3>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                        <span style={{ color: '#8E8E98' }}>طريقة الدفع:</span>
-                        <strong style={{ color: '#D4A537' }}>{deposit.method || deposit.method_name || 'محفظة إلكترونية'}</strong>
+                        <span style={{ color: '#8E8E98' }}>{t('paymentMethod', 'طريقة الدفع')}:</span>
+                        <strong style={{ color: '#D4A537' }}>{deposit.method || deposit.method_name || t('eWallet', 'محفظة إلكترونية')}</strong>
                     </div>
 
                     {deposit.sender_wallet && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                            <span style={{ color: '#8E8E98' }}>رقم المحفظة المحوّل منها:</span>
+                            <span style={{ color: '#8E8E98' }}>{t('senderWalletNumber', 'رقم المحفظة المحوّل منها')}:</span>
                             <strong style={{ color: '#FFFFFF' }}>{deposit.sender_wallet}</strong>
                         </div>
                     )}
 
                     {deposit.transaction_ref && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                            <span style={{ color: '#8E8E98' }}>الرقم المرجعي للتحويل:</span>
+                            <span style={{ color: '#8E8E98' }}>{t('transactionRefNumber', 'الرقم المرجعي للتحويل')}:</span>
                             <strong style={{ color: '#FFFFFF', fontFamily: 'monospace' }}>{deposit.transaction_ref}</strong>
                         </div>
                     )}
@@ -234,7 +238,7 @@ export default function DepositDetailPage() {
                     {deposit.proof_image && (
                         <div style={{ marginTop: '8px' }}>
                             <span style={{ fontSize: '13px', color: '#8E8E98', display: 'block', marginBottom: '8px' }}>
-                                صورة إيصال التحويل المرفقة:
+                                {t('attachedProofReceipt', 'صورة إيصال التحويل المرفقة')}:
                             </span>
                             <div
                                 onClick={() => setImageModalOpen(true)}
@@ -250,7 +254,7 @@ export default function DepositDetailPage() {
                             >
                                 <img
                                     src={deposit.proof_image}
-                                    alt="إيصال التحويل"
+                                    alt={t('transferReceipt', 'إيصال التحويل')}
                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                 />
                                 <div style={{
@@ -266,7 +270,7 @@ export default function DepositDetailPage() {
                                     gap: '6px',
                                 }}>
                                     <ExternalLink size={16} />
-                                    <span>اضغط للتكبير</span>
+                                    <span>{t('clickToEnlarge', 'اضغط للتكبير')}</span>
                                 </div>
                             </div>
                         </div>
@@ -277,14 +281,14 @@ export default function DepositDetailPage() {
             {/* Bottom Actions */}
             <div style={{ display: 'flex', gap: '14px' }}>
                 <Link to="/wallet" style={{ textDecoration: 'none' }}>
-                    <Button variant="secondary" size="lg" icon={ArrowRight}>
-                        العودة للمحفظة
+                    <Button variant="secondary" size="lg" icon={isRtl ? ArrowRight : ArrowLeft}>
+                        {t('backToWallet', 'العودة للمحفظة')}
                     </Button>
                 </Link>
 
                 <Link to="/deposit" style={{ textDecoration: 'none' }}>
                     <Button variant="primary" size="lg" icon={PlusCircle}>
-                        إيداع جديد
+                        {t('chargeBalanceNow', 'إيداع جديد')}
                     </Button>
                 </Link>
             </div>
@@ -293,14 +297,14 @@ export default function DepositDetailPage() {
             <Modal
                 isOpen={imageModalOpen}
                 onClose={() => setImageModalOpen(false)}
-                title="إيصال التحويل المرفق"
+                title={t('attachedProofReceipt', 'إيصال التحويل المرفق')}
                 maxWidth="640px"
             >
                 {deposit.proof_image && (
                     <div style={{ textAlign: 'center' }}>
                         <img
                             src={deposit.proof_image}
-                            alt="إيصال التحويل مكبر"
+                            alt={t('transferReceipt', 'إيصال التحويل مكبر')}
                             style={{
                                 width: '100%',
                                 maxHeight: '70vh',
@@ -314,3 +318,4 @@ export default function DepositDetailPage() {
         </MainLayout>
     );
 }
+

@@ -10,8 +10,9 @@ import Button from '../components/ui/Button';
 import { targetApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
 import VideoBackground from '../components/home/VideoBackground';
+
 export default function TargetOrdersPage() {
-    const { isRtl } = useLanguage();
+    const { isRtl, t, language } = useLanguage();
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -49,11 +50,11 @@ export default function TargetOrdersPage() {
         switch (status) {
             case 'approved':
             case 'paid':
-                return { variant: 'success', label: 'معتمد ومحول', color: '#22C55E' };
+                return { variant: 'success', label: t('approvedAndTransferred', 'معتمد ومحول'), color: '#22C55E' };
             case 'rejected':
-                return { variant: 'danger', label: 'مرفوض', color: '#EF4444' };
+                return { variant: 'danger', label: t('rejected', 'مرفوض'), color: '#EF4444' };
             default:
-                return { variant: 'warning', label: 'قيد المراجعة', color: '#F5D061' };
+                return { variant: 'warning', label: t('underReview', 'قيد المراجعة'), color: '#F5D061' };
         }
     };
 
@@ -68,11 +69,11 @@ export default function TargetOrdersPage() {
                     marginBottom: '16px',
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#8E8E98' }}>
-                        <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>الرئيسية</Link>
+                        <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>{t('home', 'الرئيسية')}</Link>
                         <span>/</span>
-                        <Link to="/target/apps" style={{ color: '#D4A537', textDecoration: 'none' }}>بيع التارجت</Link>
+                        <Link to="/target/apps" style={{ color: '#D4A537', textDecoration: 'none' }}>{t('targetSelling', 'بيع التارجت')}</Link>
                         <span>/</span>
-                        <span style={{ color: '#CBD5E1' }}>سجل الطلبات</span>
+                        <span style={{ color: '#CBD5E1' }}>{t('ordersHistory', 'سجل الطلبات')}</span>
                     </div>
 
                     <button
@@ -91,7 +92,7 @@ export default function TargetOrdersPage() {
                             cursor: 'pointer',
                         }}
                     >
-                        <span>رجوع</span>
+                        <span>{t('back', 'رجوع')}</span>
                         {isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
                     </button>
                 </div>
@@ -110,10 +111,10 @@ export default function TargetOrdersPage() {
                 }}>
                     <div>
                         <h1 style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: '900', color: '#FFFFFF' }}>
-                            سجل طلبات بيع التارجت
+                            {t('targetOrdersHistory', 'سجل طلبات بيع التارجت')}
                         </h1>
                         <p style={{ margin: 0, fontSize: '13px', color: '#9E9EA8' }}>
-                            متابعة حالة تحويل الكاش ومراجعة طلبات التارجت
+                            {t('trackTargetStatus', 'متابعة حالة تحويل الكاش ومراجعة طلبات التارجت')}
                         </p>
                     </div>
 
@@ -135,7 +136,7 @@ export default function TargetOrdersPage() {
                             }}
                         >
                             <PlusCircle size={16} />
-                            <span>طلب بيع جديد</span>
+                            <span>{t('sellNewTarget', 'طلب بيع جديد')}</span>
                         </button>
                     </Link>
                 </div>
@@ -145,13 +146,13 @@ export default function TargetOrdersPage() {
             <VideoBackground>
                 {loading ? (
                     <div style={{ padding: '80px 0' }}>
-                        <LoadingSpinner text="جاري جلب سجل مبيعات التارجت..." />
+                        <LoadingSpinner text={t('loadingTargetOrders', 'جاري جلب سجل مبيعات التارجت...')} />
                     </div>
                 ) : orders.length > 0 ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '32px' }}>
                         {orders.map((order) => {
                             const statusConfig = getStatusConfig(order.status);
-                            const netPayout = Number(order.net_payout || 0).toLocaleString('en-US', {
+                            const netPayout = Number(order.net_payout || 0).toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2,
                             });
@@ -206,14 +207,14 @@ export default function TargetOrdersPage() {
                                         <div style={{ minWidth: 0, flex: 1 }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
                                                 <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                    {order.product?.name || 'بيع تارجت'}
+                                                    {order.product?.name || t('targetSelling', 'بيع تارجت')}
                                                 </h4>
                                                 <span style={{ fontSize: '12px', color: 'var(--gold-400)', fontWeight: '700', fontFamily: 'monospace' }}>
                                                     #{order.id}
                                                 </span>
                                             </div>
                                             <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                                                {new Date(order.created_at).toLocaleDateString('ar-EG', {
+                                                {new Date(order.created_at).toLocaleDateString(language === 'en' ? 'en-US' : 'ar-EG', {
                                                     year: 'numeric',
                                                     month: 'short',
                                                     day: 'numeric',
@@ -227,10 +228,10 @@ export default function TargetOrdersPage() {
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexShrink: 0 }}>
                                         <div style={{ textAlign: isRtl ? 'left' : 'right' }}>
                                             <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '2px' }}>
-                                                الصافي المستحق
+                                                {t('netPayout', 'الصافي المستحق')}
                                             </div>
                                             <div style={{ fontSize: '16px', fontWeight: '900', color: '#22C55E', direction: 'ltr', fontFamily: 'Outfit, Cairo, sans-serif' }}>
-                                                {netPayout} EGP
+                                                {netPayout} {language === 'en' ? 'EGP' : 'ج.م'}
                                             </div>
                                         </div>
 
@@ -247,15 +248,14 @@ export default function TargetOrdersPage() {
                                         </div>
                                     </div>
                                 </Link>
-
                             );
                         })}
                     </div>
                 ) : (
                     <EmptyState
-                        title="لا توجد طلبات سابقة"
-                        description="لم تقم بإنشاء أي طلبات بيع تارجت بعد. اختر تطبيقك الآن وابدأ التحويل."
-                        actionText="بدء بيع تارجت"
+                        title={t('noTargetOrders', 'لا توجد طلبات سابقة')}
+                        description={t('noTargetOrdersDesc', 'لم تقم بإنشاء أي طلبات بيع تارجت بعد. اختر تطبيقك الآن وابدأ التحويل.')}
+                        actionText={t('browseTargetApps', 'بدء بيع تارجت')}
                         onAction={() => navigate('/target/apps')}
                     />
                 )}
@@ -263,3 +263,4 @@ export default function TargetOrdersPage() {
         </MainLayout>
     );
 }
+

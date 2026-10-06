@@ -15,6 +15,7 @@ import { formatImageUrl } from '../../utils/imageHelper';
 import { ordersApi, walletApi } from '../../api/endpoints';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { TargetAppIconRenderer } from '../target/TargetAppIcons';
 import OrderConfirmModal from './OrderConfirmModal';
 import '../../../css/kaProductRecharge.css';
@@ -30,6 +31,7 @@ export default function ProductRechargeModal({
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
     const { success, error: toastError } = useToast();
+    const { t, isRtl, language } = useLanguage();
 
     const tiers = useMemo(() => {
         return product.tiers || product.active_tiers || [];
@@ -144,26 +146,26 @@ export default function ProductRechargeModal({
         setErrors({});
 
         if (!isAuthenticated) {
-            toastError('يرجى تسجيل الدخول أولاً لإتمام عملية الشحن');
+            toastError(t('loginToRecharge', 'يرجى تسجيل الدخول أولاً لإتمام عملية الشحن'));
             navigate('/login', { state: { from: { pathname: window.location.pathname } } });
             return;
         }
 
         const newErrors = {};
         if (tiers.length > 0 && !selectedTier) {
-            newErrors.tier = 'يرجى اختيار باقة الشحن المطلوبة';
+            newErrors.tier = t('selectPackageError', 'يرجى اختيار باقة الشحن المطلوبة');
         }
 
         if (!playerId.trim()) {
-            newErrors.playerId = `يرجى إدخال ${product.player_id_label || 'معرف المستخدم (Player ID)'}`;
+            newErrors.playerId = t('enterPlayerId', 'يرجى إدخال معرف المستخدم').replace('{label}', product.player_id_label || t('playerOrUserId', 'معرف المستخدم'));
         }
 
         if (product.has_server_id && !serverId.trim()) {
-            newErrors.serverId = `يرجى إدخال / اختيار ${product.server_id_label || 'السيرفر'}`;
+            newErrors.serverId = t('enterServerId', 'يرجى إدخال / اختيار السيرفر');
         }
 
         if (product.requires_account_region && !accountRegion.trim()) {
-            newErrors.accountRegion = 'يرجى اختيار دولة / منطقة الحساب';
+            newErrors.accountRegion = t('selectAccountRegion', 'يرجى اختيار دولة / منطقة الحساب');
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -191,7 +193,7 @@ export default function ProductRechargeModal({
             if (res?.data) {
                 setConfirmModalOpen(false);
                 onClose();
-                success('تم إنشاء طلب الشحن بنجاح وجاري تنفيذه فوراً');
+                success(t('orderCreatedSuccess', 'تم إنشاء طلب الشحن بنجاح وجاري تنفيذه فوراً'));
                 if (onOrderSuccess) {
                     onOrderSuccess(res.data);
                 } else {
@@ -202,7 +204,7 @@ export default function ProductRechargeModal({
             if (err.message) {
                 toastError(err.message);
             } else {
-                toastError('حدث خطأ أثناء تنفيذ الطلب، يرجى المحاولة مرة أخرى');
+                toastError(t('orderExecutionError', 'حدث خطأ أثناء تنفيذ الطلب، يرجى المحاولة مرة أخرى'));
             }
         } finally {
             setSubmitting(false);
@@ -381,39 +383,40 @@ export default function ProductRechargeModal({
                                 fontWeight: '800',
                                 color: '#4ADE80'
                             }}>
-                                متاح
+                                {t('available', 'متاح')}
                             </span>
                         </div>
                     </div>
 
                     <form onSubmit={handlePreSubmit}>
-                        {/* If product has multiple tiers: Package Selector Bar */}
-                        {tiers.length > 0 && (
+                        {/* Notice Bar or Package Selector (Matching Screenshot 3) */}
+                        {tiers.length > 1 ? (
                             <div style={{ marginBottom: '14px' }}>
                                 <div
                                     onClick={() => setShowPackageGrid(prev => !prev)}
                                     style={{
-                                        background: 'linear-gradient(90deg, rgba(46, 33, 58, 0.6) 0%, rgba(26, 26, 36, 0.85) 100%)',
-                                        border: '1px solid rgba(212, 165, 55, 0.4)',
+                                        background: 'linear-gradient(90deg, rgba(67, 30, 90, 0.6) 0%, rgba(30, 24, 48, 0.85) 100%)',
+                                        border: '1px solid rgba(168, 85, 247, 0.35)',
                                         borderRadius: '12px',
-                                        padding: '10px 14px',
+                                        padding: '11px 16px',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
                                         cursor: 'pointer',
                                         transition: 'all 0.2s',
+                                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)'
                                     }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <FileText size={16} color="#D4A537" />
-                                        <span style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF' }}>
-                                            {selectedTier ? selectedTier.name : 'اختر باقة الشحن المطلوبة'}
+                                        <FileText size={17} color="#38BDF8" />
+                                        <span style={{ fontSize: '13.5px', fontWeight: '800', color: '#E9D5FF' }}>
+                                            {selectedTier ? selectedTier.name : t('selectPackage', 'اختر باقة الشحن المطلوبة')}
                                         </span>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         {selectedTier && (
-                                            <span style={{ fontSize: '12.5px', fontWeight: '900', color: '#F5D061' }}>
-                                                {Number(selectedTier.price_egp || selectedTier.price || 0).toFixed(2)} EGP
+                                            <span style={{ fontSize: '13px', fontWeight: '900', color: '#F5D061' }}>
+                                                {Number(selectedTier.price_egp || selectedTier.price || 0).toFixed(2)} {language === 'en' ? 'EGP' : 'ج.م'}
                                             </span>
                                         )}
                                         <ChevronDown
@@ -460,7 +463,7 @@ export default function ProductRechargeModal({
                                                         {t.name}
                                                     </div>
                                                     <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>
-                                                        {Number(t.price_egp || t.price || 0).toFixed(2)} EGP
+                                                        {Number(t.price_egp || t.price || 0).toFixed(2)} {language === 'en' ? 'EGP' : 'ج.م'}
                                                     </div>
                                                 </div>
                                             );
@@ -468,16 +471,36 @@ export default function ProductRechargeModal({
                                     </div>
                                 )}
                             </div>
+                        ) : (
+                            /* Fixed Notice Bar matching Screenshot 3: الشحن 0 ثانيه */
+                            <div style={{
+                                background: 'linear-gradient(90deg, rgba(67, 30, 90, 0.6) 0%, rgba(30, 24, 48, 0.85) 100%)',
+                                border: '1px solid rgba(168, 85, 247, 0.35)',
+                                borderRadius: '12px',
+                                padding: '11px 16px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: isRtl ? 'flex-end' : 'flex-start',
+                                gap: '10px',
+                                marginBottom: '16px',
+                                color: '#E9D5FF',
+                                fontSize: '13.5px',
+                                fontWeight: '800',
+                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)'
+                            }}>
+                                <span>{selectedTier?.name || product.notice || t('instantRechargeZeroSec', 'الشحن 0 ثانيه')}</span>
+                                <FileText size={17} color="#38BDF8" />
+                            </div>
                         )}
 
-                        {/* Metric Boxes: [الإجمالي] on Left, [الكمية] on Right (Matching KA Screenshots) */}
+                        {/* Metric Boxes: [الكمية] on Right, [الإجمالي] on Left in RTL (Matching Screenshot 3) */}
                         <div style={{
                             display: 'grid',
-                            gridTemplateColumns: '1.15fr 0.85fr',
+                            gridTemplateColumns: 'repeat(2, 1fr)',
                             gap: '12px',
                             marginBottom: '16px'
                         }}>
-                            {/* Box 1: الإجمالي */}
+                            {/* Box 1: الإجمالي (Total) */}
                             <div style={{
                                 background: 'rgba(18, 17, 14, 0.95)',
                                 border: '1px solid rgba(212, 165, 55, 0.3)',
@@ -495,7 +518,7 @@ export default function ProductRechargeModal({
                                     color: '#9CA3AF',
                                     marginBottom: '4px'
                                 }}>
-                                    الإجمالي
+                                    {t('total', 'الإجمالي')}
                                 </span>
                                 
                                 <div style={{
@@ -510,7 +533,7 @@ export default function ProductRechargeModal({
                                     gap: '4px'
                                 }}>
                                     <span>{formattedTotal}</span>
-                                    <span style={{ fontSize: '13px', color: '#D4A537', fontWeight: '800' }}>Egy</span>
+                                    <span style={{ fontSize: '13px', color: '#D4A537', fontWeight: '800' }}>{language === 'en' ? 'EGP' : 'Egy'}</span>
                                 </div>
 
                                 <div style={{
@@ -528,7 +551,7 @@ export default function ProductRechargeModal({
                                 </div>
                             </div>
 
-                            {/* Box 2: الكمية */}
+                            {/* Box 2: الكمية (Quantity) */}
                             <div style={{
                                 background: 'rgba(18, 17, 14, 0.95)',
                                 border: '1px solid rgba(212, 165, 55, 0.3)',
@@ -546,7 +569,7 @@ export default function ProductRechargeModal({
                                     color: '#9CA3AF',
                                     marginBottom: '4px'
                                 }}>
-                                    الكمية
+                                    {t('quantity', 'الكمية')}
                                 </span>
 
                                 <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
@@ -588,7 +611,7 @@ export default function ProductRechargeModal({
                                     marginTop: '4px',
                                     fontFamily: 'monospace'
                                 }}>
-                                    1 — 9,999
+                                    1,000 — 5,000,000
                                 </span>
                             </div>
                         </div>
@@ -611,7 +634,7 @@ export default function ProductRechargeModal({
                                 marginBottom: '8px'
                             }}>
                                 <User size={15} color="#D4A537" />
-                                <span>{product.player_id_label || 'معرف المستخدم'}</span>
+                                <span>{product.player_id_label || t('playerOrUserId', 'معرف المستخدم')}</span>
                             </label>
 
                             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
@@ -623,14 +646,14 @@ export default function ProductRechargeModal({
                                         setPlayerId(e.target.value);
                                         if (errors.playerId) setErrors(prev => ({ ...prev, playerId: null }));
                                     }}
-                                    placeholder="معرف المستخدم"
+                                    placeholder={product.player_id_label || t('playerOrUserId', 'معرف المستخدم')}
                                     style={{
                                         width: '100%',
                                         boxSizing: 'border-box',
                                         background: '#07070A',
                                         border: '1.5px solid rgba(255, 255, 255, 0.1)',
                                         borderRadius: '12px',
-                                        padding: '11px 40px 11px 14px',
+                                        padding: isRtl ? '11px 40px 11px 14px' : '11px 14px 11px 40px',
                                         color: '#FFFFFF',
                                         fontSize: '14px',
                                         fontWeight: '700',
@@ -652,7 +675,8 @@ export default function ProductRechargeModal({
                                     color="#64748B"
                                     style={{
                                         position: 'absolute',
-                                        right: '12px',
+                                        right: isRtl ? '12px' : 'auto',
+                                        left: isRtl ? 'auto' : '12px',
                                         pointerEvents: 'none'
                                     }}
                                 />
@@ -668,7 +692,7 @@ export default function ProductRechargeModal({
                                 <div style={{ marginTop: '10px' }}>
                                     <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
                                         <Server size={14} color="#D4A537" />
-                                        <span>{product.server_id_label || 'رقم السيرفر (Zone ID)'}</span>
+                                        <span>{product.server_id_label || t('server', 'رقم السيرفر (Zone ID)')}</span>
                                     </label>
                                     <input
                                         type="text"
@@ -678,7 +702,7 @@ export default function ProductRechargeModal({
                                             setServerId(e.target.value);
                                             if (errors.serverId) setErrors(prev => ({ ...prev, serverId: null }));
                                         }}
-                                        placeholder="مثال: 1234"
+                                        placeholder="1234"
                                         style={{
                                             width: '100%',
                                             boxSizing: 'border-box',
@@ -706,7 +730,7 @@ export default function ProductRechargeModal({
                                 <div style={{ marginTop: '10px' }}>
                                     <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
                                         <Globe size={14} color="#D4A537" />
-                                        <span>منطقة / سيرفر الحساب</span>
+                                        <span>{t('region', 'منطقة / سيرفر الحساب')}</span>
                                     </label>
                                     <select
                                         value={accountRegion}
@@ -728,10 +752,10 @@ export default function ProductRechargeModal({
                                             fontFamily: 'var(--font-cairo)',
                                         }}
                                     >
-                                        <option value="">اختر المنطقة</option>
-                                        <option value="ME">الشرق الأوسط (Middle East)</option>
-                                        <option value="EU">أوروبا (Europe)</option>
-                                        <option value="GLOBAL">عالمي (Global)</option>
+                                        <option value="">{language === 'en' ? 'Select Region' : 'اختر المنطقة'}</option>
+                                        <option value="ME">{language === 'en' ? 'Middle East (ME)' : 'الشرق الأوسط (Middle East)'}</option>
+                                        <option value="EU">{language === 'en' ? 'Europe (EU)' : 'أوروبا (Europe)'}</option>
+                                        <option value="GLOBAL">{language === 'en' ? 'Global' : 'عالمي (Global)'}</option>
                                     </select>
                                     {errors.accountRegion && (
                                         <span style={{ color: '#EF4444', fontSize: '11.5px', fontWeight: '700', marginTop: '4px', display: 'block' }}>
@@ -769,7 +793,7 @@ export default function ProductRechargeModal({
                                 }}
                             >
                                 <Lock size={16} />
-                                <span>شراء</span>
+                                <span>{t('buy', 'شراء')}</span>
                             </button>
 
                             <button
@@ -788,7 +812,7 @@ export default function ProductRechargeModal({
                                     fontFamily: 'var(--font-cairo)',
                                 }}
                             >
-                                إلغاء
+                                {t('cancel', 'إلغاء')}
                             </button>
                         </div>
                     </form>

@@ -14,9 +14,21 @@ export default class ErrorBoundary extends React.Component {
     componentDidCatch(error, errorInfo) {
         console.error('React ErrorBoundary caught error:', error, errorInfo);
         this.setState({ errorInfo });
+
+        // Check if error is due to stale Vite dynamic import chunk
+        const errMsg = (error?.message || '').toLowerCase();
+        if (errMsg.includes('failed to fetch dynamically imported module') || errMsg.includes('loading chunk')) {
+            const hasReloaded = window.sessionStorage.getItem('chunk_eb_reload');
+            if (!hasReloaded) {
+                window.sessionStorage.setItem('chunk_eb_reload', 'true');
+                window.location.reload();
+            }
+        }
     }
 
     handleReload = () => {
+        window.sessionStorage.removeItem('chunk_eb_reload');
+        window.sessionStorage.removeItem('chunk_retry_refreshed');
         this.setState({ hasError: false, error: null, errorInfo: null });
         window.location.reload();
     };

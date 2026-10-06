@@ -18,6 +18,8 @@ return [
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
+    'admin_timeout_minutes' => (int) env('ADMIN_SESSION_TIMEOUT', 60),
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Guards

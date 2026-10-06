@@ -37,7 +37,7 @@ export default function DepositPage() {
     const [searchParams] = useSearchParams();
     const { user, isAuthenticated } = useAuth();
     const { success, error: toastError } = useToast();
-    const { isRtl } = useLanguage();
+    const { isRtl, t, language } = useLanguage();
     const { theme } = useTheme();
     const isLight = theme === 'light';
 
@@ -256,14 +256,14 @@ export default function DepositPage() {
     ];
 
     const countries = [
-        { id: 'egypt', name: 'تحويل مصر', currency: 'EGY' },
-        { id: 'jordan', name: 'تحويل الاردن', currency: 'JOD' },
-        { id: 'syria', name: 'تحويل سوريا', currency: 'USD' },
-        { id: 'saudi', name: 'تحويل السعودية', currency: 'SAR' },
-        { id: 'uae', name: 'تحويل الامارات', currency: 'AED' },
-        { id: 'yemen', name: 'تحويل اليمن', currency: 'YER' },
-        { id: 'turkey', name: 'تحويل تركيا', currency: 'TRY' },
-        { id: 'crypto', name: 'تحويل USDT دولي', currency: 'USD' },
+        { id: 'egypt', name: language === 'en' ? 'Egypt' : 'تحويل مصر', currency: 'EGY' },
+        { id: 'jordan', name: language === 'en' ? 'Jordan' : 'تحويل الاردن', currency: 'JOD' },
+        { id: 'syria', name: language === 'en' ? 'Syria' : 'تحويل سوريا', currency: 'USD' },
+        { id: 'saudi', name: language === 'en' ? 'Saudi Arabia' : 'تحويل السعودية', currency: 'SAR' },
+        { id: 'uae', name: language === 'en' ? 'UAE' : 'تحويل الامارات', currency: 'AED' },
+        { id: 'yemen', name: language === 'en' ? 'Yemen' : 'تحويل اليمن', currency: 'YER' },
+        { id: 'turkey', name: language === 'en' ? 'Turkey' : 'تحويل تركيا', currency: 'TRY' },
+        { id: 'crypto', name: language === 'en' ? 'Global USDT' : 'تحويل USDT دولي', currency: 'USD' },
     ];
 
     const filteredMethods = allPaymentMethods.filter(m => {
@@ -275,7 +275,7 @@ export default function DepositPage() {
         if (!text) return;
         navigator.clipboard.writeText(text);
         setCopied(true);
-        success('تم نسخ بيانات التحويل بنجاح');
+        success(t('copied', 'تم نسخ بيانات التحويل بنجاح'));
         setTimeout(() => setCopied(false), 2500);
     };
 
@@ -293,18 +293,18 @@ export default function DepositPage() {
         e.preventDefault();
 
         if (!isAuthenticated) {
-            toastError('يرجى تسجيل الدخول أولاً لتتمكن من إرسال طلب الإيداع');
+            toastError(language === 'en' ? 'Please log in first to submit deposit request' : 'يرجى تسجيل الدخول أولاً لتتمكن من إرسال طلب الإيداع');
             navigate('/login', { state: { from: { pathname: '/deposit' } } });
             return;
         }
 
         if (numAmount <= 0) {
-            toastError('يرجى إدخال مبلغ الإيداع');
+            toastError(language === 'en' ? 'Please enter deposit amount' : 'يرجى إدخال مبلغ الإيداع');
             return;
         }
 
         if (!senderWallet.trim() && !transactionRef.trim()) {
-            toastError('يرجى إدخال رقم المحفظة المحول منها أو رقم العملية');
+            toastError(language === 'en' ? 'Please enter sender wallet number or transaction ID' : 'يرجى إدخال رقم المحفظة المحول منها أو رقم العملية');
             return;
         }
 
@@ -335,17 +335,17 @@ export default function DepositPage() {
 
             if (data?.id) {
                 setSubmittedDeposit(data);
-                success('تم تقديم طلب الإيداع بنجاح! سيتم مراجعة الإيصال وإيداع الرصيد فوراً');
+                success(language === 'en' ? 'Deposit request submitted successfully! Your receipt is under review.' : 'تم تقديم طلب الإيداع بنجاح! سيتم مراجعة الإيصال وإيداع الرصيد فوراً');
             } else {
                 setSubmittedDeposit({
                     id: data?.id || Math.floor(100000 + Math.random() * 900000),
                     amount: numAmount,
                     currency: selectedMethod?.currency || 'EGP',
                 });
-                success('تم استلام طلب الإيداع بنجاح!');
+                success(language === 'en' ? 'Deposit request received successfully!' : 'تم استلام طلب الإيداع بنجاح!');
             }
         } catch (err) {
-            toastError(err?.message || 'تعذر إرسال طلب الإيداع، يرجى المحاولة مجدداً');
+            toastError(err?.message || (language === 'en' ? 'Failed to submit deposit, please try again' : 'تعذر إرسال طلب الإيداع، يرجى المحاولة مجدداً'));
         } finally {
             setSubmitting(false);
         }
@@ -381,14 +381,25 @@ export default function DepositPage() {
                     </div>
 
                     <h2 style={{ margin: '0 0 8px', fontSize: '24px', fontWeight: '900', color: '#FFFFFF' }}>
-                        تم إرسال طلب الإيداع بنجاح!
+                        {t('depositSuccessTitle', 'تم إرسال طلب الإيداع بنجاح!')}
                     </h2>
 
                     <p style={{ margin: '0 0 28px', fontSize: '15px', color: '#C5C5D2', lineHeight: '1.7' }}>
-                        طلب شحن محفظة رقم <strong style={{ color: '#F5D061' }}>#{submittedDeposit.id}</strong> بمبلغ{' '}
-                        <strong style={{ color: '#4ADE80' }}>{Number(submittedDeposit.amount || numAmount).toLocaleString()} {submittedDeposit.currency || selectedMethod?.currency || 'EGP'}</strong>.
-                        <br />
-                        يقوم المشرف الآن بمطابقة التحويل وسيتم إضافة الرصيد إلى محفظتك فوراً.
+                        {language === 'en' ? (
+                            <>
+                                Deposit request <strong style={{ color: '#F5D061' }}>#{submittedDeposit.id}</strong> for{' '}
+                                <strong style={{ color: '#4ADE80' }}>{Number(submittedDeposit.amount || numAmount).toLocaleString()} {submittedDeposit.currency || selectedMethod?.currency || 'EGP'}</strong> has been created.
+                                <br />
+                                The team is matching your transfer and funds will be credited immediately.
+                            </>
+                        ) : (
+                            <>
+                                طلب شحن محفظة رقم <strong style={{ color: '#F5D061' }}>#{submittedDeposit.id}</strong> بمبلغ{' '}
+                                <strong style={{ color: '#4ADE80' }}>{Number(submittedDeposit.amount || numAmount).toLocaleString()} {submittedDeposit.currency || selectedMethod?.currency || 'EGP'}</strong>.
+                                <br />
+                                يقوم المشرف الآن بمطابقة التحويل وسيتم إضافة الرصيد إلى محفظتك فوراً.
+                            </>
+                        )}
                     </p>
 
                     <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -405,7 +416,7 @@ export default function DepositPage() {
                                     cursor: 'pointer',
                                 }}
                             >
-                                عرض رصيد المحفظة
+                                {t('viewWalletBalance', 'عرض رصيد المحفظة')}
                             </button>
                         </Link>
                         <Link to="/" style={{ textDecoration: 'none' }}>
@@ -421,7 +432,7 @@ export default function DepositPage() {
                                     cursor: 'pointer',
                                 }}
                             >
-                                تصفح المتجر والشحن
+                                {t('browseStoreAndRecharge', 'تصفح المتجر والشحن')}
                             </button>
                         </Link>
                     </div>
@@ -458,7 +469,7 @@ export default function DepositPage() {
                         }}
                     >
                         <FileText size={15} />
-                        <span>سجل المعاملات والمحفظة</span>
+                        <span>{t('depositHistory', 'سجل المعاملات والمحفظة')}</span>
                     </Link>
 
                     {selectedMethod ? (
@@ -478,7 +489,7 @@ export default function DepositPage() {
                                 cursor: 'pointer',
                             }}
                         >
-                            <span>الرجوع لطرق الدفع</span>
+                            <span>{t('backToPaymentMethods', 'الرجوع لطرق الدفع')}</span>
                             {isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
                         </button>
                     ) : (
@@ -498,19 +509,19 @@ export default function DepositPage() {
                                 cursor: 'pointer',
                             }}
                         >
-                            <span>رجوع</span>
+                            <span>{t('back', 'رجوع')}</span>
                             {isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
                         </button>
                     )}
                 </div>
 
-                {/* ═══ VIEW 1: SELECT PAYMENT METHOD (Matches KA-Card Screenshot) ═══ */}
+                {/* ═══ VIEW 1: SELECT PAYMENT METHOD ═══ */}
                 {!selectedMethod && (
                     <div>
-                        {/* Hero Banner with VIP Illustration & Balance (Matches Screenshot) */}
+                        {/* Hero Banner */}
                         <div className="deposit-hero-banner">
                             <div className="deposit-hero-content">
-                                {/* Right: Title & Intro */}
+                                {/* Right/Left: Title & Intro */}
                                 <div>
                                     <div style={{
                                         display: 'inline-flex',
@@ -526,30 +537,30 @@ export default function DepositPage() {
                                         marginBottom: '10px',
                                     }}>
                                         <Wallet size={13} />
-                                        <span>المحفظة الرقمية الملكية</span>
+                                        <span>{t('royalDigitalWallet', 'المحفظة الرقمية الملكية')}</span>
                                     </div>
 
                                     <h1 className="deposit-hero-title">
                                         <Sparkles size={24} color="#D4A537" />
-                                        إضافة رصيد
+                                        {t('addBalance', 'إضافة رصيد')}
                                     </h1>
                                     <p className="deposit-hero-desc">
-                                        اختر وسيلة الدفع المناسبة واشحن محفظتك فوراً بالثواني بأمان كامل وبدون عمولات
+                                        {t('depositPageDesc', 'اختر الدولة وطريقة الدفع المناسبة للتحويل، ثم ارفع إشعار العملية لإيداع الرصيد فوراً.')}
                                     </p>
                                 </div>
 
-                                {/* Center/Left: Current Balance Badge */}
+                                {/* Current Balance Badge */}
                                 <div className="deposit-balance-capsule">
                                     <div className="deposit-balance-label">
-                                        رصيدك الحالي
+                                        {t('availableBalance', 'رصيدك الحالي')}
                                     </div>
                                     <div className="deposit-balance-val">
-                                        {Number(user?.wallet?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })} {user?.currency || 'EGY'}
+                                        {Number(user?.wallet?.balance || 0).toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', { minimumFractionDigits: 2 })} {user?.currency || (language === 'en' ? 'EGP' : 'ج.م')}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Country & Currency Selector Pills (Matches Screenshot) */}
+                            {/* Country & Currency Selector Pills */}
                             <div className="deposit-filter-pills-row">
                                 {countries.map((c) => {
                                     const active = activeCountry === c.id;
@@ -569,7 +580,7 @@ export default function DepositPage() {
                             </div>
                         </div>
 
-                        {/* KA-Cards Style Luxury Crimson & Gold Cards Grid */}
+                        {/* Cards Grid */}
                         <div className="deposit-cards-grid">
                             {filteredMethods.map((method) => (
                                 <div
@@ -580,11 +591,11 @@ export default function DepositPage() {
                                     {/* Top Bar with Recharge & Flame */}
                                     <div className="ka-card-top-bar">
                                         <span className="ka-card-recharge-tag">
-                                            Recharge
+                                            {language === 'en' ? 'Recharge' : 'شحن'}
                                         </span>
                                         <span className="ka-card-flame-tag">
                                             <Flame size={14} color="#F5D061" />
-                                            اشحن رصيدك
+                                            {t('chargeNow', 'اشحن رصيدك')}
                                         </span>
                                     </div>
 
@@ -600,14 +611,14 @@ export default function DepositPage() {
                                         0000
                                     </div>
 
-                                    {/* Crimson Method Name Badge */}
+                                    {/* Method Name Badge */}
                                     <div className="ka-card-name-pill">
                                         {method.subName || method.name}
                                     </div>
 
                                     {/* Translucent Note Box */}
                                     <div className="ka-card-note-box">
-                                        <span className="ka-card-note-title">ملاحظة:</span>
+                                        <span className="ka-card-note-title">{t('notes', 'ملاحظة')}:</span>
                                         <span>{method.note}</span>
                                     </div>
 
@@ -673,10 +684,10 @@ export default function DepositPage() {
                             <div className="deposit-account-box">
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                                     <span style={{ fontSize: '12px', fontWeight: '800', color: isLight ? '#b45309' : '#F5D061' }}>
-                                        {selectedMethod.id.includes('usdt') ? 'عنوان المحفظة (TRC-20 Address):' : (selectedMethod.id.includes('binance') ? 'Binance Pay ID:' : 'رقم الحساب / المحفظة للتحويل:')}
+                                        {selectedMethod.id.includes('usdt') ? (language === 'en' ? 'TRC-20 Wallet Address:' : 'عنوان المحفظة (TRC-20 Address):') : (selectedMethod.id.includes('binance') ? 'Binance Pay ID:' : (language === 'en' ? 'Account / Receiving Wallet Number:' : 'رقم الحساب / المحفظة للتحويل:'))}
                                     </span>
                                     <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: '700' }}>
-                                        ✓ معتمد ونشط الآن
+                                        ✓ {language === 'en' ? 'Verified & Active Now' : 'معتمد ونشط الآن'}
                                     </span>
                                 </div>
 
@@ -721,7 +732,7 @@ export default function DepositPage() {
                                         }}
                                     >
                                         {copied ? <Check size={14} strokeWidth={3} /> : <Copy size={14} />}
-                                        <span>{copied ? 'تم النسخ!' : 'نسخ'}</span>
+                                        <span>{copied ? t('copied', 'تم النسخ!') : t('copyCode', 'نسخ')}</span>
                                     </button>
                                 </div>
                             </div>
@@ -731,7 +742,7 @@ export default function DepositPage() {
                                 {/* Amount Input */}
                                 <div>
                                     <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: isLight ? '#0f172a' : '#F3F4F6', marginBottom: '8px' }}>
-                                        المبلغ المحول ({selectedMethod.currency}): <span style={{ color: '#EF4444' }}>*</span>
+                                        {t('depositAmountRequired', 'المبلغ المحول')} ({selectedMethod.currency}): <span style={{ color: '#EF4444' }}>*</span>
                                     </label>
                                     <div style={{ position: 'relative' }}>
                                         <input
@@ -741,7 +752,7 @@ export default function DepositPage() {
                                             step="any"
                                             value={amount}
                                             onChange={(e) => setAmount(e.target.value)}
-                                            placeholder={`أدخل المبلغ (الحد الأدنى ${selectedMethod.min_amount} ${selectedMethod.currency})`}
+                                            placeholder={language === 'en' ? `Enter amount (min ${selectedMethod.min_amount} ${selectedMethod.currency})` : `أدخل المبلغ (الحد الأدنى ${selectedMethod.min_amount} ${selectedMethod.currency})`}
                                             style={{
                                                 width: '100%',
                                                 boxSizing: 'border-box',
@@ -775,14 +786,14 @@ export default function DepositPage() {
                                 {/* Sender Phone / Account Number */}
                                 <div>
                                     <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: isLight ? '#0f172a' : '#F3F4F6', marginBottom: '8px' }}>
-                                        رقم المحفظة أو الحساب المحول منه: <span style={{ color: '#EF4444' }}>*</span>
+                                        {t('senderWalletLabel', 'رقم المحفظة أو الحساب المحول منه')}: <span style={{ color: '#EF4444' }}>*</span>
                                     </label>
                                     <input
                                         type="text"
                                         required
                                         value={senderWallet}
                                         onChange={(e) => setSenderWallet(e.target.value)}
-                                        placeholder="مثال: 01012345678 أو اسم المحول"
+                                        placeholder={language === 'en' ? 'e.g. 01012345678 or sender account name' : 'مثال: 01012345678 أو اسم المحول'}
                                         style={{
                                             width: '100%',
                                             boxSizing: 'border-box',
@@ -800,13 +811,13 @@ export default function DepositPage() {
                                 {/* Transaction Reference / ID */}
                                 <div>
                                     <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: isLight ? '#0f172a' : '#F3F4F6', marginBottom: '8px' }}>
-                                        رقم العملية أو المرجع (إن وجد):
+                                        {t('transactionRefLabel', 'رقم العملية أو المرجع (إن وجد)')}:
                                     </label>
                                     <input
                                         type="text"
                                         value={transactionRef}
                                         onChange={(e) => setTransactionRef(e.target.value)}
-                                        placeholder="مثال: رقم الحوالة أو الـ TXID من الرسالة"
+                                        placeholder={language === 'en' ? 'e.g. Transfer Ref # or TXID' : 'مثال: رقم الحوالة أو الـ TXID من الرسالة'}
                                         style={{
                                             width: '100%',
                                             boxSizing: 'border-box',
@@ -824,7 +835,7 @@ export default function DepositPage() {
                                 {/* Receipt Proof Image Upload */}
                                 <div>
                                     <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: isLight ? '#0f172a' : '#F3F4F6', marginBottom: '8px' }}>
-                                        صورة إيصال التحويل (Screenshot):
+                                        {t('attachProofReceipt', 'صورة إيصال التحويل (Screenshot)')}:
                                     </label>
                                     <label style={{
                                         display: 'flex',
@@ -852,17 +863,17 @@ export default function DepositPage() {
                                                     style={{ maxHeight: '120px', borderRadius: '8px', marginBottom: '8px' }}
                                                 />
                                                 <div style={{ color: '#16a34a', fontSize: '12px', fontWeight: '800' }}>
-                                                    ✓ تم اختيار الصورة (انقر للتغيير)
+                                                    ✓ {language === 'en' ? 'Image selected (click to change)' : 'تم اختيار الصورة (انقر للتغيير)'}
                                                 </div>
                                             </div>
                                         ) : (
                                             <div style={{ textAlign: 'center', color: isLight ? '#64748b' : '#9CA3AF' }}>
                                                 <Upload size={24} color="#D4A537" style={{ marginBottom: '6px' }} />
                                                 <div style={{ fontSize: '13px', fontWeight: '700', color: isLight ? '#0f172a' : '#E2E8F0' }}>
-                                                    اضغط لرفع لقطة شاشة الإيصال
+                                                    {language === 'en' ? 'Click to upload receipt screenshot' : 'اضغط لرفع لقطة شاشة الإيصال'}
                                                 </div>
                                                 <div style={{ fontSize: '11px', marginTop: '3px' }}>
-                                                    PNG, JPG حتى 5 ميجابايت
+                                                    {language === 'en' ? 'PNG, JPG up to 5MB' : 'PNG, JPG حتى 5 ميجابايت'}
                                                 </div>
                                             </div>
                                         )}
@@ -892,7 +903,7 @@ export default function DepositPage() {
                                         }}
                                     >
                                         <Zap size={18} />
-                                        <span>{submitting ? 'جاري إرسال الطلب...' : `تأكيد إيداع (${numAmount || 0} ${selectedMethod.currency})`}</span>
+                                        <span>{submitting ? (language === 'en' ? 'Submitting request...' : 'جاري إرسال الطلب...') : (language === 'en' ? `Confirm Deposit (${numAmount || 0} ${selectedMethod.currency})` : `تأكيد إيداع (${numAmount || 0} ${selectedMethod.currency})`)}</span>
                                     </button>
 
                                     <button
@@ -909,7 +920,7 @@ export default function DepositPage() {
                                             cursor: 'pointer',
                                         }}
                                     >
-                                        إلغاء
+                                        {t('cancel', 'إلغاء')}
                                     </button>
                                 </div>
                             </form>
@@ -920,3 +931,4 @@ export default function DepositPage() {
         </MainLayout>
     );
 }
+

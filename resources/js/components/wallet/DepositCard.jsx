@@ -3,7 +3,7 @@ import { CheckCircle2, Copy, Check, Calendar, CreditCard, Clock, XCircle } from 
 import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function DepositCard({ deposit }) {
-    const { isRtl } = useLanguage();
+    const { t, isRtl, language } = useLanguage();
     const [copied, setCopied] = useState(false);
 
     if (!deposit) return null;
@@ -17,7 +17,7 @@ export default function DepositCard({ deposit }) {
                     border: 'rgba(34, 197, 94, 0.3)',
                     color: '#22c55e',
                     dot: '#22c55e',
-                    label: 'مكتملة',
+                    label: t('completed', 'مكتملة'),
                     icon: CheckCircle2,
                 };
             case 'rejected':
@@ -27,7 +27,7 @@ export default function DepositCard({ deposit }) {
                     border: 'rgba(239, 68, 68, 0.3)',
                     color: '#ef4444',
                     dot: '#ef4444',
-                    label: 'مرفوضة',
+                    label: t('rejected', 'مرفوضة'),
                     icon: XCircle,
                 };
             default:
@@ -36,7 +36,7 @@ export default function DepositCard({ deposit }) {
                     border: 'rgba(234, 179, 8, 0.3)',
                     color: '#eab308',
                     dot: '#eab308',
-                    label: 'انتظار',
+                    label: t('pending', 'انتظار'),
                     icon: Clock,
                 };
         }
@@ -51,7 +51,7 @@ export default function DepositCard({ deposit }) {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2,
     });
-    const currency = deposit.currency || 'EGY';
+    const currency = language === 'en' ? 'EGP' : (deposit.currency === 'EGY' || deposit.currency === 'EGP' ? 'ج.م' : deposit.currency);
     const referenceId = deposit.reference_id || deposit.transaction_reference || `dep_${deposit.id}`;
 
     let formattedDate = deposit.created_at || '';
@@ -61,8 +61,8 @@ export default function DepositCard({ deposit }) {
             const yyyy = d.getFullYear();
             const mm = d.getMonth() + 1;
             const dd = d.getDate();
-            const timeStr = d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-            formattedDate = `${yyyy}/${mm}/${dd}، ${timeStr}`;
+            const timeStr = d.toLocaleTimeString(language === 'en' ? 'en-US' : 'ar-EG', { hour: '2-digit', minute: '2-digit' });
+            formattedDate = `${yyyy}/${mm}/${dd}, ${timeStr}`;
         }
     } catch (e) {
         formattedDate = deposit.created_at;
@@ -130,12 +130,12 @@ export default function DepositCard({ deposit }) {
                 }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: isRtl ? 'flex-end' : 'flex-start' }}>
                         <h4 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: '800', color: 'var(--text-primary, #0f172a)' }}>
-                            إضافة رصيد
+                            {t('addBalance', 'إضافة رصيد')}
                         </h4>
 
                         <div
                             onClick={handleCopy}
-                            title="اضغط لنسخ الرقم المرجعي"
+                            title={t('clickToCopyRef', 'اضغط لنسخ الرقم المرجعي')}
                             style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
@@ -184,7 +184,7 @@ export default function DepositCard({ deposit }) {
                 {/* Fee */}
                 <div style={{ textAlign: isRtl ? 'left' : 'right' }}>
                     <span style={{ fontSize: '11px', color: 'var(--text-muted, #94a3b8)', display: 'block', marginBottom: '2px' }}>
-                        الرسوم
+                        {t('fees', 'الرسوم')}
                     </span>
                     <strong style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary, #0f172a)' }}>
                         {currency} {fee}
@@ -194,7 +194,7 @@ export default function DepositCard({ deposit }) {
                 {/* Amount */}
                 <div style={{ textAlign: isRtl ? 'right' : 'left' }}>
                     <span style={{ fontSize: '11px', color: '#0284c7', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px', justifyContent: isRtl ? 'flex-end' : 'flex-start', marginBottom: '2px' }}>
-                        <span>المبلغ</span>
+                        <span>{t('amount', 'المبلغ')}</span>
                     </span>
                     <strong style={{ fontSize: '22px', fontWeight: '900', color: '#0284c7' }}>
                         {currency} {amount}

@@ -8,8 +8,11 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Pagination from '../components/ui/Pagination';
 import Button from '../components/ui/Button';
 import { ordersApi } from '../api/endpoints';
+import { useLanguage } from '../contexts/LanguageContext';
 import VideoBackground from "../components/home/VideoBackground";
+
 export default function OrdersPage() {
+    const { t, isRtl } = useLanguage();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('all');
@@ -43,10 +46,10 @@ export default function OrdersPage() {
     }, [currentPage, statusFilter]);
 
     const filterTabs = [
-        { key: 'all', label: 'جميع الطلبات' },
-        { key: 'processing', label: 'جاري الشحن' },
-        { key: 'completed', label: 'المكتملة' },
-        { key: 'failed', label: 'الملغية والمستردة' },
+        { key: 'all', label: t('allOrders', 'جميع الطلبات') },
+        { key: 'processing', label: t('processing', 'جاري الشحن') },
+        { key: 'completed', label: t('completed', 'المكتملة') },
+        { key: 'failed', label: t('failed', 'الملغية والمستردة') },
     ];
 
     return (
@@ -54,24 +57,24 @@ export default function OrdersPage() {
             {/* Header */}
             <div style={{ marginBottom: '28px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '13px', color: '#8E8E98' }}>
-                    <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>الرئيسية</Link>
+                    <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>{t('home', 'الرئيسية')}</Link>
                     <span>/</span>
-                    <span style={{ color: '#CBD5E1' }}>سجل طلبات الشحن</span>
+                    <span style={{ color: '#CBD5E1' }}>{t('ordersAndShippingLog', 'سجل طلبات الشحن')}</span>
                 </div>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
                     <div>
                         <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '900', color: '#FFFFFF' }}>
-                            طلباتي وسجل الشحن
+                            {t('ordersAndShippingLog', 'طلباتي وسجل الشحن')}
                         </h1>
                         <p style={{ margin: 0, fontSize: '14px', color: '#9E9EA8' }}>
-                            تابع حالة تنفيذ شحن ألعابك وبطاقاتك الرقمية لحظة بلحظة
+                            {t('ordersSubtitle', 'تابع حالة تنفيذ شحن ألعابك وبطاقاتك الرقمية لحظة بلحظة')}
                         </p>
                     </div>
 
                     <Link to="/category/games" style={{ textDecoration: 'none' }}>
                         <Button variant="primary" size="md" icon={Gamepad2}>
-                            شحن لعبة جديدة
+                            {t('rechargeNewGame', 'شحن لعبة جديدة')}
                         </Button>
                     </Link>
                 </div>
@@ -108,7 +111,7 @@ export default function OrdersPage() {
                                 cursor: 'pointer',
                                 whiteSpace: 'nowrap',
                                 transition: 'all 0.2s',
-                                fontFamily: 'Cairo, sans-serif',
+                                fontFamily: 'var(--font-cairo)',
                             }}
                         >
                             {tab.label}
@@ -121,7 +124,7 @@ export default function OrdersPage() {
             <VideoBackground>
                 {loading ? (
                     <div style={{ padding: '80px 0' }}>
-                        <LoadingSpinner text="جاري جلب سجل الطلبات..." />
+                        <LoadingSpinner text={t('loadingOrders', 'جاري جلب سجل الطلبات...')} />
                     </div>
                 ) : orders.length > 0 ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '32px' }}>
@@ -141,9 +144,9 @@ export default function OrdersPage() {
                     </div>
                 ) : (
                     <EmptyState
-                        title="لا توجد طلبات شحن حالياً"
-                        description="لم تقم بإجراء أي طلبات شحن بهذا التصنيف حتى الآن."
-                        actionText="تصفح الألعاب واشحن الآن"
+                        title={t('noOrdersYet', 'لا توجد طلبات شحن حالياً')}
+                        description={t('noOrdersDesc', 'لم تقم بإجراء أي طلبات شحن بهذا التصنيف حتى الآن.')}
+                        actionText={t('browseGamesAndRecharge', 'تصفح الألعاب واشحن الآن')}
                         onAction={() => window.location.href = '/category/games'}
                     />
                 )}

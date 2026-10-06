@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, Calendar, Mail, User, Copy, Check, Gamepad2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Mail, User, Copy, Check, Gamepad2 } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function OrderCard({ order }) {
-    const { isRtl } = useLanguage();
+    const { t, isRtl, language } = useLanguage();
     const [copied, setCopied] = useState(false);
 
     if (!order) return null;
@@ -12,15 +12,15 @@ export default function OrderCard({ order }) {
     const getStatusConfig = (status) => {
         switch (status) {
             case 'completed':
-                return { bg: 'rgba(34, 197, 94, 0.12)', color: '#22c55e', dot: '#22c55e', label: 'مكتمل' };
+                return { bg: 'rgba(34, 197, 94, 0.12)', color: '#22c55e', dot: '#22c55e', label: t('completed', 'مكتمل') };
             case 'processing':
-                return { bg: 'rgba(234, 179, 8, 0.12)', color: '#eab308', dot: '#eab308', label: 'قيد التنفيذ' };
+                return { bg: 'rgba(234, 179, 8, 0.12)', color: '#eab308', dot: '#eab308', label: t('processing', 'قيد التنفيذ') };
             case 'failed':
-                return { bg: 'rgba(239, 68, 68, 0.12)', color: '#ef4444', dot: '#ef4444', label: 'ملغي / فاشل' };
+                return { bg: 'rgba(239, 68, 68, 0.12)', color: '#ef4444', dot: '#ef4444', label: t('failed', 'ملغي / فاشل') };
             case 'refunded':
-                return { bg: 'rgba(56, 189, 248, 0.12)', color: '#38bdf8', dot: '#38bdf8', label: 'مسترد' };
+                return { bg: 'rgba(56, 189, 248, 0.12)', color: '#38bdf8', dot: '#38bdf8', label: t('refunded', 'مسترد') };
             default:
-                return { bg: 'rgba(234, 179, 8, 0.12)', color: '#eab308', dot: '#eab308', label: 'قيد الانتظار' };
+                return { bg: 'rgba(234, 179, 8, 0.12)', color: '#eab308', dot: '#eab308', label: t('pending', 'قيد الانتظار') };
         }
     };
 
@@ -34,9 +34,9 @@ export default function OrderCard({ order }) {
     try {
         if (order.created_at) {
             const d = new Date(order.created_at);
-            formattedDate = d.toLocaleDateString('ar-EG', {
+            formattedDate = d.toLocaleDateString(language === 'en' ? 'en-US' : 'ar-EG', {
                 year: 'numeric',
-                month: 'long',
+                month: 'short',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
@@ -90,10 +90,10 @@ export default function OrderCard({ order }) {
                     flexShrink: 0,
                 }}>
                     <div style={{ fontSize: '11px', color: 'var(--text-secondary, #94a3b8)', fontWeight: '700' }}>
-                        القيمة
+                        {t('value', 'القيمة')}
                     </div>
                     <div style={{ fontSize: '14px', fontWeight: '900', color: '#38bdf8' }}>
-                        Egy {amount}
+                        {language === 'en' ? 'EGP' : 'ج.م'} {amount}
                     </div>
                 </div>
 
@@ -102,7 +102,7 @@ export default function OrderCard({ order }) {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    justifyContent: 'flex-end',
+                    justifyContent: isRtl ? 'flex-end' : 'flex-start',
                     flex: 1,
                     minWidth: 0,
                 }}>
@@ -124,7 +124,7 @@ export default function OrderCard({ order }) {
                             {/* Order Public ID Badge */}
                             <span
                                 onClick={handleCopyId}
-                                title="اضغط للنسخ"
+                                title={t('clickToCopy', 'اضغط للنسخ')}
                                 style={{
                                     fontSize: '11px',
                                     fontFamily: 'monospace',
@@ -177,7 +177,7 @@ export default function OrderCard({ order }) {
                             whiteSpace: 'nowrap',
                             maxWidth: '100%',
                         }}>
-                            {order.product?.name || order.tier?.name || 'طلب شحن'}
+                            {order.product?.name || order.tier?.name || t('chargeNow', 'طلب شحن')}
                         </h3>
                     </div>
 
@@ -255,7 +255,7 @@ export default function OrderCard({ order }) {
                     gap: '2px',
                 }}>
                     <span style={{ fontSize: '11px', color: 'var(--text-muted, #94a3b8)' }}>
-                        معرف المستخدم
+                        {t('playerOrUserId', 'معرف المستخدم')}
                     </span>
                     <span style={{
                         fontSize: '15px',
@@ -298,8 +298,8 @@ export default function OrderCard({ order }) {
                     e.currentTarget.style.boxShadow = '0 4px 14px rgba(21, 101, 192, 0.35)';
                 }}
             >
-                <ChevronLeft size={16} />
-                <span>التفاصيل</span>
+                {isRtl ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+                <span>{t('details', 'التفاصيل')}</span>
             </Link>
         </div>
     );

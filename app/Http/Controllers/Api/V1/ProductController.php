@@ -67,6 +67,8 @@ class ProductController extends Controller
                 'cards' => 'cards',
                 'telecom' => 'telecom',
                 'target' => 'target',
+                'bbgy' => 'games',
+                'pubg' => 'games',
             ];
 
             if (isset($typeAliases[$catSlug])) {
@@ -74,12 +76,19 @@ class ProductController extends Controller
                 $query->where(function ($q) use ($catSlug, $categoryType) {
                     $q->whereHas('category', function ($cq) use ($catSlug, $categoryType) {
                         $cq->where('slug', $catSlug)
-                           ->orWhere('type', $categoryType);
-                    });
+                           ->orWhere('type', $categoryType)
+                           ->orWhere('slug', 'like', "%{$catSlug}%")
+                           ->orWhere('name', 'like', "%{$catSlug}%");
+                    })->orWhere('slug', 'like', "%{$catSlug}%")
+                      ->orWhere('name', 'like', "%{$catSlug}%");
                 });
             } else {
-                $query->whereHas('category', function ($q) use ($catSlug) {
-                    $q->where('slug', $catSlug);
+                $query->where(function ($q) use ($catSlug) {
+                    $q->whereHas('category', function ($cq) use ($catSlug) {
+                        $cq->where('slug', $catSlug)
+                           ->orWhere('slug', 'like', "%{$catSlug}%")
+                           ->orWhere('name', 'like', "%{$catSlug}%");
+                    })->orWhere('slug', 'like', "%{$catSlug}%");
                 });
             }
         }

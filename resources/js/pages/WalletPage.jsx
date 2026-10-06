@@ -20,10 +20,12 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Pagination from '../components/ui/Pagination';
 import { walletApi, depositsApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import CurrencyConverter from '../components/wallet/CurrencyConverter';
 
 export default function WalletPage() {
     const { user } = useAuth();
+    const { t, isRtl, language } = useLanguage();
 
     const [balanceData, setBalanceData] = useState(null);
     const [deposits, setDeposits] = useState([]);
@@ -93,8 +95,7 @@ export default function WalletPage() {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
-    const currency = balanceData?.currency || user?.currency || 'EGP';
-    const currencyLabel = currency === 'EGP' ? 'ج.م' : currency;
+    const currencyLabel = language === 'en' ? 'EGP' : 'ج.م';
 
     return (
         <MainLayout>
@@ -121,12 +122,21 @@ export default function WalletPage() {
                         textDecoration: 'none',
                     }}
                 >
-                    <span>رجوع</span>
-                    <ArrowLeft size={16} />
+                    {isRtl ? (
+                        <>
+                            <span>{t('back', 'رجوع')}</span>
+                            <ArrowLeft size={16} />
+                        </>
+                    ) : (
+                        <>
+                            <ArrowLeft size={16} />
+                            <span>{t('back', 'رجوع')}</span>
+                        </>
+                    )}
                 </Link>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>الرصيد المتاح:</span>
+                    <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{t('availableBalance', 'الرصيد المتاح')}:</span>
                     <span style={{ fontSize: '15px', fontWeight: '900', color: 'var(--gold-400)' }}>
                         {formattedBalance} {currencyLabel}
                     </span>
@@ -159,15 +169,15 @@ export default function WalletPage() {
                         <ReceiptText size={22} color="#CBD5E1" />
                     </div>
 
-                    <div style={{ textAlign: 'right', flex: 1 }}>
+                    <div style={{ textAlign: isRtl ? 'right' : 'left', flex: 1 }}>
                         <span style={{ fontSize: '12.5px', color: 'rgba(255, 255, 255, 0.65)', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
-                            حسابك المالي
+                            {t('financialAccount', 'حسابك المالي')}
                         </span>
                         <h2 style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: '900', color: '#FFFFFF' }}>
-                            سجل طلبات إضافة الرصيد
+                            {t('financialTransfersTitle', 'سجل طلبات إضافة الرصيد')}
                         </h2>
                         <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255, 255, 255, 0.75)' }}>
-                            تابع حالة طلباتك ومبلغ وطريقة الدفع في مكان واحد (خلال آخر 5 أيام).
+                            {t('financialTransfersSub', 'تابع حالة طلباتك ومبلغ وطريقة الدفع في مكان واحد (خلال آخر 5 أيام).')}
                         </p>
                     </div>
                 </div>
@@ -197,7 +207,7 @@ export default function WalletPage() {
                             transition: 'all 0.2s',
                         }}
                     >
-                        <div style={{ fontSize: '11.5px', opacity: 0.85, marginBottom: '2px' }}>الكل</div>
+                        <div style={{ fontSize: '11.5px', opacity: 0.85, marginBottom: '2px' }}>{t('all', 'الكل')}</div>
                         <div style={{ fontSize: '18px', fontWeight: '900' }}>{depositStats.total || deposits.length}</div>
                     </button>
 
@@ -220,7 +230,7 @@ export default function WalletPage() {
                             transition: 'all 0.2s',
                         }}
                     >
-                        <div style={{ fontSize: '11.5px', opacity: 0.85, marginBottom: '2px' }}>انتظار</div>
+                        <div style={{ fontSize: '11.5px', opacity: 0.85, marginBottom: '2px' }}>{t('pending', 'انتظار')}</div>
                         <div style={{ fontSize: '18px', fontWeight: '900' }}>{depositStats.pending || 0}</div>
                     </button>
 
@@ -243,7 +253,7 @@ export default function WalletPage() {
                             transition: 'all 0.2s',
                         }}
                     >
-                        <div style={{ fontSize: '11.5px', opacity: 0.85, marginBottom: '2px' }}>مقبولة</div>
+                        <div style={{ fontSize: '11.5px', opacity: 0.85, marginBottom: '2px' }}>{t('accepted', 'مقبولة')}</div>
                         <div style={{ fontSize: '18px', fontWeight: '900' }}>{depositStats.approved || 0}</div>
                     </button>
 
@@ -266,7 +276,7 @@ export default function WalletPage() {
                             transition: 'all 0.2s',
                         }}
                     >
-                        <div style={{ fontSize: '11.5px', opacity: 0.85, marginBottom: '2px' }}>مرفوضة</div>
+                        <div style={{ fontSize: '11.5px', opacity: 0.85, marginBottom: '2px' }}>{t('rejected', 'مرفوضة')}</div>
                         <div style={{ fontSize: '18px', fontWeight: '900' }}>{depositStats.rejected || 0}</div>
                     </button>
                 </div>
@@ -299,16 +309,16 @@ export default function WalletPage() {
                     }}
                 >
                     <RefreshCw size={14} />
-                    <span>تحديث</span>
+                    <span>{t('refresh', 'تحديث')}</span>
                 </button>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ textAlign: 'right' }}>
+                    <div style={{ textAlign: isRtl ? 'right' : 'left' }}>
                         <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '900', color: 'var(--text-primary)' }}>
-                            طلباتك الأخيرة
+                            {t('latestRequests', 'طلباتك الأخيرة')}
                         </h3>
                         <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                            عرض {deposits.length} طلب (آخر 5 أيام)
+                            {t('showingRequests', 'عرض {count} طلب (آخر 5 أيام)').replace('{count}', deposits.length)}
                         </span>
                     </div>
 
@@ -330,7 +340,7 @@ export default function WalletPage() {
             {/* Deposits List */}
             {loadingDeposits ? (
                 <div style={{ padding: '60px 0' }}>
-                    <LoadingSpinner text="جاري تحميل سجل التحويلات والإيداعات..." />
+                    <LoadingSpinner text={t('loadingTransfers', 'جاري تحميل سجل التحويلات والإيداعات...')} />
                 </div>
             ) : deposits && deposits.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '32px' }}>
@@ -350,9 +360,9 @@ export default function WalletPage() {
                 </div>
             ) : (
                 <EmptyState
-                    title="لا توجد تحويلات مالية مسجلة"
-                    description="لم يتم العثور على طلبات إضافة رصيد خلال آخر 5 أيام."
-                    actionText="شحن رصيد الآن"
+                    title={t('noTransfersFound', 'لا توجد تحويلات مالية مسجلة')}
+                    description={t('noTransfersDesc', 'لم يتم العثور على طلبات إضافة رصيد خلال آخر 5 أيام.')}
+                    actionText={t('chargeBalanceNow', 'شحن رصيد الآن')}
                     onAction={() => window.location.href = '/deposit'}
                 />
             )}

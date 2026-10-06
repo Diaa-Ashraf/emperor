@@ -28,6 +28,7 @@ import {
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { profileApi } from '../api/endpoints';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
@@ -40,6 +41,7 @@ import TwoFactorModal from '../components/auth/TwoFactorModal';
 export default function ProfilePage() {
     const { user, refreshProfile, setUser } = useAuth();
     const { addToast } = useToast();
+    const { t, isRtl, language } = useLanguage();
     const fileInputRef = useRef(null);
 
     const [activeTab, setActiveTab] = useState('info'); // 'info' | 'security'
@@ -93,10 +95,10 @@ export default function ProfilePage() {
             if (updatedUser) {
                 setUser(updatedUser);
             }
-            addToast('تم تحديث البيانات الشخصية بنجاح', 'success');
+            addToast(t('profileUpdatedSuccess', 'تم تحديث البيانات الشخصية بنجاح'), 'success');
         } catch (err) {
             console.error('Update profile error:', err);
-            const msg = err.response?.data?.message || 'فشل تحديث البيانات، يرجى المحاولة لاحقاً';
+            const msg = err.response?.data?.message || t('profileUpdateFailed', 'فشل تحديث البيانات، يرجى المحاولة لاحقاً');
             addToast(msg, 'error');
         } finally {
             setSavingProfile(false);
@@ -109,7 +111,7 @@ export default function ProfilePage() {
         if (!file) return;
 
         if (file.size > 2 * 1024 * 1024) {
-            addToast('الحد الأقصى لحجم الصورة هو 2 ميجابايت', 'error');
+            addToast(t('maxAvatarSize', 'الحد الأقصى لحجم الصورة هو 2 ميجابايت'), 'error');
             return;
         }
 
@@ -123,10 +125,10 @@ export default function ProfilePage() {
             if (updatedUser) {
                 setUser(updatedUser);
             }
-            addToast('تم تحديث الصورة الشخصية بنجاح', 'success');
+            addToast(t('avatarUpdatedSuccess', 'تم تحديث الصورة الشخصية بنجاح'), 'success');
         } catch (err) {
             console.error('Avatar upload error:', err);
-            addToast('فشل رفع الصورة الشخصية', 'error');
+            addToast(t('avatarUploadFailed', 'فشل رفع الصورة الشخصية'), 'error');
         } finally {
             setUploadingAvatar(false);
         }
@@ -137,19 +139,19 @@ export default function ProfilePage() {
         e.preventDefault();
 
         if (passwordData.password !== passwordData.password_confirmation) {
-            addToast('تأكيد كلمة المرور غير متطابق', 'error');
+            addToast(t('passwordMismatch', 'تأكيد كلمة المرور غير متطابق'), 'error');
             return;
         }
 
         if (passwordData.password.length < 8) {
-            addToast('يجب ألا تقل كلمة المرور الجديدة عن 8 أحرف وأرقام', 'error');
+            addToast(t('passwordMinLength', 'يجب ألا تقل كلمة المرور الجديدة عن 8 أحرف وأرقام'), 'error');
             return;
         }
 
         setSavingPassword(true);
         try {
             await profileApi.updatePassword(passwordData);
-            addToast('تم تغيير كلمة المرور بنجاح', 'success');
+            addToast(t('passwordChangedSuccess', 'تم تغيير كلمة المرور بنجاح'), 'success');
             setPasswordData({
                 current_password: '',
                 password: '',
@@ -157,7 +159,7 @@ export default function ProfilePage() {
             });
         } catch (err) {
             console.error('Password change error:', err);
-            const msg = err.response?.data?.message || 'فشل تغيير كلمة المرور، يرجى التأكد من كلمة المرور الحالية';
+            const msg = err.response?.data?.message || t('passwordChangeFailed', 'فشل تغيير كلمة المرور، يرجى التأكد من كلمة المرور الحالية');
             addToast(msg, 'error');
         } finally {
             setSavingPassword(false);
@@ -170,26 +172,26 @@ export default function ProfilePage() {
         if (!user?.referral_code) return;
         navigator.clipboard.writeText(user.referral_code);
         setCopiedRef(true);
-        addToast('تم نسخ كود الإحالة بنجاح', 'success');
+        addToast(t('copied', 'تم النسخ بنجاح'), 'success');
         setTimeout(() => setCopiedRef(false), 2000);
     };
 
     const countryOptions = [
-        { value: 'EG', label: '🇪🇬 مصر (Egypt)' },
-        { value: 'SA', label: '🇸🇦 السعودية (Saudi Arabia)' },
-        { value: 'AE', label: '🇦🇪 الإمارات (UAE)' },
-        { value: 'KW', label: '🇰🇼 الكويت (Kuwait)' },
-        { value: 'SY', label: '🇸🇾 سوريا (Syria)' },
-        { value: 'IQ', label: '🇮🇶 العراق (Iraq)' },
-        { value: 'JO', label: '🇯🇴 الأردن (Jordan)' },
-        { value: 'OTHER', label: 'دولة أخرى' },
+        { value: 'EG', label: language === 'en' ? '🇪🇬 Egypt' : '🇪🇬 مصر' },
+        { value: 'SA', label: language === 'en' ? '🇸🇦 Saudi Arabia' : '🇸🇦 السعودية' },
+        { value: 'AE', label: language === 'en' ? '🇦🇪 UAE' : '🇦🇪 الإمارات' },
+        { value: 'KW', label: language === 'en' ? '🇰🇼 Kuwait' : '🇰🇼 الكويت' },
+        { value: 'SY', label: language === 'en' ? '🇸🇾 Syria' : '🇸🇾 سوريا' },
+        { value: 'IQ', label: language === 'en' ? '🇮🇶 Iraq' : '🇮🇶 العراق' },
+        { value: 'JO', label: language === 'en' ? '🇯🇴 Jordan' : '🇯🇴 الأردن' },
+        { value: 'OTHER', label: language === 'en' ? 'Other' : 'دولة أخرى' },
     ];
 
     const currencyOptions = [
-        { value: 'EGP', label: 'EGP — جنيه مصري' },
-        { value: 'USD', label: 'USD — دولار أمريكي' },
-        { value: 'SAR', label: 'SAR — ريال سعودي' },
-        { value: 'SYP', label: 'SYP — ليرة سورية' },
+        { value: 'EGP', label: language === 'en' ? 'EGP — Egyptian Pound' : 'EGP — جنيه مصري' },
+        { value: 'USD', label: language === 'en' ? 'USD — US Dollar' : 'USD — دولار أمريكي' },
+        { value: 'SAR', label: language === 'en' ? 'SAR — Saudi Riyal' : 'SAR — ريال سعودي' },
+        { value: 'SYP', label: language === 'en' ? 'SYP — Syrian Pound' : 'SYP — ليرة سورية' },
     ];
 
     return (
@@ -256,11 +258,12 @@ export default function ProfilePage() {
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={uploadingAvatar}
-                                title="تغيير الصورة الشخصية"
+                                title={t('changeAvatar', 'تغيير الصورة الشخصية')}
                                 style={{
                                     position: 'absolute',
                                     bottom: '-4px',
-                                    right: '-4px',
+                                    right: isRtl ? '-4px' : 'auto',
+                                    left: isRtl ? 'auto' : '-4px',
                                     width: '30px',
                                     height: '30px',
                                     borderRadius: '10px',
@@ -289,7 +292,7 @@ export default function ProfilePage() {
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
                                 <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: '#FFFFFF' }}>
-                                    {user?.name || 'مستخدم إمبراطور'}
+                                    {user?.name || t('emperorUser', 'مستخدم إمبراطور')}
                                 </h2>
                                 <span style={{
                                     padding: '2px 8px',
@@ -299,7 +302,7 @@ export default function ProfilePage() {
                                     fontSize: '11px',
                                     fontWeight: '800',
                                 }}>
-                                    VIP MEMBER
+                                    {user?.role === 'admin' ? t('vipMember', 'VIP MEMBER') : t('storeMember', 'STORE MEMBER')}
                                 </span>
                             </div>
 
@@ -321,7 +324,7 @@ export default function ProfilePage() {
                                     color: '#F3E5AB',
                                     fontWeight: '700',
                                 }}>
-                                    <span>كود الإحالة: {user.referral_code}</span>
+                                    <span>{t('referralCodeColon', 'كود الإحالة:')} {user.referral_code}</span>
                                     <button
                                         onClick={handleCopyReferral}
                                         style={{ background: 'transparent', border: 'none', color: '#D4A537', cursor: 'pointer', padding: 0 }}
@@ -343,11 +346,11 @@ export default function ProfilePage() {
                         textAlign: 'center',
                     }}>
                         <span style={{ fontSize: '12px', color: '#9E9EA8', display: 'block', marginBottom: '4px' }}>
-                            الرصيد المتاح بالمحفظة
+                            {t('availableBalanceInWallet', 'الرصيد المتاح بالمحفظة')}
                         </span>
                         <div style={{ fontSize: '24px', fontWeight: '900', color: '#D4A537', marginBottom: '8px' }}>
-                            {user?.wallet?.balance !== undefined ? Number(user.wallet.balance).toLocaleString() : '0.00'}{' '}
-                            <span style={{ fontSize: '14px' }}>{user?.currency || 'EGP'}</span>
+                            {user?.wallet?.balance !== undefined ? Number(user.wallet.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}{' '}
+                            <span style={{ fontSize: '14px' }}>{language === 'en' ? 'EGP' : 'ج.م'}</span>
                         </div>
                         <Link
                             to="/wallet"
@@ -361,7 +364,7 @@ export default function ProfilePage() {
                                 fontWeight: '700',
                             }}
                         >
-                            <span>شحن وإدارة المحفظة</span>
+                            <span>{t('manageAndChargeWallet', 'شحن وإدارة المحفظة')}</span>
                             <ExternalLink size={12} />
                         </Link>
                     </div>
@@ -394,13 +397,13 @@ export default function ProfilePage() {
                 >
                     <ShoppingBag size={20} color="#D4A537" />
                     <div>
-                        <div style={{ fontSize: '14px', fontWeight: '700' }}>سجل طلباتي</div>
-                        <div style={{ fontSize: '11px', color: '#9E9EA8' }}>تتبع حالة الشحن</div>
+                        <div style={{ fontSize: '14px', fontWeight: '700' }}>{t('myOrdersHistory', 'سجل طلباتي')}</div>
+                        <div style={{ fontSize: '11px', color: '#9E9EA8' }}>{t('trackShippingStatus', 'تتبع حالة الشحن')}</div>
                     </div>
                 </Link>
 
                 <Link
-                    to="/buy-target"
+                    to="/target/apps"
                     style={{
                         background: 'rgba(22, 22, 30, 0.7)',
                         border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -418,8 +421,8 @@ export default function ProfilePage() {
                 >
                     <CreditCard size={20} color="#38BDF8" />
                     <div>
-                        <div style={{ fontSize: '14px', fontWeight: '700' }}>بيع التارجت</div>
-                        <div style={{ fontSize: '11px', color: '#9E9EA8' }}>تحويل أرباح التطبيقات</div>
+                        <div style={{ fontSize: '14px', fontWeight: '700' }}>{t('targetSelling', 'بيع التارجت')}</div>
+                        <div style={{ fontSize: '11px', color: '#9E9EA8' }}>{t('transferAppProfits', 'تحويل أرباح التطبيقات')}</div>
                     </div>
                 </Link>
 
@@ -442,8 +445,8 @@ export default function ProfilePage() {
                 >
                     <Users size={20} color="#22C55E" />
                     <div>
-                        <div style={{ fontSize: '14px', fontWeight: '700' }}>برنامج الإحالات</div>
-                        <div style={{ fontSize: '11px', color: '#9E9EA8' }}>الأرباح والعمولات</div>
+                        <div style={{ fontSize: '14px', fontWeight: '700' }}>{t('referralProgram', 'برنامج الإحالات')}</div>
+                        <div style={{ fontSize: '11px', color: '#9E9EA8' }}>{t('profitsAndCommissions', 'الأرباح والعمولات')}</div>
                     </div>
                 </Link>
 
@@ -466,8 +469,8 @@ export default function ProfilePage() {
                 >
                     <SettingsIcon size={20} color="#F59E0B" />
                     <div>
-                        <div style={{ fontSize: '14px', fontWeight: '700' }}>إعدادات الحساب</div>
-                        <div style={{ fontSize: '11px', color: '#9E9EA8' }}>التفضيلات والمظهر</div>
+                        <div style={{ fontSize: '14px', fontWeight: '700' }}>{t('accountSettings', 'إعدادات الحساب')}</div>
+                        <div style={{ fontSize: '11px', color: '#9E9EA8' }}>{t('preferencesAndAppearance', 'التفضيلات والمظهر')}</div>
                     </div>
                 </Link>
             </div>
@@ -490,7 +493,7 @@ export default function ProfilePage() {
                         borderRadius: '12px',
                         fontSize: '14px',
                         fontWeight: '700',
-                        fontFamily: 'Cairo, sans-serif',
+                        fontFamily: 'var(--font-cairo)',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
                         background: activeTab === 'info' ? 'linear-gradient(135deg, #D4A537 0%, #AA7C11 100%)' : 'rgba(255, 255, 255, 0.05)',
@@ -499,7 +502,7 @@ export default function ProfilePage() {
                     }}
                 >
                     <User size={16} />
-                    <span>البيانات الأساسية</span>
+                    <span>{t('basicInfo', 'البيانات الأساسية')}</span>
                 </button>
 
                 <button
@@ -512,7 +515,7 @@ export default function ProfilePage() {
                         borderRadius: '12px',
                         fontSize: '14px',
                         fontWeight: '700',
-                        fontFamily: 'Cairo, sans-serif',
+                        fontFamily: 'var(--font-cairo)',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
                         background: activeTab === 'security' ? 'linear-gradient(135deg, #D4A537 0%, #AA7C11 100%)' : 'rgba(255, 255, 255, 0.05)',
@@ -521,7 +524,7 @@ export default function ProfilePage() {
                     }}
                 >
                     <Shield size={16} />
-                    <span>الأمان وكلمة المرور</span>
+                    <span>{t('securityAndPassword', 'الأمان وكلمة المرور')}</span>
                 </button>
             </div>
 
@@ -534,27 +537,27 @@ export default function ProfilePage() {
                     padding: '28px',
                 }}>
                     <h3 style={{ margin: '0 0 20px', fontSize: '18px', fontWeight: '800', color: '#FFFFFF' }}>
-                        تعديل البيانات الشخصية
+                        {t('editPersonalInfo', 'تعديل البيانات الشخصية')}
                     </h3>
 
                     <form onSubmit={handleProfileSubmit}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '20px', marginBottom: '24px' }}>
                             <div>
                                 <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
-                                    الاسم الكامل
+                                    {t('fullName', 'الاسم الكامل')}
                                 </label>
                                 <Input
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    placeholder="أدخل اسمك الكامل"
+                                    placeholder={t('enterFullName', 'أدخل اسمك الكامل')}
                                     required
                                 />
                             </div>
 
                             <div>
                                 <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
-                                    البريد الإلكتروني (غير قابل للتعديل)
+                                    {t('emailNonEditable', 'البريد الإلكتروني (غير قابل للتعديل)')}
                                 </label>
                                 <Input
                                     type="email"
@@ -567,11 +570,11 @@ export default function ProfilePage() {
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                                     <label style={{ fontSize: '13px', fontWeight: '700', color: '#B8B8C2' }}>
-                                        رقم الهاتف / الواتساب
+                                        {t('phoneWhatsapp', 'رقم الهاتف / الواتساب')}
                                     </label>
                                     {user?.phone_verified_at ? (
                                         <span style={{ fontSize: '11px', color: '#22C55E', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                            <CheckCircle2 size={13} /> موثق ومؤكد
+                                            <CheckCircle2 size={13} /> {t('verifiedAndConfirmed', 'موثق ومؤكد')}
                                         </span>
                                     ) : (
                                         <button
@@ -588,7 +591,7 @@ export default function ProfilePage() {
                                                 cursor: 'pointer',
                                             }}
                                         >
-                                            تأكيد وتوثيق الرقم (SMS)
+                                            {t('verifyPhoneSMS', 'تأكيد وتوثيق الرقم (SMS)')}
                                         </button>
                                     )}
                                 </div>
@@ -602,7 +605,7 @@ export default function ProfilePage() {
 
                             <div>
                                 <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
-                                    الدولة
+                                    {t('country', 'الدولة')}
                                 </label>
                                 <Select
                                     value={formData.country}
@@ -613,7 +616,7 @@ export default function ProfilePage() {
 
                             <div>
                                 <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
-                                    العملة الافتراضية
+                                    {t('defaultCurrency', 'العملة الافتراضية')}
                                 </label>
                                 <Select
                                     value={formData.currency}
@@ -630,7 +633,7 @@ export default function ProfilePage() {
                                 isLoading={savingProfile}
                                 style={{ minWidth: '160px' }}
                             >
-                                حفظ التغييرات
+                                {t('saveChanges', 'حفظ التغييرات')}
                             </Button>
                         </div>
                     </form>
@@ -650,7 +653,7 @@ export default function ProfilePage() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
                             <Lock size={20} color="#D4A537" />
                             <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#FFFFFF' }}>
-                                تغيير كلمة المرور
+                                {t('changePassword', 'تغيير كلمة المرور')}
                             </h3>
                         </div>
 
@@ -658,7 +661,7 @@ export default function ProfilePage() {
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '20px', marginBottom: '24px' }}>
                                 <div>
                                     <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
-                                        كلمة المرور الحالية
+                                        {t('currentPassword', 'كلمة المرور الحالية')}
                                     </label>
                                     <div style={{ position: 'relative' }}>
                                         <Input
@@ -673,7 +676,8 @@ export default function ProfilePage() {
                                             onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                                             style={{
                                                 position: 'absolute',
-                                                left: '12px',
+                                                left: isRtl ? '12px' : 'auto',
+                                                right: isRtl ? 'auto' : '12px',
                                                 top: '50%',
                                                 transform: 'translateY(-50%)',
                                                 background: 'none',
@@ -689,14 +693,14 @@ export default function ProfilePage() {
 
                                 <div>
                                     <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
-                                        كلمة المرور الجديدة
+                                        {t('newPassword', 'كلمة المرور الجديدة')}
                                     </label>
                                     <div style={{ position: 'relative' }}>
                                         <Input
                                             type={showNewPassword ? 'text' : 'password'}
                                             value={passwordData.password}
                                             onChange={(e) => setPasswordData({ ...passwordData, password: e.target.value })}
-                                            placeholder="8 أحرف وأرقام على الأقل"
+                                            placeholder={t('newPasswordHint', '8 أحرف وأرقام على الأقل')}
                                             required
                                         />
                                         <button
@@ -704,7 +708,8 @@ export default function ProfilePage() {
                                             onClick={() => setShowNewPassword(!showNewPassword)}
                                             style={{
                                                 position: 'absolute',
-                                                left: '12px',
+                                                left: isRtl ? '12px' : 'auto',
+                                                right: isRtl ? 'auto' : '12px',
                                                 top: '50%',
                                                 transform: 'translateY(-50%)',
                                                 background: 'none',
@@ -720,14 +725,14 @@ export default function ProfilePage() {
 
                                 <div>
                                     <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
-                                        تأكيد كلمة المرور الجديدة
+                                        {t('confirmNewPassword', 'تأكيد كلمة المرور الجديدة')}
                                     </label>
                                     <div style={{ position: 'relative' }}>
                                         <Input
                                             type={showConfirmPassword ? 'text' : 'password'}
                                             value={passwordData.password_confirmation}
                                             onChange={(e) => setPasswordData({ ...passwordData, password_confirmation: e.target.value })}
-                                            placeholder="أعد كتابة كلمة المرور"
+                                            placeholder={t('reenterPassword', 'أعد كتابة كلمة المرور')}
                                             required
                                         />
                                         <button
@@ -735,7 +740,8 @@ export default function ProfilePage() {
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                             style={{
                                                 position: 'absolute',
-                                                left: '12px',
+                                                left: isRtl ? '12px' : 'auto',
+                                                right: isRtl ? 'auto' : '12px',
                                                 top: '50%',
                                                 transform: 'translateY(-50%)',
                                                 background: 'none',
@@ -757,7 +763,7 @@ export default function ProfilePage() {
                                     isLoading={savingPassword}
                                     style={{ minWidth: '160px' }}
                                 >
-                                    تحديث كلمة المرور
+                                    {t('updatePassword', 'تحديث كلمة المرور')}
                                 </Button>
                             </div>
                         </form>
@@ -791,12 +797,12 @@ export default function ProfilePage() {
                             </div>
                             <div>
                                 <h4 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: '800', color: '#FFFFFF' }}>
-                                    المصادقة الثنائية (2FA Authentication)
+                                    {t('twoFactorAuth', 'المصادقة الثنائية (2FA Authentication)')}
                                 </h4>
                                 <p style={{ margin: 0, fontSize: '13px', color: '#9E9EA8' }}>
                                     {user?.two_factor_confirmed_at
-                                        ? 'المصادقة الثنائية مفعلة ونشطة لحماية معاملاتك المالية'
-                                        : 'تفعيل طبقة أمان إضافية لحماية حسابك عبر تطبيق Google Authenticator'}
+                                        ? t('twoFactorActiveDesc', 'المصادقة الثنائية مفعلة ونشطة لحماية معاملاتك المالية')
+                                        : t('twoFactorInactiveDesc', 'تفعيل طبقة أمان إضافية لحماية حسابك عبر تطبيق Google Authenticator')}
                                 </p>
                             </div>
                         </div>
@@ -815,7 +821,7 @@ export default function ProfilePage() {
                                         fontSize: '13px',
                                         fontWeight: '800',
                                     }}>
-                                        <CheckCircle2 size={16} /> مفعلة بنجاح
+                                        <CheckCircle2 size={16} /> {t('activeSuccess', 'مفعلة بنجاح')}
                                     </span>
                                     <Button
                                         variant="outline"
@@ -823,7 +829,7 @@ export default function ProfilePage() {
                                         onClick={() => setShow2FAModal(true)}
                                         style={{ borderColor: 'rgba(255, 255, 255, 0.15)', color: '#CBD5E1' }}
                                     >
-                                        إدارة ورموز الاسترداد
+                                        {t('manageRecoveryCodes', 'إدارة ورموز الاسترداد')}
                                     </Button>
                                 </>
                             ) : (
@@ -832,7 +838,7 @@ export default function ProfilePage() {
                                     onClick={() => setShow2FAModal(true)}
                                     style={{ borderColor: 'rgba(212, 165, 55, 0.4)', color: '#F3E5AB' }}
                                 >
-                                    تفعيل المصادقة الثنائية
+                                    {t('enable2FA', 'تفعيل المصادقة الثنائية')}
                                 </Button>
                             )}
                         </div>

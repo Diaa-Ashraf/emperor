@@ -18,11 +18,13 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
 import { targetApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useToast } from '../contexts/ToastContext';
 
 export default function TargetOrderDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { isRtl } = useLanguage();
+    const { isRtl, t, language } = useLanguage();
+    const { success } = useToast();
 
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -45,7 +47,7 @@ export default function TargetOrderDetailPage() {
         return (
             <MainLayout>
                 <div style={{ padding: '80px 0' }}>
-                    <LoadingSpinner text="جاري جلب تفاصيل طلب بيع التارجت..." />
+                    <LoadingSpinner text={t('loadingTargetOrderDetails', 'جاري جلب تفاصيل طلب بيع التارجت...')} />
                 </div>
             </MainLayout>
         );
@@ -55,9 +57,9 @@ export default function TargetOrderDetailPage() {
         return (
             <MainLayout>
                 <EmptyState
-                    title="الطلب غير موجود"
-                    description="لم يتم العثور على طلب بيع التارجت المطلوب."
-                    actionText="العودة لسجل الطلبات"
+                    title={t('orderNotFound', 'الطلب غير موجود')}
+                    description={t('targetOrderNotFoundDesc', 'لم يتم العثور على طلب بيع التارجت المطلوب.')}
+                    actionText={t('backToOrders', 'العودة لسجل الطلبات')}
                     onAction={() => navigate('/target/orders')}
                 />
             </MainLayout>
@@ -69,26 +71,26 @@ export default function TargetOrderDetailPage() {
             case 'approved':
             case 'paid':
                 return {
-                    label: order?.auto_verified ? '⚡ تم التحقق التلقائي والإيداع الفوري' : 'معتمد ومحول بنجاح',
+                    label: order?.auto_verified ? (language === 'en' ? '⚡ Auto-Verified & Instant Deposit' : '⚡ تم التحقق التلقائي والإيداع الفوري') : t('approvedAndTransferred', 'معتمد ومحول بنجاح'),
                     icon: CheckCircle2,
                     color: '#22C55E',
                     desc: order?.auto_verified
-                        ? `تم اعتماد طلبك وإيداع المبلغ فوراً في المحفظة بواسطة ${order.verification_method === 'trust_level' ? 'نظام الثقة الفوري' : 'الفحص الذكي للصورة (OCR)'} بدون انتظار!`
-                        : 'تم التحقق من استلام التارجت في الوكالة بنجاح، وتم تحويل كامل المبلغ المستحق إلى محفظتك.',
+                        ? (language === 'en' ? 'Your order has been approved and funds credited instantly to your wallet!' : `تم اعتماد طلبك وإيداع المبلغ فوراً في المحفظة بواسطة ${order.verification_method === 'trust_level' ? 'نظام الثقة الفوري' : 'الفحص الذكي للصورة (OCR)'} بدون انتظار!`)
+                        : (language === 'en' ? 'Target receipt has been verified and full payout amount credited to your wallet.' : 'تم التحقق من استلام التارجت في الوكالة بنجاح، وتم تحويل كامل المبلغ المستحق إلى محفظتك.'),
                 };
             case 'rejected':
                 return {
-                    label: 'مرفوض',
+                    label: t('rejected', 'مرفوض'),
                     icon: XCircle,
                     color: '#EF4444',
-                    desc: order?.reviewer_notes || 'تم رفض طلب بيع التارجت. يرجى التأكد من صحة البيانات أو التواصل مع خدمة العملاء.',
+                    desc: order?.reviewer_notes || (language === 'en' ? 'Target sell request was rejected. Please verify your details or contact customer support.' : 'تم رفض طلب بيع التارجت. يرجى التأكد من صحة البيانات أو التواصل مع خدمة العملاء.'),
                 };
             default:
                 return {
-                    label: 'قيد المراجعة والتحقق',
+                    label: t('underReviewVerification', 'قيد المراجعة والتحقق'),
                     icon: Clock,
                     color: '#F5D061',
-                    desc: 'يقوم النظام والمشرف بمطابقة كود التحويل والتحقق من العملية وسيتم إيداع الرصيد فوراً.',
+                    desc: language === 'en' ? 'The system and team are verifying the transfer code. Payout will be credited promptly.' : 'يقوم النظام والمشرف بمطابقة كود التحويل والتحقق من العملية وسيتم إيداع الرصيد فوراً.',
                 };
         }
     };
@@ -96,7 +98,7 @@ export default function TargetOrderDetailPage() {
     const statusInfo = getStatusInfo(order.status);
     const StatusIcon = statusInfo.icon;
 
-    const netPayout = Number(order.net_payout || 0).toLocaleString('en-US', {
+    const netPayout = Number(order.net_payout || 0).toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
@@ -123,7 +125,7 @@ export default function TargetOrderDetailPage() {
                             textDecoration: 'none',
                         }}
                     >
-                        <span>← العودة لسجل الطلبات</span>
+                        <span>{isRtl ? '←' : '→'} {t('backToOrders', 'العودة لسجل الطلبات')}</span>
                     </Link>
 
                     <button
@@ -142,7 +144,7 @@ export default function TargetOrderDetailPage() {
                             cursor: 'pointer',
                         }}
                     >
-                        <span>رجوع</span>
+                        <span>{t('back', 'رجوع')}</span>
                         {isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
                     </button>
                 </div>
@@ -172,7 +174,7 @@ export default function TargetOrderDetailPage() {
                             fontSize: '11px',
                             fontWeight: '800',
                         }}>
-                            ⚡ تحقق تلقائي فوري
+                            {language === 'en' ? '⚡ Instant Auto-Verification' : '⚡ تحقق تلقائي فوري'}
                         </div>
                     )}
 
@@ -192,7 +194,7 @@ export default function TargetOrderDetailPage() {
                     </div>
 
                     <div style={{ fontSize: '12px', color: '#9E9EA8', marginBottom: '4px' }}>
-                        طلب رقم #{order.id} {order.public_id ? `(${order.public_id})` : ''}
+                        {t('orderNumber', 'طلب رقم')} #{order.id} {order.public_id ? `(${order.public_id})` : ''}
                     </div>
 
                     <h2 style={{ margin: '0 0 8px', fontSize: '20px', fontWeight: '900', color: '#FFFFFF' }}>
@@ -217,7 +219,7 @@ export default function TargetOrderDetailPage() {
                         justifyContent: 'space-between',
                     }}>
                         <div>
-                            <span style={{ fontSize: '12px', color: '#8E8E98', display: 'block' }}>كود التحقق الخاص بهذه العملية</span>
+                            <span style={{ fontSize: '12px', color: '#8E8E98', display: 'block' }}>{t('verificationCodeForOrder', 'كود التحقق الخاص بهذه العملية')}</span>
                             <span style={{ fontSize: '18px', fontWeight: '900', color: '#D4A537', fontFamily: 'monospace', letterSpacing: '1px' }}>
                                 {order.verification_code}
                             </span>
@@ -225,7 +227,7 @@ export default function TargetOrderDetailPage() {
                         <button
                             onClick={() => {
                                 navigator.clipboard.writeText(order.verification_code);
-                                alert('تم نسخ كود التحقق!');
+                                success(t('copiedVerificationCode', 'تم نسخ كود التحقق!'));
                             }}
                             style={{
                                 background: 'rgba(212, 165, 55, 0.2)',
@@ -238,7 +240,7 @@ export default function TargetOrderDetailPage() {
                                 cursor: 'pointer',
                             }}
                         >
-                            نسخ الكود
+                            {t('copyCode', 'نسخ الكود')}
                         </button>
                     </div>
                 )}
@@ -259,29 +261,29 @@ export default function TargetOrderDetailPage() {
                         borderBottom: '1px solid rgba(212, 165, 55, 0.2)',
                         paddingBottom: '12px',
                     }}>
-                        تفاصيل العملية
+                        {t('transactionDetails', 'تفاصيل العملية')}
                     </h3>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                            <span style={{ color: '#8E8E98' }}>التطبيق:</span>
-                            <strong style={{ color: '#F5D061' }}>{order.product?.name || 'تطبيق تارجت'}</strong>
+                            <span style={{ color: '#8E8E98' }}>{t('app', 'التطبيق')}:</span>
+                            <strong style={{ color: '#F5D061' }}>{order.product?.name || t('targetSelling', 'تطبيق تارجت')}</strong>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                            <span style={{ color: '#8E8E98' }}>ID الحساب في التطبيق:</span>
+                            <span style={{ color: '#8E8E98' }}>{t('appUserId', 'ID الحساب في التطبيق')}:</span>
                             <strong style={{ color: '#FFFFFF', fontFamily: 'monospace' }}>{order.app_user_id || '—'}</strong>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                            <span style={{ color: '#8E8E98' }}>آيدي وكالة السحب:</span>
+                            <span style={{ color: '#8E8E98' }}>{t('agencyId', 'آيدي وكالة السحب')}:</span>
                             <strong style={{ color: '#F5D061', fontFamily: 'monospace' }}>{order.agency_id || '817693068'}</strong>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                            <span style={{ color: '#8E8E98' }}>تاريخ الطلب:</span>
+                            <span style={{ color: '#8E8E98' }}>{t('orderDate', 'تاريخ الطلب')}:</span>
                             <span style={{ color: '#FFFFFF' }}>
-                                {new Date(order.created_at).toLocaleDateString('ar-EG', {
+                                {new Date(order.created_at).toLocaleDateString(language === 'en' ? 'en-US' : 'ar-EG', {
                                     year: 'numeric',
                                     month: 'long',
                                     day: 'numeric',
@@ -300,10 +302,10 @@ export default function TargetOrderDetailPage() {
                             alignItems: 'center',
                         }}>
                             <span style={{ fontSize: '15px', fontWeight: '800', color: '#FFFFFF' }}>
-                                الصافي المستحق:
+                                {t('netPayout', 'الصافي المستحق')}:
                             </span>
                             <span style={{ fontSize: '22px', fontWeight: '900', color: '#22C55E' }}>
-                                {netPayout} EGP
+                                {netPayout} {language === 'en' ? 'EGP' : 'ج.م'}
                             </span>
                         </div>
                     </div>
@@ -324,7 +326,7 @@ export default function TargetOrderDetailPage() {
                                 boxShadow: '0 6px 20px rgba(212, 165, 55, 0.3)',
                             }}
                         >
-                            بيع تارجت جديد
+                            {t('sellNewTarget', 'بيع تارجت جديد')}
                         </button>
                     </Link>
                 </div>
@@ -332,3 +334,4 @@ export default function TargetOrderDetailPage() {
         </MainLayout>
     );
 }
+

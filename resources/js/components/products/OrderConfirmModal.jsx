@@ -4,6 +4,7 @@ import { ShieldCheck, AlertCircle, Wallet, CheckCircle2, Zap, ArrowLeft, PlusCir
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 import { formatImageUrl } from '../../utils/imageHelper';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function OrderConfirmModal({
     isOpen,
@@ -21,6 +22,8 @@ export default function OrderConfirmModal({
 }) {
     if (!product) return null;
 
+    const { t, isRtl, language } = useLanguage();
+
     const unitPrice = tier
         ? Number(tier.price_egp || tier.price || tier.final_price || 0)
         : Number(product.unit_price || product.price || 0);
@@ -30,13 +33,13 @@ export default function OrderConfirmModal({
     const formattedTotal = totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const formattedBalance = Number(walletBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    const currencyLabel = currency === 'EGP' ? 'ج.م' : currency;
+    const currencyLabel = language === 'en' ? 'EGP' : 'ج.م';
 
     return (
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title="تأكيد طلب الشحن الفوري"
+            title={t('orderConfirmation', 'تأكيد طلب الشحن الفوري')}
             maxWidth="480px"
         >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
@@ -79,7 +82,7 @@ export default function OrderConfirmModal({
                             {product.name}
                         </h4>
                         <span style={{ fontSize: '13px', color: '#D4A537', fontWeight: '700' }}>
-                            {tier ? `الباقة: ${tier.name}` : `السعر: ${unitPrice} ${currencyLabel}`} {quantity > 1 ? `(الكمية: ${quantity})` : ''}
+                            {tier ? `${t('package', 'الباقة')}: ${tier.name}` : `${t('amount', 'السعر')}: ${unitPrice} ${currencyLabel}`} {quantity > 1 ? `(${t('quantity', 'الكمية')}: ${quantity})` : ''}
                         </span>
                     </div>
                 </div>
@@ -96,21 +99,21 @@ export default function OrderConfirmModal({
                 }}>
                     {playerId && (
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#8E8E98' }}>{product.player_id_label || 'معرف اللاعب / ID'}:</span>
+                            <span style={{ color: '#8E8E98' }}>{product.player_id_label || t('playerIdentifier', 'معرف اللاعب / ID')}:</span>
                             <strong style={{ color: '#FFFFFF', letterSpacing: '0.5px' }}>{playerId}</strong>
                         </div>
                     )}
 
                     {serverId && (
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#8E8E98' }}>{product.server_id_label || 'المنطقة / السيرفر'}:</span>
+                            <span style={{ color: '#8E8E98' }}>{product.server_id_label || t('server', 'المنطقة / السيرفر')}:</span>
                             <strong style={{ color: '#FFFFFF' }}>{serverId}</strong>
                         </div>
                     )}
 
                     {accountRegion && (
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#8E8E98' }}>دولة الحساب:</span>
+                            <span style={{ color: '#8E8E98' }}>{t('region', 'دولة الحساب')}:</span>
                             <strong style={{ color: '#FFFFFF' }}>{accountRegion}</strong>
                         </div>
                     )}
@@ -122,7 +125,7 @@ export default function OrderConfirmModal({
                         justifyContent: 'space-between',
                         alignItems: 'baseline',
                     }}>
-                        <span style={{ color: '#CBD5E1', fontWeight: '700' }}>إجمالي المبلغ المطلوب:</span>
+                        <span style={{ color: '#CBD5E1', fontWeight: '700' }}>{t('totalDue', 'إجمالي المبلغ المطلوب')}:</span>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
                             <strong style={{ fontSize: '18px', color: '#D4A537' }}>{formattedTotal}</strong>
                             <span style={{ fontSize: '12px', color: '#D4A537' }}>{currencyLabel}</span>
@@ -143,7 +146,7 @@ export default function OrderConfirmModal({
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Wallet size={18} color={hasEnoughBalance ? '#22C55E' : '#EF4444'} />
-                        <span style={{ color: '#E2E8F0' }}>رصيد محفظتك الحالي:</span>
+                        <span style={{ color: '#E2E8F0' }}>{t('walletBalance', 'رصيد محفظتك الحالي')}:</span>
                     </div>
                     <strong style={{ color: hasEnoughBalance ? '#4ADE80' : '#F87171' }}>
                         {formattedBalance} {currencyLabel}
@@ -165,7 +168,7 @@ export default function OrderConfirmModal({
                     }}>
                         <AlertCircle size={20} style={{ flexShrink: 0, marginTop: '2px' }} />
                         <div>
-                            <span>عفواً، رصيد محفظتك غير كافٍ لإتمام هذا الطلب. يرجى شحن المحفظة أولاً.</span>
+                            <span>{t('insufficientBalance', 'عفواً، رصيد محفظتك غير كافٍ لإتمام هذا الطلب. يرجى شحن المحفظة أولاً.')}</span>
                         </div>
                     </div>
                 )}
@@ -181,7 +184,7 @@ export default function OrderConfirmModal({
                             onClick={onConfirm}
                             style={{ flex: 1 }}
                         >
-                            تأكيد وخصم المبلغ فوري
+                            {t('confirmAndPay', 'تأكيد ودفع الآن')}
                         </Button>
                     ) : (
                         <Link to="/deposit" style={{ flex: 1, textDecoration: 'none' }}>
@@ -195,7 +198,7 @@ export default function OrderConfirmModal({
                                     boxShadow: '0 4px 15px rgba(34, 197, 94, 0.3)',
                                 }}
                             >
-                                شحن المحفظة الآن
+                                {t('chargeWallet', 'شحن المحفظة الآن')}
                             </Button>
                         </Link>
                     )}
@@ -207,7 +210,7 @@ export default function OrderConfirmModal({
                         onClick={onClose}
                         style={{ color: '#8E8E98' }}
                     >
-                        إلغاء
+                        {t('cancel', 'إلغاء')}
                     </Button>
                 </div>
             </div>

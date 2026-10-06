@@ -10,6 +10,18 @@
         </div>
     @endif
 
+    @if (session('warning'))
+        <div class="alert alert-warning border-0 py-2 fs-7 mb-3 text-center" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B;">
+            <i class="ti ti-clock-pause me-1"></i> {{ session('warning') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger border-0 py-2 fs-7 mb-3 text-center" style="background: rgba(239, 68, 68, 0.15); color: #EF4444;">
+            <i class="ti ti-alert-triangle me-1"></i> {{ session('error') }}
+        </div>
+    @endif
+
     @if ($errors->any())
         <div class="alert alert-danger border-0 py-2 fs-7 mb-3" style="background: rgba(239, 68, 68, 0.15); color: #EF4444;">
             <ul class="mb-0 ps-3">
@@ -54,7 +66,7 @@
 
         <!-- Remember Me -->
         <div class="form-check mb-4">
-            <input id="remember_me" type="checkbox" class="form-check-input" name="remember" checked>
+            <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
             <label for="remember_me" class="form-check-label text-muted fs-7">
                 تذكر تسجيل دخولي على هذا الجهاز
             </label>

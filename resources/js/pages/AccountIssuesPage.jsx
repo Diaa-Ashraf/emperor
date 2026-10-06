@@ -7,16 +7,32 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 export default function AccountIssuesPage() {
     const { user, isAuthenticated } = useAuth();
-    const { isRtl } = useLanguage();
+    const { isRtl, t, language } = useLanguage();
 
+    const issueTypes = [
+        { id: 'login', key: 'issueLogin', label: 'تسجيل الدخول' },
+        { id: 'activation', key: 'issueActivation', label: 'تفعيل الحساب' },
+        { id: 'password', key: 'issuePassword', label: 'كلمة المرور' },
+        { id: 'account_data', key: 'issueAccountData', label: 'بيانات الحساب' },
+        { id: 'rejected_account', key: 'issueRejectedAccount', label: 'حساب مرفوض' },
+        { id: 'wallet_topup', key: 'issueWalletTopUp', label: 'مشاكل شحن المحفظة' },
+        { id: 'recharge_order', key: 'issueRechargeOrder', label: 'مشكلة في طلب شحن' },
+        { id: 'target_sell', key: 'issueTargetSell', label: 'مشكلة في بيع التارجت' },
+        { id: 'other', key: 'issueOther', label: 'أخرى' },
+    ];
 
+    const [selectedType, setSelectedType] = useState(issueTypes[0]);
+    const [details, setDetails] = useState('');
+    const [userPhone, setUserPhone] = useState(user?.phone || '');
+    const [userEmail, setUserEmail] = useState(user?.email || '');
 
     // Typing animation
-    const text = "مشاكل الحساب";
+    const text = t('accountIssuesTitle', 'مشاكل الحساب');
     const [displayText, setDisplayText] = useState("");
     const sectionRef = useRef(null);
     const [isVisible, setIsVisible] = useState(false);
     const [index, setIndex] = useState(0);
+
     // Observe component visibility
     useEffect(() => {
         const el = sectionRef.current;
@@ -29,26 +45,37 @@ export default function AccountIssuesPage() {
         return () => observer.disconnect();
     }, []);
 
+    // Reset typing animation on language change
+    useEffect(() => {
+        setIndex(0);
+        setDisplayText('');
+    }, [language]);
+
     // Typing effect runs while visible and not finished
     useEffect(() => {
         if (!isVisible) return;
         if (index < text.length) {
             const timeout = setTimeout(() => {
                 setIndex(i => i + 1);
-            }, 0.1);
+            }, 30);
             return () => clearTimeout(timeout);
         }
-    }, [isVisible, index]);
+    }, [isVisible, index, text]);
 
     // Update displayed text when index changes
     useEffect(() => {
         setDisplayText(text.slice(0, index));
-    }, [index]);
+    }, [index, text]);
 
     // Paragraph animation state
-    const subText = "اختر مشكلة الحساب، وسنجهز رسالة واضحة ومباشرة لإرسالها لإدارة المنصة عبر واتساب.";
+    const subText = t('accountIssuesSub', 'اختر مشكلة الحساب، وسنجهز رسالة واضحة ومباشرة لإرسالها لإدارة المنصة عبر واتساب.');
     const [subDisplay, setSubDisplay] = useState("");
     const [subIndex, setSubIndex] = useState(0);
+
+    useEffect(() => {
+        setSubIndex(0);
+        setSubDisplay('');
+    }, [language]);
 
     // Sub paragraph typing effect runs after heading finished
     useEffect(() => {
@@ -56,40 +83,35 @@ export default function AccountIssuesPage() {
         if (index >= text.length && subIndex < subText.length) {
             const timeout = setTimeout(() => {
                 setSubIndex(i => i + 1);
-            }, 0.2);
+            }, 15);
             return () => clearTimeout(timeout);
         }
-    }, [isVisible, index, subIndex]);
+    }, [isVisible, index, subIndex, text, subText]);
 
     // Update displayed sub paragraph text
     useEffect(() => {
         setSubDisplay(subText.slice(0, subIndex));
-    }, [subIndex]);
+    }, [subIndex, subText]);
 
-    const issueTypes = [
-        'تسجيل الدخول',
-        'تفعيل الحساب',
-        'كلمة المرور',
-        'بيانات الحساب',
-        'حساب مرفوض',
-        'مشاكل شحن المحفظة',
-        'مشكلة في طلب شحن',
-        'مشكلة في بيع التارجت',
-        'أخرى',
-    ];
+    // WhatsApp Support Number
+    const whatsappSupportNumber = '201026042456';
 
-    const [selectedType, setSelectedType] = useState(issueTypes[0]);
-    const [details, setDetails] = useState('');
-    const [userPhone, setUserPhone] = useState(user?.phone || '');
-    const [userEmail, setUserEmail] = useState(user?.email || '');
-
-    // WhatsApp Support Number (Configurable)
-    const whatsappSupportNumber = '201000000000'; // Replace with actual support number
+    const selectedLabel = t(selectedType.key, selectedType.label);
 
     // Live Message Construction
-    const formattedMessage = `*رسالة دعم فني إلى إدارة منصة إمبراطور*
+    const formattedMessage = language === 'en'
+        ? `*Technical Support Message - Emperor Platform*
 ----------------------------------------
-*نوع الشكوى:* ${selectedType}
+*Issue Type:* ${selectedLabel}
+*Issue Details:* ${details.trim() || 'No additional details provided'}
+*Email:* ${userEmail.trim() || (user?.email || 'Not specified')}
+*Phone:* ${userPhone.trim() || (user?.phone || 'Not specified')}
+*Account ID:* ${user?.id ? `EMP-${user.id}` : 'Guest / Unregistered'}
+----------------------------------------
+_Sent via Official Account Issues Page_`
+        : `*رسالة دعم فني إلى إدارة منصة إمبراطور*
+----------------------------------------
+*نوع الشكوى:* ${selectedLabel}
 *تفاصيل المشكلة:* ${details.trim() || 'لم تتم كتابة تفاصيل إضافية'}
 *البريد الإلكتروني:* ${userEmail.trim() || (user?.email || 'غير محدد')}
 *رقم الهاتف:* ${userPhone.trim() || (user?.phone || 'غير محدد')}
@@ -115,9 +137,9 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                     marginBottom: '24px',
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#8E8E98' }}>
-                        <Link to="/" style={{ color: 'var(--gold-400)', textDecoration: 'none' }}>الرئيسية</Link>
+                        <Link to="/" style={{ color: 'var(--gold-400)', textDecoration: 'none' }}>{t('home', 'الرئيسية')}</Link>
                         <span>/</span>
-                        <span style={{ color: '#CBD5E1' }}>مشاكل الحساب والشكاوى</span>
+                        <span style={{ color: '#CBD5E1' }}>{t('complaintsCenter', 'مشاكل الحساب والشكاوى')}</span>
                     </div>
 
                     <Link
@@ -136,7 +158,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                             textDecoration: 'none',
                         }}
                     >
-                        <span>العودة للرئيسية</span>
+                        <span>{t('back', 'العودة للرئيسية')}</span>
                         {isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
                     </Link>
                 </div>
@@ -145,7 +167,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                     gap: '24px',
                     alignItems: 'start',
                 }}>
-                    {/* Left Form: Select Issue & Input Details (Matches Screenshot 4) */}
+                    {/* Left Form: Select Issue & Input Details */}
                     <div style={{
                         background: 'linear-gradient(145deg, #14141A 0%, #0D0D12 100%)',
                         border: '1px solid rgba(212, 165, 55, 0.3)',
@@ -167,7 +189,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 fontWeight: '700',
                             }}>
                                 <MessageCircle size={14} />
-                                <span>الشكاوى والتواصل السريع</span>
+                                <span>{t('complaintsAndFastContact', 'الشكاوى والتواصل السريع')}</span>
                             </div>
                         </div>
 
@@ -179,17 +201,16 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 color: '#FFFFFF',
                                 margin: '0 0 8px',
                             }}>
-                            {displayText}
+                            {displayText || text}
                         </h1>
                         <p
-                            ref={sectionRef}
                             style={{
                                 color: '#9E9EA8',
                                 fontSize: '13.5px',
                                 margin: '0 0 24px',
                                 lineHeight: '1.6',
                             }}>
-                            {subDisplay}
+                            {subDisplay || subText}
                         </p>
 
                         {/* Issue Type Chips */}
@@ -201,7 +222,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 color: 'var(--gold-400)',
                                 marginBottom: '10px',
                             }}>
-                                اختر نوع الشكوى
+                                {t('selectIssueType', 'اختر نوع الشكوى')}
                             </label>
                             <div style={{
                                 display: 'grid',
@@ -209,10 +230,11 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 gap: '8px',
                             }}>
                                 {issueTypes.map((type) => {
-                                    const isSelected = selectedType === type;
+                                    const isSelected = selectedType.id === type.id;
+                                    const label = t(type.key, type.label);
                                     return (
                                         <button
-                                            key={type}
+                                            key={type.id}
                                             type="button"
                                             onClick={() => setSelectedType(type)}
                                             style={{
@@ -231,7 +253,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                                 fontFamily: 'var(--font-cairo)',
                                             }}
                                         >
-                                            {type}
+                                            {label}
                                         </button>
                                     );
                                 })}
@@ -247,13 +269,13 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 color: 'var(--gold-400)',
                                 marginBottom: '8px',
                             }}>
-                                الشكوى أو تفاصيل الرسالة
+                                {t('complaintOrDetails', 'الشكوى أو تفاصيل الرسالة')}
                             </label>
                             <textarea
                                 rows={4}
                                 value={details}
                                 onChange={(e) => setDetails(e.target.value)}
-                                placeholder="اكتب تفاصيل الشكوى أو المشكلة التي تواجهك داخل الموقع هنا..."
+                                placeholder={t('complaintDetailsPlaceholder', 'اكتب تفاصيل الشكوى أو المشكلة التي تواجهك داخل الموقع هنا...')}
                                 style={{
                                     width: '100%',
                                     background: '#0B0B0E',
@@ -280,7 +302,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 marginBottom: '20px',
                             }}>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#A0A0B0', marginBottom: '6px' }}>رقم هاتفك:</label>
+                                    <label style={{ display: 'block', fontSize: '12px', color: '#A0A0B0', marginBottom: '6px' }}>{t('yourPhoneNumber', 'رقم هاتفك:')}</label>
                                     <input
                                         type="text"
                                         placeholder="010xxxxxxxx"
@@ -300,7 +322,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                     />
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#A0A0B0', marginBottom: '6px' }}>البريد الإلكتروني:</label>
+                                    <label style={{ display: 'block', fontSize: '12px', color: '#A0A0B0', marginBottom: '6px' }}>{t('emailAddress', 'البريد الإلكتروني:')}</label>
                                     <input
                                         type="email"
                                         placeholder="example@email.com"
@@ -340,11 +362,11 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                             }}
                         >
                             <Send size={18} />
-                            <span>إرسال الرسالة إلى إدارة الموقع</span>
+                            <span>{t('sendMessageToManagement', 'إرسال الرسالة إلى إدارة الموقع')}</span>
                         </button>
                     </div>
 
-                    {/* Right Side: Live Message Preview Card (Matches Screenshot 4) */}
+                    {/* Right Side: Live Message Preview Card */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         <div style={{
                             background: 'linear-gradient(145deg, #121218 0%, #0A0A0E 100%)',
@@ -370,9 +392,9 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                     alignItems: 'center',
                                     gap: '8px',
                                 }}>
-                                    <span>معاينة الرسالة</span>
+                                    <span>{t('messagePreview', 'معاينة الرسالة')}</span>
                                 </h3>
-                                <span style={{ fontSize: '11px', color: '#8E8E98' }}>تحديث لحظي أثناء الكتابة</span>
+                                <span style={{ fontSize: '11px', color: '#8E8E98' }}>{t('realtimeUpdateTyping', 'تحديث لحظي أثناء الكتابة')}</span>
                             </div>
 
                             <p style={{
@@ -381,7 +403,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 margin: '0 0 16px',
                                 lineHeight: '1.6',
                             }}>
-                                سيظهر النص بهذا الشكل لصاحب الموقع داخل واتساب:
+                                {t('whatsappFormatNotice', 'سيظهر النص بهذا الشكل لصاحب الموقع داخل واتساب:')}
                             </p>
 
                             {/* Message Box */}
@@ -397,16 +419,16 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 whiteSpace: 'pre-line',
                             }}>
                                 <div style={{ fontWeight: '800', color: 'var(--gold-300)', marginBottom: '8px' }}>
-                                    رسالة إلى صاحب الموقع
+                                    {language === 'en' ? 'Message to Platform Support' : 'رسالة إلى صاحب الموقع'}
                                 </div>
                                 <div style={{ color: '#CBD5E1' }}>
-                                    <strong>نوع الشكوى:</strong> {selectedType}
+                                    <strong>{language === 'en' ? 'Issue Type:' : 'نوع الشكوى:'}</strong> {selectedLabel}
                                 </div>
                                 <div style={{ color: '#CBD5E1', marginTop: '4px' }}>
-                                    <strong>تفاصيل المشكلة:</strong> {details.trim() || '—'}
+                                    <strong>{language === 'en' ? 'Issue Details:' : 'تفاصيل المشكلة:'}</strong> {details.trim() || '—'}
                                 </div>
                                 <div style={{ color: '#94A3B8', marginTop: '4px', fontSize: '12px' }}>
-                                    <strong>بيانات الحساب:</strong> {user?.name ? `${user.name} (ID: EMP-${user.id})` : (userPhone || userEmail || 'زائر')}
+                                    <strong>{language === 'en' ? 'Account Details:' : 'بيانات الحساب:'}</strong> {user?.name ? `${user.name} (ID: EMP-${user.id})` : (userPhone || userEmail || (language === 'en' ? 'Guest' : 'زائر'))}
                                 </div>
                             </div>
                         </div>
@@ -436,10 +458,10 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                             </div>
                             <div>
                                 <h4 style={{ margin: '0 0 3px', fontSize: '14px', fontWeight: '800', color: '#FFFFFF' }}>
-                                    سيتم فتح واتساب برسالة موجهة لصاحب الموقع
+                                    {t('whatsappDirectSupport', 'سيتم فتح واتساب برسالة موجهة لصاحب الموقع')}
                                 </h4>
                                 <span style={{ fontSize: '12px', color: '#A0A0B0' }}>
-                                    فريق الدعم الفني متواجد لمساعدتك وحل أي مشكلة تقنية فوراً
+                                    {t('technicalSupportPromise', 'فريق الدعم الفني متواجد لمساعدتك وحل أي مشكلة تقنية فوراً')}
                                 </span>
                             </div>
                         </div>
@@ -449,3 +471,4 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
         </MainLayout>
     );
 }
+
