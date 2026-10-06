@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { ShieldCheck } from 'lucide-react';
 import { bannersApi } from '../../api/endpoints';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -59,7 +60,6 @@ export default function HomeBannerSlider() {
                         };
                     });
 
-                    // Fully dynamic: use only active banners configured in dashboard
                     setBanners(loaded);
                 } else {
                     setBanners(defaultBanners);
@@ -92,11 +92,9 @@ export default function HomeBannerSlider() {
         if (Math.abs(distance) < minSwipeDistance) return;
 
         if (distance > minSwipeDistance) {
-            // Swiped left
             if (isRtl) handlePrev();
             else handleNext();
         } else if (distance < -minSwipeDistance) {
-            // Swiped right
             if (isRtl) handleNext();
             else handlePrev();
         }
@@ -128,26 +126,80 @@ export default function HomeBannerSlider() {
     return (
         <div
             className="emperor-global-banner-container"
+            style={{
+                width: '100%',
+                maxWidth: '1100px',
+                margin: '0 auto',
+                padding: '16px 0 24px',
+                boxSizing: 'border-box',
+            }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
         >
-            {/* Main Luxury Banner Frame - Exact KA CARD Style (Compact Widescreen) */}
+            {/* ── 1. Security / 2FA Pill Header (Matching KA-Cards Screenshot) ── */}
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                background: 'rgba(16, 185, 129, 0.08)',
+                border: '1px solid rgba(16, 185, 129, 0.35)',
+                borderRadius: '16px',
+                padding: '10px 18px',
+                marginBottom: '18px',
+                width: '100%',
+                boxSizing: 'border-box',
+                gap: '10px',
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                    <span style={{ color: '#10B981', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                        <ShieldCheck size={18} />
+                    </span>
+                    <span style={{
+                        fontSize: '13px',
+                        fontWeight: '700',
+                        color: '#E2E8F0',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                    }}>
+                        حماية إضافية لحسابك: فعّل المصادقة الثنائية في أقل من دقيقة.
+                    </span>
+                </div>
+                <Link
+                    to="/settings"
+                    style={{
+                        background: 'rgba(16, 185, 129, 0.18)',
+                        border: '1px solid rgba(16, 185, 129, 0.5)',
+                        borderRadius: '10px',
+                        padding: '4px 12px',
+                        color: '#34D399',
+                        textDecoration: 'none',
+                        fontSize: '12px',
+                        fontWeight: '800',
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
+                    }}
+                >
+                    تفعيل الحماية ↗
+                </Link>
+            </div>
+
+            {/* ── 2. Main Luxury Hero Banner Frame (Matching KA-Cards Exact Size & Border) ── */}
             <div
                 className="emperor-hero-slider"
                 style={{
                     position: 'relative',
-                    borderRadius: '18px',
+                    borderRadius: '26px',
                     overflow: 'hidden',
-                    border: '1.2px solid rgba(212, 165, 55, 0.45)',
+                    border: '1.8px solid rgba(212, 165, 55, 0.45)',
                     background: '#0B0B0F',
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.65), 0 0 20px rgba(212, 165, 55, 0.15)',
-                    height: 'clamp(140px, 20vw, 220px)',
-                    aspectRatio: '2.3 / 1',
-                    maxHeight: '230px',
+                    boxShadow: '0 16px 45px rgba(0, 0, 0, 0.85), 0 0 30px rgba(212, 165, 55, 0.18)',
+                    aspectRatio: '2.35 / 1',
                     width: '100%',
+                    minHeight: '160px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -155,6 +207,7 @@ export default function HomeBannerSlider() {
                     transition: 'all 0.3s ease',
                     userSelect: 'none',
                     touchAction: 'pan-y',
+                    boxSizing: 'border-box',
                 }}
             >
                 {/* Clickable Banner Wrapper */}
@@ -239,23 +292,23 @@ export default function HomeBannerSlider() {
                     </div>
                 )}
 
-                {/* Slider Indicator Dots (Clean and subtle without blocking arrows) */}
+                {/* Slider Indicator Dots */}
                 {activeList.length > 1 && (
                     <div style={{
                         position: 'absolute',
-                        bottom: '10px',
+                        bottom: '12px',
                         left: '50%',
                         transform: 'translateX(-50%)',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '5px',
+                        gap: '6px',
                         zIndex: 4,
-                        background: 'rgba(0, 0, 0, 0.6)',
-                        padding: '4px 10px',
+                        background: 'rgba(0, 0, 0, 0.65)',
+                        padding: '4px 12px',
                         borderRadius: '20px',
                         backdropFilter: 'blur(8px)',
                         WebkitBackdropFilter: 'blur(8px)',
-                        border: '1px solid rgba(212, 165, 55, 0.25)',
+                        border: '1px solid rgba(212, 165, 55, 0.3)',
                     }}>
                         {activeList.map((_, i) => (
                             <button
@@ -267,7 +320,7 @@ export default function HomeBannerSlider() {
                                 }}
                                 aria-label={`Go to slide ${i + 1}`}
                                 style={{
-                                    width: i === currentIndex ? '20px' : '6px',
+                                    width: i === currentIndex ? '22px' : '6px',
                                     height: '6px',
                                     borderRadius: '3px',
                                     background: i === currentIndex
@@ -283,7 +336,7 @@ export default function HomeBannerSlider() {
                     </div>
                 )}
 
-                {/* Slide Countdown Micro-Progress Bar (at bottom) */}
+                {/* Slide Countdown Micro-Progress Bar */}
                 {activeList.length > 1 && !isHovered && (
                     <div
                         key={`prog-${currentIndex}`}
@@ -301,6 +354,20 @@ export default function HomeBannerSlider() {
                 )}
             </div>
 
+            {/* ── 3. Quranic Verse Below Banner (Matching KA-Cards Screenshot) ── */}
+            <div style={{
+                textAlign: 'center',
+                marginTop: '16px',
+                fontSize: '13.5px',
+                fontWeight: '800',
+                color: 'rgba(212, 165, 55, 0.88)',
+                fontFamily: 'var(--font-cairo)',
+                letterSpacing: '0.2px',
+                textShadow: '0 2px 8px rgba(0,0,0,0.8)',
+            }}>
+                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ {'{'}وَأَحَلَّ اللَّهُ الْبَيْعَ وَحَرَّمَ الرِّبَا{'}'} صَدَقَ اللَّهُ الْعَظِيمُ
+            </div>
+
             {/* Embedded CSS Animations */}
             <style>{`
                 /* Royal Frame Breathing Glow */
@@ -314,7 +381,13 @@ export default function HomeBannerSlider() {
                     }
                     100% {
                         border-color: rgba(245, 208, 97, 0.85);
-                        box-shadow: 0 12px 45px rgba(0, 0, 0, 0.9), 0 0 45px rgba(212, 165, 55, 0.38);
+                        box-shadow: 0 16px 45px rgba(0, 0, 0, 0.9), 0 0 45px rgba(212, 165, 55, 0.38);
+                    }
+                }
+
+                @media (max-width: 768px) {
+                    .emperor-hero-slider {
+                        border-radius: 18px !important;
                     }
                 }
 
@@ -364,13 +437,6 @@ export default function HomeBannerSlider() {
                     to {
                         width: 100%;
                     }
-                }
-
-                /* Navigation button hover */
-                .emperor-slider-nav-btn:hover {
-                    background: rgba(212, 165, 55, 0.35) !important;
-                    transform: translateY(-50%) scale(1.1) !important;
-                    box-shadow: 0 0 16px rgba(212, 165, 55, 0.5) !important;
                 }
             `}</style>
         </div>
