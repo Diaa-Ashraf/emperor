@@ -18,10 +18,13 @@ import {
 } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import "../../css/visualCategory.css";
 
 export default function AboutPage() {
     const { isRtl } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const pageRef = useRef(null);
 
     const stats = [
@@ -172,7 +175,7 @@ export default function AboutPage() {
                     <h1 style={{
                         fontSize: 'clamp(26px, 4.5vw, 42px)',
                         fontWeight: '900',
-                        color: '#FFFFFF',
+                        color: isLight ? '#0F172A' : '#FFFFFF',
                         margin: '0 0 14px',
                         letterSpacing: '-0.5px',
                         lineHeight: '1.3',
@@ -181,7 +184,7 @@ export default function AboutPage() {
                     </h1>
 
                     <p style={{
-                        color: '#A0A0B0',
+                        color: isLight ? '#475569' : '#A0A0B0',
                         fontSize: '15.5px',
                         maxWidth: '720px',
                         margin: '0 auto',
@@ -206,12 +209,12 @@ export default function AboutPage() {
                                 key={idx}
                                 className="about-animated-card about-stat-card"
                                 style={{
-                                    background: 'linear-gradient(145deg, #161622 0%, #0E0E14 100%)',
-                                    border: '1px solid rgba(212, 165, 55, 0.25)',
+                                    background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #161622 0%, #0E0E14 100%)',
+                                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.25)',
                                     borderRadius: '22px',
                                     padding: '24px 20px',
                                     textAlign: 'center',
-                                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+                                    boxShadow: isLight ? '0 4px 18px rgba(0, 0, 0, 0.05)' : '0 10px 30px rgba(0, 0, 0, 0.4)',
                                     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                                     transitionDelay: `${idx * 0.1}s`,
                                 }}
@@ -256,12 +259,12 @@ export default function AboutPage() {
 
                 {/* Pillars Section with Rich Hover Cards */}
                 <div style={{
-                    background: 'linear-gradient(145deg, #12121A 0%, #0B0B10 100%)',
-                    border: '1.5px solid rgba(212, 165, 55, 0.25)',
+                    background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #12121A 0%, #0B0B10 100%)',
+                    border: isLight ? '1px solid #E2E8F0' : '1.5px solid rgba(212, 165, 55, 0.25)',
                     borderRadius: '28px',
                     padding: 'clamp(24px, 4vw, 44px)',
                     marginBottom: '44px',
-                    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6)',
+                    boxShadow: isLight ? '0 4px 20px rgba(0, 0, 0, 0.05)' : '0 20px 60px rgba(0, 0, 0, 0.6)',
                 }}>
                     <div style={{
                         display: 'flex',
@@ -274,7 +277,7 @@ export default function AboutPage() {
                         <h2 style={{
                             fontSize: '22px',
                             fontWeight: '900',
-                            color: '#FFFFFF',
+                            color: isLight ? '#0F172A' : '#FFFFFF',
                             margin: 0,
                             display: 'flex',
                             alignItems: 'center',
@@ -291,7 +294,7 @@ export default function AboutPage() {
 
                         <span style={{
                             fontSize: '12.5px',
-                            color: 'var(--gold-400)',
+                            color: isLight ? '#B45309' : 'var(--gold-400)',
                             fontWeight: '700',
                         }}>
                             الجودة والسرعة والأمان أولويتنا الدائمة
@@ -311,8 +314,8 @@ export default function AboutPage() {
                                     key={idx}
                                     className="about-animated-card about-pillar-card"
                                     style={{
-                                        background: 'rgba(20, 20, 28, 0.7)',
-                                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                                        background: isLight ? '#F8FAFC' : 'rgba(20, 20, 28, 0.7)',
+                                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                                         borderRadius: '20px',
                                         padding: '24px',
                                         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -323,10 +326,10 @@ export default function AboutPage() {
                                     }}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.borderColor = p.color;
-                                        e.currentTarget.style.boxShadow = `0 12px 35px ${p.color}20`;
+                                        e.currentTarget.style.boxShadow = isLight ? `0 8px 24px ${p.color}25` : `0 12px 35px ${p.color}20`;
                                     }}
                                     onMouseLeave={(e) => {
-                                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                                        e.currentTarget.style.borderColor = isLight ? '#E2E8F0' : 'rgba(255, 255, 255, 0.08)';
                                         e.currentTarget.style.boxShadow = 'none';
                                     }}
                                 >
@@ -367,7 +370,7 @@ export default function AboutPage() {
                                         <h3 style={{
                                             fontSize: '17px',
                                             fontWeight: '900',
-                                            color: '#FFFFFF',
+                                            color: isLight ? '#0F172A' : '#FFFFFF',
                                             margin: '0 0 10px',
                                             lineHeight: '1.4',
                                         }}>
@@ -376,7 +379,7 @@ export default function AboutPage() {
 
                                         <p style={{
                                             fontSize: '13.5px',
-                                            color: '#94A3B8',
+                                            color: isLight ? '#475569' : '#94A3B8',
                                             lineHeight: '1.7',
                                             margin: 0,
                                         }}>
@@ -403,10 +406,11 @@ export default function AboutPage() {
                                 key={idx}
                                 className="about-animated-card"
                                 style={{
-                                    background: 'linear-gradient(145deg, #151520 0%, #0D0D14 100%)',
-                                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                                    background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #151520 0%, #0D0D14 100%)',
+                                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                                     borderRadius: '20px',
                                     padding: '24px',
+                                    boxShadow: isLight ? '0 4px 18px rgba(0, 0, 0, 0.04)' : 'none',
                                     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                                     transitionDelay: `${idx * 0.15}s`,
                                 }}
@@ -421,20 +425,20 @@ export default function AboutPage() {
                                         width: '40px',
                                         height: '40px',
                                         borderRadius: '12px',
-                                        background: 'rgba(212, 165, 55, 0.12)',
+                                        background: isLight ? 'rgba(212, 165, 55, 0.15)' : 'rgba(212, 165, 55, 0.12)',
                                         border: '1px solid rgba(212, 165, 55, 0.3)',
-                                        color: '#D4A537',
+                                        color: isLight ? '#B45309' : '#D4A537',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                     }}>
                                         <Icon size={20} />
                                     </div>
-                                    <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: '#FFFFFF' }}>
+                                    <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                         {val.title}
                                     </h4>
                                 </div>
-                                <p style={{ margin: 0, fontSize: '13px', color: '#94A3B8', lineHeight: '1.7' }}>
+                                <p style={{ margin: 0, fontSize: '13px', color: isLight ? '#475569' : '#94A3B8', lineHeight: '1.7' }}>
                                     {val.desc}
                                 </p>
                             </div>
@@ -446,8 +450,8 @@ export default function AboutPage() {
                 <div
                     className="about-animated-card"
                     style={{
-                        background: 'linear-gradient(135deg, rgba(212, 165, 55, 0.18) 0%, rgba(18, 18, 26, 0.98) 100%)',
-                        border: '1.5px solid rgba(212, 165, 55, 0.4)',
+                        background: isLight ? '#FFFFFF' : 'linear-gradient(135deg, rgba(212, 165, 55, 0.18) 0%, rgba(18, 18, 26, 0.98) 100%)',
+                        border: isLight ? '1.5px solid #D4A537' : '1.5px solid rgba(212, 165, 55, 0.4)',
                         borderRadius: '26px',
                         padding: 'clamp(24px, 4vw, 36px)',
                         display: 'flex',
@@ -455,14 +459,14 @@ export default function AboutPage() {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         gap: '20px',
-                        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 165, 55, 0.15)',
+                        boxShadow: isLight ? '0 10px 30px rgba(0, 0, 0, 0.06)' : '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 165, 55, 0.15)',
                     }}
                 >
                     <div>
-                        <h3 style={{ margin: '0 0 8px', fontSize: '21px', fontWeight: '900', color: '#FFFFFF' }}>
+                        <h3 style={{ margin: '0 0 8px', fontSize: '21px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                             جاهز للبدء والشحن مع منصة إمبراطور؟
                         </h3>
-                        <p style={{ margin: 0, fontSize: '14px', color: '#CBD5E1' }}>
+                        <p style={{ margin: 0, fontSize: '14px', color: isLight ? '#475569' : '#CBD5E1' }}>
                             سجل حسابك مجاناً الآن واستمتع بالشحن الفوري، العمولات المرتفعة، وخدمات الـ API للشركات.
                         </p>
                     </div>
@@ -490,9 +494,9 @@ export default function AboutPage() {
                             style={{
                                 padding: '12px 20px',
                                 borderRadius: '14px',
-                                background: 'rgba(255, 255, 255, 0.06)',
-                                border: '1px solid rgba(255, 255, 255, 0.15)',
-                                color: '#FFFFFF',
+                                background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.06)',
+                                border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.15)',
+                                color: isLight ? '#0F172A' : '#FFFFFF',
                                 fontSize: '14px',
                                 fontWeight: '800',
                                 textDecoration: 'none',

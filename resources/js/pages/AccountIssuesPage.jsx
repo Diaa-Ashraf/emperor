@@ -4,10 +4,13 @@ import { MessageCircle, Send, CheckCircle2, ShieldAlert, ArrowLeft, ArrowRight, 
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function AccountIssuesPage() {
     const { user, isAuthenticated } = useAuth();
     const { isRtl, t, language } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
 
     const issueTypes = [
         { id: 'login', key: 'issueLogin', label: 'تسجيل الدخول' },
@@ -169,11 +172,11 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                 }}>
                     {/* Left Form: Select Issue & Input Details */}
                     <div style={{
-                        background: 'linear-gradient(145deg, #14141A 0%, #0D0D12 100%)',
-                        border: '1px solid rgba(212, 165, 55, 0.3)',
+                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #14141A 0%, #0D0D12 100%)',
+                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.3)',
                         borderRadius: '24px',
                         padding: '28px',
-                        boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
+                        boxShadow: isLight ? '0 4px 20px rgba(0,0,0,0.05)' : '0 12px 40px rgba(0,0,0,0.5)',
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                             <div style={{
@@ -182,9 +185,9 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 gap: '6px',
                                 padding: '4px 12px',
                                 borderRadius: '10px',
-                                background: 'rgba(37, 211, 102, 0.12)',
+                                background: isLight ? '#DCFCE7' : 'rgba(37, 211, 102, 0.12)',
                                 border: '1px solid rgba(37, 211, 102, 0.3)',
-                                color: '#25D366',
+                                color: isLight ? '#15803D' : '#25D366',
                                 fontSize: '12px',
                                 fontWeight: '700',
                             }}>
@@ -198,14 +201,14 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                             style={{
                                 fontSize: '24px',
                                 fontWeight: '900',
-                                color: '#FFFFFF',
+                                color: isLight ? '#0F172A' : '#FFFFFF',
                                 margin: '0 0 8px',
                             }}>
                             {displayText || text}
                         </h1>
                         <p
                             style={{
-                                color: '#9E9EA8',
+                                color: isLight ? '#475569' : '#9E9EA8',
                                 fontSize: '13.5px',
                                 margin: '0 0 24px',
                                 lineHeight: '1.6',
@@ -219,7 +222,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 display: 'block',
                                 fontSize: '13px',
                                 fontWeight: '800',
-                                color: 'var(--gold-400)',
+                                color: isLight ? '#B45309' : 'var(--gold-400)',
                                 marginBottom: '10px',
                             }}>
                                 {t('selectIssueType', 'اختر نوع الشكوى')}
@@ -241,10 +244,10 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                                 padding: '10px 12px',
                                                 borderRadius: '12px',
                                                 background: isSelected
-                                                    ? 'rgba(212, 165, 55, 0.18)'
-                                                    : 'rgba(255, 255, 255, 0.03)',
-                                                border: `1.5px solid ${isSelected ? 'var(--gold-400)' : 'rgba(255, 255, 255, 0.08)'}`,
-                                                color: isSelected ? 'var(--gold-100)' : '#CBD5E1',
+                                                    ? (isLight ? '#FEF3C7' : 'rgba(212, 165, 55, 0.18)')
+                                                    : (isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.03)'),
+                                                border: `1.5px solid ${isSelected ? (isLight ? '#D4A537' : 'var(--gold-400)') : (isLight ? '#CBD5E1' : 'rgba(255, 255, 255, 0.08)')}`,
+                                                color: isSelected ? (isLight ? '#92400E' : 'var(--gold-100)') : (isLight ? '#334155' : '#CBD5E1'),
                                                 fontSize: '12.5px',
                                                 fontWeight: isSelected ? '800' : '600',
                                                 cursor: 'pointer',
@@ -266,7 +269,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 display: 'block',
                                 fontSize: '13px',
                                 fontWeight: '800',
-                                color: 'var(--gold-400)',
+                                color: isLight ? '#B45309' : 'var(--gold-400)',
                                 marginBottom: '8px',
                             }}>
                                 {t('complaintOrDetails', 'الشكوى أو تفاصيل الرسالة')}
@@ -278,11 +281,11 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 placeholder={t('complaintDetailsPlaceholder', 'اكتب تفاصيل الشكوى أو المشكلة التي تواجهك داخل الموقع هنا...')}
                                 style={{
                                     width: '100%',
-                                    background: '#0B0B0E',
-                                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                                    background: isLight ? '#F8FAFC' : '#0B0B0E',
+                                    border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.12)',
                                     borderRadius: '14px',
                                     padding: '14px',
-                                    color: '#FFFFFF',
+                                    color: isLight ? '#0F172A' : '#FFFFFF',
                                     fontSize: '13.5px',
                                     fontFamily: 'var(--font-cairo)',
                                     outline: 'none',
@@ -302,7 +305,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 marginBottom: '20px',
                             }}>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#A0A0B0', marginBottom: '6px' }}>{t('yourPhoneNumber', 'رقم هاتفك:')}</label>
+                                    <label style={{ display: 'block', fontSize: '12px', color: isLight ? '#475569' : '#A0A0B0', marginBottom: '6px' }}>{t('yourPhoneNumber', 'رقم هاتفك:')}</label>
                                     <input
                                         type="text"
                                         placeholder="010xxxxxxxx"
@@ -310,11 +313,11 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                         onChange={(e) => setUserPhone(e.target.value)}
                                         style={{
                                             width: '100%',
-                                            background: '#0B0B0E',
-                                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                                            background: isLight ? '#F8FAFC' : '#0B0B0E',
+                                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.1)',
                                             borderRadius: '10px',
                                             padding: '10px 12px',
-                                            color: '#FFF',
+                                            color: isLight ? '#0F172A' : '#FFF',
                                             fontSize: '13px',
                                             outline: 'none',
                                             boxSizing: 'border-box',
@@ -322,7 +325,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                     />
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#A0A0B0', marginBottom: '6px' }}>{t('emailAddress', 'البريد الإلكتروني:')}</label>
+                                    <label style={{ display: 'block', fontSize: '12px', color: isLight ? '#475569' : '#A0A0B0', marginBottom: '6px' }}>{t('emailAddress', 'البريد الإلكتروني:')}</label>
                                     <input
                                         type="email"
                                         placeholder="example@email.com"
@@ -330,11 +333,11 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                         onChange={(e) => setUserEmail(e.target.value)}
                                         style={{
                                             width: '100%',
-                                            background: '#0B0B0E',
-                                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                                            background: isLight ? '#F8FAFC' : '#0B0B0E',
+                                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.1)',
                                             borderRadius: '10px',
                                             padding: '10px 12px',
-                                            color: '#FFF',
+                                            color: isLight ? '#0F172A' : '#FFF',
                                             fontSize: '13px',
                                             outline: 'none',
                                             boxSizing: 'border-box',
@@ -369,37 +372,37 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                     {/* Right Side: Live Message Preview Card */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         <div style={{
-                            background: 'linear-gradient(145deg, #121218 0%, #0A0A0E 100%)',
-                            border: '1px solid rgba(212, 165, 55, 0.2)',
+                            background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #121218 0%, #0A0A0E 100%)',
+                            border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.2)',
                             borderRadius: '24px',
                             padding: '24px',
-                            boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
+                            boxShadow: isLight ? '0 4px 20px rgba(0,0,0,0.05)' : '0 8px 30px rgba(0,0,0,0.5)',
                         }}>
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'space-between',
                                 marginBottom: '16px',
-                                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                                borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                                 paddingBottom: '12px',
                             }}>
                                 <h3 style={{
                                     margin: 0,
                                     fontSize: '16px',
                                     fontWeight: '800',
-                                    color: 'var(--gold-200)',
+                                    color: isLight ? '#B45309' : 'var(--gold-200)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '8px',
                                 }}>
                                     <span>{t('messagePreview', 'معاينة الرسالة')}</span>
                                 </h3>
-                                <span style={{ fontSize: '11px', color: '#8E8E98' }}>{t('realtimeUpdateTyping', 'تحديث لحظي أثناء الكتابة')}</span>
+                                <span style={{ fontSize: '11px', color: isLight ? '#64748B' : '#8E8E98' }}>{t('realtimeUpdateTyping', 'تحديث لحظي أثناء الكتابة')}</span>
                             </div>
 
                             <p style={{
                                 fontSize: '12.5px',
-                                color: '#A0A0B0',
+                                color: isLight ? '#475569' : '#A0A0B0',
                                 margin: '0 0 16px',
                                 lineHeight: '1.6',
                             }}>
@@ -408,26 +411,26 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
 
                             {/* Message Box */}
                             <div style={{
-                                background: '#050508',
-                                border: '1px solid rgba(212, 165, 55, 0.25)',
+                                background: isLight ? '#F8FAFC' : '#050508',
+                                border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(212, 165, 55, 0.25)',
                                 borderRadius: '16px',
                                 padding: '18px',
                                 fontFamily: 'var(--font-cairo)',
                                 fontSize: '13px',
-                                color: '#E2E8F0',
+                                color: isLight ? '#0F172A' : '#E2E8F0',
                                 lineHeight: '1.8',
                                 whiteSpace: 'pre-line',
                             }}>
-                                <div style={{ fontWeight: '800', color: 'var(--gold-300)', marginBottom: '8px' }}>
+                                <div style={{ fontWeight: '800', color: isLight ? '#B45309' : 'var(--gold-300)', marginBottom: '8px' }}>
                                     {language === 'en' ? 'Message to Platform Support' : 'رسالة إلى صاحب الموقع'}
                                 </div>
-                                <div style={{ color: '#CBD5E1' }}>
+                                <div style={{ color: isLight ? '#334155' : '#CBD5E1' }}>
                                     <strong>{language === 'en' ? 'Issue Type:' : 'نوع الشكوى:'}</strong> {selectedLabel}
                                 </div>
-                                <div style={{ color: '#CBD5E1', marginTop: '4px' }}>
+                                <div style={{ color: isLight ? '#334155' : '#CBD5E1', marginTop: '4px' }}>
                                     <strong>{language === 'en' ? 'Issue Details:' : 'تفاصيل المشكلة:'}</strong> {details.trim() || '—'}
                                 </div>
-                                <div style={{ color: '#94A3B8', marginTop: '4px', fontSize: '12px' }}>
+                                <div style={{ color: isLight ? '#64748B' : '#94A3B8', marginTop: '4px', fontSize: '12px' }}>
                                     <strong>{language === 'en' ? 'Account Details:' : 'بيانات الحساب:'}</strong> {user?.name ? `${user.name} (ID: EMP-${user.id})` : (userPhone || userEmail || (language === 'en' ? 'Guest' : 'زائر'))}
                                 </div>
                             </div>
@@ -435,8 +438,8 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
 
                         {/* WhatsApp Dispatch Guarantee Card */}
                         <div style={{
-                            background: 'rgba(37, 211, 102, 0.06)',
-                            border: '1px solid rgba(37, 211, 102, 0.25)',
+                            background: isLight ? '#DCFCE7' : 'rgba(37, 211, 102, 0.06)',
+                            border: isLight ? '1px solid #86EFAC' : '1px solid rgba(37, 211, 102, 0.25)',
                             borderRadius: '20px',
                             padding: '20px',
                             display: 'flex',
@@ -447,8 +450,8 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 width: '44px',
                                 height: '44px',
                                 borderRadius: '14px',
-                                background: 'rgba(37, 211, 102, 0.15)',
-                                color: '#25D366',
+                                background: isLight ? '#BBF7D0' : 'rgba(37, 211, 102, 0.15)',
+                                color: isLight ? '#15803D' : '#25D366',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -457,10 +460,10 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 <MessageCircle size={24} />
                             </div>
                             <div>
-                                <h4 style={{ margin: '0 0 3px', fontSize: '14px', fontWeight: '800', color: '#FFFFFF' }}>
+                                <h4 style={{ margin: '0 0 3px', fontSize: '14px', fontWeight: '800', color: isLight ? '#14532D' : '#FFFFFF' }}>
                                     {t('whatsappDirectSupport', 'سيتم فتح واتساب برسالة موجهة لصاحب الموقع')}
                                 </h4>
-                                <span style={{ fontSize: '12px', color: '#A0A0B0' }}>
+                                <span style={{ fontSize: '12px', color: isLight ? '#166534' : '#A0A0B0' }}>
                                     {t('technicalSupportPromise', 'فريق الدعم الفني متواجد لمساعدتك وحل أي مشكلة تقنية فوراً')}
                                 </span>
                             </div>

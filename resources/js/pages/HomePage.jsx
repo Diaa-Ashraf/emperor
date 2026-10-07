@@ -20,6 +20,7 @@ export default function HomePage() {
     const navigate = useNavigate();
     const { t, isRtl } = useLanguage();
     const { theme } = useTheme();
+    const isLight = theme === 'light';
 
     const [searchQuery, setSearchQuery] = useState('');
     const [searchFocused, setSearchFocused] = useState(false);
@@ -133,15 +134,15 @@ export default function HomePage() {
                         left: 0,
                         right: 0,
                         marginTop: '8px',
-                        background: '#121218',
-                        border: '1px solid rgba(212, 165, 55, 0.3)',
+                        background: isLight ? '#FFFFFF' : '#121218',
+                        border: isLight ? '1.5px solid #CBD5E1' : '1px solid rgba(212, 165, 55, 0.3)',
                         borderRadius: '20px',
                         padding: '12px',
-                        boxShadow: '0 16px 40px rgba(0,0,0,0.8)',
+                        boxShadow: isLight ? '0 10px 30px rgba(0,0,0,0.1)' : '0 16px 40px rgba(0,0,0,0.8)',
                         maxHeight: '340px',
                         overflowY: 'auto',
                     }}>
-                        <div style={{ fontSize: '12px', color: 'var(--gold-400)', fontWeight: '800', padding: '6px 12px 10px' }}>
+                        <div style={{ fontSize: '12px', color: isLight ? '#B45309' : 'var(--gold-400)', fontWeight: '800', padding: '6px 12px 10px' }}>
                             {t('liveSearchResults', 'نتائج البحث المباشرة')} ({filteredItems.length})
                         </div>
                         {filteredItems.length > 0 ? (
@@ -158,15 +159,16 @@ export default function HomePage() {
                                                 justifyContent: 'space-between',
                                                 padding: '10px 14px',
                                                 borderRadius: '12px',
-                                                background: 'rgba(255, 255, 255, 0.02)',
+                                                background: isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.02)',
+                                                border: isLight ? '1px solid #E2E8F0' : 'none',
                                                 textDecoration: 'none',
                                                 transition: 'all 0.2s',
                                             }}
-                                            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(212, 165, 55, 0.1)'}
-                                            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'}
+                                            onMouseEnter={(e) => e.currentTarget.style.background = isLight ? '#FEFCE8' : 'rgba(212, 165, 55, 0.1)'}
+                                            onMouseLeave={(e) => e.currentTarget.style.background = isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.02)'}
                                         >
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#222', overflow: 'hidden' }}>
+                                                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: isLight ? '#F1F5F9' : '#222', overflow: 'hidden' }}>
                                                     {itemImg ? (
                                                         <img src={itemImg} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                                     ) : (
@@ -175,9 +177,9 @@ export default function HomePage() {
                                                         </div>
                                                     )}
                                                 </div>
-                                                <span style={{ fontSize: '13.5px', fontWeight: '700', color: '#FFFFFF' }}>{item.name}</span>
+                                                <span style={{ fontSize: '13.5px', fontWeight: '700', color: isLight ? '#0F172A' : '#FFFFFF' }}>{item.name}</span>
                                             </div>
-                                            <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--gold-300)' }}>
+                                            <span style={{ fontSize: '13px', fontWeight: '800', color: isLight ? '#B45309' : 'var(--gold-300)' }}>
                                                 {item.price_egp ? `${item.price_egp} ${t('currency', 'ج.م')}` : t('viewPackages', 'عرض الباقات')}
                                             </span>
                                         </Link>

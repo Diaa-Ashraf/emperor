@@ -749,13 +749,14 @@ export default function DeveloperApiPage() {
                                         padding: '12px',
                                         borderRadius: '10px',
                                         border: 'none',
-                                        background: isLight ? '#0F172A' : '#374151',
-                                        color: '#fff',
-                                        fontWeight: '700',
+                                        background: isLight ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)' : '#374151',
+                                        color: isLight ? '#0A0A0E' : '#fff',
+                                        fontWeight: '800',
                                         fontSize: '14px',
                                         cursor: 'pointer',
-                                        transition: 'background 0.2s',
-                                        opacity: saving ? 0.7 : 1
+                                        transition: 'all 0.2s',
+                                        opacity: saving ? 0.7 : 1,
+                                        boxShadow: isLight ? '0 4px 14px rgba(212, 165, 55, 0.25)' : 'none',
                                     }}
                                 >
                                     {saving ? (isEn ? 'Saving...' : 'جاري الحفظ...') : (isEn ? '💾 Save Settings' : '💾 حفظ الإعدادات')}
@@ -793,7 +794,7 @@ export default function DeveloperApiPage() {
                                 {isEn ? '- Query current merchant wallet balance' : '- الاستعلام عن رصيد المحفظة الحالي'}
                             </span>
                         </div>
-                        <pre style={{ background: '#0f172a', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: '#38bdf8', direction: 'ltr', textAlign: 'left' }}>
+                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: isLight ? '#0F172A' : '#38bdf8', direction: 'ltr', textAlign: 'left', fontWeight: '600' }}>
                             {`curl -X GET "${window.location.origin}/api/v1/external/balance" \\
   -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
   -H "X-API-Secret: YOUR_API_SECRET"`}
@@ -809,7 +810,7 @@ export default function DeveloperApiPage() {
                                 {isEn ? '- Retrieve list of products and your custom prices' : '- جلب قائمة المنتجات والأسعار الخاصة بك'}
                             </span>
                         </div>
-                        <pre style={{ background: '#0f172a', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: '#38bdf8', direction: 'ltr', textAlign: 'left' }}>
+                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: isLight ? '#0F172A' : '#38bdf8', direction: 'ltr', textAlign: 'left', fontWeight: '600' }}>
                             {`curl -X GET "${window.location.origin}/api/v1/external/products" \\
   -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
   -H "X-API-Secret: YOUR_API_SECRET"`}
@@ -825,7 +826,7 @@ export default function DeveloperApiPage() {
                                 {isEn ? '- Place and execute an instant top-up order' : '- إنشاء وتنفيذ طلب شحن مباشر'}
                             </span>
                         </div>
-                        <pre style={{ background: '#0f172a', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: '#4ade80', direction: 'ltr', textAlign: 'left' }}>
+                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: isLight ? '#15803D' : '#4ade80', direction: 'ltr', textAlign: 'left', fontWeight: '600' }}>
                             {`curl -X POST "${window.location.origin}/api/v1/external/orders" \\
   -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
   -H "X-API-Secret: YOUR_API_SECRET" \\
@@ -849,7 +850,7 @@ export default function DeveloperApiPage() {
                                 {isEn ? '- Query order status and retrieved vouchers/pins' : '- الاستعلام عن حالة الطلب والأكواد'}
                             </span>
                         </div>
-                        <pre style={{ background: '#0f172a', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: '#38bdf8', direction: 'ltr', textAlign: 'left' }}>
+                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: isLight ? '#0F172A' : '#38bdf8', direction: 'ltr', textAlign: 'left', fontWeight: '600' }}>
                             {`curl -X GET "${window.location.origin}/api/v1/external/orders/EMP-12345" \\
   -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
   -H "X-API-Secret: YOUR_API_SECRET"`}

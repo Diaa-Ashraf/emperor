@@ -161,9 +161,9 @@ export default function SupportContactModal({ isOpen, onClose }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '16px',
-                backgroundColor: isLight ? 'rgba(15, 23, 42, 0.65)' : 'rgba(5, 5, 8, 0.82)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
+                backgroundColor: isLight ? 'rgba(15, 23, 42, 0.35)' : 'rgba(5, 5, 8, 0.82)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
                 animation: 'fadeInModal 0.25s ease-out forwards',
             }}
         >

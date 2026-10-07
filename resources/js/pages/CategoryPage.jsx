@@ -458,7 +458,7 @@ export default function CategoryPage() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                background: '#0B0B0F',
+                                background: isLight ? '#FEFCE8' : '#0B0B0F',
                                 flexShrink: 0,
                                 boxShadow: '0 0 12px rgba(212, 165, 55, 0.35)'
                             }}>

@@ -17,7 +17,22 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ $siteFavicon }}">
     <link rel="shortcut icon" href="{{ $siteFavicon }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ $siteFavicon }}">
-    <link rel="manifest" href="/site.webmanifest">
+    <script>
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('emperor_theme') || 'light';
+                if (savedTheme === 'light') {
+                    document.documentElement.classList.add('light');
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.classList.remove('light');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
 
     <script>
         window.__APP_SETTINGS__ = {

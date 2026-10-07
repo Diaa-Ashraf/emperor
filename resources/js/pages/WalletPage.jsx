@@ -115,14 +115,15 @@ export default function WalletPage() {
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '6px',
-                        background: 'rgba(255, 255, 255, 0.06)',
-                        border: '1px solid var(--border-medium)',
+                        background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.06)',
+                        border: isLight ? '1px solid #CBD5E1' : '1px solid var(--border-medium)',
                         borderRadius: '20px',
                         padding: '6px 14px',
                         fontSize: '13px',
                         fontWeight: '700',
-                        color: 'var(--text-primary)',
+                        color: isLight ? '#0F172A' : 'var(--text-primary)',
                         textDecoration: 'none',
+                        boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.04)' : 'none',
                     }}
                 >
                     {isRtl ? (

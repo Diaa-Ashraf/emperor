@@ -358,12 +358,12 @@ export default function DepositPage() {
                 <div style={{
                     maxWidth: '560px',
                     margin: '40px auto',
-                    background: '#0B0B0F',
-                    border: '1.5px solid #D4A537',
+                    background: isLight ? '#FFFFFF' : '#0B0B0F',
+                    border: isLight ? '1.5px solid #D4A537' : '1.5px solid #D4A537',
                     borderRadius: '24px',
                     padding: '40px 32px',
                     textAlign: 'center',
-                    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 165, 55, 0.2)',
+                    boxShadow: isLight ? '0 10px 40px rgba(0, 0, 0, 0.08)' : '0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 165, 55, 0.2)',
                 }}>
                     <div style={{
                         width: '80px',
@@ -380,22 +380,22 @@ export default function DepositPage() {
                         <Check size={44} strokeWidth={3} />
                     </div>
 
-                    <h2 style={{ margin: '0 0 8px', fontSize: '24px', fontWeight: '900', color: '#FFFFFF' }}>
+                    <h2 style={{ margin: '0 0 8px', fontSize: '24px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                         {t('depositSuccessTitle', 'تم إرسال طلب الإيداع بنجاح!')}
                     </h2>
 
-                    <p style={{ margin: '0 0 28px', fontSize: '15px', color: '#C5C5D2', lineHeight: '1.7' }}>
+                    <p style={{ margin: '0 0 28px', fontSize: '15px', color: isLight ? '#475569' : '#C5C5D2', lineHeight: '1.7' }}>
                         {language === 'en' ? (
                             <>
-                                Deposit request <strong style={{ color: '#F5D061' }}>#{submittedDeposit.id}</strong> for{' '}
-                                <strong style={{ color: '#4ADE80' }}>{Number(submittedDeposit.amount || numAmount).toLocaleString()} {submittedDeposit.currency || selectedMethod?.currency || 'EGP'}</strong> has been created.
+                                Deposit request <strong style={{ color: isLight ? '#B45309' : '#F5D061' }}>#{submittedDeposit.id}</strong> for{' '}
+                                <strong style={{ color: '#16A34A' }}>{Number(submittedDeposit.amount || numAmount).toLocaleString()} {submittedDeposit.currency || selectedMethod?.currency || 'EGP'}</strong> has been created.
                                 <br />
                                 The team is matching your transfer and funds will be credited immediately.
                             </>
                         ) : (
                             <>
-                                طلب شحن محفظة رقم <strong style={{ color: '#F5D061' }}>#{submittedDeposit.id}</strong> بمبلغ{' '}
-                                <strong style={{ color: '#4ADE80' }}>{Number(submittedDeposit.amount || numAmount).toLocaleString()} {submittedDeposit.currency || selectedMethod?.currency || 'EGP'}</strong>.
+                                طلب شحن محفظة رقم <strong style={{ color: isLight ? '#B45309' : '#F5D061' }}>#{submittedDeposit.id}</strong> بمبلغ{' '}
+                                <strong style={{ color: '#16A34A' }}>{Number(submittedDeposit.amount || numAmount).toLocaleString()} {submittedDeposit.currency || selectedMethod?.currency || 'EGP'}</strong>.
                                 <br />
                                 يقوم المشرف الآن بمطابقة التحويل وسيتم إضافة الرصيد إلى محفظتك فوراً.
                             </>
@@ -414,6 +414,7 @@ export default function DepositPage() {
                                     fontSize: '15px',
                                     fontWeight: '800',
                                     cursor: 'pointer',
+                                    boxShadow: '0 4px 15px rgba(212, 165, 55, 0.3)',
                                 }}
                             >
                                 {t('viewWalletBalance', 'عرض رصيد المحفظة')}
@@ -424,9 +425,9 @@ export default function DepositPage() {
                                 style={{
                                     padding: '12px 24px',
                                     borderRadius: '14px',
-                                    background: 'rgba(255, 255, 255, 0.05)',
-                                    border: '1px solid rgba(212, 165, 55, 0.3)',
-                                    color: '#E5B842',
+                                    background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.05)',
+                                    border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(212, 165, 55, 0.3)',
+                                    color: isLight ? '#0F172A' : '#E5B842',
                                     fontSize: '15px',
                                     fontWeight: '700',
                                     cursor: 'pointer',
