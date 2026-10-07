@@ -9,10 +9,13 @@ import Pagination from '../components/ui/Pagination';
 import Button from '../components/ui/Button';
 import { ordersApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import VideoBackground from "../components/home/VideoBackground";
 
 export default function OrdersPage() {
     const { t, isRtl } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('all');
@@ -56,18 +59,18 @@ export default function OrdersPage() {
         <MainLayout>
             {/* Header */}
             <div style={{ marginBottom: '28px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '13px', color: '#8E8E98' }}>
-                    <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>{t('home', 'الرئيسية')}</Link>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '13px', color: isLight ? '#64748B' : '#8E8E98' }}>
+                    <Link to="/" style={{ color: isLight ? '#B45309' : '#D4A537', textDecoration: 'none' }}>{t('home', 'الرئيسية')}</Link>
                     <span>/</span>
-                    <span style={{ color: '#CBD5E1' }}>{t('ordersAndShippingLog', 'سجل طلبات الشحن')}</span>
+                    <span style={{ color: isLight ? '#334155' : '#CBD5E1' }}>{t('ordersAndShippingLog', 'سجل طلبات الشحن')}</span>
                 </div>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
                     <div>
-                        <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '900', color: '#FFFFFF' }}>
+                        <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                             {t('ordersAndShippingLog', 'طلباتي وسجل الشحن')}
                         </h1>
-                        <p style={{ margin: 0, fontSize: '14px', color: '#9E9EA8' }}>
+                        <p style={{ margin: 0, fontSize: '14px', color: isLight ? '#475569' : '#CBD5E1' }}>
                             {t('ordersSubtitle', 'تابع حالة تنفيذ شحن ألعابك وبطاقاتك الرقمية لحظة بلحظة')}
                         </p>
                     </div>
@@ -103,15 +106,20 @@ export default function OrdersPage() {
                                 borderRadius: '12px',
                                 background: isActive
                                     ? 'linear-gradient(135deg, #F3E5AB 0%, #D4A537 100%)'
-                                    : 'rgba(26, 26, 36, 0.8)',
-                                color: isActive ? '#0D0D0F' : '#CBD5E1',
+                                    : (isLight ? '#FFFFFF' : 'rgba(26, 26, 36, 0.8)'),
+                                color: isActive
+                                    ? '#0D0D0F'
+                                    : (isLight ? '#334155' : '#CBD5E1'),
                                 fontWeight: '700',
                                 fontSize: '14px',
-                                border: isActive ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+                                border: isActive
+                                    ? 'none'
+                                    : (isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.08)'),
                                 cursor: 'pointer',
                                 whiteSpace: 'nowrap',
                                 transition: 'all 0.2s',
                                 fontFamily: 'var(--font-cairo)',
+                                boxShadow: isLight && !isActive ? '0 2px 6px rgba(0,0,0,0.03)' : 'none',
                             }}
                         >
                             {tab.label}

@@ -14,6 +14,7 @@ import { ordersApi, walletApi } from '../../api/endpoints';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { TargetAppIconRenderer } from '../target/TargetAppIcons';
 import OrderConfirmModal from './OrderConfirmModal';
 import '../../../css/kaProductRecharge.css';
@@ -30,6 +31,8 @@ export default function ProductRechargeModal({
     const { user, isAuthenticated } = useAuth();
     const { success, error: toastError } = useToast();
     const { t, isRtl, language } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
 
     const tiers = useMemo(() => {
         return product.tiers || product.active_tiers || [];
@@ -319,7 +322,7 @@ export default function ProductRechargeModal({
                 style={{
                     position: 'fixed',
                     inset: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                    backgroundColor: isLight ? 'rgba(15, 23, 42, 0.35)' : 'rgba(0, 0, 0, 0.85)',
                     backdropFilter: 'blur(8px)',
                     WebkitBackdropFilter: 'blur(8px)',
                     zIndex: 9999,
@@ -343,11 +346,13 @@ export default function ProductRechargeModal({
                         maxWidth: '430px',
                         maxHeight: '92vh',
                         overflowY: 'auto',
-                        background: 'linear-gradient(180deg, #141310 0%, #0c0b08 100%)',
-                        border: '1.5px solid rgba(212, 165, 55, 0.45)',
+                        background: isLight ? '#FFFFFF' : 'linear-gradient(180deg, #141310 0%, #0c0b08 100%)',
+                        border: isLight ? '1.5px solid #E2E8F0' : '1.5px solid rgba(212, 165, 55, 0.45)',
                         borderRadius: '22px',
                         padding: '18px 20px 22px',
-                        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(212, 165, 55, 0.15)',
+                        boxShadow: isLight
+                            ? '0 20px 50px rgba(0, 0, 0, 0.08), 0 0 25px rgba(212, 165, 55, 0.15)'
+                            : '0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(212, 165, 55, 0.15)',
                         fontFamily: 'var(--font-cairo)',
                         boxSizing: 'border-box',
                         margin: 'auto',
@@ -378,7 +383,7 @@ export default function ProductRechargeModal({
                                 <h2 style={{
                                     fontSize: '18px',
                                     fontWeight: '900',
-                                    color: '#FFFFFF',
+                                    color: isLight ? '#0F172A' : '#FFFFFF',
                                     margin: '0 0 3px',
                                     lineHeight: 1.25,
                                     fontFamily: 'var(--font-cairo)'
@@ -389,8 +394,8 @@ export default function ProductRechargeModal({
                                     display: 'inline-flex',
                                     alignItems: 'center',
                                     gap: '5px',
-                                    background: 'rgba(34, 197, 94, 0.14)',
-                                    border: '1px solid rgba(34, 197, 94, 0.4)',
+                                    background: isLight ? '#DCFCE7' : 'rgba(34, 197, 94, 0.14)',
+                                    border: isLight ? '1px solid #86EFAC' : '1px solid rgba(34, 197, 94, 0.4)',
                                     padding: '2px 10px',
                                     borderRadius: '9999px',
                                 }}>
@@ -404,7 +409,7 @@ export default function ProductRechargeModal({
                                     <span style={{
                                         fontSize: '11px',
                                         fontWeight: '800',
-                                        color: '#4ADE80'
+                                        color: isLight ? '#15803D' : '#4ADE80'
                                     }}>
                                         {t('available', 'متاح')}
                                     </span>
@@ -419,7 +424,7 @@ export default function ProductRechargeModal({
                                 border: '2px solid #D4A537',
                                 boxShadow: '0 0 14px rgba(212, 165, 55, 0.35)',
                                 overflow: 'hidden',
-                                background: '#0B0B0F',
+                                background: isLight ? '#FFFFFF' : '#0B0B0F',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -445,9 +450,9 @@ export default function ProductRechargeModal({
                                 width: '32px',
                                 height: '32px',
                                 borderRadius: '50%',
-                                background: 'rgba(255, 255, 255, 0.08)',
-                                border: '1px solid rgba(255, 255, 255, 0.15)',
-                                color: '#CBD5E1',
+                                background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.08)',
+                                border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.15)',
+                                color: isLight ? '#475569' : '#CBD5E1',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -464,8 +469,10 @@ export default function ProductRechargeModal({
                         {/* Notice Banner: الشحن ثانيه (Matching KA-CARD Screenshot 2) */}
                         {isCustomQuantity ? (
                             <div style={{
-                                background: 'linear-gradient(90deg, rgba(67, 30, 90, 0.6) 0%, rgba(30, 24, 48, 0.85) 100%)',
-                                border: '1px solid rgba(168, 85, 247, 0.35)',
+                                background: isLight
+                                    ? '#FEF3C7'
+                                    : 'linear-gradient(90deg, rgba(67, 30, 90, 0.6) 0%, rgba(30, 24, 48, 0.85) 100%)',
+                                border: isLight ? '1px solid #FDE68A' : '1px solid rgba(168, 85, 247, 0.35)',
                                 borderRadius: '14px',
                                 padding: '11px 16px',
                                 display: 'flex',
@@ -473,13 +480,13 @@ export default function ProductRechargeModal({
                                 justifyContent: isRtl ? 'flex-end' : 'flex-start',
                                 gap: '10px',
                                 marginBottom: '16px',
-                                color: '#E9D5FF',
+                                color: isLight ? '#92400E' : '#E9D5FF',
                                 fontSize: '13.5px',
                                 fontWeight: '800',
-                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)'
+                                boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.04)' : '0 4px 16px rgba(0, 0, 0, 0.4)'
                             }}>
                                 <span>{product.notice || t('instantRechargeZeroSec', 'الشحن ثانيه')}</span>
-                                <FileText size={17} color="#38BDF8" />
+                                <FileText size={17} color={isLight ? '#B45309' : '#38BDF8'} />
                             </div>
                         ) : tiers.length > 1 ? (
                             /* Package Selector for Standard Games only */
@@ -487,8 +494,10 @@ export default function ProductRechargeModal({
                                 <div
                                     onClick={() => setShowPackageGrid(prev => !prev)}
                                     style={{
-                                        background: 'linear-gradient(90deg, rgba(67, 30, 90, 0.6) 0%, rgba(30, 24, 48, 0.85) 100%)',
-                                        border: '1px solid rgba(168, 85, 247, 0.35)',
+                                        background: isLight
+                                            ? '#F8FAFC'
+                                            : 'linear-gradient(90deg, rgba(67, 30, 90, 0.6) 0%, rgba(30, 24, 48, 0.85) 100%)',
+                                        border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(168, 85, 247, 0.35)',
                                         borderRadius: '12px',
                                         padding: '11px 16px',
                                         display: 'flex',
@@ -496,24 +505,24 @@ export default function ProductRechargeModal({
                                         justifyContent: 'space-between',
                                         cursor: 'pointer',
                                         transition: 'all 0.2s',
-                                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)'
+                                        boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.03)' : '0 4px 16px rgba(0, 0, 0, 0.4)'
                                     }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <FileText size={17} color="#38BDF8" />
-                                        <span style={{ fontSize: '13.5px', fontWeight: '800', color: '#E9D5FF' }}>
+                                        <FileText size={17} color={isLight ? '#B45309' : '#38BDF8'} />
+                                        <span style={{ fontSize: '13.5px', fontWeight: '800', color: isLight ? '#0F172A' : '#E9D5FF' }}>
                                             {selectedTier ? selectedTier.name : t('selectPackage', 'اختر باقة الشحن المطلوبة')}
                                         </span>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         {selectedTier && (
-                                            <span style={{ fontSize: '13px', fontWeight: '900', color: '#F5D061' }}>
+                                            <span style={{ fontSize: '13px', fontWeight: '900', color: isLight ? '#B45309' : '#F5D061' }}>
                                                 {Number(selectedTier.price_egp || selectedTier.price || 0).toFixed(2)} {language === 'en' ? 'EGP' : 'ج.م'}
                                             </span>
                                         )}
                                         <ChevronDown
                                             size={16}
-                                            color="#CBD5E1"
+                                            color={isLight ? '#64748B' : '#CBD5E1'}
                                             style={{
                                                 transform: showPackageGrid ? 'rotate(180deg)' : 'rotate(0deg)',
                                                 transition: 'transform 0.2s'
@@ -542,8 +551,12 @@ export default function ProductRechargeModal({
                                                         setShowPackageGrid(false);
                                                     }}
                                                     style={{
-                                                        background: isSelected ? 'rgba(212, 165, 55, 0.2)' : 'rgba(18, 17, 14, 0.95)',
-                                                        border: isSelected ? '1.5px solid #F5D061' : '1px solid rgba(255, 255, 255, 0.1)',
+                                                        background: isSelected
+                                                            ? (isLight ? '#FEF3C7' : 'rgba(212, 165, 55, 0.2)')
+                                                            : (isLight ? '#F8FAFC' : 'rgba(18, 17, 14, 0.95)'),
+                                                        border: isSelected
+                                                            ? '1.5px solid #D4A537'
+                                                            : (isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.1)'),
                                                         borderRadius: '10px',
                                                         padding: '8px 10px',
                                                         cursor: 'pointer',
@@ -551,10 +564,14 @@ export default function ProductRechargeModal({
                                                         transition: 'all 0.15s ease'
                                                     }}
                                                 >
-                                                    <div style={{ fontSize: '12px', fontWeight: '800', color: isSelected ? '#F5D061' : '#FFFFFF' }}>
+                                                    <div style={{
+                                                        fontSize: '12px',
+                                                        fontWeight: '800',
+                                                        color: isSelected ? (isLight ? '#92400E' : '#F5D061') : (isLight ? '#0F172A' : '#FFFFFF')
+                                                    }}>
                                                         {tItem.name}
                                                     </div>
-                                                    <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>
+                                                    <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#9CA3AF', marginTop: '2px' }}>
                                                         {Number(tItem.price_egp || tItem.price || 0).toFixed(2)} {language === 'en' ? 'EGP' : 'ج.م'}
                                                     </div>
                                                 </div>
@@ -565,8 +582,10 @@ export default function ProductRechargeModal({
                             </div>
                         ) : (
                             <div style={{
-                                background: 'linear-gradient(90deg, rgba(67, 30, 90, 0.6) 0%, rgba(30, 24, 48, 0.85) 100%)',
-                                border: '1px solid rgba(168, 85, 247, 0.35)',
+                                background: isLight
+                                    ? '#FEF3C7'
+                                    : 'linear-gradient(90deg, rgba(67, 30, 90, 0.6) 0%, rgba(30, 24, 48, 0.85) 100%)',
+                                border: isLight ? '1px solid #FDE68A' : '1px solid rgba(168, 85, 247, 0.35)',
                                 borderRadius: '12px',
                                 padding: '11px 16px',
                                 display: 'flex',
@@ -574,13 +593,13 @@ export default function ProductRechargeModal({
                                 justifyContent: isRtl ? 'flex-end' : 'flex-start',
                                 gap: '10px',
                                 marginBottom: '16px',
-                                color: '#E9D5FF',
+                                color: isLight ? '#92400E' : '#E9D5FF',
                                 fontSize: '13.5px',
                                 fontWeight: '800',
-                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)'
+                                boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.04)' : '0 4px 16px rgba(0, 0, 0, 0.4)'
                             }}>
                                 <span>{selectedTier?.name || product.notice || t('instantRechargeZeroSec', 'الشحن 0 ثانيه')}</span>
-                                <FileText size={17} color="#38BDF8" />
+                                <FileText size={17} color={isLight ? '#B45309' : '#38BDF8'} />
                             </div>
                         )}
 
@@ -594,8 +613,8 @@ export default function ProductRechargeModal({
                         }}>
                             {/* Box 1 (Right in RTL): الكمية */}
                             <div style={{
-                                background: 'rgba(18, 17, 14, 0.95)',
-                                border: '1px solid rgba(212, 165, 55, 0.3)',
+                                background: isLight ? '#F8FAFC' : 'rgba(18, 17, 14, 0.95)',
+                                border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.3)',
                                 borderRadius: '16px',
                                 padding: '12px 10px',
                                 textAlign: 'center',
@@ -607,7 +626,7 @@ export default function ProductRechargeModal({
                                 <span style={{
                                     fontSize: '12px',
                                     fontWeight: '800',
-                                    color: '#9CA3AF',
+                                    color: isLight ? '#475569' : '#CBD5E1',
                                     marginBottom: '4px'
                                 }}>
                                     {t('quantity', 'الكمية')}
@@ -625,34 +644,35 @@ export default function ProductRechargeModal({
                                         placeholder="0"
                                         style={{
                                             width: '90%',
-                                            background: '#07070A',
-                                            border: '1.5px solid rgba(212, 165, 55, 0.4)',
+                                            background: isLight ? '#FFFFFF' : '#07070A',
+                                            border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(212, 165, 55, 0.4)',
                                             borderRadius: '10px',
                                             padding: '4px 6px',
-                                            color: '#FFFFFF',
+                                            color: isLight ? '#0F172A' : '#FFFFFF',
                                             fontSize: '19px',
                                             fontWeight: '900',
                                             textAlign: 'center',
                                             outline: 'none',
-                                            boxShadow: 'inset 0 2px 6px rgba(0, 0, 0, 0.8)',
+                                            boxShadow: isLight ? 'inset 0 1px 3px rgba(0,0,0,0.05)' : 'inset 0 2px 6px rgba(0, 0, 0, 0.8)',
                                             fontFamily: 'var(--font-cairo)',
                                         }}
                                         onFocusCapture={(e) => {
-                                            e.currentTarget.style.borderColor = '#F5D061';
+                                            e.currentTarget.style.borderColor = '#D4A537';
                                             e.currentTarget.style.boxShadow = '0 0 10px rgba(212, 165, 55, 0.3)';
                                         }}
                                         onBlurCapture={(e) => {
-                                            e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.4)';
-                                            e.currentTarget.style.boxShadow = 'inset 0 2px 6px rgba(0, 0, 0, 0.8)';
+                                            e.currentTarget.style.borderColor = isLight ? '#CBD5E1' : 'rgba(212, 165, 55, 0.4)';
+                                            e.currentTarget.style.boxShadow = isLight ? 'inset 0 1px 3px rgba(0,0,0,0.05)' : 'inset 0 2px 6px rgba(0, 0, 0, 0.8)';
                                         }}
                                     />
                                 </div>
 
                                 <span style={{
                                     fontSize: '10.5px',
-                                    color: '#71717A',
+                                    color: isLight ? '#64748B' : '#A1A1AA',
                                     marginTop: '5px',
-                                    fontFamily: 'monospace'
+                                    fontFamily: 'monospace',
+                                    fontWeight: '700'
                                 }}>
                                     {isCustomQuantity ? '1,000 — 5,000,000' : '1 — 9,999'}
                                 </span>
@@ -660,8 +680,8 @@ export default function ProductRechargeModal({
 
                             {/* Box 2 (Left in RTL): الإجمالي */}
                             <div style={{
-                                background: 'rgba(18, 17, 14, 0.95)',
-                                border: '1px solid rgba(212, 165, 55, 0.3)',
+                                background: isLight ? '#F8FAFC' : 'rgba(18, 17, 14, 0.95)',
+                                border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.3)',
                                 borderRadius: '16px',
                                 padding: '12px 10px',
                                 textAlign: 'center',
@@ -673,7 +693,7 @@ export default function ProductRechargeModal({
                                 <span style={{
                                     fontSize: '12px',
                                     fontWeight: '800',
-                                    color: '#9CA3AF',
+                                    color: isLight ? '#475569' : '#CBD5E1',
                                     marginBottom: '4px'
                                 }}>
                                     {t('total', 'الإجمالي')}
@@ -682,7 +702,7 @@ export default function ProductRechargeModal({
                                 <div style={{
                                     fontSize: '19px',
                                     fontWeight: '900',
-                                    color: '#FFFFFF',
+                                    color: isLight ? '#0F172A' : '#FFFFFF',
                                     lineHeight: 1.2,
                                     direction: 'ltr',
                                     display: 'flex',
@@ -691,20 +711,20 @@ export default function ProductRechargeModal({
                                     gap: '4px'
                                 }}>
                                     <span>{formattedTotal}</span>
-                                    <span style={{ fontSize: '13px', color: '#D4A537', fontWeight: '800' }}>
+                                    <span style={{ fontSize: '13px', color: isLight ? '#B45309' : '#D4A537', fontWeight: '800' }}>
                                         {language === 'en' ? 'EGP' : 'Egy'}
                                     </span>
                                 </div>
 
                                 <div style={{
                                     marginTop: '4px',
-                                    background: 'rgba(34, 197, 94, 0.12)',
-                                    border: '1px solid rgba(34, 197, 94, 0.35)',
+                                    background: isLight ? '#DCFCE7' : 'rgba(34, 197, 94, 0.12)',
+                                    border: isLight ? '1px solid #86EFAC' : '1px solid rgba(34, 197, 94, 0.35)',
                                     borderRadius: '6px',
                                     padding: '1px 8px',
                                     fontSize: '11px',
                                     fontWeight: '800',
-                                    color: '#4ADE80',
+                                    color: isLight ? '#15803D' : '#4ADE80',
                                     direction: 'ltr'
                                 }}>
                                     {approxUsd} $
@@ -714,8 +734,8 @@ export default function ProductRechargeModal({
 
                         {/* Player ID / معرف المستخدم Input Card */}
                         <div style={{
-                            background: 'rgba(18, 17, 14, 0.95)',
-                            border: '1px solid rgba(212, 165, 55, 0.25)',
+                            background: isLight ? '#F8FAFC' : 'rgba(18, 17, 14, 0.95)',
+                            border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.25)',
                             borderRadius: '16px',
                             padding: '12px 14px',
                             marginBottom: '16px'
@@ -726,7 +746,7 @@ export default function ProductRechargeModal({
                                 gap: '6px',
                                 fontSize: '12.5px',
                                 fontWeight: '800',
-                                color: '#CBD5E1',
+                                color: isLight ? '#334155' : '#CBD5E1',
                                 marginBottom: '8px'
                             }}>
                                 <User size={15} color="#D4A537" />
@@ -746,11 +766,11 @@ export default function ProductRechargeModal({
                                     style={{
                                         width: '100%',
                                         boxSizing: 'border-box',
-                                        background: '#07070A',
-                                        border: '1.5px solid rgba(255, 255, 255, 0.1)',
+                                        background: isLight ? '#FFFFFF' : '#07070A',
+                                        border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(255, 255, 255, 0.1)',
                                         borderRadius: '12px',
                                         padding: isRtl ? '11px 40px 11px 14px' : '11px 14px 11px 40px',
-                                        color: '#FFFFFF',
+                                        color: isLight ? '#0F172A' : '#FFFFFF',
                                         fontSize: '14px',
                                         fontWeight: '700',
                                         outline: 'none',
@@ -762,13 +782,13 @@ export default function ProductRechargeModal({
                                         e.currentTarget.style.boxShadow = '0 0 12px rgba(212, 165, 55, 0.25)';
                                     }}
                                     onBlur={(e) => {
-                                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                                        e.currentTarget.style.borderColor = isLight ? '#CBD5E1' : 'rgba(255, 255, 255, 0.1)';
                                         e.currentTarget.style.boxShadow = 'none';
                                     }}
                                 />
                                 <User
                                     size={17}
-                                    color="#64748B"
+                                    color={isLight ? '#94A3B8' : '#64748B'}
                                     style={{
                                         position: 'absolute',
                                         right: isRtl ? '12px' : 'auto',
@@ -786,7 +806,7 @@ export default function ProductRechargeModal({
                             {/* Server ID if applicable */}
                             {product.has_server_id && (
                                 <div style={{ marginTop: '10px' }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '800', color: isLight ? '#334155' : '#CBD5E1', marginBottom: '6px' }}>
                                         <Server size={14} color="#D4A537" />
                                         <span>{product.server_id_label || t('server', 'رقم السيرفر (Zone ID)')}</span>
                                     </label>
@@ -802,11 +822,11 @@ export default function ProductRechargeModal({
                                         style={{
                                             width: '100%',
                                             boxSizing: 'border-box',
-                                            background: '#07070A',
-                                            border: '1px solid rgba(212, 165, 55, 0.3)',
+                                            background: isLight ? '#FFFFFF' : '#07070A',
+                                            border: isLight ? '1.5px solid #CBD5E1' : '1px solid rgba(212, 165, 55, 0.3)',
                                             borderRadius: '12px',
                                             padding: '11px 14px',
-                                            color: '#FFFFFF',
+                                            color: isLight ? '#0F172A' : '#FFFFFF',
                                             fontSize: '14px',
                                             fontWeight: '700',
                                             outline: 'none',
@@ -824,7 +844,7 @@ export default function ProductRechargeModal({
                             {/* Account Region if applicable */}
                             {product.requires_account_region && (
                                 <div style={{ marginTop: '10px' }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '800', color: isLight ? '#334155' : '#CBD5E1', marginBottom: '6px' }}>
                                         <Globe size={14} color="#D4A537" />
                                         <span>{t('region', 'منطقة / سيرفر الحساب')}</span>
                                     </label>
@@ -837,11 +857,11 @@ export default function ProductRechargeModal({
                                         style={{
                                             width: '100%',
                                             boxSizing: 'border-box',
-                                            background: '#07070A',
-                                            border: '1px solid rgba(212, 165, 55, 0.3)',
+                                            background: isLight ? '#FFFFFF' : '#07070A',
+                                            border: isLight ? '1.5px solid #CBD5E1' : '1px solid rgba(212, 165, 55, 0.3)',
                                             borderRadius: '12px',
                                             padding: '11px 14px',
-                                            color: '#FFFFFF',
+                                            color: isLight ? '#0F172A' : '#FFFFFF',
                                             fontSize: '14px',
                                             fontWeight: '700',
                                             outline: 'none',
@@ -899,10 +919,10 @@ export default function ProductRechargeModal({
                                 type="button"
                                 onClick={onClose}
                                 style={{
-                                    width: '100px',
-                                    background: 'rgba(255, 255, 255, 0.06)',
-                                    color: '#E2E8F0',
-                                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                                    width: '105px',
+                                    background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.08)',
+                                    color: isLight ? '#334155' : '#F8FAFC',
+                                    border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(255, 255, 255, 0.2)',
                                     borderRadius: '14px',
                                     padding: '13px 16px',
                                     fontSize: '14px',
@@ -910,7 +930,15 @@ export default function ProductRechargeModal({
                                     cursor: 'pointer',
                                     transition: 'all 0.2s',
                                     fontFamily: 'var(--font-cairo)',
-                                    textAlign: 'center'
+                                    textAlign: 'center',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = isLight ? '#E2E8F0' : 'rgba(255, 255, 255, 0.14)';
+                                    e.currentTarget.style.color = isLight ? '#0F172A' : '#FFFFFF';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.08)';
+                                    e.currentTarget.style.color = isLight ? '#334155' : '#F8FAFC';
                                 }}
                             >
                                 {t('cancel', 'إلغاء')}

@@ -132,20 +132,20 @@ export default function OrderDetailPage() {
         <MainLayout>
             {/* Header & Breadcrumb */}
             <div style={{ marginBottom: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '13px', color: '#8E8E98' }}>
-                    <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>{t('home', 'الرئيسية')}</Link>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '13px', color: isLight ? '#64748B' : '#8E8E98' }}>
+                    <Link to="/" style={{ color: isLight ? '#B45309' : '#D4A537', textDecoration: 'none' }}>{t('home', 'الرئيسية')}</Link>
                     <span>/</span>
-                    <Link to="/orders" style={{ color: '#D4A537', textDecoration: 'none' }}>{t('myOrders', 'طلباتي')}</Link>
+                    <Link to="/orders" style={{ color: isLight ? '#B45309' : '#D4A537', textDecoration: 'none' }}>{t('myOrders', 'طلباتي')}</Link>
                     <span>/</span>
-                    <span style={{ color: '#CBD5E1' }}>{t('order', 'طلب')} {orderPublicId}</span>
+                    <span style={{ color: isLight ? '#334155' : '#CBD5E1' }}>{t('order', 'طلب')} {orderPublicId}</span>
                 </div>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
                     <div>
-                        <h1 style={{ margin: '0 0 4px', fontSize: '26px', fontWeight: '900', color: '#FFFFFF' }}>
+                        <h1 style={{ margin: '0 0 4px', fontSize: '26px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                             {t('rechargeOrder', 'طلب شحن')} {orderPublicId}
                         </h1>
-                        <span style={{ fontSize: '13px', color: '#9E9EA8' }}>
+                        <span style={{ fontSize: '13px', color: isLight ? '#475569' : '#CBD5E1' }}>
                             {t('createdAt', 'تاريخ الإنشاء')}: {order.created_at || t('now', 'الآن')}
                         </span>
                     </div>

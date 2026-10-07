@@ -39,8 +39,8 @@
 
     /* ── Text ── */
     --text-primary: #FFFFFF;
-    --text-secondary: #A0A0B0;
-    --text-muted: #5A5A6A;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
     --text-gold: #F8E8B8;
     --text-gold-bright: #F5D061;
 
@@ -98,7 +98,7 @@ html.light,
     --border-glow: rgba(212, 165, 55, 0.75);
     --text-primary: #0f172a;
     --text-secondary: #334155;
-    --text-muted: #64748b;
+    --text-muted: #475569;
     --text-gold: #9a7210;
     --text-gold-bright: #b8860b;
 

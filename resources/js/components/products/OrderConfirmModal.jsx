@@ -5,6 +5,7 @@ import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 import { formatImageUrl } from '../../utils/imageHelper';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function OrderConfirmModal({
     isOpen,
@@ -24,6 +25,8 @@ export default function OrderConfirmModal({
     if (!product) return null;
 
     const { t, isRtl, language } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
 
     const unitPrice = tier
         ? Number(tier.price_egp || tier.price || tier.final_price || 0)
@@ -49,8 +52,8 @@ export default function OrderConfirmModal({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 {/* Product & Package Summary */}
                 <div style={{
-                    background: 'rgba(26, 26, 36, 0.8)',
-                    border: '1px solid rgba(212, 165, 55, 0.2)',
+                    background: isLight ? '#F8FAFC' : 'rgba(26, 26, 36, 0.8)',
+                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.2)',
                     borderRadius: '16px',
                     padding: '16px',
                     display: 'flex',
@@ -61,7 +64,8 @@ export default function OrderConfirmModal({
                         width: '50px',
                         height: '50px',
                         borderRadius: '12px',
-                        background: '#121218',
+                        background: isLight ? '#FFFFFF' : '#121218',
+                        border: isLight ? '1px solid #E2E8F0' : 'none',
                         overflow: 'hidden',
                         display: 'flex',
                         alignItems: 'center',
@@ -82,10 +86,10 @@ export default function OrderConfirmModal({
                         })()}
                     </div>
                     <div style={{ flex: 1 }}>
-                        <h4 style={{ margin: '0 0 2px', fontSize: '15px', fontWeight: '800', color: '#FFFFFF' }}>
+                        <h4 style={{ margin: '0 0 2px', fontSize: '15px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                             {product.name}
                         </h4>
-                        <span style={{ fontSize: '13px', color: '#D4A537', fontWeight: '700' }}>
+                        <span style={{ fontSize: '13px', color: isLight ? '#B45309' : '#D4A537', fontWeight: '700' }}>
                             {tier ? `${t('package', 'الباقة')}: ${tier.name}` : `${t('amount', 'السعر')}: ${unitPrice} ${currencyLabel}`} {quantity > 1 ? `(${t('quantity', 'الكمية')}: ${quantity})` : ''}
                         </span>
                     </div>
@@ -93,7 +97,8 @@ export default function OrderConfirmModal({
 
                 {/* Player Credentials Details */}
                 <div style={{
-                    background: 'rgba(18, 18, 24, 0.6)',
+                    background: isLight ? '#F8FAFC' : 'rgba(18, 18, 24, 0.6)',
+                    border: isLight ? '1px solid #E2E8F0' : 'none',
                     borderRadius: '14px',
                     padding: '14px',
                     display: 'flex',
@@ -103,44 +108,48 @@ export default function OrderConfirmModal({
                 }}>
                     {playerId && (
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#8E8E98' }}>{product.player_id_label || t('playerIdentifier', 'معرف اللاعب / ID')}:</span>
-                            <strong style={{ color: '#FFFFFF', letterSpacing: '0.5px' }}>{playerId}</strong>
+                            <span style={{ color: isLight ? '#64748B' : '#8E8E98' }}>{product.player_id_label || t('playerIdentifier', 'معرف اللاعب / ID')}:</span>
+                            <strong style={{ color: isLight ? '#0F172A' : '#FFFFFF', letterSpacing: '0.5px' }}>{playerId}</strong>
                         </div>
                     )}
 
                     {serverId && (
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#8E8E98' }}>{product.server_id_label || t('server', 'المنطقة / السيرفر')}:</span>
-                            <strong style={{ color: '#FFFFFF' }}>{serverId}</strong>
+                            <span style={{ color: isLight ? '#64748B' : '#8E8E98' }}>{product.server_id_label || t('server', 'المنطقة / السيرفر')}:</span>
+                            <strong style={{ color: isLight ? '#0F172A' : '#FFFFFF' }}>{serverId}</strong>
                         </div>
                     )}
 
                     {accountRegion && (
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#8E8E98' }}>{t('region', 'دولة الحساب')}:</span>
-                            <strong style={{ color: '#FFFFFF' }}>{accountRegion}</strong>
+                            <span style={{ color: isLight ? '#64748B' : '#8E8E98' }}>{t('region', 'دولة الحساب')}:</span>
+                            <strong style={{ color: isLight ? '#0F172A' : '#FFFFFF' }}>{accountRegion}</strong>
                         </div>
                     )}
 
                     <div style={{
-                        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                        borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                         paddingTop: '8px',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'baseline',
                     }}>
-                        <span style={{ color: '#CBD5E1', fontWeight: '700' }}>{t('totalDue', 'إجمالي المبلغ المطلوب')}:</span>
+                        <span style={{ color: isLight ? '#334155' : '#CBD5E1', fontWeight: '700' }}>{t('totalDue', 'إجمالي المبلغ المطلوب')}:</span>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                            <strong style={{ fontSize: '18px', color: '#D4A537' }}>{formattedTotal}</strong>
-                            <span style={{ fontSize: '12px', color: '#D4A537' }}>{currencyLabel}</span>
+                            <strong style={{ fontSize: '18px', color: isLight ? '#B45309' : '#D4A537' }}>{formattedTotal}</strong>
+                            <span style={{ fontSize: '12px', color: isLight ? '#B45309' : '#D4A537', fontWeight: '800' }}>{currencyLabel}</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Wallet Balance Status */}
                 <div style={{
-                    background: hasEnoughBalance ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.12)',
-                    border: `1px solid ${hasEnoughBalance ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                    background: hasEnoughBalance
+                        ? (isLight ? '#DCFCE7' : 'rgba(34, 197, 94, 0.1)')
+                        : (isLight ? '#FEE2E2' : 'rgba(239, 68, 68, 0.12)'),
+                    border: `1px solid ${hasEnoughBalance
+                        ? (isLight ? '#86EFAC' : 'rgba(34, 197, 94, 0.3)')
+                        : (isLight ? '#FCA5A5' : 'rgba(239, 68, 68, 0.3)')}`,
                     borderRadius: '14px',
                     padding: '12px 14px',
                     display: 'flex',
@@ -149,10 +158,12 @@ export default function OrderConfirmModal({
                     fontSize: '13px',
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Wallet size={18} color={hasEnoughBalance ? '#22C55E' : '#EF4444'} />
-                        <span style={{ color: '#E2E8F0' }}>{t('walletBalance', 'رصيد محفظتك الحالي')}:</span>
+                        <Wallet size={18} color={hasEnoughBalance ? (isLight ? '#15803D' : '#22C55E') : '#EF4444'} />
+                        <span style={{ color: isLight ? (hasEnoughBalance ? '#14532D' : '#7F1D1D') : '#E2E8F0', fontWeight: '700' }}>
+                            {t('walletBalance', 'رصيد محفظتك الحالي')}:
+                        </span>
                     </div>
-                    <strong style={{ color: hasEnoughBalance ? '#4ADE80' : '#F87171' }}>
+                    <strong style={{ color: hasEnoughBalance ? (isLight ? '#15803D' : '#4ADE80') : (isLight ? '#DC2626' : '#F87171') }}>
                         {formattedBalance} {currencyLabel}
                     </strong>
                 </div>
@@ -160,15 +171,15 @@ export default function OrderConfirmModal({
                 {/* Insufficient Balance Notice */}
                 {!hasEnoughBalance && (
                     <div style={{
-                        background: 'rgba(239, 68, 68, 0.15)',
-                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        background: isLight ? '#FEF2F2' : 'rgba(239, 68, 68, 0.15)',
+                        border: isLight ? '1px solid #FECACA' : '1px solid rgba(239, 68, 68, 0.4)',
                         borderRadius: '12px',
                         padding: '12px',
                         display: 'flex',
                         alignItems: 'flex-start',
                         gap: '10px',
                         fontSize: '13px',
-                        color: '#FCA5A5',
+                        color: isLight ? '#991B1B' : '#FCA5A5',
                     }}>
                         <AlertCircle size={20} style={{ flexShrink: 0, marginTop: '2px' }} />
                         <div>
@@ -207,15 +218,31 @@ export default function OrderConfirmModal({
                         </Link>
                     )}
 
-                    <Button
-                        variant="ghost"
-                        size="lg"
+                    <button
+                        type="button"
                         disabled={loading}
                         onClick={onClose}
-                        style={{ color: '#8E8E98' }}
+                        style={{
+                            background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.08)',
+                            color: isLight ? '#334155' : '#F8FAFC',
+                            border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(255, 255, 255, 0.2)',
+                            borderRadius: '12px',
+                            padding: '12px 20px',
+                            fontWeight: '800',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            fontFamily: 'var(--font-cairo)',
+                            transition: 'all 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = isLight ? '#E2E8F0' : 'rgba(255, 255, 255, 0.15)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.08)';
+                        }}
                     >
                         {t('cancel', 'إلغاء')}
-                    </Button>
+                    </button>
                 </div>
             </div>
         </Modal>

@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Calendar, Mail, User, Copy, Check, Gamepad2 } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function OrderCard({ order }) {
     const { t, isRtl, language } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const [copied, setCopied] = useState(false);
 
     if (!order) return null;
@@ -60,8 +63,8 @@ export default function OrderCard({ order }) {
     return (
         <div
             style={{
-                background: 'var(--bg-card, rgba(26, 26, 36, 0.9))',
-                border: '1px solid var(--border-medium, rgba(255, 255, 255, 0.08))',
+                background: isLight ? '#FFFFFF' : 'var(--bg-card, rgba(26, 26, 36, 0.9))',
+                border: isLight ? '1px solid #E2E8F0' : '1px solid var(--border-medium, rgba(255, 255, 255, 0.08))',
                 borderRadius: '20px',
                 padding: '16px 18px',
                 display: 'flex',
@@ -70,7 +73,7 @@ export default function OrderCard({ order }) {
                 transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                 boxSizing: 'border-box',
                 width: '100%',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                boxShadow: isLight ? '0 4px 16px rgba(0, 0, 0, 0.04)' : '0 4px 20px rgba(0, 0, 0, 0.15)',
             }}
         >
             {/* Top Row: Price Pill on Left, Product & ID & Status on Right */}
@@ -82,17 +85,17 @@ export default function OrderCard({ order }) {
             }}>
                 {/* Price Box */}
                 <div style={{
-                    background: 'rgba(56, 189, 248, 0.12)',
-                    border: '1px solid rgba(56, 189, 248, 0.3)',
+                    background: isLight ? '#E0F2FE' : 'rgba(56, 189, 248, 0.12)',
+                    border: isLight ? '1px solid #BAE6FD' : '1px solid rgba(56, 189, 248, 0.3)',
                     borderRadius: '14px',
                     padding: '8px 14px',
                     textAlign: 'center',
                     flexShrink: 0,
                 }}>
-                    <div style={{ fontSize: '11px', color: 'var(--text-secondary, #94a3b8)', fontWeight: '700' }}>
+                    <div style={{ fontSize: '11px', color: isLight ? '#0369A1' : '#CBD5E1', fontWeight: '800' }}>
                         {t('value', 'القيمة')}
                     </div>
-                    <div style={{ fontSize: '14px', fontWeight: '900', color: '#38bdf8' }}>
+                    <div style={{ fontSize: '14px', fontWeight: '900', color: isLight ? '#0284C7' : '#38bdf8' }}>
                         {language === 'en' ? 'EGP' : 'ج.م'} {amount}
                     </div>
                 </div>
@@ -171,7 +174,7 @@ export default function OrderCard({ order }) {
                             margin: 0,
                             fontSize: '16px',
                             fontWeight: '800',
-                            color: 'var(--text-primary, #ffffff)',
+                            color: isLight ? '#0F172A' : '#ffffff',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -186,8 +189,8 @@ export default function OrderCard({ order }) {
                         width: '52px',
                         height: '52px',
                         borderRadius: '50%',
-                        background: 'var(--bg-elevated, #1a1a24)',
-                        border: '2px solid var(--gold-400, #D4A537)',
+                        background: isLight ? '#FFFFFF' : '#1a1a24',
+                        border: '2px solid #D4A537',
                         overflow: 'hidden',
                         flexShrink: 0,
                         display: 'flex',
@@ -211,33 +214,34 @@ export default function OrderCard({ order }) {
             {/* Date & User Info Badges */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <div style={{
-                    background: 'var(--bg-elevated, rgba(255, 255, 255, 0.04))',
-                    border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.05))',
+                    background: isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.04)',
+                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                     borderRadius: '10px',
                     padding: '6px 12px',
                     fontSize: '12px',
-                    color: 'var(--text-secondary, #94a3b8)',
+                    color: isLight ? '#334155' : '#CBD5E1',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
+                    fontWeight: '600',
                 }}>
-                    <Calendar size={14} color="var(--gold-400, #D4A537)" />
+                    <Calendar size={14} color="#D4A537" />
                     <span>{formattedDate}</span>
                 </div>
 
                 {order.user?.email && (
                     <div style={{
-                        background: 'var(--bg-elevated, rgba(255, 255, 255, 0.04))',
-                        border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.05))',
+                        background: isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.04)',
+                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                         borderRadius: '10px',
                         padding: '6px 12px',
                         fontSize: '12px',
-                        color: 'var(--text-secondary, #94a3b8)',
+                        color: isLight ? '#334155' : '#CBD5E1',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
                     }}>
-                        <Mail size={14} color="#38bdf8" />
+                        <Mail size={14} color={isLight ? '#0284C7' : '#38bdf8'} />
                         <span style={{ fontFamily: 'monospace' }}>{order.user.email}</span>
                     </div>
                 )}
@@ -246,21 +250,21 @@ export default function OrderCard({ order }) {
             {/* User / Player ID Box */}
             {(order.player_id || order.account_id || order.server_id) && (
                 <div style={{
-                    background: 'var(--bg-elevated, rgba(255, 255, 255, 0.03))',
-                    border: '1px solid var(--border-medium, rgba(255, 255, 255, 0.08))',
+                    background: isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.03)',
+                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                     borderRadius: '12px',
                     padding: '10px 14px',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '2px',
                 }}>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted, #94a3b8)' }}>
+                    <span style={{ fontSize: '11px', color: isLight ? '#64748B' : '#CBD5E1', fontWeight: '700' }}>
                         {t('playerOrUserId', 'معرف المستخدم')}
                     </span>
                     <span style={{
                         fontSize: '15px',
                         fontWeight: '800',
-                        color: 'var(--text-primary, #ffffff)',
+                        color: isLight ? '#0F172A' : '#ffffff',
                         fontFamily: 'monospace',
                         letterSpacing: '0.5px',
                     }}>

@@ -37,7 +37,7 @@ export default function Modal({
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: 'clamp(8px, 3vw, 20px)',
-                backgroundColor: isLight ? 'rgba(15, 23, 42, 0.65)' : 'rgba(0, 0, 0, 0.8)',
+                backgroundColor: isLight ? 'rgba(15, 23, 42, 0.35)' : 'rgba(0, 0, 0, 0.8)',
                 backdropFilter: 'blur(8px)',
                 WebkitBackdropFilter: 'blur(8px)',
                 animation: 'fadeIn 0.2s ease-out',
