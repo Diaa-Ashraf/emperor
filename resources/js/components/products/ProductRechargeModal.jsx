@@ -170,6 +170,10 @@ export default function ProductRechargeModal({
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
+            const firstErr = Object.values(newErrors)[0];
+            if (firstErr) {
+                toastError(firstErr);
+            }
             return;
         }
 

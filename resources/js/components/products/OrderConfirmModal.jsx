@@ -41,6 +41,7 @@ export default function OrderConfirmModal({
             onClose={onClose}
             title={t('orderConfirmation', 'تأكيد طلب الشحن الفوري')}
             maxWidth="480px"
+            zIndex={10060}
         >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 {/* Product & Package Summary */}

@@ -346,12 +346,10 @@ export default function CategoryPage() {
                         className="no-scrollbar"
                         style={{
                             display: 'flex',
+                            flexWrap: 'wrap',
                             gap: '8px',
-                            overflowX: 'auto',
-                            WebkitOverflowScrolling: 'touch',
                             paddingBottom: '10px',
                             marginBottom: '16px',
-                            scrollbarWidth: 'none',
                             maxWidth: '100%',
                             boxSizing: 'border-box'
                         }}

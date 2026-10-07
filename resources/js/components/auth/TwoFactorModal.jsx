@@ -260,40 +260,53 @@ export default function TwoFactorModal({ isOpen, onClose, isEnabled, onStatusCha
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    gap: '16px',
+                                    gap: '14px',
                                     background: '#0D0D0F',
                                     border: '1px solid rgba(255, 255, 255, 0.1)',
                                     borderRadius: '16px',
-                                    padding: '20px',
-                                    marginBottom: '20px',
+                                    padding: 'clamp(12px, 3vw, 18px)',
+                                    marginBottom: '18px',
+                                    maxWidth: '100%',
+                                    boxSizing: 'border-box',
+                                    overflow: 'hidden',
                                 }}>
                                     {/* QR Code SVG */}
                                     {setupData.qr_code_svg ? (
                                         <div
                                             style={{
                                                 background: '#FFFFFF',
-                                                padding: '12px',
+                                                padding: '8px',
                                                 borderRadius: '12px',
                                                 boxShadow: '0 0 20px rgba(212, 165, 55, 0.2)',
+                                                maxWidth: '100%',
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                boxSizing: 'border-box',
+                                                overflow: 'hidden'
                                             }}
-                                            dangerouslySetInnerHTML={{ __html: setupData.qr_code_svg }}
+                                            dangerouslySetInnerHTML={{
+                                                __html: setupData.qr_code_svg.replace(/<svg\b([^>]*)>/i, (match, attrs) => {
+                                                    return `<svg ${attrs} style="max-width: clamp(140px, 44vw, 190px); height: auto; display: block; margin: 0 auto;">`;
+                                                })
+                                            }}
                                         />
                                     ) : (
                                         <div style={{
-                                            width: '180px',
-                                            height: '180px',
+                                            width: 'clamp(140px, 44vw, 180px)',
+                                            height: 'clamp(140px, 44vw, 180px)',
                                             background: '#1A1A22',
                                             borderRadius: '12px',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                         }}>
-                                            <QrCode size={48} color="#D4A537" />
+                                            <QrCode size={40} color="#D4A537" />
                                         </div>
                                     )}
 
                                     {/* Secret Key Display & Copy */}
-                                    <div style={{ width: '100%', textAlign: 'center' }}>
+                                    <div style={{ width: '100%', textAlign: 'center', maxWidth: '100%', boxSizing: 'border-box' }}>
                                         <span style={{ fontSize: '11px', color: '#9E9EA8', display: 'block', marginBottom: '6px' }}>
                                             المفتاح السري للإدخال اليدوي:
                                         </span>
@@ -301,18 +314,23 @@ export default function TwoFactorModal({ isOpen, onClose, isEnabled, onStatusCha
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            gap: '8px',
+                                            gap: '6px',
                                             background: 'rgba(255, 255, 255, 0.05)',
                                             border: '1px dashed rgba(212, 165, 55, 0.4)',
-                                            padding: '8px 14px',
+                                            padding: '6px 10px',
                                             borderRadius: '10px',
+                                            maxWidth: '100%',
+                                            boxSizing: 'border-box',
                                         }}>
                                             <span style={{
                                                 fontFamily: 'monospace',
-                                                fontSize: '14px',
+                                                fontSize: 'clamp(10.5px, 2.8vw, 13px)',
                                                 fontWeight: '800',
                                                 color: '#D4A537',
-                                                letterSpacing: '1px',
+                                                letterSpacing: '0.5px',
+                                                wordBreak: 'break-all',
+                                                lineHeight: 1.3,
+                                                textAlign: 'center',
                                             }}>
                                                 {setupData.secret}
                                             </span>
@@ -325,6 +343,7 @@ export default function TwoFactorModal({ isOpen, onClose, isEnabled, onStatusCha
                                                     color: '#D4A537',
                                                     cursor: 'pointer',
                                                     padding: '2px',
+                                                    flexShrink: 0,
                                                 }}
                                                 title="نسخ المفتاح"
                                             >
@@ -336,7 +355,7 @@ export default function TwoFactorModal({ isOpen, onClose, isEnabled, onStatusCha
 
                                 {/* Step 2: Enter 6-digit code */}
                                 <form onSubmit={handleVerifySubmit}>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#FFFFFF', marginBottom: '12px', textAlign: 'center' }}>
+                                    <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', color: '#FFFFFF', marginBottom: '12px', textAlign: 'center', lineHeight: '1.4' }}>
                                         أدخل رمز التحقق (6 أرقام) من تطبيق Authenticator:
                                     </label>
 
@@ -345,9 +364,12 @@ export default function TwoFactorModal({ isOpen, onClose, isEnabled, onStatusCha
                                         style={{
                                             display: 'flex',
                                             justifyContent: 'center',
-                                            gap: '8px',
+                                            gap: 'clamp(4px, 1.8vw, 8px)',
                                             direction: 'ltr',
-                                            marginBottom: '24px',
+                                            marginBottom: '20px',
+                                            maxWidth: '100%',
+                                            boxSizing: 'border-box',
+                                            padding: '0 2px'
                                         }}
                                     >
                                         {code.map((digit, i) => (
@@ -361,30 +383,33 @@ export default function TwoFactorModal({ isOpen, onClose, isEnabled, onStatusCha
                                                 onChange={(e) => handleCodeChange(i, e.target.value)}
                                                 onKeyDown={(e) => handleKeyDown(i, e)}
                                                 style={{
-                                                    width: '44px',
-                                                    height: '52px',
-                                                    borderRadius: '12px',
+                                                    width: 'clamp(32px, 11vw, 44px)',
+                                                    height: 'clamp(42px, 13vw, 52px)',
+                                                    borderRadius: '10px',
                                                     border: '1px solid rgba(212, 165, 55, 0.3)',
                                                     background: 'rgba(13, 13, 16, 0.8)',
                                                     color: '#FFFFFF',
-                                                    fontSize: '22px',
+                                                    fontSize: 'clamp(16px, 4.5vw, 22px)',
                                                     fontWeight: '900',
                                                     textAlign: 'center',
                                                     outline: 'none',
                                                     boxShadow: digit ? '0 0 10px rgba(212, 165, 55, 0.3)' : 'none',
                                                     transition: 'all 0.2s ease',
+                                                    flexShrink: 1,
+                                                    minWidth: 0,
+                                                    boxSizing: 'border-box',
                                                 }}
                                             />
                                         ))}
                                     </div>
 
-                                    <div style={{ display: 'flex', gap: '12px' }}>
+                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                         <Button
                                             type="submit"
                                             variant="primary"
                                             isLoading={verifying}
                                             disabled={code.join('').length !== 6}
-                                            style={{ flex: 1 }}
+                                            style={{ flex: '1 1 140px' }}
                                         >
                                             تأكيد وتفعيل المصادقة
                                         </Button>
@@ -392,6 +417,7 @@ export default function TwoFactorModal({ isOpen, onClose, isEnabled, onStatusCha
                                             type="button"
                                             variant="secondary"
                                             onClick={onClose}
+                                            style={{ flex: '1 1 80px' }}
                                         >
                                             إلغاء
                                         </Button>

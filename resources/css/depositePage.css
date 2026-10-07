@@ -94,20 +94,14 @@
    ══════════════════════════════════════════════════════════════════════ */
 .deposit-filter-pills-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     margin-top: 20px;
     padding-top: 18px;
     border-top: 1px solid rgba(212, 165, 55, 0.2);
     position: relative;
     z-index: 2;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
     padding-bottom: 4px;
-}
-
-.deposit-filter-pills-row::-webkit-scrollbar {
-    display: none;
 }
 
 .deposit-filter-pill {

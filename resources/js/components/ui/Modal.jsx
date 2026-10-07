@@ -9,6 +9,7 @@ export default function Modal({
     children,
     footer,
     maxWidth = '520px',
+    zIndex = 10050,
 }) {
     const { theme } = useTheme();
     const isLight = theme === 'light';
@@ -31,15 +32,17 @@ export default function Modal({
             style={{
                 position: 'fixed',
                 inset: 0,
-                zIndex: 999,
+                zIndex,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '20px',
-                backgroundColor: isLight ? 'rgba(15, 23, 42, 0.65)' : 'rgba(0, 0, 0, 0.75)',
+                padding: 'clamp(8px, 3vw, 20px)',
+                backgroundColor: isLight ? 'rgba(15, 23, 42, 0.65)' : 'rgba(0, 0, 0, 0.8)',
                 backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
                 animation: 'fadeIn 0.2s ease-out',
                 direction: 'rtl',
+                boxSizing: 'border-box',
             }}
             onClick={onClose}
         >
@@ -58,6 +61,7 @@ export default function Modal({
                     overflow: 'hidden',
                     animation: 'slideIn 0.25s ease-out',
                     color: isLight ? '#0F172A' : '#FFFFFF',
+                    boxSizing: 'border-box',
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
@@ -94,7 +98,7 @@ export default function Modal({
                         </button>
                     </div>
                 )}
-                <div style={{ padding: '24px', maxHeight: '75vh', overflowY: 'auto' }}>
+                <div style={{ padding: 'clamp(12px, 3.5vw, 24px)', maxHeight: '82vh', overflowY: 'auto', boxSizing: 'border-box' }}>
                     {children}
                 </div>
                 {footer && (

@@ -561,7 +561,7 @@ export default function DepositPage() {
                             </div>
 
                             {/* Country & Currency Selector Pills */}
-                            <div className="deposit-filter-pills-row">
+                            <div className="deposit-filter-pills-row" style={{ flexWrap: 'wrap' }}>
                                 {countries.map((c) => {
                                     const active = activeCountry === c.id;
                                     return (

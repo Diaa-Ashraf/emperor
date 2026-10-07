@@ -237,30 +237,30 @@
                                     @endif
                                 </td>
                                 <td class="text-end pe-3">
-                                    <div class="btn-group btn-group-sm">
+                                    <div class="d-flex flex-wrap gap-1 justify-content-end align-items-center">
                                         <!-- Custom Pricing Matrix -->
-                                        <a href="{{ route('admin.api-clients.pricing', $client->id) }}" class="btn btn-outline-warning" title="تخصيص أسعار المنتجات">
+                                        <a href="{{ route('admin.api-clients.pricing', $client->id) }}" class="btn btn-sm btn-outline-warning text-nowrap" title="تخصيص أسعار المنتجات">
                                             <i class="ti ti-coin"></i> أسعار العميل
                                         </a>
                                         <!-- Logs -->
-                                        <a href="{{ route('admin.api-clients.logs', $client->id) }}" class="btn btn-outline-info" title="سجلات الطلبات (Logs)">
+                                        <a href="{{ route('admin.api-clients.logs', $client->id) }}" class="btn btn-sm btn-outline-info text-nowrap" title="سجلات الطلبات (Logs)">
                                             <i class="ti ti-history"></i> السجلات
                                         </a>
                                         <!-- Edit -->
-                                        <a href="{{ route('admin.api-clients.edit', $client->id) }}" class="btn btn-outline-secondary" title="تعديل">
+                                        <a href="{{ route('admin.api-clients.edit', $client->id) }}" class="btn btn-sm btn-outline-secondary" title="تعديل">
                                             <i class="ti ti-edit"></i>
                                         </a>
                                         <!-- Toggle Status -->
                                         <form action="{{ route('admin.api-clients.toggle-active', $client->id) }}" method="POST" class="d-inline" onsubmit="return confirm('هل أنت متأكد من تغيير حالة هذا العميل؟');">
                                             @csrf
-                                            <button type="submit" class="btn btn-outline-{{ $client->status->value === 'active' ? 'danger' : 'success' }}" title="{{ $client->status->value === 'active' ? 'إيقاف مؤقت' : 'تفعيل' }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-{{ $client->status->value === 'active' ? 'danger' : 'success' }}" title="{{ $client->status->value === 'active' ? 'إيقاف مؤقت' : 'تفعيل' }}">
                                                 <i class="ti ti-power"></i>
                                             </button>
                                         </form>
                                         <!-- Regenerate Keys -->
                                         <form action="{{ route('admin.api-clients.regenerate-credentials', $client->id) }}" method="POST" class="d-inline" onsubmit="return confirm('تحذير: سيتم إبطال الرمز السري الحالي فوراً وإنشاء مفاتيح جديدة للعميل. هل تود المتابعة؟');">
                                             @csrf
-                                            <button type="submit" class="btn btn-outline-danger" title="تجديد مفتاح الـ API والرمز السري">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="تجديد مفتاح الـ API والرمز السري">
                                                 <i class="ti ti-refresh"></i>
                                             </button>
                                         </form>
