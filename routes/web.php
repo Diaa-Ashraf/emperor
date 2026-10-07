@@ -6,10 +6,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Admin Authentication (Web Session)
-Route::middleware('guest')->group(function () {
-    Route::get('/admin/login', [AuthenticatedSessionController::class, 'create'])->name('login');
-    Route::post('/admin/login', [AuthenticatedSessionController::class, 'store']);
-});
+Route::get('/admin/login', [AuthenticatedSessionController::class, 'create'])->middleware('guest')->name('login');
+Route::post('/admin/login', [AuthenticatedSessionController::class, 'store']);
 
 // Admin Profile & Session Actions
 Route::middleware(['auth'])->group(function () {

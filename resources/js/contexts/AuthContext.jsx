@@ -21,6 +21,7 @@ export function AuthProvider({ children }) {
         } finally {
             localStorage.removeItem('emperor_token');
             localStorage.removeItem('emperor_user');
+            try { sessionStorage.clear(); } catch (e) {}
             setToken(null);
             setUser(null);
         }

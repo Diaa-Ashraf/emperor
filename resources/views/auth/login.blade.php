@@ -79,4 +79,12 @@
             </button>
         </div>
     </form>
+
+    <script>
+        try {
+            localStorage.removeItem('emperor_token');
+            localStorage.removeItem('emperor_user');
+            sessionStorage.clear();
+        } catch(e) {}
+    </script>
 </x-guest-layout>

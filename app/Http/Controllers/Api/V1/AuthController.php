@@ -223,11 +223,22 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout and revoke current token.
+     * Logout and revoke current token and any active web session.
      */
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        if ($request->user()) {
+            $request->user()->currentAccessToken()?->delete();
+        }
+
+        // Also terminate web session to keep SPA and Admin portal sessions synchronized
+        try {
+            \Illuminate\Support\Facades\Auth::guard('web')->logout();
+            if ($request->hasSession()) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
+        } catch (\Throwable $e) {}
 
         return $this->successResponse(null, 'تم تسجيل الخروج بنجاح');
     }

@@ -24,6 +24,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // If an existing session exists, clear it first to guarantee the submitted credentials are fully re-authenticated
+        if (Auth::guard('web')->check()) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
         $request->authenticate();
 
         $request->session()->regenerate();
@@ -37,6 +44,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        if ($user = $request->user()) {
+            $user->tokens()->delete();
+        }
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
