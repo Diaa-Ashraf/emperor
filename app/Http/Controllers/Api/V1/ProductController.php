@@ -28,33 +28,47 @@ class ProductController extends Controller
         $perPage = max(1, min($perPage, 100));
         $page = (int) ($request->input('page') ?: 1);
 
+        $hasParentId = \Illuminate\Support\Facades\Schema::hasColumn('products', 'parent_id');
+
+        $withRelations = [
+            'category:id,name,slug,type',
+            'activeTiers',
+        ];
+
+        if ($hasParentId) {
+            $withRelations['variants'] = function ($q) {
+                $q->where('is_active', true)
+                  ->with('activeTiers')
+                  ->orderBy('sort_order', 'asc');
+            };
+        }
+
+        $selectColumns = [
+            'id', 'category_id', 'name', 'slug', 'description', 'image',
+            'type', 'player_id_label', 'player_id_validation_regex',
+            'player_id_guide_image', 'has_server_id', 'server_id_label',
+            'server_options', 'requires_account_region', 'region_options',
+            'sort_order'
+        ];
+        if ($hasParentId) {
+            $selectColumns[] = 'parent_id';
+        }
+
         $query = Product::where('is_active', true)
             ->where('type', '!=', 'target')
-            ->with([
-                'category:id,name,slug,type',
-                'activeTiers',
-                'variants' => function ($q) {
-                    $q->where('is_active', true)
-                      ->with('activeTiers')
-                      ->orderBy('sort_order', 'asc');
-                }
-            ])
-            ->withCount([
+            ->with($withRelations)
+            ->select($selectColumns);
+
+        if ($hasParentId) {
+            $query->withCount([
                 'variants' => fn($q) => $q->where('is_active', true)
-            ])
-            ->select([
-                'id', 'category_id', 'parent_id', 'name', 'slug', 'description', 'image',
-                'type', 'player_id_label', 'player_id_validation_regex',
-                'player_id_guide_image', 'has_server_id', 'server_id_label',
-                'server_options', 'requires_account_region', 'region_options',
-                'sort_order'
             ]);
 
-        if ($parentId !== null && $parentId !== '') {
-            $query->where('parent_id', $parentId);
-        } elseif ($search === '') {
-            // When not searching and no parent_id specified, show only parent products
-            $query->whereNull('parent_id');
+            if ($parentId !== null && $parentId !== '') {
+                $query->where('parent_id', $parentId);
+            } elseif ($search === '') {
+                $query->whereNull('parent_id');
+            }
         }
 
         if ($catId) {
@@ -125,20 +139,30 @@ class ProductController extends Controller
      */
     public function show(string|int $id): JsonResponse
     {
-        $cacheKey = "api_product_detail_v3_{$id}";
+        $cacheKey = "api_product_detail_v4_{$id}";
         $product = Cache::remember($cacheKey, 900, function () use ($id) {
-            $query = Product::where('is_active', true)->with([
+            $hasParentId = \Illuminate\Support\Facades\Schema::hasColumn('products', 'parent_id');
+            $withRelations = [
                 'category:id,name,slug,type',
-                'parent:id,name,slug,image',
                 'activeTiers',
-                'variants' => function ($q) {
+            ];
+
+            if ($hasParentId) {
+                $withRelations['parent'] = fn($q) => $q->select(['id', 'name', 'slug', 'image']);
+                $withRelations['variants'] = function ($q) {
                     $q->where('is_active', true)
                       ->with('activeTiers')
                       ->orderBy('sort_order', 'asc');
-                }
-            ])->withCount([
-                'variants' => fn($q) => $q->where('is_active', true)
-            ]);
+                };
+            }
+
+            $query = Product::where('is_active', true)->with($withRelations);
+
+            if ($hasParentId) {
+                $query->withCount([
+                    'variants' => fn($q) => $q->where('is_active', true)
+                ]);
+            }
 
             if (is_numeric($id)) {
                 return $query->where('id', $id)->firstOrFail();

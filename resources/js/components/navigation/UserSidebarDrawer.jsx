@@ -347,8 +347,9 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             {/* Copy User ID Pill on Top Corner */}
                             <div style={{
                                 position: 'absolute',
-                                top: '8px',
+                                top: '10px',
                                 [isRtl ? 'left' : 'right']: '10px',
+                                zIndex: 2,
                             }}>
                                 <button
                                     onClick={copyUserId}
@@ -362,7 +363,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         borderRadius: '7px',
                                         padding: '2px 6px',
                                         color: isLight ? '#9A7210' : '#F5D061',
-                                        fontSize: '10px',
+                                        fontSize: '9.5px',
                                         fontWeight: '800',
                                         cursor: 'pointer',
                                     }}
@@ -373,12 +374,12 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             </div>
 
                             {/* User details row */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '10px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
                                 {/* Avatar with active status green circle */}
                                 <div style={{ position: 'relative', flexShrink: 0 }}>
                                     <div style={{
-                                        width: '42px',
-                                        height: '42px',
+                                        width: '40px',
+                                        height: '40px',
                                         borderRadius: '12px',
                                         background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
                                         border: '1.5px solid rgba(212, 165, 55, 0.8)',
@@ -386,7 +387,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         color: '#08080A',
-                                        fontSize: '17px',
+                                        fontSize: '16px',
                                         fontWeight: '900',
                                         boxShadow: '0 4px 12px rgba(212, 165, 55, 0.35)',
                                     }}>
@@ -397,8 +398,8 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         position: 'absolute',
                                         bottom: '-2px',
                                         [isRtl ? 'left' : 'right']: '-2px',
-                                        width: '11px',
-                                        height: '11px',
+                                        width: '10px',
+                                        height: '10px',
                                         borderRadius: '50%',
                                         background: '#22c55e',
                                         border: isLight ? '2px solid #ffffff' : '2px solid #101015',
@@ -406,20 +407,25 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     }} />
                                 </div>
 
-                                <div style={{ minWidth: 0 }}>
+                                <div style={{
+                                    minWidth: 0,
+                                    flex: 1,
+                                    paddingInlineEnd: '75px', // Guarantees zero overlap with the ID badge
+                                }}>
                                     <h4 style={{
                                         margin: '0 0 2px',
-                                        fontSize: '14px',
-                                        fontWeight: '900',
+                                        fontSize: '12.5px',
+                                        fontWeight: '800',
                                         color: isLight ? '#0F172A' : '#FFFFFF',
                                         whiteSpace: 'nowrap',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
+                                        lineHeight: 1.25,
                                     }}>
                                         {user?.name || 'User'}
                                     </h4>
                                     <span style={{
-                                        fontSize: '11px',
+                                        fontSize: '10.5px',
                                         fontWeight: '800',
                                         color: isLight ? '#9A7210' : '#F5D061',
                                     }}>

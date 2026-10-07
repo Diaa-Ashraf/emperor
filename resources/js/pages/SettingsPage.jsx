@@ -196,26 +196,28 @@ export default function SettingsPage() {
                         <div
                             onClick={toggleTheme}
                             style={{
-                                width: '48px',
-                                height: '26px',
-                                borderRadius: '13px',
+                                direction: 'ltr',
+                                width: '46px',
+                                height: '24px',
+                                borderRadius: '12px',
                                 background: isDarkMode ? '#f59e0b' : 'rgba(255, 255, 255, 0.2)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 padding: '2px',
                                 cursor: 'pointer',
-                                transition: 'all 0.3s ease',
+                                transition: 'background 0.25s ease',
                                 boxSizing: 'border-box',
+                                flexShrink: 0,
                             }}
                         >
                             <div style={{
-                                width: '22px',
-                                height: '22px',
+                                width: '20px',
+                                height: '20px',
                                 borderRadius: '50%',
                                 background: '#FFFFFF',
                                 transform: isDarkMode ? 'translateX(22px)' : 'translateX(0px)',
-                                transition: 'all 0.3s ease',
-                                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
+                                transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
                             }} />
                         </div>
 
@@ -257,7 +259,8 @@ export default function SettingsPage() {
                             <div
                                 onClick={() => handleToggleNotification('order_notifications')}
                                 style={{
-                                    width: '44px',
+                                    direction: 'ltr',
+                                    width: '46px',
                                     height: '24px',
                                     borderRadius: '12px',
                                     background: preferences.order_notifications ? '#f59e0b' : 'rgba(255, 255, 255, 0.15)',
@@ -265,7 +268,9 @@ export default function SettingsPage() {
                                     alignItems: 'center',
                                     padding: '2px',
                                     cursor: 'pointer',
-                                    transition: 'all 0.3s ease',
+                                    transition: 'background 0.25s ease',
+                                    boxSizing: 'border-box',
+                                    flexShrink: 0,
                                 }}
                             >
                                 <div style={{
@@ -273,8 +278,9 @@ export default function SettingsPage() {
                                     height: '20px',
                                     borderRadius: '50%',
                                     background: '#FFFFFF',
-                                    transform: preferences.order_notifications ? 'translateX(20px)' : 'translateX(0px)',
-                                    transition: 'all 0.3s ease',
+                                    transform: preferences.order_notifications ? 'translateX(22px)' : 'translateX(0px)',
+                                    transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
                                 }} />
                             </div>
                             <span style={{ fontSize: '13.5px', color: 'var(--text-primary, #cbd5e1)', fontWeight: '700' }}>
@@ -293,7 +299,8 @@ export default function SettingsPage() {
                             <div
                                 onClick={() => handleToggleNotification('balance_notifications')}
                                 style={{
-                                    width: '44px',
+                                    direction: 'ltr',
+                                    width: '46px',
                                     height: '24px',
                                     borderRadius: '12px',
                                     background: preferences.balance_notifications ? '#f59e0b' : 'rgba(255, 255, 255, 0.15)',
@@ -301,7 +308,9 @@ export default function SettingsPage() {
                                     alignItems: 'center',
                                     padding: '2px',
                                     cursor: 'pointer',
-                                    transition: 'all 0.3s ease',
+                                    transition: 'background 0.25s ease',
+                                    boxSizing: 'border-box',
+                                    flexShrink: 0,
                                 }}
                             >
                                 <div style={{
@@ -309,8 +318,9 @@ export default function SettingsPage() {
                                     height: '20px',
                                     borderRadius: '50%',
                                     background: '#FFFFFF',
-                                    transform: preferences.balance_notifications ? 'translateX(20px)' : 'translateX(0px)',
-                                    transition: 'all 0.3s ease',
+                                    transform: preferences.balance_notifications ? 'translateX(22px)' : 'translateX(0px)',
+                                    transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
                                 }} />
                             </div>
                             <span style={{ fontSize: '13.5px', color: 'var(--text-primary, #cbd5e1)', fontWeight: '700' }}>
@@ -328,7 +338,8 @@ export default function SettingsPage() {
                             <div
                                 onClick={() => handleToggleNotification('offers_notifications')}
                                 style={{
-                                    width: '44px',
+                                    direction: 'ltr',
+                                    width: '46px',
                                     height: '24px',
                                     borderRadius: '12px',
                                     background: preferences.offers_notifications ? '#f59e0b' : 'rgba(255, 255, 255, 0.15)',
@@ -336,7 +347,9 @@ export default function SettingsPage() {
                                     alignItems: 'center',
                                     padding: '2px',
                                     cursor: 'pointer',
-                                    transition: 'all 0.3s ease',
+                                    transition: 'background 0.25s ease',
+                                    boxSizing: 'border-box',
+                                    flexShrink: 0,
                                 }}
                             >
                                 <div style={{
@@ -344,8 +357,9 @@ export default function SettingsPage() {
                                     height: '20px',
                                     borderRadius: '50%',
                                     background: '#FFFFFF',
-                                    transform: preferences.offers_notifications ? 'translateX(20px)' : 'translateX(0px)',
-                                    transition: 'all 0.3s ease',
+                                    transform: preferences.offers_notifications ? 'translateX(22px)' : 'translateX(0px)',
+                                    transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
                                 }} />
                             </div>
                             <span style={{ fontSize: '13.5px', color: 'var(--text-primary, #cbd5e1)', fontWeight: '700' }}>

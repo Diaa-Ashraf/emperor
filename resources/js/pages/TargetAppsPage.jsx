@@ -11,7 +11,7 @@ import { TargetAppIconRenderer } from '../components/target/TargetAppIcons';
 import VideoBackground from '../components/home/VideoBackground';
 
 export default function TargetAppsPage() {
-    const { isRtl } = useLanguage();
+    const { isRtl, t } = useLanguage();
     const { theme } = useTheme();
     const isLight = theme === 'light';
     const navigate = useNavigate();

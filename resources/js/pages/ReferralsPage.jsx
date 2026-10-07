@@ -16,11 +16,14 @@ import {
     FileText,
     TrendingUp,
     Clock,
-    Link as LinkIcon
+    Link as LinkIcon,
+    Globe,
+    Share
 } from 'lucide-react';
 import MainLayout from '../layouts/MainLayout';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Pagination from '../components/ui/Pagination';
+import Modal from '../components/ui/Modal';
 import { referralsApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -41,6 +44,7 @@ export default function ReferralsPage() {
 
     const [copiedCode, setCopiedCode] = useState(false);
     const [copiedLink, setCopiedLink] = useState(false);
+    const [shareModalOpen, setShareModalOpen] = useState(false);
 
     useEffect(() => {
         setLoadingStats(true);
@@ -101,6 +105,10 @@ export default function ReferralsPage() {
     };
 
     const handleNativeShare = () => {
+        setShareModalOpen(true);
+    };
+
+    const handleSystemShare = () => {
         if (navigator.share) {
             navigator.share({
                 title: 'منصة إمبراطور للشحن الرقمي',
@@ -812,6 +820,188 @@ export default function ReferralsPage() {
                     <ArrowLeft size={18} />
                 </div>
             </Link>
+
+            {/* ═══ Share Modal ═══ */}
+            <Modal
+                isOpen={shareModalOpen}
+                onClose={() => setShareModalOpen(false)}
+                title={t('shareReferral', 'مشاركة رابط وكود الإحالة')}
+                maxWidth="460px"
+            >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '10px 0' }}>
+                    <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.6', textAlign: 'center' }}>
+                        {t('shareReferralDesc', 'شارك رابط أو كود دعوتك مع أصدقائك أو عبر وسائل التواصل الاجتماعي واكسب عمولة فورية على كل عملية شحن.')}
+                    </p>
+
+                    {/* Copy Link Row */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '10px 14px',
+                        borderRadius: '12px',
+                        background: 'rgba(255, 255, 255, 0.04)',
+                        border: '1px solid var(--border-medium)',
+                        gap: '10px',
+                    }}>
+                        <div style={{
+                            fontSize: '12px',
+                            color: 'var(--text-primary)',
+                            fontFamily: 'monospace',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            direction: 'ltr',
+                            flex: 1,
+                        }}>
+                            {referralLink}
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleCopyLink}
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                background: copiedLink ? 'rgba(34, 197, 94, 0.15)' : 'rgba(212, 165, 55, 0.15)',
+                                border: copiedLink ? '1px solid #22c55e' : '1px solid var(--gold-400)',
+                                color: copiedLink ? '#22c55e' : 'var(--gold-400)',
+                                borderRadius: '8px',
+                                padding: '6px 12px',
+                                fontSize: '12px',
+                                fontWeight: '800',
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                            }}
+                        >
+                            {copiedLink ? <Check size={14} /> : <Copy size={14} />}
+                            <span>{copiedLink ? t('copied', 'تم النسخ!') : t('copy', 'نسخ')}</span>
+                        </button>
+                    </div>
+
+                    {/* Social Buttons Grid */}
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(2, 1fr)',
+                        gap: '10px',
+                    }}>
+                        <button
+                            type="button"
+                            onClick={handleWhatsAppShare}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                padding: '12px 14px',
+                                borderRadius: '12px',
+                                background: '#22c55e',
+                                color: '#FFFFFF',
+                                border: 'none',
+                                fontSize: '13px',
+                                fontWeight: '800',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 12px rgba(34, 197, 94, 0.25)',
+                            }}
+                        >
+                            <MessageCircle size={17} />
+                            <span>واتساب</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={handleTelegramShare}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                padding: '12px 14px',
+                                borderRadius: '12px',
+                                background: '#0284c7',
+                                color: '#FFFFFF',
+                                border: 'none',
+                                fontSize: '13px',
+                                fontWeight: '800',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)',
+                            }}
+                        >
+                            <Send size={17} />
+                            <span>تيليجرام</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`, '_blank')}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                padding: '12px 14px',
+                                borderRadius: '12px',
+                                background: '#1877F2',
+                                color: '#FFFFFF',
+                                border: 'none',
+                                fontSize: '13px',
+                                fontWeight: '800',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            <Globe size={17} />
+                            <span>فيسبوك</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}`, '_blank')}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                padding: '12px 14px',
+                                borderRadius: '12px',
+                                background: '#000000',
+                                color: '#FFFFFF',
+                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                fontSize: '13px',
+                                fontWeight: '800',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            <Share size={17} />
+                            <span>منصة X</span>
+                        </button>
+                    </div>
+
+                    {/* System Share (if available on device) */}
+                    {typeof navigator !== 'undefined' && navigator.share && (
+                        <button
+                            type="button"
+                            onClick={handleSystemShare}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                padding: '11px 16px',
+                                borderRadius: '12px',
+                                background: 'rgba(212, 165, 55, 0.14)',
+                                border: '1.5px solid var(--gold-400)',
+                                color: 'var(--gold-400)',
+                                fontSize: '13px',
+                                fontWeight: '800',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            <Share2 size={16} />
+                            <span>{t('systemShare', 'مشاركة عبر تطبيقات الجهاز')}</span>
+                        </button>
+                    )}
+                </div>
+            </Modal>
         </MainLayout>
     );
 }
