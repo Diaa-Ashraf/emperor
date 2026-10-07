@@ -67,7 +67,7 @@ class OrderController extends Controller
         $user = $request->user();
 
         $query = Order::where('user_id', $user->id)
-            ->with(['product', 'tier'])
+            ->with(['product', 'tier', 'vouchers'])
             ->select([
                 'id', 'public_id', 'user_id', 'product_id', 'product_tier_id',
                 'quantity', 'unit_price', 'total_amount', 'currency',
@@ -81,7 +81,10 @@ class OrderController extends Controller
 
         $orders = $query->latest('id')->paginate(15);
 
-        return $this->paginatedResponse($orders, 'تم جلب سجل طلباتك بنجاح');
+        return $this->paginatedResponse(
+            $orders->through(fn($order) => new OrderResource($order)),
+            'تم جلب سجل طلباتك بنجاح'
+        );
     }
 
     /**
@@ -91,9 +94,18 @@ class OrderController extends Controller
     {
         $user = $request->user();
 
-        $order = Order::where('user_id', $user->id)
-            ->with(['product', 'tier'])
-            ->where(function ($q) use ($id) {
+        $query = Order::with(['product', 'tier', 'vouchers']);
+
+        // Admins can inspect any order directly, normal users only their own
+        $isAdmin = (method_exists($user, 'hasRole') && $user->hasRole('admin'))
+            || ($user->is_admin ?? false)
+            || (($user->role ?? null) === 'admin');
+
+        if (!$isAdmin) {
+            $query->where('user_id', $user->id);
+        }
+
+        $order = $query->where(function ($q) use ($id) {
                 $q->where('public_id', $id)->orWhere('id', $id);
             })
             ->firstOrFail();

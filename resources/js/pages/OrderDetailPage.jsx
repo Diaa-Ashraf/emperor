@@ -304,6 +304,109 @@ export default function OrderDetailPage() {
                         </div>
                     </div>
 
+                    {/* Vouchers / Digital Codes Delivered */}
+                    {order.vouchers && order.vouchers.length > 0 && (
+                        <div style={{
+                            background: 'linear-gradient(135deg, rgba(212, 165, 55, 0.15) 0%, rgba(26, 26, 36, 0.95) 100%)',
+                            border: '1.5px solid rgba(212, 165, 55, 0.5)',
+                            borderRadius: '20px',
+                            padding: '20px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '14px',
+                            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 165, 55, 0.1)',
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <div style={{
+                                        width: '36px',
+                                        height: '36px',
+                                        borderRadius: '10px',
+                                        background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                        color: '#000',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: '900',
+                                    }}>
+                                        <Zap size={20} />
+                                    </div>
+                                    <div>
+                                        <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: '#FFFFFF' }}>
+                                            {t('digitalCodesDelivered', 'الأكواد الرقمية المستلمة (Vouchers)')}
+                                        </h4>
+                                        <span style={{ fontSize: '12px', color: '#4ADE80', fontWeight: '700' }}>
+                                            ✓ {t('codeReadyToRedeem', 'جاهز للاستخدام والشحن المباشر')}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {order.vouchers.map((voucher, idx) => (
+                                    <div
+                                        key={voucher.id || idx}
+                                        style={{
+                                            background: '#0B0B0F',
+                                            border: '1.5px dashed rgba(212, 165, 55, 0.45)',
+                                            borderRadius: '14px',
+                                            padding: '14px 16px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            gap: '12px',
+                                            flexWrap: 'wrap',
+                                        }}
+                                    >
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                            <span style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: '700' }}>
+                                                {t('codeNumber', 'كود البطاقة')} #{idx + 1}
+                                            </span>
+                                            <span style={{
+                                                fontFamily: 'monospace',
+                                                fontSize: '17px',
+                                                fontWeight: '900',
+                                                color: '#F5D061',
+                                                letterSpacing: '1px',
+                                                wordBreak: 'break-all',
+                                            }}>
+                                                {voucher.code}
+                                            </span>
+                                            {voucher.serial_number && (
+                                                <span style={{ fontSize: '11px', color: '#64748B', fontFamily: 'monospace' }}>
+                                                    S/N: {voucher.serial_number}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => handleCopy(voucher.code)}
+                                            style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                padding: '8px 16px',
+                                                borderRadius: '10px',
+                                                background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                                border: 'none',
+                                                color: '#000000',
+                                                fontSize: '13px',
+                                                fontWeight: '800',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s',
+                                                flexShrink: 0,
+                                            }}
+                                        >
+                                            {copied ? <Check size={15} /> : <Copy size={15} />}
+                                            <span>{copied ? t('copied', 'تم النسخ!') : t('copyCode', 'نسخ الكود')}</span>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {/* WhatsApp Complaint / Support Banner */}
                     <div style={{
                         background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)',

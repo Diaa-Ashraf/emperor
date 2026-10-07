@@ -16,13 +16,21 @@ class OrderResource extends JsonResource
             'product' => [
                 'id' => $this->product_id,
                 'name' => $this->product?->name,
-                'image_url' => $this->product?->image ? Storage::disk('public')->url($this->product->image) : null,
+                'image_url' => $this->product?->image_url ?? ($this->product?->image ? Storage::disk('public')->url($this->product->image) : null),
                 'type' => $this->product?->type?->value,
             ],
             'tier' => [
                 'id' => $this->product_tier_id,
                 'name' => $this->tier?->name,
             ],
+            'vouchers' => $this->relationLoaded('vouchers')
+                ? $this->vouchers->map(fn($v) => [
+                    'id' => $v->id,
+                    'code' => $v->code,
+                    'serial_number' => $v->serial_number,
+                    'expires_at' => $v->expires_at?->format('Y-m-d'),
+                ])
+                : [],
             'quantity' => (int) $this->quantity,
             'unit_price' => (float) $this->unit_price,
             'total_amount' => (float) $this->total_amount,
