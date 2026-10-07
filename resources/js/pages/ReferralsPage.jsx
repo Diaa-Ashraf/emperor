@@ -405,17 +405,18 @@ export default function ReferralsPage() {
                             width: '100%',
                             padding: '10px 16px',
                             borderRadius: '12px',
-                            background: '#0f172a',
-                            border: 'none',
-                            color: '#FFFFFF',
+                            background: isLight ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)' : '#0f172a',
+                            border: isLight ? '1px solid rgba(212, 165, 55, 0.5)' : 'none',
+                            color: isLight ? '#0F172A' : '#FFFFFF',
                             fontSize: '13.5px',
-                            fontWeight: '800',
+                            fontWeight: '900',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
+                            boxShadow: isLight ? '0 4px 14px rgba(212, 165, 55, 0.25)' : 'none',
                         }}
                     >
-                        {copiedLink ? <Check size={16} color="#22c55e" /> : <Copy size={16} />}
-                        <span>{copiedLink ? t('copied', 'تم النسخ!') : t('copyLink', 'نسخ الرابط')}</span>
+                        {copiedLink ? <Check size={16} color={isLight ? '#065F46' : '#22c55e'} /> : <Copy size={16} color={isLight ? '#0F172A' : '#FFFFFF'} />}
+                        <span style={{ color: isLight ? '#0F172A' : '#FFFFFF' }}>{copiedLink ? t('copied', 'تم النسخ!') : t('copyLink', 'نسخ الرابط')}</span>
                     </button>
                 </div>
 

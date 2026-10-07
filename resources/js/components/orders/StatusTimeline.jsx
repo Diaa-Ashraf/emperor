@@ -1,7 +1,10 @@
 import React from 'react';
 import { Check, Clock, Zap, XCircle, RefreshCw, AlertCircle } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function StatusTimeline({ status, createdAt, completedAt, failureReason }) {
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     // If order failed or refunded
     if (status === 'failed') {
         return (
@@ -16,13 +19,13 @@ export default function StatusTimeline({ status, createdAt, completedAt, failure
             }}>
                 <XCircle size={24} color="#EF4444" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <div>
-                    <h4 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: '800', color: '#F87171' }}>
+                    <h4 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: '800', color: isLight ? '#DC2626' : '#F87171' }}>
                         تعذر إتمام طلب الشحن
                     </h4>
-                    <p style={{ margin: '0 0 6px', fontSize: '13px', color: '#CBD5E1' }}>
+                    <p style={{ margin: '0 0 6px', fontSize: '13px', color: isLight ? '#475569' : '#CBD5E1' }}>
                         {failureReason || 'حدث خطأ أثناء تنفيذ الشحن مع مزود الخدمة.'}
                     </p>
-                    <span style={{ fontSize: '12px', color: '#4ADE80', fontWeight: '700' }}>
+                    <span style={{ fontSize: '12px', color: isLight ? '#16A34A' : '#4ADE80', fontWeight: '700' }}>
                         تم استرداد كامل قيمة الطلب إلى محفظتك تلقائياً.
                     </span>
                 </div>
@@ -33,7 +36,7 @@ export default function StatusTimeline({ status, createdAt, completedAt, failure
     if (status === 'refunded') {
         return (
             <div style={{
-                background: 'rgba(56, 189, 248, 0.12)',
+                background: isLight ? 'rgba(56, 189, 248, 0.08)' : 'rgba(56, 189, 248, 0.12)',
                 border: '1px solid rgba(56, 189, 248, 0.35)',
                 borderRadius: '16px',
                 padding: '20px',
@@ -41,12 +44,12 @@ export default function StatusTimeline({ status, createdAt, completedAt, failure
                 alignItems: 'flex-start',
                 gap: '14px',
             }}>
-                <RefreshCw size={24} color="#38BDF8" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <RefreshCw size={24} color={isLight ? '#0284C7' : '#38BDF8'} style={{ flexShrink: 0, marginTop: '2px' }} />
                 <div>
-                    <h4 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: '800', color: '#38BDF8' }}>
+                    <h4 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: '800', color: isLight ? '#0284C7' : '#38BDF8' }}>
                         تم استرداد الطلب
                     </h4>
-                    <p style={{ margin: 0, fontSize: '13px', color: '#CBD5E1' }}>
+                    <p style={{ margin: 0, fontSize: '13px', color: isLight ? '#475569' : '#CBD5E1' }}>
                         تم إلغاء الطلب واسترجاع المبلغ كاملاً إلى رصيد محفظتك.
                     </p>
                 </div>
@@ -90,13 +93,14 @@ export default function StatusTimeline({ status, createdAt, completedAt, failure
 
     return (
         <div style={{
-            background: 'rgba(26, 26, 36, 0.7)',
-            border: '1px solid rgba(212, 165, 55, 0.25)',
+            background: isLight ? '#FFFFFF' : 'rgba(26, 26, 36, 0.7)',
+            border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.25)',
+            boxShadow: isLight ? '0 4px 20px rgba(0, 0, 0, 0.05)' : 'none',
             borderRadius: '20px',
             padding: '28px 24px',
             marginBottom: '28px',
         }}>
-            <h3 style={{ margin: '0 0 24px', fontSize: '17px', fontWeight: '800', color: '#FFFFFF' }}>
+            <h3 style={{ margin: '0 0 24px', fontSize: '17px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                 مراحل تنفيذ الطلب
             </h3>
 
@@ -126,7 +130,7 @@ export default function StatusTimeline({ status, createdAt, completedAt, failure
                                     right: '18px',
                                     bottom: '-20px',
                                     width: '2px',
-                                    background: isDone ? '#D4A537' : 'rgba(255, 255, 255, 0.1)',
+                                    background: isDone ? '#D4A537' : (isLight ? '#E2E8F0' : 'rgba(255, 255, 255, 0.1)'),
                                     zIndex: 0,
                                 }} />
                             )}
@@ -140,9 +144,9 @@ export default function StatusTimeline({ status, createdAt, completedAt, failure
                                     ? 'linear-gradient(135deg, #22C55E, #15803D)'
                                     : isActive
                                         ? 'linear-gradient(135deg, #F3E5AB, #D4A537)'
-                                        : '#1E1E28',
-                                border: `2px solid ${isDone ? '#4ADE80' : isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.15)'}`,
-                                color: isDone || isActive ? '#0D0D0F' : '#8E8E98',
+                                        : (isLight ? '#F1F5F9' : '#1E1E28'),
+                                border: `2px solid ${isDone ? '#4ADE80' : isActive ? (isLight ? '#D4A537' : '#FFFFFF') : (isLight ? '#CBD5E1' : 'rgba(255, 255, 255, 0.15)')}`,
+                                color: isDone || isActive ? '#0D0D0F' : (isLight ? '#64748B' : '#8E8E98'),
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -151,7 +155,7 @@ export default function StatusTimeline({ status, createdAt, completedAt, failure
                                 boxShadow: isActive ? '0 0 15px rgba(212, 165, 55, 0.6)' : 'none',
                                 animation: isActive ? 'pulse 2s infinite' : 'none',
                             }}>
-                                <StepIcon size={18} strokeWidth={isDone ? 3 : 2} color={isDone || isActive ? '#0D0D0F' : '#8E8E98'} />
+                                <StepIcon size={18} strokeWidth={isDone ? 3 : 2} color={isDone || isActive ? '#0D0D0F' : (isLight ? '#64748B' : '#8E8E98')} />
                             </div>
 
                             {/* Step Text Info */}
@@ -160,11 +164,11 @@ export default function StatusTimeline({ status, createdAt, completedAt, failure
                                     margin: '0 0 2px',
                                     fontSize: '15px',
                                     fontWeight: '800',
-                                    color: isDone ? '#4ADE80' : isActive ? '#D4A537' : '#8E8E98',
+                                    color: isDone ? '#16A34A' : isActive ? '#D4A537' : (isLight ? '#64748B' : '#8E8E98'),
                                 }}>
                                     {step.title}
                                 </h4>
-                                <p style={{ margin: 0, fontSize: '13px', color: '#9E9EA8' }}>
+                                <p style={{ margin: 0, fontSize: '13px', color: isLight ? '#475569' : '#9E9EA8' }}>
                                     {step.desc}
                                 </p>
                             </div>

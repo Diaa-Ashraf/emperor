@@ -19,8 +19,11 @@ import EmptyState from '../components/ui/EmptyState';
 import { targetApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useToast } from '../contexts/ToastContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function TargetOrderDetailPage() {
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const { id } = useParams();
     const navigate = useNavigate();
     const { isRtl, t, language } = useLanguage();
@@ -136,12 +139,13 @@ export default function TargetOrderDetailPage() {
                             gap: '6px',
                             padding: '8px 18px',
                             borderRadius: '20px',
-                            background: 'rgba(255, 255, 255, 0.04)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            color: '#D1D1DB',
+                            background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.04)',
+                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.1)',
+                            color: isLight ? '#0F172A' : '#D1D1DB',
                             fontSize: '13px',
-                            fontWeight: '600',
+                            fontWeight: '700',
                             cursor: 'pointer',
+                            boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.04)' : 'none',
                         }}
                     >
                         <span>{t('back', 'رجوع')}</span>
@@ -151,13 +155,13 @@ export default function TargetOrderDetailPage() {
 
                 {/* Status Card */}
                 <div style={{
-                    background: '#0D0D12',
-                    border: `1px solid ${order.auto_verified ? '#22C55E' : '#D4A537'}`,
+                    background: isLight ? '#FFFFFF' : '#0D0D12',
+                    border: isLight ? '1px solid #E2E8F0' : `1px solid ${order.auto_verified ? '#22C55E' : '#D4A537'}`,
                     borderRadius: '24px',
                     padding: '28px 24px',
                     textAlign: 'center',
                     marginBottom: '20px',
-                    boxShadow: '0 12px 40px rgba(0, 0, 0, 0.8)',
+                    boxShadow: isLight ? '0 8px 25px rgba(0, 0, 0, 0.05)' : '0 12px 40px rgba(0, 0, 0, 0.8)',
                     position: 'relative',
                     overflow: 'hidden',
                 }}>
@@ -166,8 +170,8 @@ export default function TargetOrderDetailPage() {
                             position: 'absolute',
                             top: '12px',
                             left: '12px',
-                            background: 'rgba(34, 197, 94, 0.2)',
-                            color: '#4ADE80',
+                            background: isLight ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 197, 94, 0.2)',
+                            color: isLight ? '#16A34A' : '#4ADE80',
                             border: '1px solid #22C55E',
                             padding: '4px 10px',
                             borderRadius: '12px',
@@ -193,15 +197,15 @@ export default function TargetOrderDetailPage() {
                         <StatusIcon size={32} />
                     </div>
 
-                    <div style={{ fontSize: '12px', color: '#9E9EA8', marginBottom: '4px' }}>
+                    <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#9E9EA8', marginBottom: '4px' }}>
                         {t('orderNumber', 'طلب رقم')} #{order.id} {order.public_id ? `(${order.public_id})` : ''}
                     </div>
 
-                    <h2 style={{ margin: '0 0 8px', fontSize: '20px', fontWeight: '900', color: '#FFFFFF' }}>
+                    <h2 style={{ margin: '0 0 8px', fontSize: '20px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                         {statusInfo.label}
                     </h2>
 
-                    <p style={{ margin: 0, fontSize: '13px', color: '#C5C5D2', lineHeight: '1.6' }}>
+                    <p style={{ margin: 0, fontSize: '13px', color: isLight ? '#475569' : '#C5C5D2', lineHeight: '1.6' }}>
                         {statusInfo.desc}
                     </p>
                 </div>
@@ -209,8 +213,8 @@ export default function TargetOrderDetailPage() {
                 {/* Verification Code Box (if present) */}
                 {order.verification_code && (
                     <div style={{
-                        background: 'rgba(212, 165, 55, 0.08)',
-                        border: '1px dashed #D4A537',
+                        background: isLight ? '#FFFBEB' : 'rgba(212, 165, 55, 0.08)',
+                        border: isLight ? '1px dashed #D4A537' : '1px dashed #D4A537',
                         borderRadius: '16px',
                         padding: '16px 20px',
                         marginBottom: '20px',
@@ -219,8 +223,8 @@ export default function TargetOrderDetailPage() {
                         justifyContent: 'space-between',
                     }}>
                         <div>
-                            <span style={{ fontSize: '12px', color: '#8E8E98', display: 'block' }}>{t('verificationCodeForOrder', 'كود التحقق الخاص بهذه العملية')}</span>
-                            <span style={{ fontSize: '18px', fontWeight: '900', color: '#D4A537', fontFamily: 'monospace', letterSpacing: '1px' }}>
+                            <span style={{ fontSize: '12px', color: isLight ? '#78350F' : '#8E8E98', display: 'block' }}>{t('verificationCodeForOrder', 'كود التحقق الخاص بهذه العملية')}</span>
+                            <span style={{ fontSize: '18px', fontWeight: '900', color: isLight ? '#B45309' : '#D4A537', fontFamily: 'monospace', letterSpacing: '1px' }}>
                                 {order.verification_code}
                             </span>
                         </div>
@@ -230,9 +234,9 @@ export default function TargetOrderDetailPage() {
                                 success(t('copiedVerificationCode', 'تم نسخ كود التحقق!'));
                             }}
                             style={{
-                                background: 'rgba(212, 165, 55, 0.2)',
-                                border: '1px solid #D4A537',
-                                color: '#FFFFFF',
+                                background: isLight ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)' : 'rgba(212, 165, 55, 0.2)',
+                                border: isLight ? 'none' : '1px solid #D4A537',
+                                color: isLight ? '#000000' : '#FFFFFF',
                                 padding: '6px 14px',
                                 borderRadius: '8px',
                                 fontSize: '12px',
@@ -247,18 +251,19 @@ export default function TargetOrderDetailPage() {
 
                 {/* Order Details Breakdown */}
                 <div style={{
-                    background: '#0B0B0F',
-                    border: '1px solid rgba(212, 165, 55, 0.35)',
+                    background: isLight ? '#FFFFFF' : '#0B0B0F',
+                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.35)',
                     borderRadius: '24px',
                     padding: '24px 22px',
                     marginBottom: '24px',
+                    boxShadow: isLight ? '0 8px 25px rgba(0, 0, 0, 0.04)' : 'none',
                 }}>
                     <h3 style={{
                         margin: '0 0 16px',
                         fontSize: '16px',
                         fontWeight: '900',
-                        color: '#FFFFFF',
-                        borderBottom: '1px solid rgba(212, 165, 55, 0.2)',
+                        color: isLight ? '#0F172A' : '#FFFFFF',
+                        borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.2)',
                         paddingBottom: '12px',
                     }}>
                         {t('transactionDetails', 'تفاصيل العملية')}
@@ -266,23 +271,23 @@ export default function TargetOrderDetailPage() {
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                            <span style={{ color: '#8E8E98' }}>{t('app', 'التطبيق')}:</span>
-                            <strong style={{ color: '#F5D061' }}>{order.product?.name || t('targetSelling', 'تطبيق تارجت')}</strong>
+                            <span style={{ color: isLight ? '#64748B' : '#8E8E98' }}>{t('app', 'التطبيق')}:</span>
+                            <strong style={{ color: isLight ? '#B45309' : '#F5D061' }}>{order.product?.name || t('targetSelling', 'تطبيق تارجت')}</strong>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                            <span style={{ color: '#8E8E98' }}>{t('appUserId', 'ID الحساب في التطبيق')}:</span>
-                            <strong style={{ color: '#FFFFFF', fontFamily: 'monospace' }}>{order.app_user_id || '—'}</strong>
+                            <span style={{ color: isLight ? '#64748B' : '#8E8E98' }}>{t('appUserId', 'ID الحساب في التطبيق')}:</span>
+                            <strong style={{ color: isLight ? '#0F172A' : '#FFFFFF', fontFamily: 'monospace' }}>{order.app_user_id || '—'}</strong>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                            <span style={{ color: '#8E8E98' }}>{t('agencyId', 'آيدي وكالة السحب')}:</span>
-                            <strong style={{ color: '#F5D061', fontFamily: 'monospace' }}>{order.agency_id || '817693068'}</strong>
+                            <span style={{ color: isLight ? '#64748B' : '#8E8E98' }}>{t('agencyId', 'آيدي وكالة السحب')}:</span>
+                            <strong style={{ color: isLight ? '#B45309' : '#F5D061', fontFamily: 'monospace' }}>{order.agency_id || '817693068'}</strong>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                            <span style={{ color: '#8E8E98' }}>{t('orderDate', 'تاريخ الطلب')}:</span>
-                            <span style={{ color: '#FFFFFF' }}>
+                            <span style={{ color: isLight ? '#64748B' : '#8E8E98' }}>{t('orderDate', 'تاريخ الطلب')}:</span>
+                            <span style={{ color: isLight ? '#0F172A' : '#FFFFFF', fontWeight: '600' }}>
                                 {new Date(order.created_at).toLocaleDateString(language === 'en' ? 'en-US' : 'ar-EG', {
                                     year: 'numeric',
                                     month: 'long',
@@ -296,15 +301,15 @@ export default function TargetOrderDetailPage() {
                         <div style={{
                             marginTop: '10px',
                             paddingTop: '14px',
-                            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                            borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
                         }}>
-                            <span style={{ fontSize: '15px', fontWeight: '800', color: '#FFFFFF' }}>
+                            <span style={{ fontSize: '15px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                 {t('netPayout', 'الصافي المستحق')}:
                             </span>
-                            <span style={{ fontSize: '22px', fontWeight: '900', color: '#22C55E' }}>
+                            <span style={{ fontSize: '22px', fontWeight: '900', color: '#16A34A' }}>
                                 {netPayout} {language === 'en' ? 'EGP' : 'ج.م'}
                             </span>
                         </div>

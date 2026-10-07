@@ -9,10 +9,13 @@ import Pagination from '../components/ui/Pagination';
 import Button from '../components/ui/Button';
 import { targetApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import VideoBackground from '../components/home/VideoBackground';
 
 export default function TargetOrdersPage() {
     const { isRtl, t, language } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -68,12 +71,12 @@ export default function TargetOrdersPage() {
                     justifyContent: 'space-between',
                     marginBottom: '16px',
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#8E8E98' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: isLight ? '#64748B' : '#8E8E98' }}>
                         <Link to="/" style={{ color: '#D4A537', textDecoration: 'none' }}>{t('home', 'الرئيسية')}</Link>
                         <span>/</span>
                         <Link to="/target/apps" style={{ color: '#D4A537', textDecoration: 'none' }}>{t('targetSelling', 'بيع التارجت')}</Link>
                         <span>/</span>
-                        <span style={{ color: '#CBD5E1' }}>{t('ordersHistory', 'سجل الطلبات')}</span>
+                        <span style={{ color: isLight ? '#0F172A' : '#CBD5E1', fontWeight: isLight ? '700' : 'normal' }}>{t('ordersHistory', 'سجل الطلبات')}</span>
                     </div>
 
                     <button
@@ -84,11 +87,11 @@ export default function TargetOrdersPage() {
                             gap: '6px',
                             padding: '8px 18px',
                             borderRadius: '20px',
-                            background: 'rgba(255, 255, 255, 0.04)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            color: '#D1D1DB',
+                            background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.04)',
+                            border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.1)',
+                            color: isLight ? '#334155' : '#D1D1DB',
                             fontSize: '13px',
-                            fontWeight: '600',
+                            fontWeight: '700',
                             cursor: 'pointer',
                         }}
                     >
@@ -98,8 +101,8 @@ export default function TargetOrdersPage() {
                 </div>
 
                 <div style={{
-                    background: '#0D0D12',
-                    border: '1px solid #D4A537',
+                    background: isLight ? '#FFFFFF' : '#0D0D12',
+                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid #D4A537',
                     borderRadius: '22px',
                     padding: '22px 24px',
                     display: 'flex',
@@ -107,13 +110,13 @@ export default function TargetOrdersPage() {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: '16px',
-                    boxShadow: '0 8px 30px rgba(0,0,0,0.6)',
+                    boxShadow: isLight ? '0 8px 24px rgba(0, 0, 0, 0.05)' : '0 8px 30px rgba(0,0,0,0.6)',
                 }}>
                     <div>
-                        <h1 style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: '900', color: '#FFFFFF' }}>
+                        <h1 style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                             {t('targetOrdersHistory', 'سجل طلبات بيع التارجت')}
                         </h1>
-                        <p style={{ margin: 0, fontSize: '13px', color: '#9E9EA8' }}>
+                        <p style={{ margin: 0, fontSize: '13px', color: isLight ? '#475569' : '#9E9EA8' }}>
                             {t('trackTargetStatus', 'متابعة حالة تحويل الكاش ومراجعة طلبات التارجت')}
                         </p>
                     </div>

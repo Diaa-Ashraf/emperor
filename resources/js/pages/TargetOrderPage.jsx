@@ -23,8 +23,11 @@ import { targetApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function TargetOrderPage() {
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
@@ -251,12 +254,13 @@ export default function TargetOrderPage() {
                             gap: '8px',
                             padding: '8px 18px',
                             borderRadius: '20px',
-                            background: 'rgba(212, 165, 55, 0.08)',
-                            border: '1px solid rgba(212, 165, 55, 0.25)',
-                            color: '#F5D061',
+                            background: isLight ? '#FFFFFF' : 'rgba(212, 165, 55, 0.08)',
+                            border: isLight ? '1px solid #D4A537' : '1px solid rgba(212, 165, 55, 0.25)',
+                            color: isLight ? '#B45309' : '#F5D061',
                             fontSize: '13px',
                             fontWeight: '700',
                             textDecoration: 'none',
+                            boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.04)' : 'none',
                         }}
                     >
                         <span>سجل الطلبات</span>
@@ -270,12 +274,13 @@ export default function TargetOrderPage() {
                             gap: '6px',
                             padding: '8px 18px',
                             borderRadius: '20px',
-                            background: 'rgba(255, 255, 255, 0.04)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            color: '#D1D1DB',
+                            background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.04)',
+                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.1)',
+                            color: isLight ? '#0F172A' : '#D1D1DB',
                             fontSize: '13px',
-                            fontWeight: '600',
+                            fontWeight: '700',
                             cursor: 'pointer',
+                            boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.04)' : 'none',
                         }}
                     >
                         <span>رجوع</span>
@@ -283,12 +288,12 @@ export default function TargetOrderPage() {
                     </button>
                 </div>
 
-                {/* Top Banner: Click to open Withdrawal Info Modal (Matches Screenshot 2) */}
+                {/* Top Banner: Click to open Withdrawal Info Modal */}
                 <div
                     onClick={() => setShowWithdrawalModal(true)}
                     style={{
-                        background: '#0D0D12',
-                        border: '1px solid #D4A537',
+                        background: isLight ? '#FFFFFF' : '#0D0D12',
+                        border: isLight ? '1.5px solid #D4A537' : '1px solid #D4A537',
                         borderRadius: '22px',
                         padding: '16px 20px',
                         marginBottom: '18px',
@@ -296,7 +301,7 @@ export default function TargetOrderPage() {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         cursor: 'pointer',
-                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 165, 55, 0.1)',
+                        boxShadow: isLight ? '0 8px 24px rgba(0, 0, 0, 0.06)' : '0 8px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 165, 55, 0.1)',
                         transition: 'all 0.2s ease',
                     }}
                     onMouseEnter={(e) => {
@@ -313,10 +318,10 @@ export default function TargetOrderPage() {
                     </div>
 
                     <div style={{ textAlign: 'center', flex: 1, padding: '0 12px' }}>
-                        <div style={{ fontSize: '15px', fontWeight: '900', color: '#FFFFFF', marginBottom: '3px' }}>
+                        <div style={{ fontSize: '15px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', marginBottom: '3px' }}>
                             اضغط هنا للاطلاع على بيانات السحب
                         </div>
-                        <div style={{ fontSize: '12px', color: '#9E9EA8', fontWeight: '500' }}>
+                        <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#9E9EA8', fontWeight: '600' }}>
                             اضغط على البطاقة لعرض آيدي السحب ومدة التنفيذ
                         </div>
                     </div>
@@ -325,7 +330,7 @@ export default function TargetOrderPage() {
                         width: '50px',
                         height: '50px',
                         borderRadius: '16px',
-                        background: activeApp.gradient || 'linear-gradient(135deg, #2A2415 0%, #151410 100%)',
+                        background: activeApp.gradient || (isLight ? 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)' : 'linear-gradient(135deg, #2A2415 0%, #151410 100%)'),
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -346,12 +351,12 @@ export default function TargetOrderPage() {
                                 style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }}
                             />
                         ) : (
-                            <Smartphone size={24} color="#F5D061" strokeWidth={1.8} />
+                            <Smartphone size={24} color={isLight ? '#B45309' : '#F5D061'} strokeWidth={1.8} />
                         )}
                     </div>
                 </div>
 
-                {/* Rates & Commission Summary Bar (Matches Screenshot 2) */}
+                {/* Rates & Commission Summary Bar */}
                 <div style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr 1fr',
@@ -360,44 +365,46 @@ export default function TargetOrderPage() {
                 }}>
                     {/* Rate Pill */}
                     <div style={{
-                        background: '#121218',
-                        border: '1px solid rgba(212, 165, 55, 0.4)',
+                        background: isLight ? '#FFFFFF' : '#121218',
+                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.4)',
                         borderRadius: '18px',
                         padding: '14px 16px',
                         textAlign: 'center',
+                        boxShadow: isLight ? '0 4px 12px rgba(0,0,0,0.03)' : 'none',
                     }}>
-                        <div style={{ fontSize: '12px', color: '#9E9EA8', marginBottom: '4px', fontWeight: '600' }}>
+                        <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#9E9EA8', marginBottom: '4px', fontWeight: '600' }}>
                             سعر الصرف
                         </div>
-                        <div style={{ fontSize: '15px', fontWeight: '900', color: '#22C55E' }}>
+                        <div style={{ fontSize: '15px', fontWeight: '900', color: '#16A34A' }}>
                             {exchangeRate} EGP / دولار
                         </div>
                     </div>
 
                     {/* Commission Pill */}
                     <div style={{
-                        background: '#121218',
-                        border: '1px solid rgba(212, 165, 55, 0.4)',
+                        background: isLight ? '#FFFFFF' : '#121218',
+                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.4)',
                         borderRadius: '18px',
                         padding: '14px 16px',
                         textAlign: 'center',
+                        boxShadow: isLight ? '0 4px 12px rgba(0,0,0,0.03)' : 'none',
                     }}>
-                        <div style={{ fontSize: '12px', color: '#9E9EA8', marginBottom: '4px', fontWeight: '600' }}>
+                        <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#9E9EA8', marginBottom: '4px', fontWeight: '600' }}>
                             نسبة العمولة
                         </div>
-                        <div style={{ fontSize: '15px', fontWeight: '900', color: '#F5D061' }}>
+                        <div style={{ fontSize: '15px', fontWeight: '900', color: isLight ? '#B45309' : '#F5D061' }}>
                             %{commissionPct}
                         </div>
                     </div>
                 </div>
 
-                {/* Main Order Form Card (Matches Screenshot 2 & 3) */}
+                {/* Main Order Form Card */}
                 <div style={{
-                    background: '#0B0B0F',
-                    border: '1px solid #D4A537',
+                    background: isLight ? '#FFFFFF' : '#0B0B0F',
+                    border: isLight ? '1px solid #E2E8F0' : '1px solid #D4A537',
                     borderRadius: '24px',
                     padding: '24px 20px',
-                    boxShadow: '0 12px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 165, 55, 0.08)',
+                    boxShadow: isLight ? '0 10px 30px rgba(0, 0, 0, 0.05)' : '0 12px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 165, 55, 0.08)',
                 }}>
                     {/* Card Header with Agency ID on Top Left */}
                     <div style={{
@@ -406,18 +413,18 @@ export default function TargetOrderPage() {
                         justifyContent: 'space-between',
                         marginBottom: '22px',
                         paddingBottom: '14px',
-                        borderBottom: '1px solid rgba(212, 165, 55, 0.2)',
+                        borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.2)',
                     }}>
                         <div style={{
                             fontSize: '14px',
                             fontWeight: '800',
-                            color: '#F5D061',
+                            color: isLight ? '#B45309' : '#F5D061',
                             letterSpacing: '0.5px',
                             fontFamily: 'monospace',
                         }}>
                             {agencyId}
                         </div>
-                        <div style={{ fontSize: '16px', fontWeight: '900', color: '#FFFFFF' }}>
+                        <div style={{ fontSize: '16px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                             حساب التحويل
                         </div>
                     </div>
@@ -432,18 +439,18 @@ export default function TargetOrderPage() {
                                 gap: '8px',
                                 marginBottom: '8px',
                             }}>
-                                <label style={{ fontSize: '14px', fontWeight: '800', color: '#FFFFFF' }}>
+                                <label style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                     ID المستخدم في التطبيق
                                 </label>
                                 <div style={{
                                     width: '26px',
                                     height: '26px',
                                     borderRadius: '50%',
-                                    background: 'rgba(212, 165, 55, 0.15)',
+                                    background: isLight ? 'rgba(212, 165, 55, 0.2)' : 'rgba(212, 165, 55, 0.15)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    color: '#F5D061',
+                                    color: isLight ? '#B45309' : '#F5D061',
                                 }}>
                                     <User size={15} />
                                 </div>
@@ -458,21 +465,21 @@ export default function TargetOrderPage() {
                                     width: '100%',
                                     padding: '14px 18px',
                                     borderRadius: '14px',
-                                    background: '#07070A',
-                                    border: '1px solid rgba(212, 165, 55, 0.35)',
-                                    color: '#FFFFFF',
+                                    background: isLight ? '#FFFFFF' : '#07070A',
+                                    border: isLight ? '1.5px solid #CBD5E1' : '1px solid rgba(212, 165, 55, 0.35)',
+                                    color: isLight ? '#0F172A' : '#FFFFFF',
                                     fontSize: '15px',
                                     textAlign: 'right',
                                     outline: 'none',
                                     boxSizing: 'border-box',
                                     transition: 'border 0.2s',
                                 }}
-                                onFocus={(e) => (e.target.style.borderColor = '#F5D061')}
-                                onBlur={(e) => (e.target.style.borderColor = 'rgba(212, 165, 55, 0.35)')}
+                                onFocus={(e) => (e.target.style.borderColor = '#D4A537')}
+                                onBlur={(e) => (e.target.style.borderColor = isLight ? '#CBD5E1' : 'rgba(212, 165, 55, 0.35)')}
                             />
                             <div style={{
                                 fontSize: '12px',
-                                color: '#8E8E98',
+                                color: isLight ? '#64748B' : '#8E8E98',
                                 marginTop: '6px',
                                 textAlign: 'right',
                                 display: 'flex',
@@ -494,18 +501,18 @@ export default function TargetOrderPage() {
                                 gap: '8px',
                                 marginBottom: '8px',
                             }}>
-                                <label style={{ fontSize: '14px', fontWeight: '800', color: '#FFFFFF' }}>
+                                <label style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                     المبلغ المراد سحبه
                                 </label>
                                 <div style={{
                                     width: '26px',
                                     height: '26px',
                                     borderRadius: '50%',
-                                    background: 'rgba(212, 165, 55, 0.15)',
+                                    background: isLight ? 'rgba(212, 165, 55, 0.2)' : 'rgba(212, 165, 55, 0.15)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    color: '#F5D061',
+                                    color: isLight ? '#B45309' : '#F5D061',
                                 }}>
                                     <DollarSign size={15} />
                                 </div>
@@ -514,8 +521,8 @@ export default function TargetOrderPage() {
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                background: '#07070A',
-                                border: '1px solid rgba(212, 165, 55, 0.35)',
+                                background: isLight ? '#FFFFFF' : '#07070A',
+                                border: isLight ? '1.5px solid #CBD5E1' : '1px solid rgba(212, 165, 55, 0.35)',
                                 borderRadius: '14px',
                                 overflow: 'hidden',
                             }}>
@@ -543,7 +550,7 @@ export default function TargetOrderPage() {
                                         padding: '14px 18px',
                                         background: 'transparent',
                                         border: 'none',
-                                        color: '#FFFFFF',
+                                        color: isLight ? '#0F172A' : '#FFFFFF',
                                         fontSize: '17px',
                                         fontWeight: '800',
                                         textAlign: 'right',
@@ -554,7 +561,7 @@ export default function TargetOrderPage() {
                             </div>
                             <div style={{
                                 fontSize: '12px',
-                                color: '#8E8E98',
+                                color: isLight ? '#64748B' : '#8E8E98',
                                 marginTop: '6px',
                                 textAlign: 'right',
                                 display: 'flex',
@@ -567,15 +574,14 @@ export default function TargetOrderPage() {
                             </div>
                         </div>
 
-                        {/* Field 3: Receiving Method Card / Selector (Matches Screenshot 3) */}
+                        {/* Field 3: Receiving Method Card / Selector */}
                         <div style={{ marginBottom: '22px' }}>
                             <div
                                 onClick={() => {
-                                    // Toggle method for convenience
                                     setReceivingMethod(prev => prev === 'site_wallet' ? 'vodafone_cash' : prev === 'vodafone_cash' ? 'instapay' : 'site_wallet');
                                 }}
                                 style={{
-                                    background: 'rgba(34, 197, 94, 0.1)',
+                                    background: isLight ? 'rgba(34, 197, 94, 0.08)' : 'rgba(34, 197, 94, 0.1)',
                                     border: '1.5px solid #22C55E',
                                     borderRadius: '16px',
                                     padding: '14px 18px',
@@ -586,16 +592,16 @@ export default function TargetOrderPage() {
                                     transition: 'all 0.2s',
                                 }}
                             >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#22C55E' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#16A34A' }}>
                                     {isRtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
-                                    <span style={{ fontSize: '12px', fontWeight: '600', opacity: 0.85 }}>
+                                    <span style={{ fontSize: '12px', fontWeight: '700' }}>
                                         اضغط لاختيار طريقة استلام أخرى
                                     </span>
                                 </div>
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <div style={{ textAlign: 'right' }}>
-                                        <div style={{ fontSize: '14px', fontWeight: '900', color: '#FFFFFF' }}>
+                                        <div style={{ fontSize: '14px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                             {receivingMethod === 'site_wallet' ? 'استلم على محفظة الموقع' :
                                              receivingMethod === 'vodafone_cash' ? 'فودافون كاش / المحافظ الإلكترونية' :
                                              'انستاباي InstaPay'}
@@ -606,7 +612,7 @@ export default function TargetOrderPage() {
                                         height: '36px',
                                         borderRadius: '10px',
                                         background: '#22C55E',
-                                        color: '#000000',
+                                        color: '#FFFFFF',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -628,9 +634,9 @@ export default function TargetOrderPage() {
                                             width: '100%',
                                             padding: '12px 16px',
                                             borderRadius: '12px',
-                                            background: '#07070A',
-                                            border: '1px solid #22C55E',
-                                            color: '#FFFFFF',
+                                            background: isLight ? '#FFFFFF' : '#07070A',
+                                            border: '1.5px solid #22C55E',
+                                            color: isLight ? '#0F172A' : '#FFFFFF',
                                             fontSize: '14px',
                                             textAlign: 'right',
                                             outline: 'none',
@@ -650,18 +656,18 @@ export default function TargetOrderPage() {
                                 gap: '8px',
                                 marginBottom: '8px',
                             }}>
-                                <label style={{ fontSize: '14px', fontWeight: '800', color: '#FFFFFF' }}>
+                                <label style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                     إرفاق إيصال التحويل (سكرين شوت)
                                 </label>
                                 <div style={{
                                     width: '26px',
                                     height: '26px',
                                     borderRadius: '50%',
-                                    background: 'rgba(212, 165, 55, 0.15)',
+                                    background: isLight ? 'rgba(212, 165, 55, 0.2)' : 'rgba(212, 165, 55, 0.15)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    color: '#F5D061',
+                                    color: isLight ? '#B45309' : '#F5D061',
                                 }}>
                                     <Upload size={15} />
                                 </div>
@@ -675,14 +681,14 @@ export default function TargetOrderPage() {
                                     justifyContent: 'center',
                                     padding: proofImage ? '12px' : '22px 16px',
                                     borderRadius: '16px',
-                                    background: '#07070A',
-                                    border: '1.5px dashed rgba(212, 165, 55, 0.4)',
+                                    background: isLight ? '#F8FAFC' : '#07070A',
+                                    border: isLight ? '1.5px dashed #CBD5E1' : '1.5px dashed rgba(212, 165, 55, 0.4)',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s',
                                     textAlign: 'center',
                                 }}
-                                onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#F5D061')}
-                                onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.4)')}
+                                onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#D4A537')}
+                                onMouseLeave={(e) => (e.currentTarget.style.borderColor = isLight ? '#CBD5E1' : 'rgba(212, 165, 55, 0.4)')}
                             >
                                 <input
                                     type="file"
@@ -709,7 +715,7 @@ export default function TargetOrderPage() {
                                             style={{
                                                 padding: '6px 12px',
                                                 borderRadius: '8px',
-                                                background: 'rgba(239, 68, 68, 0.15)',
+                                                background: isLight ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.15)',
                                                 border: '1px solid #EF4444',
                                                 color: '#EF4444',
                                                 fontSize: '12px',
@@ -721,10 +727,10 @@ export default function TargetOrderPage() {
                                         </button>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <div style={{ textAlign: 'right' }}>
-                                                <div style={{ fontSize: '13px', fontWeight: '800', color: '#22C55E' }}>
+                                                <div style={{ fontSize: '13px', fontWeight: '800', color: '#16A34A' }}>
                                                     تم إرفاق: {proofImage.name}
                                                 </div>
-                                                <div style={{ fontSize: '11px', color: '#8E8E98' }}>
+                                                <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#8E8E98' }}>
                                                     {(proofImage.size / 1024).toFixed(0)} KB
                                                 </div>
                                             </div>
@@ -748,19 +754,19 @@ export default function TargetOrderPage() {
                                             width: '44px',
                                             height: '44px',
                                             borderRadius: '50%',
-                                            background: 'rgba(212, 165, 55, 0.1)',
+                                            background: isLight ? 'rgba(212, 165, 55, 0.15)' : 'rgba(212, 165, 55, 0.1)',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            color: '#F5D061',
+                                            color: isLight ? '#B45309' : '#F5D061',
                                             marginBottom: '8px',
                                         }}>
                                             <Upload size={20} />
                                         </div>
-                                        <div style={{ fontSize: '14px', fontWeight: '800', color: '#FFFFFF', marginBottom: '4px' }}>
+                                        <div style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF', marginBottom: '4px' }}>
                                             اضغط لرفع صورة إيصال التحويل
                                         </div>
-                                        <div style={{ fontSize: '12px', color: '#8E8E98' }}>
+                                        <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#8E8E98' }}>
                                             PNG, JPG, WEBP حتى 5 ميجابايت
                                         </div>
                                     </>
@@ -768,7 +774,7 @@ export default function TargetOrderPage() {
                             </label>
                             <div style={{
                                 fontSize: '12px',
-                                color: '#8E8E98',
+                                color: isLight ? '#64748B' : '#8E8E98',
                                 marginTop: '6px',
                                 textAlign: 'right',
                                 display: 'flex',
@@ -781,10 +787,10 @@ export default function TargetOrderPage() {
                             </div>
                         </div>
 
-                        {/* Field 4: Live Net Calculation Box (Matches Screenshot 3) */}
+                        {/* Field 4: Live Net Calculation Box */}
                         <div style={{
-                            background: '#07070A',
-                            border: '1.5px solid #22C55E',
+                            background: isLight ? '#F0FDF4' : '#07070A',
+                            border: isLight ? '1.5px solid #86EFAC' : '1.5px solid #22C55E',
                             borderRadius: '18px',
                             padding: '18px 20px',
                             marginBottom: '20px',
@@ -799,14 +805,14 @@ export default function TargetOrderPage() {
                                 <div style={{
                                     fontSize: '11px',
                                     fontWeight: '700',
-                                    color: '#22C55E',
-                                    background: 'rgba(34, 197, 94, 0.15)',
+                                    color: '#16A34A',
+                                    background: isLight ? 'rgba(34, 197, 94, 0.2)' : 'rgba(34, 197, 94, 0.15)',
                                     padding: '3px 10px',
                                     borderRadius: '10px',
                                 }}>
                                     بعد خصم عمولة التطبيق
                                 </div>
-                                <div style={{ fontSize: '13px', fontWeight: '800', color: '#D1D1DB' }}>
+                                <div style={{ fontSize: '13px', fontWeight: '800', color: isLight ? '#334155' : '#D1D1DB' }}>
                                     الرصيد الذي سيضاف إلى محفظتك
                                 </div>
                             </div>
@@ -814,31 +820,31 @@ export default function TargetOrderPage() {
                             <div style={{
                                 fontSize: '28px',
                                 fontWeight: '900',
-                                color: '#FFFFFF',
+                                color: isLight ? '#0F172A' : '#FFFFFF',
                                 margin: '8px 0',
                                 letterSpacing: '0.5px',
                             }}>
                                 {netEgp > 0 ? (
                                     <span>
                                         {netEgp.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{' '}
-                                        <span style={{ fontSize: '18px', color: '#22C55E' }}>EGP</span>
+                                        <span style={{ fontSize: '18px', color: '#16A34A' }}>EGP</span>
                                     </span>
                                 ) : (
-                                    <span style={{ color: '#6E6E78' }}>
+                                    <span style={{ color: isLight ? '#94A3B8' : '#6E6E78' }}>
                                         0 <span style={{ fontSize: '18px' }}>EGP</span>
                                     </span>
                                 )}
                             </div>
 
-                            <div style={{ fontSize: '12px', color: '#8E8E98' }}>
+                            <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#8E8E98' }}>
                                 {netEgp > 0 ? `سعر الصرف: ${exchangeRate} EGP • العمولة: ${commissionPct}%` : 'أدخل المبلغ لحساب الصافي'}
                             </div>
                         </div>
 
-                        {/* Warning Box (Matches Screenshot 3) */}
+                        {/* Warning Box */}
                         <div style={{
-                            background: '#121218',
-                            border: '1px solid #D4A537',
+                            background: isLight ? '#FFFBEB' : '#121218',
+                            border: isLight ? '1px solid #FCD34D' : '1px solid #D4A537',
                             borderRadius: '14px',
                             padding: '14px 18px',
                             marginBottom: '24px',
@@ -847,11 +853,11 @@ export default function TargetOrderPage() {
                             gap: '12px',
                             textAlign: 'right',
                         }}>
-                            <div style={{ flex: 1, fontSize: '13px', color: '#E2E2EA', lineHeight: '1.6' }}>
-                                <strong style={{ color: '#F5D061' }}>تنبيه مهم: </strong>
+                            <div style={{ flex: 1, fontSize: '13px', color: isLight ? '#78350F' : '#E2E2EA', lineHeight: '1.6' }}>
+                                <strong style={{ color: isLight ? '#B45309' : '#F5D061' }}>تنبيه مهم: </strong>
                                 يضاف المبلغ إلى محفظتك على الموقع بعد موافقة الإدارة، وللسحب اختر طريقة أخرى.
                             </div>
-                            <div style={{ color: '#F5D061', flexShrink: 0 }}>
+                            <div style={{ color: isLight ? '#D97706' : '#F5D061', flexShrink: 0 }}>
                                 <AlertTriangle size={22} />
                             </div>
                         </div>
@@ -910,11 +916,11 @@ export default function TargetOrderPage() {
                     <div style={{
                         width: '100%',
                         maxWidth: '460px',
-                        background: '#0B0B0F',
-                        border: '1.5px solid #D4A537',
+                        background: isLight ? '#FFFFFF' : '#0B0B0F',
+                        border: isLight ? '1.5px solid #E2E8F0' : '1.5px solid #D4A537',
                         borderRadius: '26px',
                         padding: '28px 24px',
-                        boxShadow: '0 25px 70px rgba(0, 0, 0, 0.95), 0 0 40px rgba(212, 165, 55, 0.2)',
+                        boxShadow: isLight ? '0 25px 70px rgba(0, 0, 0, 0.2)' : '0 25px 70px rgba(0, 0, 0, 0.95), 0 0 40px rgba(212, 165, 55, 0.2)',
                         animation: 'scaleUp 0.25s ease-out',
                     }}>
                         {/* Modal Header */}
@@ -930,9 +936,9 @@ export default function TargetOrderPage() {
                                     width: '36px',
                                     height: '36px',
                                     borderRadius: '50%',
-                                    background: 'rgba(255, 255, 255, 0.06)',
-                                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                                    color: '#FFFFFF',
+                                    background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.06)',
+                                    border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.1)',
+                                    color: isLight ? '#0F172A' : '#FFFFFF',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -944,10 +950,10 @@ export default function TargetOrderPage() {
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: '11px', color: '#9E9EA8', fontWeight: '700' }}>
+                                    <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#9E9EA8', fontWeight: '700' }}>
                                         بيانات السحب
                                     </div>
-                                    <div style={{ fontSize: '17px', fontWeight: '900', color: '#FFFFFF' }}>
+                                    <div style={{ fontSize: '17px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                         {activeApp.name}
                                     </div>
                                 </div>
@@ -956,7 +962,7 @@ export default function TargetOrderPage() {
                                     width: '44px',
                                     height: '44px',
                                     borderRadius: '14px',
-                                    background: activeApp.gradient || 'linear-gradient(135deg, #2A2415 0%, #151410 100%)',
+                                    background: activeApp.gradient || (isLight ? 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)' : 'linear-gradient(135deg, #2A2415 0%, #151410 100%)'),
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -975,17 +981,17 @@ export default function TargetOrderPage() {
                                             style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }}
                                         />
                                     ) : (
-                                        <Smartphone size={22} color="#F5D061" strokeWidth={1.8} />
+                                        <Smartphone size={22} color={isLight ? '#B45309' : '#F5D061'} strokeWidth={1.8} />
                                     )}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Agency ID Box with Copy Button (Matches Screenshot 1) */}
+                        {/* Agency ID Box with Copy Button */}
                         <div style={{ marginBottom: '22px', textAlign: 'center' }}>
                             <div style={{
                                 fontSize: '13px',
-                                color: '#9E9EA8',
+                                color: isLight ? '#475569' : '#9E9EA8',
                                 fontWeight: '700',
                                 marginBottom: '8px',
                                 textAlign: 'right',
@@ -996,7 +1002,7 @@ export default function TargetOrderPage() {
                             <div
                                 onClick={handleCopyAgencyId}
                                 style={{
-                                    background: '#07070A',
+                                    background: isLight ? '#F8FAFC' : '#07070A',
                                     border: '1.5px solid #D4A537',
                                     borderRadius: '18px',
                                     padding: '14px 18px',
@@ -1004,7 +1010,7 @@ export default function TargetOrderPage() {
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
                                     cursor: 'pointer',
-                                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+                                    boxShadow: isLight ? '0 4px 14px rgba(0, 0, 0, 0.05)' : '0 4px 20px rgba(0, 0, 0, 0.5)',
                                 }}
                             >
                                 <button
@@ -1015,9 +1021,9 @@ export default function TargetOrderPage() {
                                         gap: '6px',
                                         padding: '8px 16px',
                                         borderRadius: '12px',
-                                        background: copied ? '#22C55E' : 'rgba(212, 165, 55, 0.2)',
-                                        border: '1px solid rgba(212, 165, 55, 0.4)',
-                                        color: copied ? '#000000' : '#F5D061',
+                                        background: copied ? '#22C55E' : (isLight ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)' : 'rgba(212, 165, 55, 0.2)'),
+                                        border: isLight ? 'none' : '1px solid rgba(212, 165, 55, 0.4)',
+                                        color: copied ? '#FFFFFF' : '#000000',
                                         fontSize: '13px',
                                         fontWeight: '800',
                                         cursor: 'pointer',
@@ -1030,7 +1036,7 @@ export default function TargetOrderPage() {
                                 <div style={{
                                     fontSize: '22px',
                                     fontWeight: '900',
-                                    color: '#F5D061',
+                                    color: isLight ? '#B45309' : '#F5D061',
                                     letterSpacing: '1px',
                                     fontFamily: 'monospace',
                                 }}>
@@ -1038,35 +1044,35 @@ export default function TargetOrderPage() {
                                 </div>
                             </div>
 
-                            <div style={{ fontSize: '12px', color: '#7E7E88', marginTop: '6px' }}>
+                            <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#7E7E88', marginTop: '6px' }}>
                                 اضغط داخل البطاقة لنسخ الآيدي
                             </div>
                         </div>
 
-                        {/* Minimum & Execution Time Grid (Matches Screenshot 1) */}
+                        {/* Minimum & Execution Time Grid */}
                         <div style={{
                             display: 'grid',
                             gridTemplateColumns: '1fr 1fr',
                             gap: '12px',
                             marginBottom: '26px',
-                            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                            borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                             paddingTop: '18px',
                         }}>
                             {/* Execution Time */}
-                            <div style={{ textAlign: 'center', borderRight: '1px solid rgba(255, 255, 255, 0.08)', paddingRight: '8px' }}>
+                            <div style={{ textAlign: 'center', borderRight: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)', paddingRight: '8px' }}>
                                 <div style={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: '6px',
-                                    color: '#9E9EA8',
+                                    color: isLight ? '#64748B' : '#9E9EA8',
                                     fontSize: '12px',
                                     marginBottom: '4px',
                                 }}>
-                                    <Clock size={14} color="#F5D061" />
+                                    <Clock size={14} color={isLight ? '#B45309' : '#F5D061'} />
                                     <span>مدة التنفيذ</span>
                                 </div>
-                                <div style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF' }}>
+                                <div style={{ fontSize: '13px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                     {executionTime}
                                 </div>
                             </div>
@@ -1078,14 +1084,14 @@ export default function TargetOrderPage() {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: '6px',
-                                    color: '#9E9EA8',
+                                    color: isLight ? '#64748B' : '#9E9EA8',
                                     fontSize: '12px',
                                     marginBottom: '4px',
                                 }}>
-                                    <DollarSign size={14} color="#F5D061" />
+                                    <DollarSign size={14} color={isLight ? '#B45309' : '#F5D061'} />
                                     <span>الحد الأدنى</span>
                                 </div>
-                                <div style={{ fontSize: '16px', fontWeight: '900', color: '#22C55E' }}>
+                                <div style={{ fontSize: '16px', fontWeight: '900', color: '#16A34A' }}>
                                     {minWithdraw}
                                 </div>
                             </div>
