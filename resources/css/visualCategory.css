@@ -76,34 +76,34 @@
 /* ── 2. Products & Voice Apps Grid (Category Page & Apps) ── */
 .emperor-products-poster-grid,
 .emperor-products-grid {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 18px;
-    width: 100%;
-    box-sizing: border-box;
-    align-items: start;
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    align-items: stretch !important;
 }
 
 @media (min-width: 1400px) {
     .emperor-products-poster-grid,
     .emperor-products-grid {
-        grid-template-columns: repeat(6, minmax(0, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+        gap: 18px !important;
     }
 }
 
 @media (max-width: 1200px) {
     .emperor-products-poster-grid,
     .emperor-products-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 14px;
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+        gap: 14px !important;
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 992px) {
     .emperor-products-poster-grid,
     .emperor-products-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
         gap: 12px !important;
     }
 }
@@ -122,12 +122,12 @@
     }
     
     .product-poster-title {
-        font-size: 11.5px !important;
+        font-size: 11px !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        max-height: 32px !important;
+        line-height: 16px !important;
         margin-top: 5px !important;
-        line-height: 1.2 !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
     }
 }
 
@@ -143,18 +143,36 @@
     }
     
     .product-poster-title {
-        font-size: 11px !important;
+        font-size: 10.5px !important;
+        height: 30px !important;
+        min-height: 30px !important;
+        max-height: 30px !important;
+        line-height: 15px !important;
     }
 }
 
 /* ── 3. Strict 1:1 Aspect Ratio Rules for Perfect Uniformity ── */
+.emperor-product-poster-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+}
+
 .category-poster-frame,
 .product-poster-frame {
     position: relative !important;
     width: 100% !important;
     aspect-ratio: 1 / 1 !important;
+    height: auto !important;
     overflow: hidden !important;
     box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
 }
 
@@ -170,10 +188,28 @@
     display: block !important;
 }
 
-.category-poster-title,
-.product-poster-title {
+.category-poster-title {
     width: 100% !important;
     box-sizing: border-box !important;
+}
+
+.product-poster-title {
+    width: 100% !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    line-height: 19px !important;
+    margin-top: 8px !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    text-align: center !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-sizing: border-box !important;
+    padding: 0 4px !important;
 }
 
 /* ── Hover Animations ── */

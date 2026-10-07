@@ -16,8 +16,15 @@ export default function ProductCard({ product, onClick }) {
 
     const productUrl = `/products/${product.id}`;
 
-    const isApp = product.category?.type === 'voice_apps' || product.type === 'voice_apps';
-    const showTargetIcon = isApp && (!imageSrc || imgError || (typeof imageSrc === 'string' && (imageSrc.includes('unsplash') || imageSrc.includes('pexels') || imageSrc.includes('random'))));
+    const isApp = product.category?.type === 'voice_apps'
+        || product.type === 'voice_apps'
+        || product.category_slug === 'apps'
+        || product.category_slug === 'voice_apps'
+        || (typeof window !== 'undefined' && window.location.pathname.includes('/apps'))
+        || product.parent_id !== null;
+
+    const isStockPhoto = typeof imageSrc === 'string' && (imageSrc.includes('unsplash') || imageSrc.includes('pexels') || imageSrc.includes('random'));
+    const showTargetIcon = isApp || !imageSrc || imgError || isStockPhoto;
 
     const cardContent = (
         <div
@@ -33,9 +40,11 @@ export default function ProductCard({ product, onClick }) {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
+                justifyContent: 'flex-start',
                 cursor: 'pointer',
                 width: '100%',
                 userSelect: 'none',
+                boxSizing: 'border-box',
             }}
         >
             {/* ── Square Luxury Poster Frame ── */}
@@ -45,7 +54,7 @@ export default function ProductCard({ product, onClick }) {
                     position: 'relative',
                     width: '100%',
                     aspectRatio: '1 / 1',
-                    borderRadius: '20px',
+                    borderRadius: '18px',
                     overflow: 'hidden',
                     background: isLight ? '#FFFFFF' : '#0B0B0F',
                     border: isLight
@@ -61,7 +70,7 @@ export default function ProductCard({ product, onClick }) {
                 }}
             >
                 {showTargetIcon ? (
-                    <div style={{ width: '80%', height: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: '74%', height: '74%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <TargetAppIconRenderer app={product} size={80} />
                     </div>
                 ) : imageSrc && !imgError ? (
@@ -83,28 +92,32 @@ export default function ProductCard({ product, onClick }) {
                         }}
                     />
                 ) : (
-                    <div style={{ width: '80%', height: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: '74%', height: '74%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <TargetAppIconRenderer app={product} size={80} />
                     </div>
                 )}
             </div>
 
-            {/* ── App / Product Title (Underneath) ── */}
+            {/* ── App / Product Title (Strict 2-Line Clamped Height for Pixel-Perfect Uniformity) ── */}
             <span
                 className="product-poster-title"
                 style={{
                     marginTop: '8px',
-                    fontSize: '13.5px',
+                    fontSize: '13px',
                     fontWeight: '800',
                     color: isLight ? '#0F172A' : '#FFFFFF',
                     textAlign: 'center',
-                    lineHeight: 1.3,
+                    lineHeight: '18px',
+                    height: '36px',
                     maxWidth: '100%',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
                     padding: '0 4px',
                     fontFamily: 'var(--font-cairo)',
+                    boxSizing: 'border-box',
                 }}
                 title={product.name}
             >

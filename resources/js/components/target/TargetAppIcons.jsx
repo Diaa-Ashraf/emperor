@@ -948,6 +948,86 @@ export function WePlayIcon({ size = 80 }) {
     );
 }
 
+export function TikTokIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="ttBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#121218" />
+                    <stop offset="100%" stopColor="#050508" />
+                </linearGradient>
+                <filter id="ttGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="-2" dy="-2" stdDeviation="2" floodColor="#25F4EE" floodOpacity="0.8" />
+                    <feDropShadow dx="2" dy="2" stdDeviation="2" floodColor="#FE2C55" floodOpacity="0.8" />
+                </filter>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#ttBg)" stroke="rgba(255,255,255,0.1)" strokeWidth="1.5" />
+            {/* Cyan layer */}
+            <path d="M56 22 C59 28 65 32 72 33 L72 44 C67 44 62 42 58 39 L58 63 C58 73 50 81 40 81 C30 81 22 73 22 63 C22 53 30 45 40 45 C42 45 44 45.4 46 46 L46 57 C44 56.4 42 56 40 56 C36 56 33 59 33 63 C33 67 36 70 40 70 C44 70 47 67 47 63 L47 22 L56 22 Z" fill="#25F4EE" opacity="0.9" />
+            {/* Red layer offset */}
+            <path d="M60 22 C63 28 69 32 76 33 L76 44 C71 44 66 42 62 39 L62 63 C62 73 54 81 44 81 C34 81 26 73 26 63 C26 53 34 45 44 45 C46 45 48 45.4 50 46 L50 57 C48 56.4 46 56 44 56 C40 56 37 59 37 63 C37 67 40 70 44 70 C48 70 51 67 51 63 L51 22 L60 22 Z" fill="#FE2C55" opacity="0.9" />
+            {/* White note center */}
+            <path d="M58 22 C61 28 67 32 74 33 L74 44 C69 44 64 42 60 39 L60 63 C60 73 52 81 42 81 C32 81 24 73 24 63 C24 53 32 45 42 45 C44 45 46 45.4 48 46 L48 57 C46 56.4 44 56 42 56 C38 56 35 59 35 63 C35 67 38 70 42 70 C46 70 49 67 49 63 L49 22 L58 22 Z" fill="#FFFFFF" />
+        </svg>
+    );
+}
+
+export function LikeeIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="likeeBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#4A0E4E" />
+                    <stop offset="50%" stopColor="#2A0845" />
+                    <stop offset="100%" stopColor="#15002A" />
+                </linearGradient>
+                <linearGradient id="likeeHeart" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FF416C" />
+                    <stop offset="100%" stopColor="#FF4B2B" />
+                </linearGradient>
+                <linearGradient id="likeeGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FFD200" />
+                    <stop offset="100%" stopColor="#F7971E" />
+                </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#likeeBg)" />
+            {/* Layered vibrant 3D Heart */}
+            <path d="M50 78 C40 70 20 54 20 37 C20 26 29 18 39 18 C45 18 50 22 50 22 C50 22 55 18 61 18 C71 18 80 26 80 37 C80 54 60 70 50 78 Z" fill="url(#likeeHeart)" />
+            <path d="M50 72 C43 65 26 51 26 37 C26 28 33 22 41 22 C45 22 48 24 50 26 C52 24 55 22 59 22 C67 22 74 28 74 37 C74 51 57 65 50 72 Z" fill="url(#likeeGlow)" opacity="0.6" />
+            <text x="50" y="88" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="900" fontFamily="system-ui, sans-serif">
+                Likee
+            </text>
+        </svg>
+    );
+}
+
+export function MicoIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="micoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#3B82F6" />
+                    <stop offset="50%" stopColor="#1D4ED8" />
+                    <stop offset="100%" stopColor="#1E1B4B" />
+                </linearGradient>
+                <linearGradient id="micoYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FDE047" />
+                    <stop offset="100%" stopColor="#EAB308" />
+                </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#micoBg)" />
+            {/* Smiling Chat Bubble */}
+            <path d="M22 46 C22 30 34 20 50 20 C66 20 78 30 78 46 C78 62 66 72 50 72 C44 72 38 70 34 68 L22 74 L26 62 C23 58 22 52 22 46 Z" fill="#FFFFFF" />
+            <circle cx="38" cy="44" r="5" fill="#1E293B" />
+            <circle cx="62" cy="44" r="5" fill="#1E293B" />
+            <path d="M42 54 Q50 62 58 54" stroke="#EF4444" strokeWidth="4" strokeLinecap="round" fill="none" />
+            <text x="50" y="86" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="900" fontFamily="system-ui, sans-serif">
+                MICO
+            </text>
+        </svg>
+    );
+}
+
 /**
  * Universal resolver for target app icons.
  * If app has custom uploaded image, uses that; otherwise falls back to the high-res 3D icon by name.
@@ -955,33 +1035,39 @@ export function WePlayIcon({ size = 80 }) {
 export function TargetAppIconRenderer({ app, size = 84 }) {
     if (app?.image_url || app?.icon_url || app?.iconUrl || app?.image) {
         const u = app.image_url || app.icon_url || app.iconUrl || app.image;
-        const resolved = typeof u === 'string' && u.includes('/storage/')
-            ? ('/storage/' + u.split('/storage/')[1])
-            : u;
-        return (
-            <img
-                src={resolved}
-                alt={app.name}
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    borderRadius: '20px',
-                }}
-                onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    if (e.currentTarget.nextElementSibling) {
-                        e.currentTarget.nextElementSibling.style.display = 'block';
-                    }
-                }}
-            />
-        );
+        const isStockPhoto = typeof u === 'string' && (u.includes('unsplash') || u.includes('pexels') || u.includes('random'));
+        if (!isStockPhoto) {
+            const resolved = typeof u === 'string' && u.includes('/storage/')
+                ? ('/storage/' + u.split('/storage/')[1])
+                : u;
+            return (
+                <img
+                    src={resolved}
+                    alt={app.name}
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        borderRadius: '16px',
+                    }}
+                    onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        if (e.currentTarget.nextElementSibling) {
+                            e.currentTarget.nextElementSibling.style.display = 'block';
+                        }
+                    }}
+                />
+            );
+        }
     }
 
     const n = (app?.name || '').toLowerCase();
     const en = (app?.enName || app?.slug || '').toLowerCase();
 
     // Voice & Chat Apps (KA CARD benchmark)
+    if (n.includes('تيك') || en.includes('tiktok')) return <TikTokIcon size={size} />;
+    if (n.includes('لايكي') || en.includes('likee')) return <LikeeIcon size={size} />;
+    if (n.includes('ميكو') || en.includes('mico')) return <MicoIcon size={size} />;
     if (n.includes('يوهو') || en.includes('yoho')) return <YohoIcon size={size} />;
     if (n.includes('هلين') || en.includes('haahlan')) return <HaahlanIcon size={size} />;
     if (n.includes('فان') || en.includes('funup')) return <FunUpIcon size={size} />;
