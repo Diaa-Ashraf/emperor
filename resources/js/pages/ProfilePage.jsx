@@ -29,6 +29,7 @@ import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { profileApi } from '../api/endpoints';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
@@ -42,6 +43,8 @@ export default function ProfilePage() {
     const { user, refreshProfile, setUser } = useAuth();
     const { addToast } = useToast();
     const { t, isRtl, language } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const fileInputRef = useRef(null);
 
     const [activeTab, setActiveTab] = useState('info'); // 'info' | 'security'
@@ -199,14 +202,14 @@ export default function ProfilePage() {
             <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '10px 0 60px' }}>
                 {/* Top User Hero Card */}
                 <div style={{
-                    background: 'linear-gradient(135deg, rgba(28, 28, 38, 0.95) 0%, rgba(18, 18, 24, 0.95) 100%)',
-                    border: '1px solid rgba(212, 165, 55, 0.25)',
+                    background: isLight ? '#FFFFFF' : 'linear-gradient(135deg, rgba(28, 28, 38, 0.95) 0%, rgba(18, 18, 24, 0.95) 100%)',
+                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.25)',
                     borderRadius: '24px',
                     padding: 'clamp(18px, 3.5vw, 30px)',
                     marginBottom: '28px',
                     position: 'relative',
                     overflow: 'hidden',
-                    boxShadow: '0 12px 30px rgba(0, 0, 0, 0.4)',
+                    boxShadow: isLight ? '0 10px 30px rgba(30, 80, 140, 0.08)' : '0 12px 30px rgba(0, 0, 0, 0.4)',
                 }}>
 
                 {/* Background Gold Glow */}
@@ -240,12 +243,12 @@ export default function ProfilePage() {
                                 borderRadius: '24px',
                                 background: user?.avatar_url
                                     ? `url(${user.avatar_url}) center/cover no-repeat`
-                                    : 'linear-gradient(135deg, #2A2A35 0%, #1A1A22 100%)',
+                                    : (isLight ? '#FEFCE8' : 'linear-gradient(135deg, #2A2A35 0%, #1A1A22 100%)'),
                                 border: '2px solid #D4A537',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: '#D4A537',
+                                color: isLight ? '#B45309' : '#D4A537',
                                 fontSize: '32px',
                                 fontWeight: '900',
                                 boxShadow: '0 0 20px rgba(212, 165, 55, 0.25)',
@@ -269,12 +272,13 @@ export default function ProfilePage() {
                                     borderRadius: '10px',
                                     background: '#D4A537',
                                     color: '#0D0D0F',
-                                    border: '2px solid #1A1A22',
+                                    border: isLight ? '2px solid #FFFFFF' : '2px solid #1A1A22',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s ease',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
                                 }}
                             >
                                 {uploadingAvatar ? <RefreshCw size={14} className="spin" /> : <Camera size={14} />}
@@ -291,7 +295,7 @@ export default function ProfilePage() {
                         {/* Name & Details */}
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                                <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: '#FFFFFF' }}>
+                                <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                     {user?.name || t('emperorUser', 'مستخدم إمبراطور')}
                                 </h2>
                                 <span style={{
@@ -306,7 +310,7 @@ export default function ProfilePage() {
                                 </span>
                             </div>
 
-                            <p style={{ margin: '0 0 8px', fontSize: '14px', color: '#9E9EA8', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <p style={{ margin: '0 0 8px', fontSize: '14px', color: isLight ? '#475569' : '#9E9EA8', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <Mail size={14} />
                                 <span>{user?.email || '—'}</span>
                             </p>
@@ -316,18 +320,18 @@ export default function ProfilePage() {
                                     display: 'inline-flex',
                                     alignItems: 'center',
                                     gap: '8px',
-                                    background: 'rgba(212, 165, 55, 0.1)',
-                                    border: '1px solid rgba(212, 165, 55, 0.25)',
+                                    background: isLight ? '#FEFCE8' : 'rgba(212, 165, 55, 0.1)',
+                                    border: isLight ? '1px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.25)',
                                     padding: '4px 10px',
                                     borderRadius: '8px',
                                     fontSize: '12px',
-                                    color: '#F3E5AB',
+                                    color: isLight ? '#92400E' : '#F3E5AB',
                                     fontWeight: '700',
                                 }}>
                                     <span>{t('referralCodeColon', 'كود الإحالة:')} {user.referral_code}</span>
                                     <button
                                         onClick={handleCopyReferral}
-                                        style={{ background: 'transparent', border: 'none', color: '#D4A537', cursor: 'pointer', padding: 0 }}
+                                        style={{ background: 'transparent', border: 'none', color: isLight ? '#B45309' : '#D4A537', cursor: 'pointer', padding: 0 }}
                                     >
                                         {copiedRef ? <Check size={14} /> : <Copy size={14} />}
                                     </button>
@@ -338,17 +342,18 @@ export default function ProfilePage() {
 
                     {/* Quick Wallet Stats Box */}
                     <div style={{
-                        background: 'rgba(13, 13, 16, 0.8)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#F8FAFC' : 'rgba(13, 13, 16, 0.8)',
+                        border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.08)',
                         borderRadius: '16px',
                         padding: '16px 20px',
                         minWidth: '200px',
                         textAlign: 'center',
+                        boxShadow: isLight ? '0 4px 12px rgba(30, 80, 140, 0.05)' : 'none',
                     }}>
-                        <span style={{ fontSize: '12px', color: '#9E9EA8', display: 'block', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '12px', color: isLight ? '#64748B' : '#9E9EA8', display: 'block', marginBottom: '4px' }}>
                             {t('availableBalanceInWallet', 'الرصيد المتاح بالمحفظة')}
                         </span>
-                        <div style={{ fontSize: '24px', fontWeight: '900', color: '#D4A537', marginBottom: '8px' }}>
+                        <div style={{ fontSize: '24px', fontWeight: '900', color: isLight ? '#B45309' : '#D4A537', marginBottom: '8px' }}>
                             {user?.wallet?.balance !== undefined ? Number(user.wallet.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}{' '}
                             <span style={{ fontSize: '14px' }}>{language === 'en' ? 'EGP' : 'ج.م'}</span>
                         </div>
@@ -359,7 +364,7 @@ export default function ProfilePage() {
                                 alignItems: 'center',
                                 gap: '6px',
                                 fontSize: '12px',
-                                color: '#F3E5AB',
+                                color: isLight ? '#92400E' : '#F3E5AB',
                                 textDecoration: 'none',
                                 fontWeight: '700',
                             }}
@@ -381,96 +386,100 @@ export default function ProfilePage() {
                 <Link
                     to="/orders"
                     style={{
-                        background: 'rgba(22, 22, 30, 0.7)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#FFFFFF' : 'rgba(22, 22, 30, 0.7)',
+                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
                         borderRadius: '14px',
                         padding: '14px 18px',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '12px',
                         textDecoration: 'none',
-                        color: '#FFFFFF',
+                        color: isLight ? '#0F172A' : '#FFFFFF',
                         transition: 'all 0.2s ease',
+                        boxShadow: isLight ? '0 4px 12px rgba(30, 80, 140, 0.05)' : 'none',
                     }}
                     onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#D4A537')}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(255, 255, 255, 0.08)')}
                 >
                     <ShoppingBag size={20} color="#D4A537" />
                     <div>
                         <div style={{ fontSize: '14px', fontWeight: '700' }}>{t('myOrdersHistory', 'سجل طلباتي')}</div>
-                        <div style={{ fontSize: '11px', color: '#9E9EA8' }}>{t('trackShippingStatus', 'تتبع حالة الشحن')}</div>
+                        <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#9E9EA8' }}>{t('trackShippingStatus', 'تتبع حالة الشحن')}</div>
                     </div>
                 </Link>
 
                 <Link
                     to="/target/apps"
                     style={{
-                        background: 'rgba(22, 22, 30, 0.7)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#FFFFFF' : 'rgba(22, 22, 30, 0.7)',
+                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
                         borderRadius: '14px',
                         padding: '14px 18px',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '12px',
                         textDecoration: 'none',
-                        color: '#FFFFFF',
+                        color: isLight ? '#0F172A' : '#FFFFFF',
                         transition: 'all 0.2s ease',
+                        boxShadow: isLight ? '0 4px 12px rgba(30, 80, 140, 0.05)' : 'none',
                     }}
                     onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#D4A537')}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(255, 255, 255, 0.08)')}
                 >
                     <CreditCard size={20} color="#38BDF8" />
                     <div>
                         <div style={{ fontSize: '14px', fontWeight: '700' }}>{t('targetSelling', 'بيع التارجت')}</div>
-                        <div style={{ fontSize: '11px', color: '#9E9EA8' }}>{t('transferAppProfits', 'تحويل أرباح التطبيقات')}</div>
+                        <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#9E9EA8' }}>{t('transferAppProfits', 'تحويل أرباح التطبيقات')}</div>
                     </div>
                 </Link>
 
                 <Link
                     to="/referrals"
                     style={{
-                        background: 'rgba(22, 22, 30, 0.7)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#FFFFFF' : 'rgba(22, 22, 30, 0.7)',
+                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
                         borderRadius: '14px',
                         padding: '14px 18px',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '12px',
                         textDecoration: 'none',
-                        color: '#FFFFFF',
+                        color: isLight ? '#0F172A' : '#FFFFFF',
                         transition: 'all 0.2s ease',
+                        boxShadow: isLight ? '0 4px 12px rgba(30, 80, 140, 0.05)' : 'none',
                     }}
                     onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#D4A537')}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(255, 255, 255, 0.08)')}
                 >
                     <Users size={20} color="#22C55E" />
                     <div>
                         <div style={{ fontSize: '14px', fontWeight: '700' }}>{t('referralProgram', 'برنامج الإحالات')}</div>
-                        <div style={{ fontSize: '11px', color: '#9E9EA8' }}>{t('profitsAndCommissions', 'الأرباح والعمولات')}</div>
+                        <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#9E9EA8' }}>{t('profitsAndCommissions', 'الأرباح والعمولات')}</div>
                     </div>
                 </Link>
 
                 <Link
                     to="/settings"
                     style={{
-                        background: 'rgba(22, 22, 30, 0.7)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#FFFFFF' : 'rgba(22, 22, 30, 0.7)',
+                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
                         borderRadius: '14px',
                         padding: '14px 18px',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '12px',
                         textDecoration: 'none',
-                        color: '#FFFFFF',
+                        color: isLight ? '#0F172A' : '#FFFFFF',
                         transition: 'all 0.2s ease',
+                        boxShadow: isLight ? '0 4px 12px rgba(30, 80, 140, 0.05)' : 'none',
                     }}
                     onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#D4A537')}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(255, 255, 255, 0.08)')}
                 >
                     <SettingsIcon size={20} color="#F59E0B" />
                     <div>
                         <div style={{ fontSize: '14px', fontWeight: '700' }}>{t('accountSettings', 'إعدادات الحساب')}</div>
-                        <div style={{ fontSize: '11px', color: '#9E9EA8' }}>{t('preferencesAndAppearance', 'التفضيلات والمظهر')}</div>
+                        <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#9E9EA8' }}>{t('preferencesAndAppearance', 'التفضيلات والمظهر')}</div>
                     </div>
                 </Link>
             </div>
@@ -496,9 +505,9 @@ export default function ProfilePage() {
                         fontFamily: 'var(--font-cairo)',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
-                        background: activeTab === 'info' ? 'linear-gradient(135deg, #D4A537 0%, #AA7C11 100%)' : 'rgba(255, 255, 255, 0.05)',
-                        color: activeTab === 'info' ? '#0D0D0F' : '#9E9EA8',
-                        border: activeTab === 'info' ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: activeTab === 'info' ? 'linear-gradient(135deg, #D4A537 0%, #AA7C11 100%)' : (isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.05)'),
+                        color: activeTab === 'info' ? '#0D0D0F' : (isLight ? '#475569' : '#9E9EA8'),
+                        border: activeTab === 'info' ? 'none' : (isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)'),
                     }}
                 >
                     <User size={16} />
@@ -518,9 +527,9 @@ export default function ProfilePage() {
                         fontFamily: 'var(--font-cairo)',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
-                        background: activeTab === 'security' ? 'linear-gradient(135deg, #D4A537 0%, #AA7C11 100%)' : 'rgba(255, 255, 255, 0.05)',
-                        color: activeTab === 'security' ? '#0D0D0F' : '#9E9EA8',
-                        border: activeTab === 'security' ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: activeTab === 'security' ? 'linear-gradient(135deg, #D4A537 0%, #AA7C11 100%)' : (isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.05)'),
+                        color: activeTab === 'security' ? '#0D0D0F' : (isLight ? '#475569' : '#9E9EA8'),
+                        border: activeTab === 'security' ? 'none' : (isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)'),
                     }}
                 >
                     <Shield size={16} />
@@ -531,19 +540,20 @@ export default function ProfilePage() {
             {/* Tab 1: Personal Info Form */}
             {activeTab === 'info' && (
                 <div style={{
-                    background: 'rgba(22, 22, 30, 0.8)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: isLight ? '#FFFFFF' : 'rgba(22, 22, 30, 0.8)',
+                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                     borderRadius: '20px',
                     padding: '28px',
+                    boxShadow: isLight ? '0 4px 20px rgba(0, 0, 0, 0.04)' : 'none',
                 }}>
-                    <h3 style={{ margin: '0 0 20px', fontSize: '18px', fontWeight: '800', color: '#FFFFFF' }}>
+                    <h3 style={{ margin: '0 0 20px', fontSize: '18px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                         {t('editPersonalInfo', 'تعديل البيانات الشخصية')}
                     </h3>
 
                     <form onSubmit={handleProfileSubmit}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '20px', marginBottom: '24px' }}>
                             <div>
-                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: isLight ? '#475569' : '#B8B8C2', marginBottom: '8px' }}>
                                     {t('fullName', 'الاسم الكامل')}
                                 </label>
                                 <Input
@@ -556,7 +566,7 @@ export default function ProfilePage() {
                             </div>
 
                             <div>
-                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: isLight ? '#475569' : '#B8B8C2', marginBottom: '8px' }}>
                                     {t('emailNonEditable', 'البريد الإلكتروني (غير قابل للتعديل)')}
                                 </label>
                                 <Input
@@ -569,7 +579,7 @@ export default function ProfilePage() {
 
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                    <label style={{ fontSize: '13px', fontWeight: '700', color: '#B8B8C2' }}>
+                                    <label style={{ fontSize: '13px', fontWeight: '700', color: isLight ? '#475569' : '#B8B8C2' }}>
                                         {t('phoneWhatsapp', 'رقم الهاتف / الواتساب')}
                                     </label>
                                     {user?.phone_verified_at ? (
@@ -604,7 +614,7 @@ export default function ProfilePage() {
                             </div>
 
                             <div>
-                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: isLight ? '#475569' : '#B8B8C2', marginBottom: '8px' }}>
                                     {t('country', 'الدولة')}
                                 </label>
                                 <Select
@@ -615,7 +625,7 @@ export default function ProfilePage() {
                             </div>
 
                             <div>
-                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: isLight ? '#475569' : '#B8B8C2', marginBottom: '8px' }}>
                                     {t('defaultCurrency', 'العملة الافتراضية')}
                                 </label>
                                 <Select
@@ -645,14 +655,15 @@ export default function ProfilePage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     {/* Password Change Box */}
                     <div style={{
-                        background: 'rgba(22, 22, 30, 0.8)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#FFFFFF' : 'rgba(22, 22, 30, 0.8)',
+                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                         borderRadius: '20px',
                         padding: '28px',
+                        boxShadow: isLight ? '0 4px 20px rgba(0, 0, 0, 0.04)' : 'none',
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
                             <Lock size={20} color="#D4A537" />
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#FFFFFF' }}>
+                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                 {t('changePassword', 'تغيير كلمة المرور')}
                             </h3>
                         </div>
@@ -660,7 +671,7 @@ export default function ProfilePage() {
                         <form onSubmit={handlePasswordSubmit}>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '20px', marginBottom: '24px' }}>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: isLight ? '#475569' : '#B8B8C2', marginBottom: '8px' }}>
                                         {t('currentPassword', 'كلمة المرور الحالية')}
                                     </label>
                                     <div style={{ position: 'relative' }}>
@@ -692,7 +703,7 @@ export default function ProfilePage() {
                                 </div>
 
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: isLight ? '#475569' : '#B8B8C2', marginBottom: '8px' }}>
                                         {t('newPassword', 'كلمة المرور الجديدة')}
                                     </label>
                                     <div style={{ position: 'relative' }}>
@@ -724,7 +735,7 @@ export default function ProfilePage() {
                                 </div>
 
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#B8B8C2', marginBottom: '8px' }}>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: isLight ? '#475569' : '#B8B8C2', marginBottom: '8px' }}>
                                         {t('confirmNewPassword', 'تأكيد كلمة المرور الجديدة')}
                                     </label>
                                     <div style={{ position: 'relative' }}>
@@ -771,8 +782,8 @@ export default function ProfilePage() {
 
                     {/* 2FA Security Section */}
                     <div style={{
-                        background: 'rgba(22, 22, 30, 0.8)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#FFFFFF' : 'rgba(22, 22, 30, 0.8)',
+                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                         borderRadius: '20px',
                         padding: '28px',
                         display: 'flex',
@@ -780,6 +791,7 @@ export default function ProfilePage() {
                         justifyContent: 'space-between',
                         flexWrap: 'wrap',
                         gap: '20px',
+                        boxShadow: isLight ? '0 4px 20px rgba(0, 0, 0, 0.04)' : 'none',
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                             <div style={{
@@ -796,10 +808,10 @@ export default function ProfilePage() {
                                 <Shield size={24} />
                             </div>
                             <div>
-                                <h4 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: '800', color: '#FFFFFF' }}>
+                                <h4 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                     {t('twoFactorAuth', 'المصادقة الثنائية (2FA Authentication)')}
                                 </h4>
-                                <p style={{ margin: 0, fontSize: '13px', color: '#9E9EA8' }}>
+                                <p style={{ margin: 0, fontSize: '13px', color: isLight ? '#64748B' : '#9E9EA8' }}>
                                     {user?.two_factor_confirmed_at
                                         ? t('twoFactorActiveDesc', 'المصادقة الثنائية مفعلة ونشطة لحماية معاملاتك المالية')
                                         : t('twoFactorInactiveDesc', 'تفعيل طبقة أمان إضافية لحماية حسابك عبر تطبيق Google Authenticator')}
@@ -817,7 +829,7 @@ export default function ProfilePage() {
                                         padding: '8px 16px',
                                         borderRadius: '10px',
                                         background: 'rgba(34, 197, 94, 0.15)',
-                                        color: '#22C55E',
+                                        color: '#16A34A',
                                         fontSize: '13px',
                                         fontWeight: '800',
                                     }}>
@@ -827,7 +839,7 @@ export default function ProfilePage() {
                                         variant="outline"
                                         size="sm"
                                         onClick={() => setShow2FAModal(true)}
-                                        style={{ borderColor: 'rgba(255, 255, 255, 0.15)', color: '#CBD5E1' }}
+                                        style={{ borderColor: isLight ? '#CBD5E1' : 'rgba(255, 255, 255, 0.15)', color: isLight ? '#334155' : '#CBD5E1' }}
                                     >
                                         {t('manageRecoveryCodes', 'إدارة ورموز الاسترداد')}
                                     </Button>
@@ -836,7 +848,7 @@ export default function ProfilePage() {
                                 <Button
                                     variant="outline"
                                     onClick={() => setShow2FAModal(true)}
-                                    style={{ borderColor: 'rgba(212, 165, 55, 0.4)', color: '#F3E5AB' }}
+                                    style={{ borderColor: 'rgba(212, 165, 55, 0.4)', color: isLight ? '#92400E' : '#F3E5AB' }}
                                 >
                                     {t('enable2FA', 'تفعيل المصادقة الثنائية')}
                                 </Button>

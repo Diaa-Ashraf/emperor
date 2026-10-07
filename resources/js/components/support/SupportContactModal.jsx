@@ -13,10 +13,14 @@ import {
 } from 'lucide-react';
 import { supportApi } from '../../api/endpoints';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function SupportContactModal({ isOpen, onClose }) {
     const { theme } = useTheme();
     const isLight = theme === 'light';
+    const { language, isRtl } = useLanguage();
+    const isEn = language === 'en';
+
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -71,8 +75,8 @@ export default function SupportContactModal({ isOpen, onClose }) {
     const defaultContacts = [
         {
             id: 'owner',
-            name: 'ضياء أشرف',
-            role_badge: 'صاحب المنصة',
+            name: isEn ? 'Diaa Ashraf' : 'ضياء أشرف',
+            role_badge: isEn ? 'Platform Owner' : 'صاحب المنصة',
             badge_color: '#F59E0B',
             channel: 'whatsapp',
             phone: '01012286661',
@@ -80,8 +84,8 @@ export default function SupportContactModal({ isOpen, onClose }) {
         },
         {
             id: 'support-1',
-            name: 'ياسمين',
-            role_badge: 'خدمة العملاء',
+            name: isEn ? 'Yasmine' : 'ياسمين',
+            role_badge: isEn ? 'Customer Support' : 'خدمة العملاء',
             badge_color: '#38BDF8',
             channel: 'whatsapp',
             phone: '01201111390',
@@ -89,8 +93,8 @@ export default function SupportContactModal({ isOpen, onClose }) {
         },
         {
             id: 'support-2',
-            name: 'فريق الدعم',
-            role_badge: 'خدمة العملاء',
+            name: isEn ? 'Support Team' : 'فريق الدعم',
+            role_badge: isEn ? 'Customer Support' : 'خدمة العملاء',
             badge_color: '#34D399',
             channel: 'whatsapp',
             phone: '01013669339',
@@ -105,7 +109,9 @@ export default function SupportContactModal({ isOpen, onClose }) {
         if (ch.includes('whatsapp') || val.startsWith('+') || /^[0-9]+$/.test(val.replace(/[\s+-]/g, ''))) {
             const clean = val.replace(/[^0-9]/g, '');
             const phone = clean.startsWith('01') ? `20${clean.substring(1)}` : clean;
-            const msg = encodeURIComponent('السلام عليكم ورحمة الله وبركاته، محتاج مساعدة بخصوص حسابي في منصة إمبراطور EMPEROR.');
+            const msg = isEn
+                ? encodeURIComponent('Hello, I need assistance regarding my EMPEROR account.')
+                : encodeURIComponent('السلام عليكم ورحمة الله وبركاته، محتاج مساعدة بخصوص حسابي في منصة إمبراطور EMPEROR.');
             return `https://wa.me/${phone}?text=${msg}`;
         }
         if (ch.includes('telegram') || val.includes('t.me')) {
@@ -118,12 +124,21 @@ export default function SupportContactModal({ isOpen, onClose }) {
     };
 
     const getContactBadge = (contact, idx) => {
-        if (contact.role_badge) return contact.role_badge;
-        const desc = (contact.description || '').trim();
-        if (desc.includes('صاحب') || desc.includes('إدارة')) return 'صاحب المنصة';
-        if (desc.includes('تارجت')) return 'قسم التارجت';
-        if (desc.includes('فني') || desc.includes('شحن')) return 'الدعم الفني';
-        return 'خدمة العملاء';
+        let badge = contact.role_badge;
+        if (!badge) {
+            const desc = (contact.description || '').trim();
+            if (desc.includes('صاحب') || desc.includes('إدارة')) badge = 'صاحب المنصة';
+            else if (desc.includes('تارجت')) badge = 'قسم التارجت';
+            else if (desc.includes('فني') || desc.includes('شحن')) badge = 'الدعم الفني';
+            else badge = 'خدمة العملاء';
+        }
+        if (isEn) {
+            if (badge === 'صاحب المنصة') return 'Platform Owner';
+            if (badge === 'قسم التارجت') return 'Target Support';
+            if (badge === 'الدعم الفني') return 'Technical Support';
+            if (badge === 'خدمة العملاء') return 'Customer Support';
+        }
+        return badge;
     };
 
     const displayContacts = contacts.length > 0
@@ -198,7 +213,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                         : '0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(34, 197, 94, 0.12)',
                     animation: 'scaleUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                     fontFamily: 'var(--font-cairo, Cairo, sans-serif)',
-                    direction: 'rtl',
+                    direction: isRtl ? 'rtl' : 'ltr',
                     color: isLight ? '#0F172A' : '#FFFFFF',
                     boxSizing: 'border-box',
                 }}
@@ -214,7 +229,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                     <button
                         type="button"
                         onClick={onClose}
-                        aria-label="إغلاق"
+                        aria-label={isEn ? "Close" : "إغلاق"}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -253,7 +268,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                         alignItems: 'center',
                         gap: '6px',
                     }}>
-                        <span>تواصل مع فريق</span>
+                        <span>{isEn ? 'Contact Team' : 'تواصل مع فريق'}</span>
                         <span style={{
                             background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
                             WebkitBackgroundClip: 'text',
@@ -270,9 +285,9 @@ export default function SupportContactModal({ isOpen, onClose }) {
                     fontSize: '13.5px',
                     fontWeight: '700',
                     color: isLight ? '#475569' : '#9E9EA8',
-                    textAlign: 'right',
+                    textAlign: isRtl ? 'right' : 'left',
                 }}>
-                    اختر القناة أو الشخص الذي تريد التواصل معه مباشرة:
+                    {isEn ? 'Choose the channel or representative to contact directly:' : 'اختر القناة أو الشخص الذي تريد التواصل معه مباشرة:'}
                 </p>
 
                 {/* Contact List */}
@@ -295,14 +310,14 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                     justifyContent: 'space-between',
                                     padding: '12px 14px',
                                     borderRadius: '16px',
-                                    background: isLight ? '#F8FAFC' : 'rgba(15, 18, 16, 0.75)',
+                                    background: isLight ? '#FFFFFF' : 'rgba(15, 18, 16, 0.75)',
                                     border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1.5px solid rgba(34, 197, 94, 0.22)',
                                     gap: '10px',
                                     boxSizing: 'border-box',
                                     width: '100%',
                                 }}
                             >
-                                {/* Left: Action "تواصل" Button */}
+                                {/* Action "تواصل / Contact" Button */}
                                 <a
                                     href={targetUrl}
                                     target="_blank"
@@ -315,27 +330,28 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                         padding: '7px 16px',
                                         borderRadius: '10px',
                                         border: '1.5px solid #22C55E',
-                                        color: isLight ? '#FFFFFF' : '#4ADE80',
-                                        background: isLight ? '#22C55E' : 'transparent',
+                                        color: '#FFFFFF',
+                                        background: '#22C55E',
                                         fontSize: '13px',
                                         fontWeight: '900',
                                         textDecoration: 'none',
                                         cursor: 'pointer',
                                         flexShrink: 0,
-                                        boxShadow: isLight ? '0 2px 8px rgba(34, 197, 94, 0.3)' : 'none',
+                                        boxShadow: '0 2px 8px rgba(34, 197, 94, 0.3)',
                                     }}
                                 >
-                                    تواصل
+                                    {isEn ? 'Contact' : 'تواصل'}
                                 </a>
 
-                                {/* Right Group: Info & WhatsApp Icon */}
+                                {/* Info & WhatsApp Icon */}
                                 <div style={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '10px',
                                     minWidth: 0,
                                     flex: 1,
-                                    justifyContent: 'flex-end',
+                                    justifyContent: isRtl ? 'flex-end' : 'flex-start',
+                                    flexDirection: isRtl ? 'row' : 'row-reverse',
                                 }}>
                                     {/* Text Info (Name, Badge, Phone) */}
                                     <div style={{
@@ -344,12 +360,12 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                         gap: '3px',
                                         minWidth: 0,
                                         flex: 1,
-                                        textAlign: 'right',
+                                        textAlign: isRtl ? 'right' : 'left',
                                     }}>
                                         <div style={{
                                             display: 'flex',
                                             alignItems: 'center',
-                                            justifyContent: 'flex-start',
+                                            justifyContent: isRtl ? 'flex-start' : 'flex-start',
                                             gap: '6px',
                                             flexWrap: 'wrap',
                                         }}>
@@ -387,7 +403,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                                 fontSize: '12px',
                                                 fontWeight: '700',
                                                 direction: 'ltr',
-                                                justifyContent: 'flex-end',
+                                                justifyContent: isRtl ? 'flex-end' : 'flex-start',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
                                                 whiteSpace: 'nowrap',
@@ -400,7 +416,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                                         )}
                                     </div>
 
-                                    {/* WhatsApp Circular Icon on Right */}
+                                    {/* WhatsApp Circular Icon */}
                                     <div style={{
                                         width: '40px',
                                         height: '40px',
@@ -435,9 +451,10 @@ export default function SupportContactModal({ isOpen, onClose }) {
                     fontWeight: '700',
                 }}>
                     <ShieldCheck size={14} color="#22C55E" />
-                    <span>فريق الدعم متواجد لخدمتك على مدار الساعة 24/7</span>
+                    <span>{isEn ? 'Support team available 24/7 to assist you' : 'فريق الدعم متواجد لخدمتك على مدار الساعة 24/7'}</span>
                 </div>
             </div>
         </div>
     );
 }
+

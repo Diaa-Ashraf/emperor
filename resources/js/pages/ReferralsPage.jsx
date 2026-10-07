@@ -28,11 +28,14 @@ import { referralsApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function ReferralsPage() {
     const { user } = useAuth();
     const { success } = useToast();
-    const { t, isRtl } = useLanguage();
+    const { t, isRtl, language } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
 
     const [activeTab, setActiveTab] = useState('code'); // 'code' | 'sub_agent'
     const [stats, setStats] = useState(null);
@@ -94,14 +97,16 @@ export default function ReferralsPage() {
         setTimeout(() => setCopiedLink(false), 2500);
     };
 
-    const shareMessage = `انضم الآن إلى منصة إمبراطور لشحن الألعاب والتطبيقات واستلم عروض وهدايا فورية! سجل عبر الرابط التالي: ${referralLink}`;
+    const shareMessage = language === 'en'
+        ? `Join Emperor platform now for game and app top-ups and receive instant rewards! Register via: ${referralLink}`
+        : `انضم الآن إلى منصة إمبراطور لشحن الألعاب والتطبيقات واستلم عروض وهدايا فورية! سجل عبر الرابط التالي: ${referralLink}`;
 
     const handleWhatsAppShare = () => {
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareMessage)}`, '_blank');
     };
 
     const handleTelegramShare = () => {
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('سجل في منصة إمبراطور واشحن ألعابك بأفضل الأسعار!')}`, '_blank');
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(language === 'en' ? 'Register on Emperor platform and top up games at the best prices!' : 'سجل في منصة إمبراطور واشحن ألعابك بأفضل الأسعار!')}`, '_blank');
     };
 
     const handleNativeShare = () => {
@@ -111,7 +116,7 @@ export default function ReferralsPage() {
     const handleSystemShare = () => {
         if (navigator.share) {
             navigator.share({
-                title: 'منصة إمبراطور للشحن الرقمي',
+                title: language === 'en' ? 'Emperor Top-up Platform' : 'منصة إمبراطور للشحن الرقمي',
                 text: shareMessage,
                 url: referralLink,
             }).catch(() => {});
@@ -135,8 +140,8 @@ export default function ReferralsPage() {
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '6px',
-                        background: 'rgba(255, 255, 255, 0.06)',
-                        border: '1px solid var(--border-medium)',
+                        background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.06)',
+                        border: isLight ? '1px solid #E2E8F0' : '1px solid var(--border-medium)',
                         borderRadius: '20px',
                         padding: '6px 16px',
                         fontSize: '13px',
@@ -152,14 +157,14 @@ export default function ReferralsPage() {
 
             {/* Top Referral Hero Poster Banner */}
             <div style={{
-                background: 'linear-gradient(135deg, #1C1917 0%, #2A1F0D 50%, #151108 100%)',
-                border: '1px solid rgba(212, 165, 55, 0.4)',
+                background: isLight ? '#FFFFFF' : 'linear-gradient(135deg, #1C1917 0%, #2A1F0D 50%, #151108 100%)',
+                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.4)',
                 borderRadius: '24px',
                 padding: '24px',
                 marginBottom: '20px',
                 position: 'relative',
                 overflow: 'hidden',
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+                boxShadow: isLight ? '0 8px 24px rgba(0, 0, 0, 0.05)' : '0 10px 30px rgba(0, 0, 0, 0.4)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -179,11 +184,11 @@ export default function ReferralsPage() {
                     }}>
                         {t('referrals', 'رابط الإحالة')}
                     </span>
-                    <h2 style={{ margin: '0 0 8px', fontSize: '26px', fontWeight: '900', color: '#FFFFFF', lineHeight: 1.2 }}>
+                    <h2 style={{ margin: '0 0 8px', fontSize: '26px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', lineHeight: 1.2 }}>
                         {t('referralTitle', 'اكسب فلوس واسحبها')}
                     </h2>
-                    <p style={{ margin: 0, fontSize: '13.5px', color: '#CBD5E1', lineHeight: 1.5 }}>
-                        فايدك من التلفون • سحب فوري كاش • دعم فني على مدار الساعة
+                    <p style={{ margin: 0, fontSize: '13.5px', color: isLight ? '#475569' : '#CBD5E1', lineHeight: 1.5 }}>
+                        {language === 'en' ? 'Earn from your phone • Instant cashout • 24/7 support' : 'فايدك من التلفون • سحب فوري كاش • دعم فني على مدار الساعة'}
                     </p>
                 </div>
 
@@ -214,8 +219,8 @@ export default function ReferralsPage() {
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
                 gap: '4px',
-                background: 'var(--bg-card, #12131A)',
-                border: '1px solid var(--border-medium, rgba(255, 255, 255, 0.08))',
+                background: isLight ? '#F1F5F9' : 'var(--bg-card, #12131A)',
+                border: isLight ? '1px solid #E2E8F0' : '1px solid var(--border-medium, rgba(255, 255, 255, 0.08))',
                 borderRadius: '16px',
                 padding: '4px',
                 marginBottom: '24px',
@@ -905,7 +910,7 @@ export default function ReferralsPage() {
                             }}
                         >
                             <MessageCircle size={17} />
-                            <span>واتساب</span>
+                            <span>{language === 'en' ? 'WhatsApp' : 'واتساب'}</span>
                         </button>
 
                         <button
@@ -928,7 +933,7 @@ export default function ReferralsPage() {
                             }}
                         >
                             <Send size={17} />
-                            <span>تيليجرام</span>
+                            <span>{language === 'en' ? 'Telegram' : 'تيليجرام'}</span>
                         </button>
 
                         <button
@@ -950,7 +955,7 @@ export default function ReferralsPage() {
                             }}
                         >
                             <Globe size={17} />
-                            <span>فيسبوك</span>
+                            <span>{language === 'en' ? 'Facebook' : 'فيسبوك'}</span>
                         </button>
 
                         <button
@@ -972,7 +977,7 @@ export default function ReferralsPage() {
                             }}
                         >
                             <Share size={17} />
-                            <span>منصة X</span>
+                            <span>{language === 'en' ? 'X Platform' : 'منصة X'}</span>
                         </button>
                     </div>
 

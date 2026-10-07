@@ -21,11 +21,14 @@ import Pagination from '../components/ui/Pagination';
 import { walletApi, depositsApi } from '../api/endpoints';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import CurrencyConverter from '../components/wallet/CurrencyConverter';
 
 export default function WalletPage() {
     const { user } = useAuth();
     const { t, isRtl, language } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
 
     const [balanceData, setBalanceData] = useState(null);
     const [deposits, setDeposits] = useState([]);
@@ -145,38 +148,38 @@ export default function WalletPage() {
 
             {/* Financial Account Hero Card (Screenshot 5 Header) */}
             <div style={{
-                background: 'linear-gradient(135deg, #1e1e2d 0%, #2a223f 50%, #151a30 100%)',
-                border: '1px solid rgba(139, 92, 246, 0.3)',
+                background: isLight ? '#FFFFFF' : 'linear-gradient(135deg, #1e1e2d 0%, #2a223f 50%, #151a30 100%)',
+                border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(139, 92, 246, 0.3)',
                 borderRadius: '24px',
                 padding: '24px 20px',
                 marginBottom: '28px',
-                boxShadow: '0 12px 35px rgba(0, 0, 0, 0.35)',
+                boxShadow: isLight ? '0 8px 24px rgba(0, 0, 0, 0.05)' : '0 12px 35px rgba(0, 0, 0, 0.35)',
                 position: 'relative',
                 overflow: 'hidden',
-                color: '#FFFFFF',
+                color: isLight ? '#0F172A' : '#FFFFFF',
             }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', marginBottom: '24px' }}>
                     <div style={{
                         width: '46px',
                         height: '46px',
                         borderRadius: '50%',
-                        background: 'rgba(255, 255, 255, 0.1)',
+                        background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.1)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexShrink: 0,
                     }}>
-                        <ReceiptText size={22} color="#CBD5E1" />
+                        <ReceiptText size={22} color={isLight ? '#475569' : '#CBD5E1'} />
                     </div>
 
                     <div style={{ textAlign: isRtl ? 'right' : 'left', flex: 1 }}>
-                        <span style={{ fontSize: '12.5px', color: 'rgba(255, 255, 255, 0.65)', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '12.5px', color: isLight ? '#64748B' : 'rgba(255, 255, 255, 0.65)', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
                             {t('financialAccount', 'حسابك المالي')}
                         </span>
-                        <h2 style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: '900', color: '#FFFFFF' }}>
+                        <h2 style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                             {t('financialTransfersTitle', 'سجل طلبات إضافة الرصيد')}
                         </h2>
-                        <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255, 255, 255, 0.75)' }}>
+                        <p style={{ margin: 0, fontSize: '13px', color: isLight ? '#475569' : 'rgba(255, 255, 255, 0.75)' }}>
                             {t('financialTransfersSub', 'تابع حالة طلباتك ومبلغ وطريقة الدفع في مكان واحد (خلال آخر 5 أيام).')}
                         </p>
                     </div>
@@ -197,17 +200,17 @@ export default function WalletPage() {
                         style={{
                             background: depositStatusFilter === 'all'
                                 ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                                : 'rgba(255, 255, 255, 0.08)',
-                            border: depositStatusFilter === 'all' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                                : (isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.08)'),
+                            border: depositStatusFilter === 'all' ? 'none' : (isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.1)'),
                             borderRadius: '16px',
                             padding: '12px 6px',
-                            color: '#FFFFFF',
+                            color: depositStatusFilter === 'all' ? '#FFFFFF' : (isLight ? '#0F172A' : '#FFFFFF'),
                             textAlign: 'center',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                         }}
                     >
-                        <div style={{ fontSize: '11.5px', opacity: 0.85, marginBottom: '2px' }}>{t('all', 'الكل')}</div>
+                        <div style={{ fontSize: '11.5px', opacity: depositStatusFilter === 'all' ? 0.9 : 0.7, marginBottom: '2px', fontWeight: '700' }}>{t('all', 'الكل')}</div>
                         <div style={{ fontSize: '18px', fontWeight: '900' }}>{depositStats.total || deposits.length}</div>
                     </button>
 
@@ -220,17 +223,17 @@ export default function WalletPage() {
                         style={{
                             background: depositStatusFilter === 'pending'
                                 ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
-                                : 'rgba(255, 255, 255, 0.08)',
-                            border: depositStatusFilter === 'pending' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                                : (isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.08)'),
+                            border: depositStatusFilter === 'pending' ? 'none' : (isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.1)'),
                             borderRadius: '16px',
                             padding: '12px 6px',
-                            color: '#FFFFFF',
+                            color: depositStatusFilter === 'pending' ? '#FFFFFF' : (isLight ? '#0F172A' : '#FFFFFF'),
                             textAlign: 'center',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                         }}
                     >
-                        <div style={{ fontSize: '11.5px', opacity: 0.85, marginBottom: '2px' }}>{t('pending', 'انتظار')}</div>
+                        <div style={{ fontSize: '11.5px', opacity: depositStatusFilter === 'pending' ? 0.9 : 0.7, marginBottom: '2px', fontWeight: '700' }}>{t('pending', 'انتظار')}</div>
                         <div style={{ fontSize: '18px', fontWeight: '900' }}>{depositStats.pending || 0}</div>
                     </button>
 
@@ -243,17 +246,17 @@ export default function WalletPage() {
                         style={{
                             background: depositStatusFilter === 'completed'
                                 ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                                : 'rgba(255, 255, 255, 0.08)',
-                            border: depositStatusFilter === 'completed' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                                : (isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.08)'),
+                            border: depositStatusFilter === 'completed' ? 'none' : (isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.1)'),
                             borderRadius: '16px',
                             padding: '12px 6px',
-                            color: '#FFFFFF',
+                            color: depositStatusFilter === 'completed' ? '#FFFFFF' : (isLight ? '#0F172A' : '#FFFFFF'),
                             textAlign: 'center',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                         }}
                     >
-                        <div style={{ fontSize: '11.5px', opacity: 0.85, marginBottom: '2px' }}>{t('accepted', 'مقبولة')}</div>
+                        <div style={{ fontSize: '11.5px', opacity: depositStatusFilter === 'completed' ? 0.9 : 0.7, marginBottom: '2px', fontWeight: '700' }}>{t('accepted', 'مقبولة')}</div>
                         <div style={{ fontSize: '18px', fontWeight: '900' }}>{depositStats.approved || 0}</div>
                     </button>
 
@@ -266,17 +269,17 @@ export default function WalletPage() {
                         style={{
                             background: depositStatusFilter === 'rejected'
                                 ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
-                                : 'rgba(255, 255, 255, 0.08)',
-                            border: depositStatusFilter === 'rejected' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                                : (isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.08)'),
+                            border: depositStatusFilter === 'rejected' ? 'none' : (isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.1)'),
                             borderRadius: '16px',
                             padding: '12px 6px',
-                            color: '#FFFFFF',
+                            color: depositStatusFilter === 'rejected' ? '#FFFFFF' : (isLight ? '#0F172A' : '#FFFFFF'),
                             textAlign: 'center',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                         }}
                     >
-                        <div style={{ fontSize: '11.5px', opacity: 0.85, marginBottom: '2px' }}>{t('rejected', 'مرفوضة')}</div>
+                        <div style={{ fontSize: '11.5px', opacity: depositStatusFilter === 'rejected' ? 0.9 : 0.7, marginBottom: '2px', fontWeight: '700' }}>{t('rejected', 'مرفوضة')}</div>
                         <div style={{ fontSize: '18px', fontWeight: '900' }}>{depositStats.rejected || 0}</div>
                     </button>
                 </div>
