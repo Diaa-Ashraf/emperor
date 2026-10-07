@@ -152,7 +152,7 @@ export default function WalletPage() {
                 background: isLight ? '#FFFFFF' : 'linear-gradient(135deg, #1e1e2d 0%, #2a223f 50%, #151a30 100%)',
                 border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(139, 92, 246, 0.3)',
                 borderRadius: '24px',
-                padding: '24px 20px',
+                padding: 'clamp(16px, 3.5vw, 24px) clamp(14px, 3vw, 20px)',
                 marginBottom: '28px',
                 boxShadow: isLight ? '0 8px 24px rgba(0, 0, 0, 0.05)' : '0 12px 35px rgba(0, 0, 0, 0.35)',
                 position: 'relative',
@@ -187,11 +187,7 @@ export default function WalletPage() {
                 </div>
 
                 {/* Filter / Stats Counters (Pills) */}
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(4, 1fr)',
-                    gap: '10px',
-                }}>
+                <div className="wallet-stats-grid">
                     {/* All */}
                     <button
                         onClick={() => {
@@ -291,6 +287,7 @@ export default function WalletPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                flexWrap: 'wrap',
                 gap: '12px',
                 marginBottom: '16px',
                 padding: '0 4px',

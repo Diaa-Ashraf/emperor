@@ -82,7 +82,7 @@ export default function DepositCard({ deposit }) {
                 background: 'var(--bg-card, #FFFFFF)',
                 border: '1px solid var(--border-medium, rgba(0, 0, 0, 0.08))',
                 borderRadius: '20px',
-                padding: '18px 20px',
+                padding: 'clamp(14px, 3vw, 18px) clamp(14px, 3.5vw, 20px)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '14px',
@@ -97,7 +97,8 @@ export default function DepositCard({ deposit }) {
                 display: 'flex',
                 alignItems: 'flex-start',
                 justifyContent: 'space-between',
-                gap: '12px',
+                flexWrap: 'wrap-reverse',
+                gap: '10px',
             }}>
                 {/* Status Pill */}
                 <div style={{
@@ -176,7 +177,7 @@ export default function DepositCard({ deposit }) {
                 background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(14, 165, 233, 0.03) 100%)',
                 border: '1px solid rgba(56, 189, 248, 0.2)',
                 borderRadius: '16px',
-                padding: '14px 20px',
+                padding: 'clamp(10px, 2.5vw, 14px) clamp(12px, 3vw, 20px)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -207,6 +208,8 @@ export default function DepositCard({ deposit }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '8px',
                 fontSize: '12px',
                 color: 'var(--text-secondary, #64748b)',
                 paddingTop: '2px',

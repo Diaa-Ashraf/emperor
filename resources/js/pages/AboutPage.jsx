@@ -198,8 +198,8 @@ export default function AboutPage() {
                 <div
                     style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
-                        gap: '18px',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
+                        gap: '14px',
                         marginBottom: '48px',
                     }}>
                     {stats.map((s, idx) => {
@@ -212,7 +212,7 @@ export default function AboutPage() {
                                     background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #161622 0%, #0E0E14 100%)',
                                     border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.25)',
                                     borderRadius: '22px',
-                                    padding: '24px 20px',
+                                    padding: 'clamp(16px, 3.5vw, 24px) clamp(12px, 3vw, 20px)',
                                     textAlign: 'center',
                                     boxShadow: isLight ? '0 4px 18px rgba(0, 0, 0, 0.05)' : '0 10px 30px rgba(0, 0, 0, 0.4)',
                                     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -304,8 +304,8 @@ export default function AboutPage() {
                     <div
                         style={{
                             display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
-                            gap: '20px',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
+                            gap: '18px',
                         }}>
                         {pillars.map((p, idx) => {
                             const Icon = p.icon;
@@ -317,7 +317,7 @@ export default function AboutPage() {
                                         background: isLight ? '#F8FAFC' : 'rgba(20, 20, 28, 0.7)',
                                         border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                                         borderRadius: '20px',
-                                        padding: '24px',
+                                        padding: 'clamp(18px, 3.5vw, 24px)',
                                         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                                         transitionDelay: `${idx * 0.12}s`,
                                         display: 'flex',
@@ -395,8 +395,8 @@ export default function AboutPage() {
                 {/* Core Values Section */}
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
-                    gap: '20px',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
+                    gap: '18px',
                     marginBottom: '44px',
                 }}>
                     {values.map((val, idx) => {
@@ -409,7 +409,7 @@ export default function AboutPage() {
                                     background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #151520 0%, #0D0D14 100%)',
                                     border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
                                     borderRadius: '20px',
-                                    padding: '24px',
+                                    padding: 'clamp(16px, 3.5vw, 24px)',
                                     boxShadow: isLight ? '0 4px 18px rgba(0, 0, 0, 0.04)' : 'none',
                                     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                                     transitionDelay: `${idx * 0.15}s`,
@@ -471,16 +471,18 @@ export default function AboutPage() {
                         </p>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', width: '100%' }}>
                         <Link
                             to="/register"
                             className="emperor-btn-primary"
                             style={{
+                                flex: '1 1 180px',
                                 padding: '12px 24px',
                                 fontSize: '14px',
                                 borderRadius: '14px',
                                 display: 'inline-flex',
                                 alignItems: 'center',
+                                justifyContent: 'center',
                                 gap: '8px',
                                 textDecoration: 'none',
                                 fontWeight: '900',
@@ -492,6 +494,7 @@ export default function AboutPage() {
                         <Link
                             to="/support"
                             style={{
+                                flex: '1 1 180px',
                                 padding: '12px 20px',
                                 borderRadius: '14px',
                                 background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.06)',
@@ -502,6 +505,7 @@ export default function AboutPage() {
                                 textDecoration: 'none',
                                 display: 'inline-flex',
                                 alignItems: 'center',
+                                justifyContent: 'center',
                                 gap: '6px',
                                 transition: 'all 0.2s',
                             }}

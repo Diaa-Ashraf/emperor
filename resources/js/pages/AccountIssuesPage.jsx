@@ -175,7 +175,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                         background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #14141A 0%, #0D0D12 100%)',
                         border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.3)',
                         borderRadius: '24px',
-                        padding: '28px',
+                        padding: 'clamp(16px, 4vw, 28px)',
                         boxShadow: isLight ? '0 4px 20px rgba(0,0,0,0.05)' : '0 12px 40px rgba(0,0,0,0.5)',
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
@@ -229,7 +229,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                             </label>
                             <div style={{
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 120px), 1fr))',
                                 gap: '8px',
                             }}>
                                 {issueTypes.map((type) => {
@@ -300,7 +300,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                         {!isAuthenticated && (
                             <div style={{
                                 display: 'grid',
-                                gridTemplateColumns: '1fr 1fr',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
                                 gap: '12px',
                                 marginBottom: '20px',
                             }}>
@@ -375,7 +375,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                             background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #121218 0%, #0A0A0E 100%)',
                             border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.2)',
                             borderRadius: '24px',
-                            padding: '24px',
+                            padding: 'clamp(16px, 3.5vw, 24px)',
                             boxShadow: isLight ? '0 4px 20px rgba(0,0,0,0.05)' : '0 8px 30px rgba(0,0,0,0.5)',
                         }}>
                             <div style={{
@@ -414,12 +414,13 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                 background: isLight ? '#F8FAFC' : '#050508',
                                 border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(212, 165, 55, 0.25)',
                                 borderRadius: '16px',
-                                padding: '18px',
+                                padding: 'clamp(12px, 3vw, 18px)',
                                 fontFamily: 'var(--font-cairo)',
                                 fontSize: '13px',
                                 color: isLight ? '#0F172A' : '#E2E8F0',
                                 lineHeight: '1.8',
                                 whiteSpace: 'pre-line',
+                                wordBreak: 'break-word',
                             }}>
                                 <div style={{ fontWeight: '800', color: isLight ? '#B45309' : 'var(--gold-300)', marginBottom: '8px' }}>
                                     {language === 'en' ? 'Message to Platform Support' : 'رسالة إلى صاحب الموقع'}

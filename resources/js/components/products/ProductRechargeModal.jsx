@@ -349,7 +349,7 @@ export default function ProductRechargeModal({
                         background: isLight ? '#FFFFFF' : 'linear-gradient(180deg, #141310 0%, #0c0b08 100%)',
                         border: isLight ? '1.5px solid #E2E8F0' : '1.5px solid rgba(212, 165, 55, 0.45)',
                         borderRadius: '22px',
-                        padding: '18px 20px 22px',
+                        padding: 'clamp(14px, 3.5vw, 20px)',
                         boxShadow: isLight
                             ? '0 20px 50px rgba(0, 0, 0, 0.08), 0 0 25px rgba(212, 165, 55, 0.15)'
                             : '0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(212, 165, 55, 0.15)',
@@ -886,7 +886,7 @@ export default function ProductRechargeModal({
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '12px',
+                            gap: '10px',
                             direction: isRtl ? 'rtl' : 'ltr'
                         }}>
                             <button
@@ -919,12 +919,13 @@ export default function ProductRechargeModal({
                                 type="button"
                                 onClick={onClose}
                                 style={{
-                                    width: '105px',
+                                    flexShrink: 0,
+                                    minWidth: '85px',
                                     background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.08)',
                                     color: isLight ? '#334155' : '#F8FAFC',
                                     border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(255, 255, 255, 0.2)',
                                     borderRadius: '14px',
-                                    padding: '13px 16px',
+                                    padding: '13px 14px',
                                     fontSize: '14px',
                                     fontWeight: '800',
                                     cursor: 'pointer',

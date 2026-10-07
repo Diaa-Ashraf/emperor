@@ -1666,14 +1666,19 @@ body {
 }
 
 /* Responsive Touch Friendly Buttons */
-@media(max-width: 992px) {
+.wallet-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
 
-    .no-scrollbar {
-        padding: 12px 20px !important;
-        font-size: 14px !important;
-        flex-wrap: wrap !important;
+@media (max-width: 520px) {
+    .wallet-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
     }
 }
+
 
 @media (max-width: 640px) {
 

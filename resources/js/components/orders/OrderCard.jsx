@@ -81,7 +81,8 @@ export default function OrderCard({ order }) {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'flex-start',
-                gap: '12px',
+                flexWrap: 'wrap-reverse',
+                gap: '10px',
             }}>
                 {/* Price Box */}
                 <div style={{
@@ -104,9 +105,9 @@ export default function OrderCard({ order }) {
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '12px',
+                    gap: '10px',
                     justifyContent: isRtl ? 'flex-end' : 'flex-start',
-                    flex: 1,
+                    flex: '1 1 200px',
                     minWidth: 0,
                 }}>
                     <div style={{
@@ -186,8 +187,8 @@ export default function OrderCard({ order }) {
 
                     {/* Product Thumbnail */}
                     <div style={{
-                        width: '52px',
-                        height: '52px',
+                        width: '46px',
+                        height: '46px',
                         borderRadius: '50%',
                         background: isLight ? '#FFFFFF' : '#1a1a24',
                         border: '2px solid #D4A537',

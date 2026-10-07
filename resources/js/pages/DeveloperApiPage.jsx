@@ -464,13 +464,13 @@ export default function DeveloperApiPage() {
                                         />
                                     </div>
 
-                                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '8px' }}>
+                                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '8px', width: '100%' }}>
                                         <button
                                             type="submit"
                                             disabled={requesting}
                                             style={{
-                                                flex: 1,
-                                                minWidth: '220px',
+                                                flex: '1 1 200px',
+                                                minWidth: 'min(100%, 200px)',
                                                 padding: '14px 20px',
                                                 borderRadius: '12px',
                                                 border: 'none',
@@ -498,6 +498,7 @@ export default function DeveloperApiPage() {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{
+                                                flex: '1 1 180px',
                                                 padding: '14px 20px',
                                                 borderRadius: '12px',
                                                 background: '#25D366',
@@ -507,6 +508,7 @@ export default function DeveloperApiPage() {
                                                 textDecoration: 'none',
                                                 display: 'inline-flex',
                                                 alignItems: 'center',
+                                                justifyContent: 'center',
                                                 gap: '8px',
                                                 boxShadow: '0 4px 15px rgba(37, 211, 102, 0.25)',
                                             }}
@@ -521,7 +523,7 @@ export default function DeveloperApiPage() {
                     </div>
                 ) : (
                     /* Active API Client: Show Key Generation & Settings */
-                    <div className="developer-api-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+                    <div className="developer-api-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '20px' }}>
 
                         {/* Card 1: API Key & Secret */}
                         <div
@@ -530,7 +532,7 @@ export default function DeveloperApiPage() {
                                 background: isLight ? '#FFFFFF' : '#111827',
                                 border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.25)',
                                 borderRadius: '16px',
-                                padding: '24px',
+                                padding: 'clamp(16px, 3.5vw, 24px)',
                                 boxShadow: isLight ? '0 10px 30px rgba(30, 80, 140, 0.08)' : '0 8px 30px rgba(0, 0, 0, 0.4)'
                             }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
@@ -670,7 +672,7 @@ export default function DeveloperApiPage() {
                                 background: isLight ? '#FFFFFF' : '#111827',
                                 border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.25)',
                                 borderRadius: '16px',
-                                padding: '24px',
+                                padding: 'clamp(16px, 3.5vw, 24px)',
                                 boxShadow: isLight ? '0 10px 30px rgba(30, 80, 140, 0.08)' : '0 8px 30px rgba(0, 0, 0, 0.4)'
                             }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
@@ -772,7 +774,7 @@ export default function DeveloperApiPage() {
                     background: isLight ? '#FFFFFF' : '#111827',
                     border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.25)',
                     borderRadius: '16px',
-                    padding: '28px',
+                    padding: 'clamp(16px, 3.5vw, 28px)',
                     boxShadow: isLight ? '0 10px 30px rgba(30, 80, 140, 0.08)' : '0 8px 30px rgba(0, 0, 0, 0.4)'
                 }}>
                     <h2 style={{ fontSize: '20px', fontWeight: '800', color: isLight ? '#B45309' : '#D4A537', marginBottom: '10px' }}>
@@ -780,21 +782,21 @@ export default function DeveloperApiPage() {
                     </h2>
                     <p className="developer-api-base-url" style={{ color: isLight ? '#475569' : '#9ca3af', fontSize: '14px', marginBottom: '24px' }}>
                         {isEn ? 'Base URL for all merchant requests:' : 'الرابط الأساسي لجميع طلبات الموزعين:'}{' '}
-                        <code className="developer-api-base-url-value" style={{ color: isLight ? '#0F172A' : '#fff', background: isLight ? '#F1F5F9' : '#1f2937', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '3px 8px', borderRadius: '6px', fontWeight: '700' }}>
+                        <code className="developer-api-base-url-value" style={{ color: isLight ? '#0F172A' : '#fff', background: isLight ? '#F1F5F9' : '#1f2937', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '3px 8px', borderRadius: '6px', fontWeight: '700', wordBreak: 'break-all', display: 'inline-block', maxWidth: '100%' }}>
                             {window.location.origin}/api/v1/external
                         </code>
                     </p>
 
                     {/* Endpoint 1: Balance */}
-                    <div className="developer-api-endpoint" style={{ background: isLight ? '#F8FAFC' : '#1e293b', border: isLight ? '1px solid #E2E8F0' : 'none', borderRadius: '12px', padding: '18px', marginBottom: '18px' }}>
-                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div className="developer-api-endpoint" style={{ background: isLight ? '#F8FAFC' : '#1e293b', border: isLight ? '1px solid #E2E8F0' : 'none', borderRadius: '12px', padding: '16px', marginBottom: '18px' }}>
+                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
                             <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>GET</span>
                             <code style={{ fontSize: '15px', color: isLight ? '#0F172A' : '#f8fafc', fontWeight: '700' }}>/balance</code>
                             <span style={{ color: isLight ? '#475569' : '#94a3b8', fontSize: '13px' }}>
                                 {isEn ? '- Query current merchant wallet balance' : '- الاستعلام عن رصيد المحفظة الحالي'}
                             </span>
                         </div>
-                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: isLight ? '#0F172A' : '#38bdf8', direction: 'ltr', textAlign: 'left', fontWeight: '600' }}>
+                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: 'clamp(10px, 2.5vw, 14px)', borderRadius: '8px', overflowX: 'auto', maxWidth: '100%', boxSizing: 'border-box', fontSize: '13px', color: isLight ? '#0F172A' : '#38bdf8', direction: 'ltr', textAlign: 'left', fontWeight: '600', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
                             {`curl -X GET "${window.location.origin}/api/v1/external/balance" \\
   -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
   -H "X-API-Secret: YOUR_API_SECRET"`}
@@ -802,15 +804,15 @@ export default function DeveloperApiPage() {
                     </div>
 
                     {/* Endpoint 2: Products */}
-                    <div className="developer-api-endpoint" style={{ background: isLight ? '#F8FAFC' : '#1e293b', border: isLight ? '1px solid #E2E8F0' : 'none', borderRadius: '12px', padding: '18px', marginBottom: '18px' }}>
-                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div className="developer-api-endpoint" style={{ background: isLight ? '#F8FAFC' : '#1e293b', border: isLight ? '1px solid #E2E8F0' : 'none', borderRadius: '12px', padding: '16px', marginBottom: '18px' }}>
+                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
                             <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>GET</span>
                             <code style={{ fontSize: '15px', color: isLight ? '#0F172A' : '#f8fafc', fontWeight: '700' }}>/products</code>
                             <span style={{ color: isLight ? '#475569' : '#94a3b8', fontSize: '13px' }}>
                                 {isEn ? '- Retrieve list of products and your custom prices' : '- جلب قائمة المنتجات والأسعار الخاصة بك'}
                             </span>
                         </div>
-                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: isLight ? '#0F172A' : '#38bdf8', direction: 'ltr', textAlign: 'left', fontWeight: '600' }}>
+                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: 'clamp(10px, 2.5vw, 14px)', borderRadius: '8px', overflowX: 'auto', maxWidth: '100%', boxSizing: 'border-box', fontSize: '13px', color: isLight ? '#0F172A' : '#38bdf8', direction: 'ltr', textAlign: 'left', fontWeight: '600', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
                             {`curl -X GET "${window.location.origin}/api/v1/external/products" \\
   -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
   -H "X-API-Secret: YOUR_API_SECRET"`}
@@ -818,15 +820,15 @@ export default function DeveloperApiPage() {
                     </div>
 
                     {/* Endpoint 3: Create Order */}
-                    <div className="developer-api-endpoint" style={{ background: isLight ? '#F8FAFC' : '#1e293b', border: isLight ? '1px solid #E2E8F0' : 'none', borderRadius: '12px', padding: '18px', marginBottom: '18px' }}>
-                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div className="developer-api-endpoint" style={{ background: isLight ? '#F8FAFC' : '#1e293b', border: isLight ? '1px solid #E2E8F0' : 'none', borderRadius: '12px', padding: '16px', marginBottom: '18px' }}>
+                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
                             <span style={{ background: '#16a34a', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>POST</span>
                             <code style={{ fontSize: '15px', color: isLight ? '#0F172A' : '#f8fafc', fontWeight: '700' }}>/orders</code>
                             <span style={{ color: isLight ? '#475569' : '#94a3b8', fontSize: '13px' }}>
                                 {isEn ? '- Place and execute an instant top-up order' : '- إنشاء وتنفيذ طلب شحن مباشر'}
                             </span>
                         </div>
-                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: isLight ? '#15803D' : '#4ade80', direction: 'ltr', textAlign: 'left', fontWeight: '600' }}>
+                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: 'clamp(10px, 2.5vw, 14px)', borderRadius: '8px', overflowX: 'auto', maxWidth: '100%', boxSizing: 'border-box', fontSize: '13px', color: isLight ? '#15803D' : '#4ade80', direction: 'ltr', textAlign: 'left', fontWeight: '600', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
                             {`curl -X POST "${window.location.origin}/api/v1/external/orders" \\
   -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
   -H "X-API-Secret: YOUR_API_SECRET" \\
@@ -842,15 +844,15 @@ export default function DeveloperApiPage() {
                     </div>
 
                     {/* Endpoint 4: Check Order */}
-                    <div className="developer-api-endpoint" style={{ background: isLight ? '#F8FAFC' : '#1e293b', border: isLight ? '1px solid #E2E8F0' : 'none', borderRadius: '12px', padding: '18px' }}>
-                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div className="developer-api-endpoint" style={{ background: isLight ? '#F8FAFC' : '#1e293b', border: isLight ? '1px solid #E2E8F0' : 'none', borderRadius: '12px', padding: '16px' }}>
+                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
                             <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>GET</span>
                             <code style={{ fontSize: '15px', color: isLight ? '#0F172A' : '#f8fafc', fontWeight: '700' }}>/orders/{'{id}'}</code>
                             <span style={{ color: isLight ? '#475569' : '#94a3b8', fontSize: '13px' }}>
                                 {isEn ? '- Query order status and retrieved vouchers/pins' : '- الاستعلام عن حالة الطلب والأكواد'}
                             </span>
                         </div>
-                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '14px', borderRadius: '8px', overflowX: 'auto', fontSize: '13px', color: isLight ? '#0F172A' : '#38bdf8', direction: 'ltr', textAlign: 'left', fontWeight: '600' }}>
+                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: 'clamp(10px, 2.5vw, 14px)', borderRadius: '8px', overflowX: 'auto', maxWidth: '100%', boxSizing: 'border-box', fontSize: '13px', color: isLight ? '#0F172A' : '#38bdf8', direction: 'ltr', textAlign: 'left', fontWeight: '600', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
                             {`curl -X GET "${window.location.origin}/api/v1/external/orders/EMP-12345" \\
   -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
   -H "X-API-Secret: YOUR_API_SECRET"`}

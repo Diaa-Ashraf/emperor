@@ -55,10 +55,10 @@ export default function OrderConfirmModal({
                     background: isLight ? '#F8FAFC' : 'rgba(26, 26, 36, 0.8)',
                     border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.2)',
                     borderRadius: '16px',
-                    padding: '16px',
+                    padding: 'clamp(12px, 3vw, 16px)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '14px',
+                    gap: '12px',
                 }}>
                     <div style={{
                         width: '50px',
@@ -189,7 +189,7 @@ export default function OrderConfirmModal({
                 )}
 
                 {/* Action Buttons */}
-                <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap' }}>
                     {hasEnoughBalance ? (
                         <Button
                             variant="primary"
@@ -197,12 +197,12 @@ export default function OrderConfirmModal({
                             loading={loading}
                             icon={Zap}
                             onClick={onConfirm}
-                            style={{ flex: 1 }}
+                            style={{ flex: '1 1 160px' }}
                         >
                             {t('confirmAndPay', 'تأكيد ودفع الآن')}
                         </Button>
                     ) : (
-                        <Link to="/deposit" style={{ flex: 1, textDecoration: 'none' }}>
+                        <Link to="/deposit" style={{ flex: '1 1 160px', textDecoration: 'none' }}>
                             <Button
                                 variant="primary"
                                 size="lg"
@@ -223,11 +223,13 @@ export default function OrderConfirmModal({
                         disabled={loading}
                         onClick={onClose}
                         style={{
+                            flexShrink: 0,
+                            minWidth: '85px',
                             background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.08)',
                             color: isLight ? '#334155' : '#F8FAFC',
                             border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(255, 255, 255, 0.2)',
                             borderRadius: '12px',
-                            padding: '12px 20px',
+                            padding: '12px clamp(12px, 2.5vw, 20px)',
                             fontWeight: '800',
                             fontSize: '14px',
                             cursor: 'pointer',
