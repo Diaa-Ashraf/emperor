@@ -16,7 +16,7 @@ class StoreOrderRequest extends FormRequest
         return [
             'product_id' => ['required', 'exists:products,id'],
             'product_tier_id' => ['required', 'exists:product_tiers,id'],
-            'quantity' => ['required', 'integer', 'min:1', 'max:100'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:10000000'],
             'player_id' => ['nullable', 'string', 'max:100'],
             'server_id' => ['nullable', 'string', 'max:100'],
             'account_region' => ['nullable', 'string', 'max:100'],

@@ -33,9 +33,37 @@ class OrderService
             throw new InvalidArgumentException('هذا المنتج غير متاح حالياً للطلب.');
         }
 
-        $unitPrice = $this->pricingService->getPriceForUser($tier, $user);
-        $totalAmount = $unitPrice * $dto->quantity;
-        $costAmount = ((float) $tier->source_cost) * $dto->quantity;
+        $tierUserPrice = $this->pricingService->getPriceForUser($tier, $user);
+
+        // Detect if tier represents a package of coins (e.g. "7,000 كوينز" or "1,000 كوينز")
+        $coinsInTier = 1;
+        if (!empty($tier->name)) {
+            $cleaned = str_replace(',', '', (string) $tier->name);
+            if (preg_match('/(\d+)/', $cleaned, $matches)) {
+                $num = (int) $matches[1];
+                if ($num > 1) {
+                    $coinsInTier = $num;
+                }
+            }
+        }
+
+        $isVoiceApp = ($product->category?->type === \App\Enums\CategoryType::VOICE_APPS)
+            || ($product->category?->slug === 'apps')
+            || ($dto->quantity >= 500 && $coinsInTier > 1);
+
+        if ($isVoiceApp && $coinsInTier > 1) {
+            $coinRate = $tierUserPrice / $coinsInTier;
+            $coinCost = ((float) $tier->source_cost) / $coinsInTier;
+
+            $totalAmount = round($coinRate * $dto->quantity, 2);
+            $costAmount = round($coinCost * $dto->quantity, 2);
+            $unitPrice = round($coinRate, 6);
+        } else {
+            $unitPrice = $tierUserPrice;
+            $totalAmount = round($unitPrice * $dto->quantity, 2);
+            $costAmount = round(((float) $tier->source_cost) * $dto->quantity, 2);
+        }
+
         $profitAmount = $totalAmount - $costAmount;
 
         return DB::transaction(function () use ($dto, $user, $product, $tier, $unitPrice, $totalAmount, $costAmount, $profitAmount) {

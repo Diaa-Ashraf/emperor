@@ -19,6 +19,7 @@ export default function OrderConfirmModal({
     currency = 'EGP',
     onConfirm,
     loading = false,
+    calculatedTotal,
 }) {
     if (!product) return null;
 
@@ -27,7 +28,9 @@ export default function OrderConfirmModal({
     const unitPrice = tier
         ? Number(tier.price_egp || tier.price || tier.final_price || 0)
         : Number(product.unit_price || product.price || 0);
-    const totalPrice = unitPrice * (quantity || 1);
+    const totalPrice = calculatedTotal !== undefined && calculatedTotal !== null
+        ? Number(calculatedTotal)
+        : unitPrice * (quantity || 1);
     const hasEnoughBalance = walletBalance >= totalPrice;
 
     const formattedTotal = totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

@@ -6,10 +6,8 @@ import {
     User,
     Server,
     Globe,
-    Layers,
     ChevronDown,
     FileText,
-    Check
 } from 'lucide-react';
 import { formatImageUrl } from '../../utils/imageHelper';
 import { ordersApi, walletApi } from '../../api/endpoints';
@@ -37,9 +35,25 @@ export default function ProductRechargeModal({
         return product.tiers || product.active_tiers || [];
     }, [product]);
 
+    // Detect if this is a custom-quantity coin/voice app (matching KA-CARD mode)
+    const isCustomQuantity = useMemo(() => {
+        const catType = product.category?.type;
+        const catSlug = product.category?.slug;
+        if (catType === 'voice_apps' || catSlug === 'apps' || catSlug === 'voice_apps') return true;
+        if (typeof window !== 'undefined' && (window.location.pathname.includes('/apps') || window.location.search.includes('app='))) return true;
+        if (product.parent_id !== null && product.parent_id !== undefined) return true;
+        const nameLower = (product.name || '').toLowerCase();
+        const voiceKeywords = [
+            'فان اب', 'هلين', 'أهلاً', 'يوهو', 'يويو', 'بولا', 'مجلس',
+            'زينا', 'هايو', 'زفا', 'شات', 'كوينز', 'funup', 'haahlan',
+            'yoho', 'yoyo', 'pola', 'majlis', 'zina', 'yabi', 'zafa', 'soulchill'
+        ];
+        return voiceKeywords.some(kw => nameLower.includes(kw));
+    }, [product]);
+
     const [selectedTier, setSelectedTier] = useState(tiers.length > 0 ? tiers[0] : null);
-    const [quantity, setQuantity] = useState(1);
-    const [quantityInput, setQuantityInput] = useState('1');
+    const [quantity, setQuantity] = useState(isCustomQuantity ? 0 : 1);
+    const [quantityInput, setQuantityInput] = useState(isCustomQuantity ? '0' : '1');
     const [playerId, setPlayerId] = useState('');
     const [serverId, setServerId] = useState('');
     const [accountRegion, setAccountRegion] = useState('');
@@ -50,6 +64,7 @@ export default function ProductRechargeModal({
     const [submitting, setSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
 
+    // Reset when product changes
     useEffect(() => {
         const availableTiers = product.tiers || product.active_tiers || [];
         if (availableTiers.length > 0) {
@@ -57,15 +72,23 @@ export default function ProductRechargeModal({
         } else {
             setSelectedTier(null);
         }
-        setQuantity(1);
-        setQuantityInput('1');
+
+        if (isCustomQuantity) {
+            setQuantity(0);
+            setQuantityInput('0');
+        } else {
+            setQuantity(1);
+            setQuantityInput('1');
+        }
+
         setPlayerId('');
         setServerId('');
         setAccountRegion('');
         setErrors({});
         setShowPackageGrid(false);
-    }, [product]);
+    }, [product, isCustomQuantity]);
 
+    // Fetch user wallet balance
     useEffect(() => {
         if (isAuthenticated) {
             walletApi.getBalance()
@@ -78,29 +101,64 @@ export default function ProductRechargeModal({
         }
     }, [isAuthenticated]);
 
-    // Handle direct quantity input
+    // Compute unit coin rate for custom coin recharge
+    const coinRate = useMemo(() => {
+        if (product.unit_price && Number(product.unit_price) > 0) {
+            return Number(product.unit_price);
+        }
+        const availableTiers = product.tiers || product.active_tiers || [];
+        if (availableTiers.length > 0) {
+            for (const tItem of availableTiers) {
+                const price = Number(tItem.price_egp || tItem.price || tItem.final_price || 0);
+                const cleaned = (tItem.name || '').replace(/,/g, '');
+                const matches = cleaned.match(/\d+/);
+                if (matches && matches[0] && price > 0) {
+                    const count = parseInt(matches[0], 10);
+                    if (count > 1) {
+                        return price / count;
+                    }
+                }
+            }
+            const firstPrice = Number(availableTiers[0].price_egp || availableTiers[0].price || availableTiers[0].final_price || 0);
+            if (firstPrice > 0 && firstPrice < 1) {
+                return firstPrice;
+            }
+        }
+        return 0.007142857; // Default fallback for voice apps (~50 EGP per 7000 coins)
+    }, [product]);
+
+    // Handle quantity input change
     const handleQuantityInputChange = (e) => {
-        const valStr = e.target.value;
-        setQuantityInput(valStr);
-        const parsed = parseInt(valStr, 10);
+        const raw = e.target.value.replace(/[^0-9]/g, '');
+        setQuantityInput(raw);
+        const parsed = parseInt(raw, 10);
         if (!isNaN(parsed) && parsed > 0) {
-            setQuantity(Math.min(9999, parsed));
-        } else if (valStr === '') {
-            setQuantity(1);
+            setQuantity(parsed);
+        } else {
+            setQuantity(0);
+        }
+    };
+
+    const handleQuantityFocus = () => {
+        if (quantityInput === '0') {
+            setQuantityInput('');
         }
     };
 
     const handleQuantityInputBlur = () => {
-        const parsed = parseInt(quantityInput, 10);
-        if (isNaN(parsed) || parsed < 1) {
-            setQuantity(1);
-            setQuantityInput('1');
-        } else if (parsed > 9999) {
-            setQuantity(9999);
-            setQuantityInput('9999');
+        if (quantityInput === '' || parseInt(quantityInput, 10) <= 0) {
+            if (isCustomQuantity) {
+                setQuantity(0);
+                setQuantityInput('0');
+            } else {
+                setQuantity(1);
+                setQuantityInput('1');
+            }
         } else {
-            setQuantity(parsed);
-            setQuantityInput(String(parsed));
+            const parsed = parseInt(quantityInput, 10);
+            const clamped = isCustomQuantity ? Math.min(5000000, parsed) : Math.min(9999, parsed);
+            setQuantity(clamped);
+            setQuantityInput(String(clamped));
         }
     };
 
@@ -118,26 +176,41 @@ export default function ProductRechargeModal({
         return 0;
     }, [selectedTier, product]);
 
+    const validQty = useMemo(() => {
+        const parsed = parseInt(quantityInput, 10);
+        return (!isNaN(parsed) && parsed > 0) ? parsed : 0;
+    }, [quantityInput]);
+
     const totalPrice = useMemo(() => {
-        return unitPrice * quantity;
-    }, [unitPrice, quantity]);
+        if (isCustomQuantity) {
+            if (validQty <= 0) return 0;
+            return validQty * coinRate;
+        }
+        return unitPrice * (quantity || 1);
+    }, [isCustomQuantity, validQty, coinRate, unitPrice, quantity]);
 
-    // Format with commas and exact precision
-    const formattedTotal = totalPrice.toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 3
-    });
+    // Formatted totals
+    const formattedTotal = useMemo(() => {
+        if (totalPrice <= 0) return '0';
+        return totalPrice.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }, [totalPrice]);
 
-    const approxUsd = (totalPrice / 50.5).toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 3
-    });
+    const approxUsd = useMemo(() => {
+        if (totalPrice <= 0) return '0';
+        return (totalPrice / 50.5).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }, [totalPrice]);
 
     const productImage = formatImageUrl(
         product.image_url || product.image || product.banner_url || product.icon_url
     );
 
-    const displayName = selectedTier?.name && tiers.length === 1
+    const displayName = selectedTier?.name && tiers.length === 1 && !isCustomQuantity
         ? selectedTier.name
         : product.name;
 
@@ -152,12 +225,35 @@ export default function ProductRechargeModal({
         }
 
         const newErrors = {};
-        if (tiers.length > 0 && !selectedTier) {
-            newErrors.tier = t('selectPackageError', 'يرجى اختيار باقة الشحن المطلوبة');
+
+        if (isCustomQuantity) {
+            if (validQty < 1000) {
+                newErrors.quantity = 'أقل كمية شحن مسموح بها هي 1,000 كوينز';
+                toastError('أقل كمية شحن مسموح بها هي 1,000 كوينز');
+                setErrors(newErrors);
+                return;
+            }
+            if (validQty > 5000000) {
+                newErrors.quantity = 'أقصى كمية شحن مسموح بها هي 5,000,000 كوينز';
+                toastError('أقصى كمية شحن مسموح بها هي 5,000,000 كوينز');
+                setErrors(newErrors);
+                return;
+            }
+        } else {
+            if (tiers.length > 0 && !selectedTier) {
+                newErrors.tier = t('selectPackageError', 'يرجى اختيار باقة الشحن المطلوبة');
+            }
+            if (quantity < 1) {
+                newErrors.quantity = 'يرجى تحديد الكمية المطلوبة';
+            }
         }
 
         if (!playerId.trim()) {
-            newErrors.playerId = t('enterPlayerId', 'يرجى إدخال معرف المستخدم').replace('{label}', product.player_id_label || t('playerOrUserId', 'معرف المستخدم'));
+            const errText = t('enterPlayerId', 'يرجى إدخال معرف المستخدم').replace('{label}', product.player_id_label || t('playerOrUserId', 'معرف المستخدم'));
+            newErrors.playerId = errText;
+            toastError(errText);
+            setErrors(newErrors);
+            return;
         }
 
         if (product.has_server_id && !serverId.trim()) {
@@ -183,10 +279,11 @@ export default function ProductRechargeModal({
     const handleConfirmOrder = async () => {
         setSubmitting(true);
         try {
+            const effectiveTierId = selectedTier?.id || (tiers.length > 0 ? tiers[0].id : null);
             const payload = {
                 product_id: product.id,
-                product_tier_id: selectedTier?.id,
-                quantity: quantity,
+                product_tier_id: effectiveTierId,
+                quantity: isCustomQuantity ? validQty : quantity,
                 player_id: playerId.trim() || undefined,
                 server_id: serverId.trim() || undefined,
                 account_region: accountRegion.trim() || undefined,
@@ -222,7 +319,7 @@ export default function ProductRechargeModal({
                 style={{
                     position: 'fixed',
                     inset: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.82)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.85)',
                     backdropFilter: 'blur(8px)',
                     WebkitBackdropFilter: 'blur(8px)',
                     zIndex: 9999,
@@ -243,13 +340,13 @@ export default function ProductRechargeModal({
                     style={{
                         position: 'relative',
                         width: '100%',
-                        maxWidth: '460px',
+                        maxWidth: '430px',
                         maxHeight: '92vh',
                         overflowY: 'auto',
                         background: 'linear-gradient(180deg, #141310 0%, #0c0b08 100%)',
                         border: '1.5px solid rgba(212, 165, 55, 0.45)',
-                        borderRadius: '24px',
-                        padding: '22px 20px 24px',
+                        borderRadius: '22px',
+                        padding: '18px 20px 22px',
                         boxShadow: '0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(212, 165, 55, 0.15)',
                         fontFamily: 'var(--font-cairo)',
                         boxSizing: 'border-box',
@@ -257,21 +354,96 @@ export default function ProductRechargeModal({
                     }}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {/* Top Bar: Close Button (Top-Left) & VIP Badge (Top-Right) */}
+                    {/* Top Bar: Close Button (Left) & Title + Avatar (Right in RTL - Matching KA-CARD Screenshot 2) */}
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         width: '100%',
-                        marginBottom: '6px'
+                        marginBottom: '16px',
+                        flexDirection: isRtl ? 'row-reverse' : 'row'
                     }}>
+                        {/* Product Title & Avatar Group */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            flexDirection: isRtl ? 'row-reverse' : 'row'
+                        }}>
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: isRtl ? 'flex-end' : 'flex-start'
+                            }}>
+                                <h2 style={{
+                                    fontSize: '18px',
+                                    fontWeight: '900',
+                                    color: '#FFFFFF',
+                                    margin: '0 0 3px',
+                                    lineHeight: 1.25,
+                                    fontFamily: 'var(--font-cairo)'
+                                }}>
+                                    {displayName}
+                                </h2>
+                                <div style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                    background: 'rgba(34, 197, 94, 0.14)',
+                                    border: '1px solid rgba(34, 197, 94, 0.4)',
+                                    padding: '2px 10px',
+                                    borderRadius: '9999px',
+                                }}>
+                                    <span style={{
+                                        width: '6px',
+                                        height: '6px',
+                                        borderRadius: '50%',
+                                        background: '#22C55E',
+                                        boxShadow: '0 0 6px #22C55E'
+                                    }} />
+                                    <span style={{
+                                        fontSize: '11px',
+                                        fontWeight: '800',
+                                        color: '#4ADE80'
+                                    }}>
+                                        {t('available', 'متاح')}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Circular Avatar */}
+                            <div style={{
+                                width: '48px',
+                                height: '48px',
+                                borderRadius: '50%',
+                                border: '2px solid #D4A537',
+                                boxShadow: '0 0 14px rgba(212, 165, 55, 0.35)',
+                                overflow: 'hidden',
+                                background: '#0B0B0F',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0
+                            }}>
+                                {productImage ? (
+                                    <img
+                                        src={productImage}
+                                        alt={displayName}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    />
+                                ) : (
+                                    <TargetAppIconRenderer app={product} size={36} />
+                                )}
+                            </div>
+                        </div>
+
                         {/* Close button */}
                         <button
                             type="button"
                             onClick={onClose}
                             style={{
-                                width: '34px',
-                                height: '34px',
+                                width: '32px',
+                                height: '32px',
                                 borderRadius: '50%',
                                 background: 'rgba(255, 255, 255, 0.08)',
                                 border: '1px solid rgba(255, 255, 255, 0.15)',
@@ -284,117 +456,33 @@ export default function ProductRechargeModal({
                             }}
                             title="إغلاق"
                         >
-                            <X size={18} />
+                            <X size={17} />
                         </button>
-
-                        {/* KA / Emperor VIP Crest Badge */}
-                        <div style={{
-                            width: '38px',
-                            height: '38px',
-                            borderRadius: '10px',
-                            background: 'linear-gradient(135deg, rgba(212, 165, 55, 0.25) 0%, rgba(212, 165, 55, 0.08) 100%)',
-                            border: '1px solid rgba(212, 165, 55, 0.5)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 0 12px rgba(212, 165, 55, 0.2)'
-                        }}>
-                            <span style={{
-                                color: '#F5D061',
-                                fontWeight: '900',
-                                fontSize: '15px',
-                                letterSpacing: '-0.5px'
-                            }}>
-                                KA
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Centered Avatar Header */}
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        textAlign: 'center',
-                        marginBottom: '16px'
-                    }}>
-                        {/* Circular Avatar */}
-                        <div style={{
-                            width: '78px',
-                            height: '78px',
-                            borderRadius: '50%',
-                            border: '2px solid #D4A537',
-                            boxShadow: '0 0 20px rgba(212, 165, 55, 0.4), inset 0 0 10px rgba(0, 0, 0, 0.6)',
-                            overflow: 'hidden',
-                            background: '#0B0B0F',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginBottom: '10px',
-                            flexShrink: 0
-                        }}>
-                            {productImage ? (
-                                <img
-                                    src={productImage}
-                                    alt={displayName}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                />
-                            ) : (
-                                <TargetAppIconRenderer app={product} size={50} />
-                            )}
-                        </div>
-
-                        {/* Title with Gold Accent Underline */}
-                        <h2 style={{
-                            fontSize: '20px',
-                            fontWeight: '900',
-                            color: '#FFFFFF',
-                            margin: '0 0 4px',
-                            lineHeight: 1.25,
-                            letterSpacing: '-0.3px'
-                        }}>
-                            {displayName}
-                        </h2>
-
-                        <div style={{
-                            width: '56px',
-                            height: '2px',
-                            background: 'linear-gradient(90deg, transparent, #D4A537, transparent)',
-                            marginBottom: '8px'
-                        }} />
-
-                        {/* Status Badge: متاح */}
-                        <div style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            background: 'rgba(34, 197, 94, 0.14)',
-                            border: '1px solid rgba(34, 197, 94, 0.4)',
-                            padding: '3px 14px',
-                            borderRadius: '9999px',
-                            boxShadow: '0 0 12px rgba(34, 197, 94, 0.15)'
-                        }}>
-                            <span style={{
-                                width: '6px',
-                                height: '6px',
-                                borderRadius: '50%',
-                                background: '#22C55E',
-                                boxShadow: '0 0 8px #22C55E'
-                            }} />
-                            <span style={{
-                                fontSize: '12px',
-                                fontWeight: '800',
-                                color: '#4ADE80'
-                            }}>
-                                {t('available', 'متاح')}
-                            </span>
-                        </div>
                     </div>
 
                     <form onSubmit={handlePreSubmit}>
-                        {/* Notice Bar or Package Selector (Matching Screenshot 3) */}
-                        {tiers.length > 1 ? (
+                        {/* Notice Banner: الشحن ثانيه (Matching KA-CARD Screenshot 2) */}
+                        {isCustomQuantity ? (
+                            <div style={{
+                                background: 'linear-gradient(90deg, rgba(67, 30, 90, 0.6) 0%, rgba(30, 24, 48, 0.85) 100%)',
+                                border: '1px solid rgba(168, 85, 247, 0.35)',
+                                borderRadius: '14px',
+                                padding: '11px 16px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: isRtl ? 'flex-end' : 'flex-start',
+                                gap: '10px',
+                                marginBottom: '16px',
+                                color: '#E9D5FF',
+                                fontSize: '13.5px',
+                                fontWeight: '800',
+                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)'
+                            }}>
+                                <span>{product.notice || t('instantRechargeZeroSec', 'الشحن ثانيه')}</span>
+                                <FileText size={17} color="#38BDF8" />
+                            </div>
+                        ) : tiers.length > 1 ? (
+                            /* Package Selector for Standard Games only */
                             <div style={{ marginBottom: '14px' }}>
                                 <div
                                     onClick={() => setShowPackageGrid(prev => !prev)}
@@ -444,13 +532,13 @@ export default function ProductRechargeModal({
                                         overflowY: 'auto',
                                         padding: '4px',
                                     }}>
-                                        {tiers.map((t) => {
-                                            const isSelected = selectedTier?.id === t.id;
+                                        {tiers.map((tItem) => {
+                                            const isSelected = selectedTier?.id === tItem.id;
                                             return (
                                                 <div
-                                                    key={t.id}
+                                                    key={tItem.id}
                                                     onClick={() => {
-                                                        setSelectedTier(t);
+                                                        setSelectedTier(tItem);
                                                         setShowPackageGrid(false);
                                                     }}
                                                     style={{
@@ -464,10 +552,10 @@ export default function ProductRechargeModal({
                                                     }}
                                                 >
                                                     <div style={{ fontSize: '12px', fontWeight: '800', color: isSelected ? '#F5D061' : '#FFFFFF' }}>
-                                                        {t.name}
+                                                        {tItem.name}
                                                     </div>
                                                     <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>
-                                                        {Number(t.price_egp || t.price || 0).toFixed(2)} {language === 'en' ? 'EGP' : 'ج.م'}
+                                                        {Number(tItem.price_egp || tItem.price || 0).toFixed(2)} {language === 'en' ? 'EGP' : 'ج.م'}
                                                     </div>
                                                 </div>
                                             );
@@ -476,7 +564,6 @@ export default function ProductRechargeModal({
                                 )}
                             </div>
                         ) : (
-                            /* Fixed Notice Bar matching Screenshot 3: الشحن 0 ثانيه */
                             <div style={{
                                 background: 'linear-gradient(90deg, rgba(67, 30, 90, 0.6) 0%, rgba(30, 24, 48, 0.85) 100%)',
                                 border: '1px solid rgba(168, 85, 247, 0.35)',
@@ -497,65 +584,15 @@ export default function ProductRechargeModal({
                             </div>
                         )}
 
-                        {/* Metric Boxes: [الكمية] on Right, [الإجمالي] on Left in RTL (Matching Screenshot 3) */}
+                        {/* Metric Boxes: [الكمية] on Right, [الإجمالي] on Left in RTL (Matching KA-CARD Screenshot 2) */}
                         <div style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(2, 1fr)',
                             gap: '12px',
-                            marginBottom: '16px'
+                            marginBottom: '16px',
+                            direction: isRtl ? 'rtl' : 'ltr'
                         }}>
-                            {/* Box 1: الإجمالي (Total) */}
-                            <div style={{
-                                background: 'rgba(18, 17, 14, 0.95)',
-                                border: '1px solid rgba(212, 165, 55, 0.3)',
-                                borderRadius: '16px',
-                                padding: '12px 10px',
-                                textAlign: 'center',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}>
-                                <span style={{
-                                    fontSize: '12px',
-                                    fontWeight: '800',
-                                    color: '#9CA3AF',
-                                    marginBottom: '4px'
-                                }}>
-                                    {t('total', 'الإجمالي')}
-                                </span>
-                                
-                                <div style={{
-                                    fontSize: '18px',
-                                    fontWeight: '900',
-                                    color: '#FFFFFF',
-                                    lineHeight: 1.2,
-                                    direction: 'ltr',
-                                    display: 'flex',
-                                    alignItems: 'baseline',
-                                    justifyContent: 'center',
-                                    gap: '4px'
-                                }}>
-                                    <span>{formattedTotal}</span>
-                                    <span style={{ fontSize: '13px', color: '#D4A537', fontWeight: '800' }}>{language === 'en' ? 'EGP' : 'Egy'}</span>
-                                </div>
-
-                                <div style={{
-                                    marginTop: '4px',
-                                    background: 'rgba(34, 197, 94, 0.12)',
-                                    border: '1px solid rgba(34, 197, 94, 0.35)',
-                                    borderRadius: '6px',
-                                    padding: '1px 8px',
-                                    fontSize: '11px',
-                                    fontWeight: '800',
-                                    color: '#4ADE80',
-                                    direction: 'ltr'
-                                }}>
-                                    {approxUsd} $
-                                </div>
-                            </div>
-
-                            {/* Box 2: الكمية (Quantity) */}
+                            {/* Box 1 (Right in RTL): الكمية */}
                             <div style={{
                                 background: 'rgba(18, 17, 14, 0.95)',
                                 border: '1px solid rgba(212, 165, 55, 0.3)',
@@ -578,27 +615,29 @@ export default function ProductRechargeModal({
 
                                 <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                                     <input
-                                        type="number"
-                                        min="1"
-                                        max="9999"
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
                                         value={quantityInput}
                                         onChange={handleQuantityInputChange}
+                                        onFocus={handleQuantityFocus}
                                         onBlur={handleQuantityInputBlur}
+                                        placeholder="0"
                                         style={{
-                                            width: '85%',
+                                            width: '90%',
                                             background: '#07070A',
                                             border: '1.5px solid rgba(212, 165, 55, 0.4)',
                                             borderRadius: '10px',
                                             padding: '4px 6px',
                                             color: '#FFFFFF',
-                                            fontSize: '18px',
+                                            fontSize: '19px',
                                             fontWeight: '900',
                                             textAlign: 'center',
                                             outline: 'none',
                                             boxShadow: 'inset 0 2px 6px rgba(0, 0, 0, 0.8)',
                                             fontFamily: 'var(--font-cairo)',
                                         }}
-                                        onFocus={(e) => {
+                                        onFocusCapture={(e) => {
                                             e.currentTarget.style.borderColor = '#F5D061';
                                             e.currentTarget.style.boxShadow = '0 0 10px rgba(212, 165, 55, 0.3)';
                                         }}
@@ -612,11 +651,64 @@ export default function ProductRechargeModal({
                                 <span style={{
                                     fontSize: '10.5px',
                                     color: '#71717A',
-                                    marginTop: '4px',
+                                    marginTop: '5px',
                                     fontFamily: 'monospace'
                                 }}>
-                                    1,000 — 5,000,000
+                                    {isCustomQuantity ? '1,000 — 5,000,000' : '1 — 9,999'}
                                 </span>
+                            </div>
+
+                            {/* Box 2 (Left in RTL): الإجمالي */}
+                            <div style={{
+                                background: 'rgba(18, 17, 14, 0.95)',
+                                border: '1px solid rgba(212, 165, 55, 0.3)',
+                                borderRadius: '16px',
+                                padding: '12px 10px',
+                                textAlign: 'center',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                <span style={{
+                                    fontSize: '12px',
+                                    fontWeight: '800',
+                                    color: '#9CA3AF',
+                                    marginBottom: '4px'
+                                }}>
+                                    {t('total', 'الإجمالي')}
+                                </span>
+
+                                <div style={{
+                                    fontSize: '19px',
+                                    fontWeight: '900',
+                                    color: '#FFFFFF',
+                                    lineHeight: 1.2,
+                                    direction: 'ltr',
+                                    display: 'flex',
+                                    alignItems: 'baseline',
+                                    justifyContent: 'center',
+                                    gap: '4px'
+                                }}>
+                                    <span>{formattedTotal}</span>
+                                    <span style={{ fontSize: '13px', color: '#D4A537', fontWeight: '800' }}>
+                                        {language === 'en' ? 'EGP' : 'Egy'}
+                                    </span>
+                                </div>
+
+                                <div style={{
+                                    marginTop: '4px',
+                                    background: 'rgba(34, 197, 94, 0.12)',
+                                    border: '1px solid rgba(34, 197, 94, 0.35)',
+                                    borderRadius: '6px',
+                                    padding: '1px 8px',
+                                    fontSize: '11px',
+                                    fontWeight: '800',
+                                    color: '#4ADE80',
+                                    direction: 'ltr'
+                                }}>
+                                    {approxUsd} $
+                                </div>
                             </div>
                         </div>
 
@@ -770,40 +862,44 @@ export default function ProductRechargeModal({
                             )}
                         </div>
 
-                        {/* Actions Row: [شراء] (Gold with lock) + [إلغاء] (Dark) */}
+                        {/* Actions Row: إلغاء on Left, شراء 🔒 on Right (Matching KA-CARD Screenshot 2) */}
                         <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: '1.5fr 1fr',
-                            gap: '10px'
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            direction: isRtl ? 'rtl' : 'ltr'
                         }}>
                             <button
                                 type="submit"
+                                disabled={submitting}
                                 style={{
+                                    flex: 1,
                                     background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
                                     color: '#0A0A0E',
                                     border: 'none',
                                     borderRadius: '14px',
-                                    padding: '13px 16px',
+                                    padding: '13px 18px',
                                     fontSize: '15px',
                                     fontWeight: '900',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: '8px',
-                                    cursor: 'pointer',
+                                    cursor: submitting ? 'not-allowed' : 'pointer',
                                     boxShadow: '0 6px 20px rgba(212, 165, 55, 0.35)',
                                     transition: 'all 0.2s',
                                     fontFamily: 'var(--font-cairo)',
                                 }}
                             >
                                 <Lock size={16} />
-                                <span>{t('buy', 'شراء')}</span>
+                                <span>{submitting ? t('processing', 'جاري التنفيذ...') : t('buy', 'شراء')}</span>
                             </button>
 
                             <button
                                 type="button"
                                 onClick={onClose}
                                 style={{
+                                    width: '100px',
                                     background: 'rgba(255, 255, 255, 0.06)',
                                     color: '#E2E8F0',
                                     border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -814,6 +910,7 @@ export default function ProductRechargeModal({
                                     cursor: 'pointer',
                                     transition: 'all 0.2s',
                                     fontFamily: 'var(--font-cairo)',
+                                    textAlign: 'center'
                                 }}
                             >
                                 {t('cancel', 'إلغاء')}
@@ -829,7 +926,7 @@ export default function ProductRechargeModal({
                 onClose={() => setConfirmModalOpen(false)}
                 product={product}
                 tier={selectedTier}
-                quantity={quantity}
+                quantity={isCustomQuantity ? validQty : quantity}
                 playerId={playerId}
                 serverId={serverId}
                 accountRegion={accountRegion}
@@ -837,6 +934,7 @@ export default function ProductRechargeModal({
                 currency={user?.currency || 'EGP'}
                 onConfirm={handleConfirmOrder}
                 loading={submitting}
+                calculatedTotal={totalPrice}
             />
         </>
     );
