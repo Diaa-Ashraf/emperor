@@ -60,7 +60,19 @@
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label class="form-label text-white fw-semibold">مصدر المزامنة (إن وجد)</label>
+                            <label class="form-label text-white fw-semibold">التطبيق الرئيسي (الأب - اختياري)</label>
+                            <select name="parent_id" class="form-select">
+                                <option value="">-- منتج رئيسي مستقل --</option>
+                                @foreach($parentProducts as $parent)
+                                    <option value="{{ $parent->id }}" {{ old('parent_id', $product->parent_id) == $parent->id ? 'selected' : '' }}>
+                                        {{ $parent->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted">إذا كان هذا سيرفر/خيار فرعي (مثل أهلاً 2 أو هيلين 2) اختر التطبيق الأصلي هنا.</small>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label text-white fw-semibold">مصدر المزامنة</label>
                             <select name="catalog_source_id" class="form-select">
                                 <option value="">-- بدون مصدر (يدوي) --</option>
                                 @foreach($sources as $source)
@@ -70,7 +82,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-2 mb-3">
                             <label class="form-label text-white fw-semibold">ترتيب العرض</label>
                             <input type="number" name="sort_order" class="form-control" value="{{ old('sort_order', $product->sort_order) }}" min="0">
                         </div>

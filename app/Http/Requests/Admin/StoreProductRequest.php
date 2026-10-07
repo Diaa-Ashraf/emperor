@@ -18,6 +18,7 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'category_id' => ['required', 'exists:categories,id'],
+            'parent_id' => ['nullable', 'exists:products,id'],
             'catalog_source_id' => ['nullable', 'exists:catalog_sources,id'],
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:products,slug'],

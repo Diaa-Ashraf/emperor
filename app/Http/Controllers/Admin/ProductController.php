@@ -74,8 +74,9 @@ class ProductController extends Controller
     {
         $categories = Category::where('is_active', true)->select(['id', 'name', 'type'])->orderBy('sort_order')->get();
         $sources = CatalogSource::where('is_active', true)->select(['id', 'name'])->get();
+        $parentProducts = Product::whereNull('parent_id')->orderBy('name')->get(['id', 'name']);
 
-        return view('admin.products.create', compact('categories', 'sources'));
+        return view('admin.products.create', compact('categories', 'sources', 'parentProducts'));
     }
 
     public function store(StoreProductRequest $request): RedirectResponse
@@ -140,8 +141,9 @@ class ProductController extends Controller
 
         $categories = Category::select(['id', 'name', 'type'])->orderBy('sort_order')->get();
         $sources = CatalogSource::select(['id', 'name'])->get();
+        $parentProducts = Product::whereNull('parent_id')->where('id', '!=', $id)->orderBy('name')->get(['id', 'name']);
 
-        return view('admin.products.edit', compact('product', 'categories', 'sources'));
+        return view('admin.products.edit', compact('product', 'categories', 'sources', 'parentProducts'));
     }
 
     public function update(UpdateProductRequest $request, int $id): RedirectResponse
