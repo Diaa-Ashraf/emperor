@@ -197,9 +197,11 @@ export default function HomeBannerSlider() {
                     position: 'relative',
                     borderRadius: '26px',
                     overflow: 'hidden',
-                    border: '1.8px solid rgba(212, 165, 55, 0.45)',
-                    background: '#0B0B0F',
-                    boxShadow: '0 14px 40px rgba(0, 0, 0, 0.85), 0 0 28px rgba(212, 165, 55, 0.18)',
+                    border: isLight ? '1.8px solid rgba(212, 165, 55, 0.35)' : '1.8px solid rgba(212, 165, 55, 0.45)',
+                    background: isLight ? '#FFFFFF' : '#0B0B0F',
+                    boxShadow: isLight
+                        ? '0 0 20px rgba(212, 165, 55, 0.2)'
+                        : '0 14px 40px rgba(0, 0, 0, 0.85), 0 0 28px rgba(212, 165, 55, 0.18)',
                     aspectRatio: '2.85 / 1',
                     maxHeight: '260px',
                     height: 'clamp(130px, 22vw, 260px)',
@@ -395,11 +397,11 @@ export default function HomeBannerSlider() {
                 @keyframes royalBorderGlow {
                     0% {
                         border-color: rgba(212, 165, 55, 0.45);
-                        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 165, 55, 0.18);
+                        box-shadow: ${isLight ? '0 0 15px rgba(212, 165, 55, 0.15)' : '0 10px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 165, 55, 0.18)'};
                     }
                     100% {
                         border-color: rgba(245, 208, 97, 0.85);
-                        box-shadow: 0 16px 45px rgba(0, 0, 0, 0.9), 0 0 45px rgba(212, 165, 55, 0.38);
+                        box-shadow: ${isLight ? '0 0 25px rgba(212, 165, 55, 0.3)' : '0 16px 45px rgba(0, 0, 0, 0.9), 0 0 45px rgba(212, 165, 55, 0.38)'};
                     }
                 }
 

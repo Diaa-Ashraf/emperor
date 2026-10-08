@@ -217,5 +217,27 @@
 .category-poster-frame:hover {
     transform: translateY(-4px) scale(1.02);
     border-color: #F5D061 !important;
+}
+
+/* Light Theme: strictly no black shadows around cards */
+[data-theme="light"] .category-poster-frame,
+[data-theme="light"] .product-poster-frame,
+.light .category-poster-frame,
+.light .product-poster-frame {
+    box-shadow: none !important;
+}
+
+[data-theme="light"] .category-poster-frame:hover,
+[data-theme="light"] .emperor-product-poster-card:hover .product-poster-frame,
+.light .category-poster-frame:hover,
+.light .emperor-product-poster-card:hover .product-poster-frame {
+    box-shadow: 0 0 20px rgba(212, 165, 55, 0.3) !important;
+}
+
+/* Dark Theme hover shadow */
+[data-theme="dark"] .category-poster-frame:hover,
+[data-theme="dark"] .emperor-product-poster-card:hover .product-poster-frame,
+.dark .category-poster-frame:hover,
+.dark .emperor-product-poster-card:hover .product-poster-frame {
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 165, 55, 0.3) !important;
 }

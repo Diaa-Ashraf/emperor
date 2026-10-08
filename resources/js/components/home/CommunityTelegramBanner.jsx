@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { MessageCircle, ExternalLink, Sparkles, ArrowLeft, ArrowRight } from 'lucide-react';
 import { bannersApi } from '../../api/endpoints';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { formatImageUrl } from '../../utils/imageHelper';
 
 export default function CommunityTelegramBanner() {
     const { isRtl, language, t } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const [hovered, setHovered] = useState(false);
     const [customBanner, setCustomBanner] = useState(null);
 
@@ -66,11 +69,15 @@ export default function CommunityTelegramBanner() {
                         height: 'clamp(180px, 24vw, 240px)',
                         borderRadius: '24px',
                         overflow: 'hidden',
-                        background: '#07080A',
-                        border: `1.8px solid ${hovered ? '#22C55E' : 'rgba(34, 197, 94, 0.45)'}`,
-                        boxShadow: hovered
-                            ? '0 18px 50px rgba(0, 0, 0, 0.95), 0 0 35px rgba(34, 197, 94, 0.45), 0 0 15px rgba(212, 165, 55, 0.3)'
-                            : '0 10px 30px rgba(0, 0, 0, 0.75), 0 0 22px rgba(34, 197, 94, 0.18)',
+                        background: isLight ? '#FFFFFF' : '#07080A',
+                        border: isLight
+                            ? `1.8px solid ${hovered ? '#16A34A' : 'rgba(34, 197, 94, 0.4)'}`
+                            : `1.8px solid ${hovered ? '#22C55E' : 'rgba(34, 197, 94, 0.45)'}`,
+                        boxShadow: isLight
+                            ? (hovered ? '0 0 25px rgba(34, 197, 94, 0.35)' : 'none')
+                            : (hovered
+                                ? '0 18px 50px rgba(0, 0, 0, 0.95), 0 0 35px rgba(34, 197, 94, 0.45), 0 0 15px rgba(212, 165, 55, 0.3)'
+                                : '0 10px 30px rgba(0, 0, 0, 0.75), 0 0 22px rgba(34, 197, 94, 0.18)'),
                         transform: hovered ? 'translateY(-6px) scale(1.02)' : 'translateY(0) scale(1)',
                         transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
                     }}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { catalogApi } from '../../api/endpoints';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { formatImageUrl } from '../../utils/imageHelper';
 import "../../../css/visualCategory.css";
 
@@ -59,6 +60,8 @@ function getCategoryDisplayName(cat, language) {
 }
 
 function CategoryPosterCard({ cat, isRtl, language, index }) {
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const [hovered, setHovered] = useState(false);
     const isTarget = cat.slug === 'target' || cat.slug === 'target-apps' || cat.isTarget;
     const categoryLink = isTarget ? '/target/apps' : `/category/${cat.slug || cat.id}`;
@@ -105,11 +108,15 @@ function CategoryPosterCard({ cat, isRtl, language, index }) {
                     aspectRatio: '1 / 1',
                     borderRadius: '24px',
                     overflow: 'hidden',
-                    background: '#0B0B0F',
-                    border: `1.8px solid ${hovered ? '#F5D061' : 'rgba(212, 165, 55, 0.4)'}`,
-                    boxShadow: hovered
-                        ? '0 16px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 165, 55, 0.35)'
-                        : '0 8px 24px rgba(0, 0, 0, 0.65), 0 0 15px rgba(212, 165, 55, 0.1)',
+                    background: isLight ? '#FFFFFF' : '#0B0B0F',
+                    border: isLight
+                        ? `1.8px solid ${hovered ? '#D4A537' : 'rgba(212, 165, 55, 0.35)'}`
+                        : `1.8px solid ${hovered ? '#F5D061' : 'rgba(212, 165, 55, 0.4)'}`,
+                    boxShadow: isLight
+                        ? (hovered ? '0 0 20px rgba(212, 165, 55, 0.35)' : 'none')
+                        : (hovered
+                            ? '0 16px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 165, 55, 0.35)'
+                            : '0 8px 24px rgba(0, 0, 0, 0.65), 0 0 15px rgba(212, 165, 55, 0.1)'),
                     transform: hovered ? 'translateY(-6px) scale(1.02)' : 'translateY(0) scale(1)',
                     transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
                     boxSizing: 'border-box',
@@ -158,7 +165,9 @@ function CategoryPosterCard({ cat, isRtl, language, index }) {
                     margin: '14px 0 0',
                     fontSize: 'clamp(15px, 2vw, 17px)',
                     fontWeight: '800',
-                    color: hovered ? '#F5D061' : '#FFFFFF',
+                    color: hovered
+                        ? (isLight ? '#B45309' : '#F5D061')
+                        : (isLight ? '#0F172A' : '#FFFFFF'),
                     textAlign: 'center',
                     lineHeight: '1.4',
                     letterSpacing: '-0.2px',
