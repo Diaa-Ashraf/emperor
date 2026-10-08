@@ -94,78 +94,61 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
             path: '/profile',
             label: t('myAccount', 'حسابي'),
             icon: User,
-            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
-            iconBadgeColor: 'var(--gold-400, #D4A537)',
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
             authRequired: true
         },
         {
-            path: '/settings',
+            path: '/profile?tab=security',
             label: t('security', 'حماية الحساب'),
             icon: Shield,
-            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
-            iconBadgeColor: 'var(--gold-400, #D4A537)',
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
             authRequired: true
         },
         {
             path: '/referrals',
             label: t('referrals', 'رابط الإحالة اكسب واسحب'),
             icon: Share2,
-            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
-            iconBadgeColor: 'var(--gold-400, #D4A537)',
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
             authRequired: true
         },
         {
             path: '/orders',
             label: t('myOrders', 'طلباتي'),
             icon: FileText,
-            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
-            iconBadgeColor: 'var(--gold-400, #D4A537)',
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
             authRequired: true
         },
         {
             path: '/target/apps',
-            label: t('targetSelling', 'سحب وبيع التارجت'),
+            label: t('targetSelling', 'بيع التارجت'),
             icon: Target,
-            iconBadgeBg: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
-            iconBadgeColor: '#000000'
-        },
-        {
-            path: '/wallet',
-            label: t('financialTransfers', 'التحويلات المالية'),
-            icon: Wallet,
-            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
-            iconBadgeColor: 'var(--gold-400, #D4A537)',
-            authRequired: true
-        },
-        {
-            path: '/developer',
-            label: t('developerApi', 'API للمطورين'),
-            icon: Key,
-            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
-            iconBadgeColor: 'var(--gold-400, #D4A537)',
-            authRequired: true,
-            condition: (u) => Boolean(u?.has_api_access || u?.api_access_status === 'active' || u?.is_admin || u?.role === 'admin' || u?.role === 'api_client')
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8'
         },
         {
             path: '/created-by',
             label: t('createdBy', 'تم الإنشاء بواسطة'),
             icon: Code,
-            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
-            iconBadgeColor: 'var(--gold-400, #D4A537)'
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8'
         },
         {
             path: '/support',
-            label: t('support', 'اتصل بنا والدعم'),
+            label: t('support', 'اتصل بنا'),
             icon: Headphones,
-            iconBadgeBg: 'rgba(34, 197, 94, 0.15)',
-            iconBadgeColor: '#22C55E'
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8'
         },
         {
             path: '/settings',
-            label: t('settings', 'الإعدادات العامة'),
+            label: t('settings', 'الإعدادات'),
             icon: Settings,
-            iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
-            iconBadgeColor: 'var(--gold-400, #D4A537)',
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
             authRequired: true
         },
     ];
@@ -595,7 +578,6 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                 {/* ── 6. Navigation Items (Flows in the single unified drawer scroll container) ── */}
                 <nav style={{ padding: '0 12px 24px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {navItems.map((item) => {
-                        if (item.authRequired && !isAuthenticated) return null;
                         if (item.condition && !item.condition(user)) return null;
                         const active = isActive(item.path);
 
@@ -608,6 +590,12 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     if (item.path === '/support') {
                                         e.preventDefault();
                                         window.dispatchEvent(new CustomEvent('emperor:open-support-modal'));
+                                        return;
+                                    }
+                                    if (item.authRequired && !isAuthenticated) {
+                                        e.preventDefault();
+                                        navigate('/login', { state: { from: { pathname: item.path } } });
+                                        return;
                                     }
                                 }}
                                 style={{
@@ -619,12 +607,12 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     textDecoration: 'none',
                                     background: active
                                         ? (isLight
-                                            ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.16) 0%, rgba(255, 255, 255, 0.95) 100%)'
-                                            : 'linear-gradient(135deg, rgba(212, 165, 55, 0.22) 0%, rgba(18, 18, 24, 0.95) 100%)')
+                                            ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.22) 0%, rgba(255, 255, 255, 0.95) 100%)'
+                                            : 'linear-gradient(135deg, rgba(212, 165, 55, 0.25) 0%, rgba(30, 26, 16, 0.95) 100%)')
                                         : (isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.03)'),
                                     border: active
-                                        ? (isLight ? '1.5px solid rgba(212, 165, 55, 0.65)' : '1px solid rgba(212, 165, 55, 0.55)')
-                                        : (isLight ? '1px solid rgba(226, 232, 240, 0.9)' : '1px solid rgba(255, 255, 255, 0.04)'),
+                                        ? (isLight ? '1.5px solid rgba(212, 165, 55, 0.7)' : '1px solid rgba(212, 165, 55, 0.65)')
+                                        : (isLight ? '1px solid rgba(226, 232, 240, 0.9)' : '1px solid rgba(255, 255, 255, 0.05)'),
                                     color: active
                                         ? (isLight ? '#9A7210' : '#F5D061')
                                         : (isLight ? '#1E293B' : '#FFFFFF'),
@@ -632,26 +620,26 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     fontSize: '13.5px',
                                     transition: 'all 0.2s ease',
                                     boxShadow: active
-                                        ? '0 3px 12px rgba(212, 165, 55, 0.2)'
+                                        ? '0 3px 12px rgba(212, 165, 55, 0.25)'
                                         : 'none',
                                 }}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    {/* Rounded gold icon badge */}
+                                    {/* Rounded icon badge */}
                                     <div style={{
                                         width: '32px',
                                         height: '32px',
                                         borderRadius: '9px',
                                         background: active
                                             ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
-                                            : (isLight ? 'rgba(212, 165, 55, 0.12)' : 'rgba(212, 165, 55, 0.15)'),
+                                            : (isLight ? 'rgba(56, 189, 248, 0.12)' : (item.iconBadgeBg || 'rgba(56, 189, 248, 0.14)')),
                                         border: active
                                             ? '1px solid rgba(212, 165, 55, 0.8)'
-                                            : (isLight ? '1px solid rgba(212, 165, 55, 0.25)' : '1px solid rgba(212, 165, 55, 0.25)'),
+                                            : (isLight ? '1px solid rgba(56, 189, 248, 0.3)' : '1px solid rgba(56, 189, 248, 0.25)'),
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: active ? '#08080A' : (isLight ? '#9A7210' : '#F5D061'),
+                                        color: active ? '#08080A' : (item.iconBadgeColor || '#38BDF8'),
                                         flexShrink: 0,
                                     }}>
                                         <item.icon size={16} />
@@ -660,16 +648,16 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                 </div>
 
                                 {isRtl ? (
-                                    <ChevronLeft size={15} color={isLight ? '#94A3B8' : '#64748B'} />
+                                    <ChevronLeft size={15} color={active ? '#F5D061' : (isLight ? '#94A3B8' : '#64748B')} />
                                 ) : (
-                                    <ChevronRight size={15} color={isLight ? '#94A3B8' : '#64748B'} />
+                                    <ChevronRight size={15} color={active ? '#F5D061' : (isLight ? '#94A3B8' : '#64748B')} />
                                 )}
                             </Link>
                         );
                     })}
 
-                    {/* ── 7. Logout Button ── */}
-                    {isAuthenticated && (
+                    {/* ── 7. Logout / Login Action Button ── */}
+                    {isAuthenticated ? (
                         <button
                             onClick={handleLogout}
                             style={{
@@ -701,6 +689,42 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                         >
                             <LogOut size={16} />
                             <span>{t('logout', 'تسجيل الخروج')}</span>
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => {
+                                onClose();
+                                navigate('/login');
+                            }}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                width: '100%',
+                                padding: '11px 14px',
+                                marginTop: '10px',
+                                borderRadius: '14px',
+                                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.6)' : '1px solid rgba(212, 165, 55, 0.4)',
+                                background: isLight ? '#FFFDF8' : 'rgba(18, 18, 24, 0.95)',
+                                color: isLight ? '#9a7210' : '#F5D061',
+                                fontWeight: '900',
+                                fontSize: '13.5px',
+                                cursor: 'pointer',
+                                boxShadow: isLight ? '0 3px 12px rgba(212, 165, 55, 0.15)' : '0 5px 18px rgba(0, 0, 0, 0.4), 0 0 12px rgba(212, 165, 55, 0.1)',
+                                transition: 'all 0.2s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.borderColor = '#F5D061';
+                                e.currentTarget.style.transform = 'translateY(-1.5px)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.6)' : 'rgba(212, 165, 55, 0.4)';
+                                e.currentTarget.style.transform = 'translateY(0)';
+                            }}
+                        >
+                            <LogIn size={16} />
+                            <span>{t('login', 'تسجيل الدخول')}</span>
                         </button>
                     )}
                 </nav>
