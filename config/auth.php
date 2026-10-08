@@ -19,6 +19,8 @@ return [
     ],
 
     'admin_timeout_minutes' => (int) env('ADMIN_SESSION_TIMEOUT', 60),
+    'session_idle_timeout' => (int) env('SESSION_IDLE_TIMEOUT', 120), // 2 hours of inactivity
+    'remember_idle_timeout' => (int) env('REMEMBER_IDLE_TIMEOUT', 2880), // 48 hours for remembered sessions
 
     /*
     |--------------------------------------------------------------------------

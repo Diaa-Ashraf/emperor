@@ -51,7 +51,7 @@ class AuthController extends Controller
         // Create default wallet
         $this->walletService->getOrCreateWallet($user, $currency);
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $user->createToken('auth-token', ['*'], now()->addHours(24))->plainTextToken;
 
         return $this->successResponse([
             'token' => $token,
@@ -135,7 +135,9 @@ class AuthController extends Controller
         }
 
         $deviceName = $validated['device_name'] ?? 'Web Application';
-        $token = $user->createToken($deviceName)->plainTextToken;
+        $isRemember = (bool) ($validated['remember'] ?? false);
+        $expiresAt = $isRemember ? now()->addDays(7) : now()->addHours(24);
+        $token = $user->createToken($deviceName, ['*'], $expiresAt)->plainTextToken;
 
         return $this->successResponse([
             'token' => $token,
@@ -214,7 +216,9 @@ class AuthController extends Controller
         }
 
         $deviceName = $request->input('device_name', 'Web Application (2FA)');
-        $token = $user->createToken($deviceName)->plainTextToken;
+        $isRemember = (bool) ($request->input('remember', false));
+        $expiresAt = $isRemember ? now()->addDays(7) : now()->addHours(24);
+        $token = $user->createToken($deviceName, ['*'], $expiresAt)->plainTextToken;
 
         return $this->successResponse([
             'token' => $token,
@@ -349,7 +353,7 @@ class AuthController extends Controller
         }
 
         $deviceName = $request->input('device_name', 'Google OAuth Login');
-        $token = $user->createToken($deviceName)->plainTextToken;
+        $token = $user->createToken($deviceName, ['*'], now()->addHours(24))->plainTextToken;
 
         return $this->successResponse([
             'token' => $token,
@@ -419,7 +423,7 @@ class AuthController extends Controller
             $this->walletService->getOrCreateWallet($user, 'EGP');
         }
 
-        $token = $user->createToken('Google Demo Web Session')->plainTextToken;
+        $token = $user->createToken('Google Demo Web Session', ['*'], now()->addHours(24))->plainTextToken;
 
         if ($request->expectsJson()) {
             return $this->successResponse([
@@ -464,7 +468,7 @@ class AuthController extends Controller
                 $this->walletService->getOrCreateWallet($user, 'EGP');
             }
 
-            $token = $user->createToken('Google Web Session')->plainTextToken;
+            $token = $user->createToken('Google Web Session', ['*'], now()->addHours(24))->plainTextToken;
 
             // Redirect back to SPA with token query param
             return redirect("/login?oauth_token={$token}" . ($isNewUser ? '&is_new=1' : ''));

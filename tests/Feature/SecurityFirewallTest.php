@@ -59,4 +59,57 @@ class SecurityFirewallTest extends TestCase
 
         $response->assertStatus(429);
     }
+
+    public function test_active_authenticated_user_accesses_protected_route(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('test-active', ['*'], now()->addHours(24))->plainTextToken;
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->getJson('/api/v1/profile');
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('status', 'success');
+    }
+
+    public function test_idle_token_older_than_2_hours_is_rejected_and_revoked(): void
+    {
+        $user = User::factory()->create();
+        $tokenModel = $user->createToken('test-idle', ['*'], now()->addHours(24));
+        $plainToken = $tokenModel->plainTextToken;
+
+        // Simulate token was last used 3 hours ago (idle beyond 120 min)
+        $tokenModel->accessToken->forceFill([
+            'last_used_at' => now()->subHours(3),
+            'created_at' => now()->subHours(4),
+        ])->save();
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$plainToken)
+            ->getJson('/api/v1/profile');
+
+        $response->assertStatus(401);
+
+        // Token should be revoked from DB
+        $this->assertDatabaseMissing('personal_access_tokens', [
+            'id' => $tokenModel->accessToken->id,
+        ]);
+    }
+
+    public function test_expired_token_is_rejected_and_revoked(): void
+    {
+        $user = User::factory()->create();
+        $tokenModel = $user->createToken('test-expired', ['*'], now()->subDays(2));
+        $plainToken = $tokenModel->plainTextToken;
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$plainToken)
+            ->getJson('/api/v1/profile');
+
+        $response->assertStatus(401);
+
+        // Token should be revoked from DB
+        $this->assertDatabaseMissing('personal_access_tokens', [
+            'id' => $tokenModel->accessToken->id,
+        ]);
+    }
 }
+

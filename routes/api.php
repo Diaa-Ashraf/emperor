@@ -65,8 +65,8 @@ Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
         Route::post('/verify-phone', [AuthController::class, 'verifyPhone']);
     });
 
-    // Protected Customer Routes
-    Route::middleware(['auth:sanctum', 'log.api'])->group(function () {
+    // Protected Customer Routes (Guarded with Sanctum & Inactivity Idle Timeout Shield)
+    Route::middleware(['auth:sanctum', 'session.idle', 'log.api'])->group(function () {
         // Auth session
         Route::post('/auth/logout', [AuthController::class, 'logout']);
 

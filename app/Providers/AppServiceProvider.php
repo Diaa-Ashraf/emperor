@@ -33,6 +33,35 @@ class AppServiceProvider extends ServiceProvider
     {
         \Illuminate\Pagination\Paginator::useBootstrapFive();
 
+        // Sanctum Personal Access Token Idle Inactivity & Expiry Enforcement
+        \Laravel\Sanctum\Sanctum::authenticateAccessTokensUsing(function ($accessToken, bool $isValid) {
+            if (!$isValid) {
+                if ($accessToken->expires_at && $accessToken->expires_at->isPast()) {
+                    $accessToken->delete();
+                }
+                return false;
+            }
+
+            if ($accessToken->expires_at && $accessToken->expires_at->isPast()) {
+                $accessToken->delete();
+                return false;
+            }
+
+            $isRemembered = ($accessToken->expires_at && $accessToken->expires_at->diffInDays($accessToken->created_at) > 2);
+            $idleLimitMinutes = $isRemembered
+                ? (int) config('auth.remember_idle_timeout', 2880)
+                : (int) config('auth.session_idle_timeout', 120);
+
+            $lastActive = $accessToken->last_used_at ?? $accessToken->created_at;
+
+            if ($lastActive && $lastActive->diffInMinutes(now()) > $idleLimitMinutes) {
+                $accessToken->delete();
+                return false;
+            }
+
+            return true;
+        });
+
         // Enterprise Multi-Tier Rate Limiters (Anti-DDoS & Anti-Abuse)
         RateLimiter::for('api', function (Request $request) {
             $user = $request->user();

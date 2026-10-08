@@ -18,6 +18,7 @@ class LoginRequest extends FormRequest
             'password' => ['required', 'string'],
             'device_name' => ['nullable', 'string', 'max:100'],
             'fcm_token' => ['nullable', 'string'],
+            'remember' => ['nullable', 'boolean'],
         ];
     }
 

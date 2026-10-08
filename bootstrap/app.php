@@ -47,6 +47,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'log.api' => LogApiRequest::class,
             'security.headers' => \App\Http\Middleware\SecurityHeadersMiddleware::class,
             'firewall' => \App\Http\Middleware\FirewallShieldMiddleware::class,
+            'session.idle' => \App\Http\Middleware\EnsureSessionNotIdle::class,
             'verify.webhook' => \App\Http\Middleware\VerifyWebhookSignature::class,
             'auth.api_client' => \App\Http\Middleware\AuthenticateApiClient::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
