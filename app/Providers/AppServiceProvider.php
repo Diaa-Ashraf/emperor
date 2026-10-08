@@ -33,16 +33,47 @@ class AppServiceProvider extends ServiceProvider
     {
         \Illuminate\Pagination\Paginator::useBootstrapFive();
 
-        // Rate limiters
+        // Enterprise Multi-Tier Rate Limiters (Anti-DDoS & Anti-Abuse)
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(120)->by($request->user()?->id ?: $request->ip());
+            $user = $request->user();
+            // Authenticated users get 180 req/min, guests get 60 req/min
+            $limit = $user ? 180 : 60;
+            return Limit::perMinute($limit)->by($user?->id ?: $request->ip())->response(function () {
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 'RATE_LIMIT_EXCEEDED',
+                    'message' => 'تم تجاوز معدل الطلبات المسموح به في الدقيقة. يرجى الانتظار قليلاً.',
+                ], 429);
+            });
         });
 
         RateLimiter::for('auth', function (Request $request) {
-            return Limit::perMinute(15)->by($request->ip())->response(function () {
+            return Limit::perMinute(6)->by($request->ip())->response(function () {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'تم تجاوز الحد المسموح من محاولات الدخول. يرجى الانتظار دقيقة والمحاولة مجدداً.',
+                    'code' => 'AUTH_RATE_LIMIT',
+                    'message' => 'تم تجاوز الحد المسموح من محاولات الدخول أو التسجيل. يرجى الانتظار دقيقة والمحاولة مجدداً.',
+                ], 429);
+            });
+        });
+
+        RateLimiter::for('admin-auth', function (Request $request) {
+            return Limit::perMinutes(5, 5)->by($request->ip())->response(function () {
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 'ADMIN_BRUTE_FORCE_BLOCKED',
+                    'message' => 'تم حظر محاولات تسجيل الدخول للوحة التحكم مؤقتاً بسبب تكرار المحاولات الخاطئة. انتظر 5 دقائق.',
+                ], 429);
+            });
+        });
+
+        RateLimiter::for('financial', function (Request $request) {
+            $identifier = $request->user()?->id ?: $request->ip();
+            return Limit::perMinute(12)->by('financial:' . $identifier)->response(function () {
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 'TRANSACTION_RATE_LIMIT',
+                    'message' => 'يرجى الانتظار بضع ثوانٍ بين المعاملات المالية والشحن لضمان معالجة العمليات بدقة.',
                 ], 429);
             });
         });

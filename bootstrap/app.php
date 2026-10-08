@@ -21,6 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Trust Cloudflare, Load Balancers, and Reverse Proxies for accurate real IP detection
+        $middleware->trustProxies(at: '*');
+
+        // Global Firewall and Anti-DDoS Burst Shield
+        $middleware->append(\App\Http\Middleware\FirewallShieldMiddleware::class);
+
         // Global web middleware
         $middleware->web(append: [
             SetLocale::class,
@@ -40,6 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'idempotent' => IdempotencyCheck::class,
             'log.api' => LogApiRequest::class,
             'security.headers' => \App\Http\Middleware\SecurityHeadersMiddleware::class,
+            'firewall' => \App\Http\Middleware\FirewallShieldMiddleware::class,
             'verify.webhook' => \App\Http\Middleware\VerifyWebhookSignature::class,
             'auth.api_client' => \App\Http\Middleware\AuthenticateApiClient::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,

@@ -5,9 +5,9 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// Admin Authentication (Web Session)
+// Admin Authentication (Web Session) with Anti-Brute-Force Throttling
 Route::get('/admin/login', [AuthenticatedSessionController::class, 'create'])->middleware('guest')->name('login');
-Route::post('/admin/login', [AuthenticatedSessionController::class, 'store']);
+Route::post('/admin/login', [AuthenticatedSessionController::class, 'store'])->middleware(['throttle:admin-auth']);
 
 // Admin Profile & Session Actions
 Route::middleware(['auth'])->group(function () {

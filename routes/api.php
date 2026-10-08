@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('v1')->middleware(['locale'])->group(function () {
+Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
     // Health & Public Info
     Route::get('/ping', function () {
         return response()->json([
@@ -54,8 +54,8 @@ Route::prefix('v1')->middleware(['locale'])->group(function () {
     // Public Payment Methods for Deposit
     Route::get('/deposits/methods', [DepositController::class, 'methods']);
 
-    // Public Auth Routes
-    Route::prefix('auth')->group(function () {
+    // Public Auth Routes (Guarded with Anti-Brute-Force Rate Limiting)
+    Route::prefix('auth')->middleware(['throttle:auth'])->group(function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/login/2fa', [AuthController::class, 'login2FA']);
@@ -85,22 +85,22 @@ Route::prefix('v1')->middleware(['locale'])->group(function () {
         Route::get('/wallet/balance', [WalletController::class, 'balance']);
         Route::get('/wallet/rates', [WalletController::class, 'rates']);
         Route::post('/wallet/preview-conversion', [WalletController::class, 'previewConversion']);
-        Route::post('/wallet/convert', [WalletController::class, 'convert']);
+        Route::post('/wallet/convert', [WalletController::class, 'convert'])->middleware('throttle:financial');
         Route::get('/wallet/transactions', [WalletController::class, 'transactions']);
 
         // Deposit Requests (1.8)
         Route::get('/deposits', [DepositController::class, 'index']);
-        Route::post('/deposits', [DepositController::class, 'store']);
+        Route::post('/deposits', [DepositController::class, 'store'])->middleware('throttle:financial');
         Route::get('/deposits/{id}', [DepositController::class, 'show']);
 
         // Order Placement & History (2.9)
         Route::get('/orders', [OrderController::class, 'index']);
-        Route::post('/orders', [OrderController::class, 'store']);
+        Route::post('/orders', [OrderController::class, 'store'])->middleware('throttle:financial');
         Route::get('/orders/{id}', [OrderController::class, 'show']);
 
         // Target Selling Orders (4.3)
         Route::get('/target-orders', [TargetOrderController::class, 'index']);
-        Route::post('/target-orders', [TargetOrderController::class, 'store']);
+        Route::post('/target-orders', [TargetOrderController::class, 'store'])->middleware('throttle:financial');
         Route::get('/target-orders/{id}', [TargetOrderController::class, 'show']);
 
         // Referrals & Affiliates (5.4)
