@@ -75,13 +75,14 @@
 
                 <!-- Page Content -->
                 @yield('content')
+
+                <!-- Page-Level Scripts (Inside #content for SPA execution) -->
+                @stack('scripts')
             </main>
 
             <!-- Footer -->
             @include('admin.partials.footer')
         </div>
     </div>
-
-    @stack('scripts')
 </body>
 </html>

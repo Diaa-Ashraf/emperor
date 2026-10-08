@@ -242,10 +242,10 @@
                         <div class="row g-3">
                             <div class="col-12 col-md-6">
                                 <label class="form-label text-white fw-semibold small">المنتج التابع له <span class="text-danger">*</span></label>
-                                <select name="product_id" id="modalProductSelect" class="form-select" required onchange="updateTierOptions(this.value)">
+                                <select name="product_id" id="modalProductSelect" class="form-select" required onchange="window.updateTierOptions(this.value)">
                                     <option value="">-- اختر المنتج --</option>
                                     @foreach($products as $p)
-                                        <option value="{{ $p->id }}" data-tiers="{{ json_encode($p->tiers) }}">{{ $p->name }}</option>
+                                        <option value="{{ $p->id }}">{{ $p->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -349,26 +349,103 @@
             </div>
         </div>
     </div>
+    <script>
+        window.voucherProductsList = @json($products);
+
+        window.updateTierOptions = function(productId) {
+            const tierSelect = document.getElementById('modalTierSelect');
+            if (!tierSelect) return;
+            tierSelect.innerHTML = '<option value="">-- اختر الباقة --</option>';
+
+            if (!productId) return;
+
+            const products = window.voucherProductsList || [];
+            const product = products.find(p => String(p.id) === String(productId));
+
+            if (!product || !product.tiers || product.tiers.length === 0) {
+                const noOpt = document.createElement('option');
+                noOpt.value = '';
+                noOpt.disabled = true;
+                noOpt.textContent = 'لا توجد باقات مسجلة لهذا المنتج';
+                tierSelect.appendChild(noOpt);
+                return;
+            }
+
+            product.tiers.forEach(tier => {
+                const opt = document.createElement('option');
+                opt.value = tier.id;
+                opt.textContent = tier.name;
+                tierSelect.appendChild(opt);
+            });
+        };
+
+        // Auto wire change listener when DOM or modal is ready
+        (function() {
+            function bindProductSelect() {
+                const sel = document.getElementById('modalProductSelect');
+                if (sel && !sel.dataset.listenerBound) {
+                    sel.dataset.listenerBound = 'true';
+                    sel.addEventListener('change', function() {
+                        window.updateTierOptions(this.value);
+                    });
+                    if (sel.value) {
+                        window.updateTierOptions(sel.value);
+                    }
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', bindProductSelect);
+            } else {
+                bindProductSelect();
+            }
+
+            // Also check whenever modal is opened
+            const modalEl = document.getElementById('importVouchersModal');
+            if (modalEl) {
+                modalEl.addEventListener('shown.bs.modal', function() {
+                    bindProductSelect();
+                    const sel = document.getElementById('modalProductSelect');
+                    if (sel && sel.value) {
+                        window.updateTierOptions(sel.value);
+                    }
+                });
+            }
+        })();
+    </script>
 @endsection
 
 @push('scripts')
 <script>
-    function updateTierOptions(productId) {
-        const productSelect = document.getElementById('modalProductSelect');
-        const tierSelect = document.getElementById('modalTierSelect');
-        tierSelect.innerHTML = '<option value="">-- اختر الباقة --</option>';
+    // Backup declaration for direct page loads
+    if (!window.updateTierOptions) {
+        window.voucherProductsList = @json($products);
+        window.updateTierOptions = function(productId) {
+            const tierSelect = document.getElementById('modalTierSelect');
+            if (!tierSelect) return;
+            tierSelect.innerHTML = '<option value="">-- اختر الباقة --</option>';
 
-        if (!productId) return;
+            if (!productId) return;
 
-        const selectedOption = productSelect.options[productSelect.selectedIndex];
-        const tiers = JSON.parse(selectedOption.getAttribute('data-tiers') || '[]');
+            const products = window.voucherProductsList || [];
+            const product = products.find(p => String(p.id) === String(productId));
 
-        tiers.forEach(tier => {
-            const opt = document.createElement('option');
-            opt.value = tier.id;
-            opt.textContent = tier.name;
-            tierSelect.appendChild(opt);
-        });
+            if (!product || !product.tiers || product.tiers.length === 0) {
+                const noOpt = document.createElement('option');
+                noOpt.value = '';
+                noOpt.disabled = true;
+                noOpt.textContent = 'لا توجد باقات مسجلة لهذا المنتج';
+                tierSelect.appendChild(noOpt);
+                return;
+            }
+
+            product.tiers.forEach(tier => {
+                const opt = document.createElement('option');
+                opt.value = tier.id;
+                opt.textContent = tier.name;
+                tierSelect.appendChild(opt);
+            });
+        };
     }
 
     function toggleCodeReveal(id, code) {
