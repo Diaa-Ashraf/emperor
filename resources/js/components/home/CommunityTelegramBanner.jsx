@@ -123,7 +123,7 @@ export default function CommunityTelegramBanner() {
                         margin: '14px 0 0',
                         fontSize: 'clamp(15px, 2vw, 17px)',
                         fontWeight: '800',
-                        color: hovered ? '#4ADE80' : '#E2E8F0',
+                        color: hovered ? '#16A34A' : (isLight ? '#0F172A' : '#E2E8F0'),
                         textAlign: 'center',
                         lineHeight: '1.4',
                         letterSpacing: '-0.2px',
@@ -135,14 +135,14 @@ export default function CommunityTelegramBanner() {
                         gap: '6px',
                     }}
                 >
-                    <MessageCircle size={17} color={hovered ? '#4ADE80' : '#22C55E'} />
+                    <MessageCircle size={17} color={hovered ? '#16A34A' : (isLight ? '#15803D' : '#22C55E')} />
                     <span>{bannerTitle}</span>
                 </h3>
             </a>
 
             <style>{`
                 .emperor-whatsapp-banner-card {
-                    animation: whatsappCardPulse 4s ease-in-out infinite alternate;
+                    animation: ${isLight ? 'none' : 'whatsappCardPulse 4s ease-in-out infinite alternate'};
                 }
                 @keyframes whatsappCardPulse {
                     0% {

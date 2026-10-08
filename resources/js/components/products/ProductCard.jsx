@@ -61,7 +61,7 @@ export default function ProductCard({ product, onClick }) {
                         ? '1.5px solid rgba(212, 165, 55, 0.45)'
                         : '1.5px solid rgba(212, 165, 55, 0.35)',
                     boxShadow: isLight
-                        ? '0 6px 18px rgba(0, 0, 0, 0.06)'
+                        ? 'none'
                         : '0 8px 24px rgba(0, 0, 0, 0.65), 0 0 15px rgba(212, 165, 55, 0.08)',
                     display: 'flex',
                     alignItems: 'center',

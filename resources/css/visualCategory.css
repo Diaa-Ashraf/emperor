@@ -219,18 +219,27 @@
     border-color: #F5D061 !important;
 }
 
-/* Light Theme: strictly no black shadows around cards */
+/* Light Theme: strictly no black shadows around cards and banners */
 [data-theme="light"] .category-poster-frame,
 [data-theme="light"] .product-poster-frame,
+[data-theme="light"] .emperor-target-banner-card,
+[data-theme="light"] .emperor-whatsapp-banner-card,
 .light .category-poster-frame,
-.light .product-poster-frame {
+.light .product-poster-frame,
+.light .emperor-target-banner-card,
+.light .emperor-whatsapp-banner-card {
     box-shadow: none !important;
+    animation: none !important;
 }
 
 [data-theme="light"] .category-poster-frame:hover,
 [data-theme="light"] .emperor-product-poster-card:hover .product-poster-frame,
+[data-theme="light"] .emperor-target-banner-card:hover,
+[data-theme="light"] .emperor-whatsapp-banner-card:hover,
 .light .category-poster-frame:hover,
-.light .emperor-product-poster-card:hover .product-poster-frame {
+.light .emperor-product-poster-card:hover .product-poster-frame,
+.light .emperor-target-banner-card:hover,
+.light .emperor-whatsapp-banner-card:hover {
     box-shadow: 0 0 20px rgba(212, 165, 55, 0.3) !important;
 }
 

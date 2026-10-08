@@ -121,7 +121,7 @@ export default function GoldenTargetBanner() {
                         margin: '14px 0 0',
                         fontSize: 'clamp(16px, 2.2vw, 18px)',
                         fontWeight: '800',
-                        color: hovered ? '#F5D061' : '#FFFFFF',
+                        color: hovered ? (isLight ? '#B45309' : '#F5D061') : (isLight ? '#0F172A' : '#FFFFFF'),
                         textAlign: 'center',
                         lineHeight: '1.4',
                         letterSpacing: '-0.2px',
@@ -135,7 +135,7 @@ export default function GoldenTargetBanner() {
 
             <style>{`
                 .emperor-target-banner-card {
-                    animation: targetCardPulse 4s ease-in-out infinite alternate;
+                    animation: ${isLight ? 'none' : 'targetCardPulse 4s ease-in-out infinite alternate'};
                 }
                 @keyframes targetCardPulse {
                     0% {

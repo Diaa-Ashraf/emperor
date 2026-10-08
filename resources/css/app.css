@@ -391,6 +391,78 @@ html.light body {
     color: #050507 !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE: ZERO HARSH BLACK SHADOWS (WHOLE SITE SAFEGUARD)
+   ═══════════════════════════════════════════════════════════════ */
+.light .category-poster-frame,
+.light .product-poster-frame,
+.light .emperor-target-banner-card,
+.light .emperor-whatsapp-banner-card,
+.light .emperor-hero-slider,
+[data-theme="light"] .category-poster-frame,
+[data-theme="light"] .product-poster-frame,
+[data-theme="light"] .emperor-target-banner-card,
+[data-theme="light"] .emperor-whatsapp-banner-card,
+[data-theme="light"] .emperor-hero-slider {
+    box-shadow: none !important;
+    animation: none !important;
+}
+
+.light .category-poster-frame:hover,
+.light .product-poster-frame:hover,
+.light .emperor-target-banner-card:hover,
+.light .emperor-whatsapp-banner-card:hover,
+[data-theme="light"] .category-poster-frame:hover,
+[data-theme="light"] .product-poster-frame:hover,
+[data-theme="light"] .emperor-target-banner-card:hover,
+[data-theme="light"] .emperor-whatsapp-banner-card:hover {
+    box-shadow: 0 0 20px rgba(212, 165, 55, 0.3) !important;
+}
+
+/* Eliminate harsh black shadows from any element with heavy inline black shadows in light mode */
+.light div[style*="rgba(0, 0, 0, 0.4)"],
+.light div[style*="rgba(0, 0, 0, 0.5)"],
+.light div[style*="rgba(0, 0, 0, 0.6)"],
+.light div[style*="rgba(0, 0, 0, 0.65)"],
+.light div[style*="rgba(0, 0, 0, 0.7)"],
+.light div[style*="rgba(0, 0, 0, 0.75)"],
+.light div[style*="rgba(0, 0, 0, 0.8)"],
+.light div[style*="rgba(0, 0, 0, 0.85)"],
+.light div[style*="rgba(0, 0, 0, 0.9)"],
+.light div[style*="rgba(0, 0, 0, 0.95)"],
+.light div[style*="rgba(0,0,0,0.4)"],
+.light div[style*="rgba(0,0,0,0.5)"],
+.light div[style*="rgba(0,0,0,0.6)"],
+.light div[style*="rgba(0,0,0,0.65)"],
+.light div[style*="rgba(0,0,0,0.7)"],
+.light div[style*="rgba(0,0,0,0.75)"],
+.light div[style*="rgba(0,0,0,0.8)"],
+.light div[style*="rgba(0,0,0,0.85)"],
+.light div[style*="rgba(0,0,0,0.9)"],
+.light div[style*="rgba(0,0,0,0.95)"],
+[data-theme="light"] div[style*="rgba(0, 0, 0, 0.4)"],
+[data-theme="light"] div[style*="rgba(0, 0, 0, 0.5)"],
+[data-theme="light"] div[style*="rgba(0, 0, 0, 0.6)"],
+[data-theme="light"] div[style*="rgba(0, 0, 0, 0.65)"],
+[data-theme="light"] div[style*="rgba(0, 0, 0, 0.7)"],
+[data-theme="light"] div[style*="rgba(0, 0, 0, 0.75)"],
+[data-theme="light"] div[style*="rgba(0, 0, 0, 0.8)"],
+[data-theme="light"] div[style*="rgba(0, 0, 0, 0.85)"],
+[data-theme="light"] div[style*="rgba(0, 0, 0, 0.9)"],
+[data-theme="light"] div[style*="rgba(0, 0, 0, 0.95)"],
+[data-theme="light"] div[style*="rgba(0,0,0,0.4)"],
+[data-theme="light"] div[style*="rgba(0,0,0,0.5)"],
+[data-theme="light"] div[style*="rgba(0,0,0,0.6)"],
+[data-theme="light"] div[style*="rgba(0,0,0,0.65)"],
+[data-theme="light"] div[style*="rgba(0,0,0,0.7)"],
+[data-theme="light"] div[style*="rgba(0,0,0,0.75)"],
+[data-theme="light"] div[style*="rgba(0,0,0,0.8)"],
+[data-theme="light"] div[style*="rgba(0,0,0,0.85)"],
+[data-theme="light"] div[style*="rgba(0,0,0,0.9)"],
+[data-theme="light"] div[style*="rgba(0,0,0,0.95)"] {
+    box-shadow: none !important;
+}
+
 
 /* ═══════════════════════════════════════════════════════════════
    BASE RESET & TYPOGRAPHY
