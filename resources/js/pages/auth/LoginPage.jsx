@@ -5,6 +5,7 @@ import AuthLayout from '../../layouts/AuthLayout';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
 import { authApi } from '../../api/endpoints';
 
@@ -12,6 +13,8 @@ export default function LoginPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const { login, login2FA, setSession } = useAuth();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const { success, error: toastError } = useToast();
 
     const from = location.state?.from?.pathname || '/';
@@ -255,9 +258,9 @@ export default function LoginPage() {
                             width: '64px',
                             height: '64px',
                             borderRadius: '20px',
-                            background: 'rgba(212, 165, 55, 0.15)',
-                            border: '1px solid rgba(212, 165, 55, 0.3)',
-                            color: '#D4A537',
+                            background: isLight ? 'rgba(212, 165, 55, 0.15)' : 'rgba(212, 165, 55, 0.15)',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.5)' : '1px solid rgba(212, 165, 55, 0.3)',
+                            color: isLight ? '#B8860B' : '#D4A537',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -271,9 +274,9 @@ export default function LoginPage() {
                         <div>
                             <label style={{
                                 display: 'block',
-                                fontSize: '13px',
+                                fontSize: '13.5px',
                                 fontWeight: '700',
-                                color: '#FFFFFF',
+                                color: isLight ? '#0F172A' : '#FFFFFF',
                                 marginBottom: '16px',
                                 textAlign: 'center',
                             }}>
@@ -304,9 +307,9 @@ export default function LoginPage() {
                                             width: '46px',
                                             height: '54px',
                                             borderRadius: '12px',
-                                            border: '1px solid rgba(212, 165, 55, 0.3)',
-                                            background: 'rgba(13, 13, 16, 0.8)',
-                                            color: '#FFFFFF',
+                                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.5)' : '1px solid rgba(212, 165, 55, 0.3)',
+                                            background: isLight ? '#F8FAFC' : 'rgba(13, 13, 16, 0.8)',
+                                            color: isLight ? '#0F172A' : '#FFFFFF',
                                             fontSize: '22px',
                                             fontWeight: '900',
                                             textAlign: 'center',
@@ -320,7 +323,7 @@ export default function LoginPage() {
                         </div>
                     ) : (
                         <div style={{ marginBottom: '24px' }}>
-                            <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#FFFFFF', marginBottom: '8px' }}>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: isLight ? '#0F172A' : '#FFFFFF', marginBottom: '8px' }}>
                                 رمز الاسترداد الاحتياطي (Recovery Code):
                             </label>
                             <Input
@@ -343,7 +346,7 @@ export default function LoginPage() {
                             style={{
                                 background: 'transparent',
                                 border: 'none',
-                                color: '#D4A537',
+                                color: isLight ? '#B8860B' : '#D4A537',
                                 fontSize: '13px',
                                 fontWeight: '700',
                                 cursor: 'pointer',
@@ -376,9 +379,9 @@ export default function LoginPage() {
                         style={{
                             width: '100%',
                             background: 'transparent',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            border: isLight ? '1.5px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.12)',
                             borderRadius: '12px',
-                            color: '#9E9EA8',
+                            color: isLight ? '#475569' : '#9E9EA8',
                             fontSize: '13px',
                             fontWeight: '700',
                             padding: '10px',
@@ -405,9 +408,9 @@ export default function LoginPage() {
                             width: '100%',
                             padding: '12px 18px',
                             borderRadius: '12px',
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                            border: '1px solid rgba(255, 255, 255, 0.15)',
-                            color: '#FFFFFF',
+                            backgroundColor: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.05)',
+                            border: isLight ? '1.5px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.15)',
+                            color: isLight ? '#0F172A' : '#FFFFFF',
                             fontSize: '14px',
                             fontWeight: '700',
                             display: 'flex',
@@ -418,14 +421,15 @@ export default function LoginPage() {
                             transition: 'all 0.2s ease',
                             marginBottom: '20px',
                             fontFamily: 'Cairo, sans-serif',
+                            boxShadow: isLight ? '0 1px 4px rgba(0, 0, 0, 0.05)' : 'none',
                         }}
                         onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                            e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.4)';
+                            e.currentTarget.style.backgroundColor = isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.1)';
+                            e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.6)';
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-                            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                            e.currentTarget.style.backgroundColor = isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.05)';
+                            e.currentTarget.style.borderColor = isLight ? '#CBD5E1' : 'rgba(255, 255, 255, 0.15)';
                         }}
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24">
@@ -456,9 +460,9 @@ export default function LoginPage() {
                         margin: '0 0 20px',
                         gap: '12px',
                     }}>
-                        <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.08)' }} />
-                        <span style={{ fontSize: '12px', color: '#656570', fontWeight: '700' }}>أو عبر البريد الإلكتروني</span>
-                        <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.08)' }} />
+                        <div style={{ flex: 1, height: '1px', background: isLight ? '#E2E8F0' : 'rgba(255, 255, 255, 0.1)' }} />
+                        <span style={{ fontSize: '12.5px', color: isLight ? '#64748B' : '#94A3B8', fontWeight: '700' }}>أو عبر البريد الإلكتروني</span>
+                        <div style={{ flex: 1, height: '1px', background: isLight ? '#E2E8F0' : 'rgba(255, 255, 255, 0.1)' }} />
                     </div>
 
                     <form onSubmit={handleSubmit} noValidate>
@@ -496,10 +500,10 @@ export default function LoginPage() {
                                 style={{
                                     position: 'absolute',
                                     left: '12px',
-                                    top: '38px',
+                                    top: '36px',
                                     background: 'transparent',
                                     border: 'none',
-                                    color: '#8E8E98',
+                                    color: isLight ? '#64748B' : '#94A3B8',
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -524,7 +528,8 @@ export default function LoginPage() {
                                 alignItems: 'center',
                                 gap: '8px',
                                 cursor: 'pointer',
-                                color: '#CBD5E1',
+                                color: isLight ? '#1E293B' : '#E2E8F0',
+                                fontWeight: '600',
                                 userSelect: 'none',
                             }}>
                                 <input
@@ -542,7 +547,12 @@ export default function LoginPage() {
                                 تذكرني على هذا الجهاز
                             </label>
 
-                            <Link to="/support" style={{ color: '#8E8E98', fontSize: '12px', textDecoration: 'none' }}>
+                            <Link to="/support" style={{
+                                color: isLight ? '#B8860B' : '#F5D061',
+                                fontSize: '12.5px',
+                                fontWeight: '700',
+                                textDecoration: 'none',
+                            }}>
                                 نسيت كلمة المرور؟
                             </Link>
                         </div>
@@ -554,7 +564,12 @@ export default function LoginPage() {
                             size="lg"
                             loading={loading}
                             icon={LogIn}
-                            style={{ width: '100%', marginBottom: '20px' }}
+                            style={{
+                                width: '100%',
+                                marginBottom: '20px',
+                                fontWeight: '900',
+                                fontSize: '15px',
+                            }}
                         >
                             تسجيل الدخول
                         </Button>
@@ -563,16 +578,17 @@ export default function LoginPage() {
                         <div style={{
                             textAlign: 'center',
                             fontSize: '14px',
-                            color: '#9E9EA8',
-                            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                            color: isLight ? '#64748B' : '#9E9EA8',
+                            borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.1)',
                             paddingTop: '20px',
+                            fontWeight: '600',
                         }}>
                             ليس لديك حساب؟{' '}
                             <Link
                                 to="/register"
                                 style={{
-                                    color: '#D4A537',
-                                    fontWeight: '700',
+                                    color: isLight ? '#B8860B' : '#F5D061',
+                                    fontWeight: '800',
                                     textDecoration: 'none',
                                     transition: 'color 0.2s',
                                 }}

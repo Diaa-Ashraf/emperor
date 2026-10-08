@@ -6,6 +6,7 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { authApi } from '../../api/endpoints';
 
 export default function RegisterPage() {
@@ -13,6 +14,8 @@ export default function RegisterPage() {
     const [searchParams] = useSearchParams();
     const { register, setSession } = useAuth();
     const { success, error: toastError } = useToast();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
 
     const [formData, setFormData] = useState({
         name: '',
@@ -140,9 +143,9 @@ export default function RegisterPage() {
                     width: '100%',
                     padding: '12px 18px',
                     borderRadius: '12px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#FFFFFF',
+                    backgroundColor: isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.05)',
+                    border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.15)',
+                    color: isLight ? '#0F172A' : '#FFFFFF',
                     fontSize: '14px',
                     fontWeight: '700',
                     display: 'flex',
@@ -155,12 +158,12 @@ export default function RegisterPage() {
                     fontFamily: 'Cairo, sans-serif',
                 }}
                 onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                    e.currentTarget.style.borderColor = 'rgba(212, 165, 55, 0.4)';
+                    e.currentTarget.style.backgroundColor = isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.borderColor = isLight ? '#B8860B' : 'rgba(212, 165, 55, 0.4)';
                 }}
                 onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                    e.currentTarget.style.backgroundColor = isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.05)';
+                    e.currentTarget.style.borderColor = isLight ? '#CBD5E1' : 'rgba(255, 255, 255, 0.15)';
                 }}
             >
                 <svg width="18" height="18" viewBox="0 0 24 24">
@@ -191,9 +194,9 @@ export default function RegisterPage() {
                 margin: '0 0 20px',
                 gap: '12px',
             }}>
-                <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.08)' }} />
-                <span style={{ fontSize: '12px', color: '#656570', fontWeight: '700' }}>أو أنشئ حسابك يدوياً</span>
-                <div style={{ flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.08)' }} />
+                <div style={{ flex: 1, height: '1px', background: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.08)' }} />
+                <span style={{ fontSize: '12px', color: isLight ? '#64748B' : '#94A3B8', fontWeight: '700' }}>أو أنشئ حسابك يدوياً</span>
+                <div style={{ flex: 1, height: '1px', background: isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.08)' }} />
             </div>
 
             <form onSubmit={handleSubmit} noValidate>
@@ -248,7 +251,7 @@ export default function RegisterPage() {
                             top: '38px',
                             background: 'transparent',
                             border: 'none',
-                            color: '#8E8E98',
+                            color: isLight ? '#64748B' : '#94A3B8',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
@@ -294,7 +297,7 @@ export default function RegisterPage() {
                         alignItems: 'flex-start',
                         gap: '10px',
                         cursor: 'pointer',
-                        color: '#CBD5E1',
+                        color: isLight ? '#334155' : '#CBD5E1',
                         fontSize: '13px',
                         userSelect: 'none',
                     }}>
@@ -312,7 +315,7 @@ export default function RegisterPage() {
                             }}
                         />
                         <span>
-                            أوافق على <span style={{ color: '#D4A537', textDecoration: 'underline' }}>شروط الاستخدام</span> و <span style={{ color: '#D4A537', textDecoration: 'underline' }}>سياسة الخصوصية</span> لمنصة إمبراطور
+                            أوافق على <span style={{ color: isLight ? '#B8860B' : '#D4A537', fontWeight: '600', textDecoration: 'underline' }}>شروط الاستخدام</span> و <span style={{ color: isLight ? '#B8860B' : '#D4A537', fontWeight: '600', textDecoration: 'underline' }}>سياسة الخصوصية</span> لمنصة إمبراطور
                         </span>
                     </label>
                     {errors.terms && (
@@ -338,15 +341,15 @@ export default function RegisterPage() {
                 <div style={{
                     textAlign: 'center',
                     fontSize: '14px',
-                    color: '#9E9EA8',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                    color: isLight ? '#64748B' : '#9E9EA8',
+                    borderTop: isLight ? '1px solid rgba(0, 0, 0, 0.08)' : '1px solid rgba(255, 255, 255, 0.08)',
                     paddingTop: '20px',
                 }}>
                     لديك حساب بالفعل؟{' '}
                     <Link
                         to="/login"
                         style={{
-                            color: '#D4A537',
+                            color: isLight ? '#B8860B' : '#F5D061',
                             fontWeight: '700',
                             textDecoration: 'none',
                             transition: 'color 0.2s',

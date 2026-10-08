@@ -99,6 +99,14 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
             authRequired: true
         },
         {
+            path: '/wallet',
+            label: t('financialTransfers', 'التحويلات المالية'),
+            icon: Wallet,
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
+            authRequired: true
+        },
+        {
             path: '/profile?tab=security',
             label: t('security', 'حماية الحساب'),
             icon: Shield,
