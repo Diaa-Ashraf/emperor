@@ -82,6 +82,14 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
         navigate('/login');
     };
 
+    const hasDeveloperAccess = Boolean(
+        user?.has_api_access ||
+        user?.api_access_status === 'active' ||
+        user?.role === 'api_client' ||
+        user?.is_admin ||
+        user?.role === 'admin'
+    );
+
     const navItems = [
         {
             path: '/',
@@ -137,6 +145,20 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
             iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
             iconBadgeColor: '#38BDF8'
         },
+        ...(hasDeveloperAccess ? [
+            {
+                path: '/developer',
+                label: t('developerApi', 'الربط البرمجي (API)'),
+                icon: Key,
+                iconBadgeBg: 'rgba(212, 165, 55, 0.18)',
+                iconBadgeColor: 'var(--gold-400, #D4A537)',
+                badgeText: 'B2B API',
+                badgeBg: 'rgba(16, 185, 129, 0.15)',
+                badgeColor: '#10B981',
+                badgeBorder: 'rgba(16, 185, 129, 0.35)',
+                authRequired: true
+            }
+        ] : []),
         {
             path: '/created-by',
             label: t('createdBy', 'تم الإنشاء بواسطة'),
@@ -655,11 +677,28 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     <span>{item.label}</span>
                                 </div>
 
-                                {isRtl ? (
-                                    <ChevronLeft size={15} color={active ? '#F5D061' : (isLight ? '#94A3B8' : '#64748B')} />
-                                ) : (
-                                    <ChevronRight size={15} color={active ? '#F5D061' : (isLight ? '#94A3B8' : '#64748B')} />
-                                )}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    {item.badgeText && (
+                                        <span style={{
+                                            fontSize: '10px',
+                                            fontWeight: '900',
+                                            padding: '2px 7px',
+                                            borderRadius: '6px',
+                                            backgroundColor: item.badgeBg || 'rgba(16, 185, 129, 0.15)',
+                                            color: item.badgeColor || '#10B981',
+                                            border: item.badgeBorder || '1px solid rgba(16, 185, 129, 0.35)',
+                                            letterSpacing: '0.4px',
+                                            fontFamily: 'monospace',
+                                        }}>
+                                            {item.badgeText}
+                                        </span>
+                                    )}
+                                    {isRtl ? (
+                                        <ChevronLeft size={15} color={active ? '#F5D061' : (isLight ? '#94A3B8' : '#64748B')} />
+                                    ) : (
+                                        <ChevronRight size={15} color={active ? '#F5D061' : (isLight ? '#94A3B8' : '#64748B')} />
+                                    )}
+                                </div>
                             </Link>
                         );
                     })}
