@@ -1028,11 +1028,124 @@ export function MicoIcon({ size = 80 }) {
     );
 }
 
+export function RobloxIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="rbxBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#1E1E26" />
+                    <stop offset="60%" stopColor="#111118" />
+                    <stop offset="100%" stopColor="#08080C" />
+                </linearGradient>
+                <linearGradient id="rbxRed" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FF3B30" />
+                    <stop offset="50%" stopColor="#E0241A" />
+                    <stop offset="100%" stopColor="#991B1B" />
+                </linearGradient>
+                <linearGradient id="rbxSilver" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FFFFFF" />
+                    <stop offset="100%" stopColor="#CBD5E1" />
+                </linearGradient>
+                <filter id="rbxShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="#000000" floodOpacity="0.7" />
+                    <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#EF4444" floodOpacity="0.4" />
+                </filter>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#rbxBg)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+            {/* Tilted Roblox 3D Cube */}
+            <g filter="url(#rbxShadow)" transform="translate(50, 42)">
+                <g transform="rotate(-15)">
+                    {/* Outer Cube */}
+                    <rect x="-24" y="-24" width="48" height="48" rx="8" fill="url(#rbxRed)" stroke="#FFFFFF" strokeWidth="1.5" />
+                    {/* Inner Square Hole */}
+                    <rect x="-8" y="-8" width="16" height="16" rx="3" fill="#0A0A10" />
+                </g>
+            </g>
+            {/* ROBLOX Text */}
+            <text x="50" y="86" textAnchor="middle" fill="url(#rbxSilver)" fontSize="11" fontWeight="900" fontFamily="Arial Black, sans-serif" letterSpacing="1.2">
+                ROBLOX
+            </text>
+        </svg>
+    );
+}
+
+export function ValorantIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="valBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#0F1923" />
+                    <stop offset="60%" stopColor="#0B1219" />
+                    <stop offset="100%" stopColor="#040608" />
+                </linearGradient>
+                <linearGradient id="valRed" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FF4655" />
+                    <stop offset="100%" stopColor="#BD1A2A" />
+                </linearGradient>
+                <filter id="valGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="5" floodColor="#FF4655" floodOpacity="0.5" />
+                </filter>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#valBg)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+            {/* Valorant V Slash Geometry */}
+            <g filter="url(#valGlow)" transform="translate(24, 20)">
+                <path d="M0 0 L22 38 L32 38 L10 0 Z" fill="url(#valRed)" />
+                <path d="M42 0 L52 0 L30 38 L20 38 Z" fill="url(#valRed)" />
+                <polygon points="16,46 26,46 38,26 28,26" fill="#FFFFFF" />
+            </g>
+            {/* VALORANT Text */}
+            <text x="50" y="86" textAnchor="middle" fill="#FFFFFF" fontSize="10" fontWeight="900" fontFamily="Arial Black, sans-serif" letterSpacing="1.5">
+                VALORANT
+            </text>
+        </svg>
+    );
+}
+
+export function HonorOfKingsIcon({ size = 80 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="hokBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#2A1B4E" />
+                    <stop offset="60%" stopColor="#170F2C" />
+                    <stop offset="100%" stopColor="#090514" />
+                </linearGradient>
+                <linearGradient id="hokGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FFF176" />
+                    <stop offset="50%" stopColor="#FFD54F" />
+                    <stop offset="100%" stopColor="#FF9800" />
+                </linearGradient>
+                <linearGradient id="hokRuby" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FF1744" />
+                    <stop offset="100%" stopColor="#B71C1C" />
+                </linearGradient>
+                <filter id="hokGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="5" floodColor="#FFB300" floodOpacity="0.45" />
+                </filter>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="url(#hokBg)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+            {/* Imperial Crown Emblem */}
+            <g filter="url(#hokGlow)" transform="translate(20, 22)">
+                <path d="M8 38 L4 16 L20 26 L30 8 L40 26 L56 16 L52 38 Z" fill="url(#hokGold)" stroke="#FFFFFF" strokeWidth="1" />
+                <rect x="6" y="38" width="48" height="8" rx="2" fill="url(#hokGold)" />
+                {/* Ruby in Center */}
+                <polygon points="30,22 36,30 30,38 24,30" fill="url(#hokRuby)" stroke="#FFFFFF" strokeWidth="1" />
+                <circle cx="14" cy="42" r="2" fill="#00E5FF" />
+                <circle cx="46" cy="42" r="2" fill="#00E5FF" />
+            </g>
+            {/* HOK Text */}
+            <text x="50" y="86" textAnchor="middle" fill="url(#hokGold)" fontSize="10.5" fontWeight="900" fontFamily="Arial Black, sans-serif" letterSpacing="1">
+                HONOR OF KINGS
+            </text>
+        </svg>
+    );
+}
+
 /**
  * Universal resolver for target app icons.
  * If app has custom uploaded image, uses that; otherwise falls back to the high-res 3D icon by name.
  */
-export function TargetAppIconRenderer({ app, size = 84 }) {
+export function TargetAppIconRenderer({ app, size = '100%' }) {
     if (app?.image_url || app?.icon_url || app?.iconUrl || app?.image) {
         const u = app.image_url || app.icon_url || app.iconUrl || app.image;
         const isStockPhoto = typeof u === 'string' && (u.includes('unsplash') || u.includes('pexels') || u.includes('random'));
@@ -1047,7 +1160,7 @@ export function TargetAppIconRenderer({ app, size = 84 }) {
                     style={{
                         width: '100%',
                         height: '100%',
-                        objectFit: 'contain',
+                        objectFit: 'cover',
                         borderRadius: '16px',
                     }}
                     onError={(e) => {
@@ -1081,9 +1194,14 @@ export function TargetAppIconRenderer({ app, size = 84 }) {
     if (n.includes('زفا') || en.includes('zafa')) return <ZafaLiveIcon size={size} />;
     if (n.includes('بولا') || en.includes('pola')) return <PolaLiveIcon size={size} />;
 
-    // Other Target & Game Apps
+    // Top Games
+    if (n.includes('روبلوكس') || en.includes('roblox')) return <RobloxIcon size={size} />;
+    if (n.includes('فالورانت') || en.includes('valorant')) return <ValorantIcon size={size} />;
+    if (n.includes('أونور') || n.includes('اونور') || en.includes('honor of kings') || en.includes('hok')) return <HonorOfKingsIcon size={size} />;
     if (n.includes('ببجي') || en.includes('pubg')) return <PubgIcon size={size} />;
     if (n.includes('فاير') || en.includes('free fire')) return <FreeFireIcon size={size} />;
+
+    // Other Target & Social Apps
     if (n.includes('بارتي') || en.includes('party')) return <PartyStarIcon size={size} />;
     if (n.includes('بوتا') || en.includes('bouta')) return <BoutaLiveIcon size={size} />;
     if (n.includes('تامي') || en.includes('tami')) return <TamiIcon size={size} />;

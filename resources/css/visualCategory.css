@@ -77,33 +77,33 @@
 .emperor-products-poster-grid,
 .emperor-products-grid {
     display: grid !important;
-    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
-    gap: 16px !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 18px !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    align-items: stretch !important;
+    align-items: start !important;
 }
 
-@media (min-width: 1400px) {
+@media (min-width: 1500px) {
     .emperor-products-poster-grid,
     .emperor-products-grid {
         grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
-        gap: 18px !important;
+        gap: 20px !important;
     }
 }
 
 @media (max-width: 1200px) {
     .emperor-products-poster-grid,
     .emperor-products-grid {
-        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-        gap: 14px !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 16px !important;
     }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 900px) {
     .emperor-products-poster-grid,
     .emperor-products-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
         gap: 12px !important;
     }
 }
@@ -113,7 +113,7 @@
     .emperor-products-poster-grid,
     .emperor-products-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        gap: 10px 7px !important;
+        gap: 10px 8px !important;
     }
     
     .product-poster-frame {
