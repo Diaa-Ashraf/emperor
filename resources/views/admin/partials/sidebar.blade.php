@@ -88,7 +88,7 @@
         </a>
         <a href="{{ route('admin.payment-methods.index') }}" class="nav-link {{ request()->routeIs('admin.payment-methods.*') ? 'active' : '' }}">
             <i class="ti ti-credit-card"></i>
-            <span class="nav-text">طرق الدفع والحسابات</span>
+            <span class="nav-text">طرق الدفع وبطاقات التحويل</span>
         </a>
         <a href="{{ route('admin.exchange-rates.index') }}" class="nav-link {{ request()->routeIs('admin.exchange-rates.*') ? 'active' : '' }}">
             <i class="ti ti-arrows-exchange"></i>

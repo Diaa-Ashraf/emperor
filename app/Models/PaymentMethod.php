@@ -13,7 +13,10 @@ class PaymentMethod extends Model
 
     protected $fillable = [
         'name',
+        'sub_name',
         'code',
+        'country',
+        'country_name',
         'type',
         'currency',
         'logo',
@@ -21,6 +24,9 @@ class PaymentMethod extends Model
         'max_amount',
         'fixed_fee',
         'percent_fee',
+        'account_number',
+        'note',
+        'instruction',
         'account_details',
         'instructions',
         'is_active',

@@ -89,11 +89,8 @@ Route::middleware(['auth', 'admin.only', 'locale'])->prefix('admin')->name('admi
     Route::post('/withdrawals/{id}/approve', [\App\Http\Controllers\Admin\WithdrawalController::class, 'approve'])->name('withdrawals.approve');
     Route::post('/withdrawals/{id}/reject', [\App\Http\Controllers\Admin\WithdrawalController::class, 'reject'])->name('withdrawals.reject');
 
-    Route::get('/payment-methods', [PlaceholderAdminController::class, 'index'])
-        ->defaults('title', 'طرق الدفع والحسابات')
-        ->defaults('icon', 'ti-credit-card')
-        ->defaults('description', 'تهيئة أرقام محافظ الكاش، انستاباي، وعناوين USDT')
-        ->name('payment-methods.index');
+    Route::resource('payment-methods', \App\Http\Controllers\Admin\PaymentMethodController::class);
+    Route::post('/payment-methods/{id}/toggle-active', [\App\Http\Controllers\Admin\PaymentMethodController::class, 'toggleActive'])->name('payment-methods.toggle-active');
 
     // Providers Management (2.2)
     Route::get('/providers', [ProviderController::class, 'index'])->name('providers.index');

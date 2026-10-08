@@ -41,8 +41,15 @@ export default function DepositPage() {
     const { theme } = useTheme();
     const isLight = theme === 'light';
 
-    const [activeCountry, setActiveCountry] = useState('egypt');
+    const [activeCountry, setActiveCountry] = useState('all');
     const [selectedMethod, setSelectedMethod] = useState(null);
+    const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 640 : false);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 640);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Form inputs
     const [amount, setAmount] = useState('');
@@ -55,25 +62,15 @@ export default function DepositPage() {
     const [submitting, setSubmitting] = useState(false);
     const [submittedDeposit, setSubmittedDeposit] = useState(null);
     const [dbMethods, setDbMethods] = useState([]);
+    const [loadingMethods, setLoadingMethods] = useState(true);
 
-    useEffect(() => {
-        depositsApi.getMethods()
-            .then(res => {
-                const data = res?.data || res;
-                if (Array.isArray(data)) {
-                    setDbMethods(data);
-                }
-            })
-            .catch(() => {});
-    }, []);
-
-    // Comprehensive list of rich payment methods matching KA-CARDS layout
-    const allPaymentMethods = [
-        // 🇪🇬 EGYPT
+    // Initial fallback if database is empty or loading
+    const fallbackPaymentMethods = [
         {
-            id: 'vodafone_cash',
+            id: 1,
             code: 'vodafone_cash',
             country: 'egypt',
+            country_name: 'تحويل مصر',
             name: 'فودافون كاش',
             subName: 'VF-CASH',
             currency: 'EGY',
@@ -84,65 +81,10 @@ export default function DepositPage() {
             tag: 'تحويل مصر',
         },
         {
-            id: 'etisalat_cash',
-            code: 'etisalat_cash',
-            country: 'egypt',
-            name: 'اتصالات كاش',
-            subName: 'اتصالات كاش',
-            currency: 'EGY',
-            min_amount: 50,
-            account_number: '01123456789',
-            note: 'سيتم قبول المبلغ بعد المراجعه من قبل الادارة',
-            instruction: 'أقل تحويل 50 ج، التحويل متاح 24/7 عبر محفظة اتصالات كاش.',
-            tag: 'تحويل مصر',
-        },
-        {
-            id: 'instapay',
-            code: 'instapay',
-            country: 'egypt',
-            name: 'انستا بي (InstaPay)',
-            subName: 'انستا بي',
-            currency: 'EGY',
-            min_amount: 50,
-            account_number: 'emperor@instapay',
-            note: 'تحويل بنكي ولحظي فوري بدون أي عمولة 0%',
-            instruction: 'حول عبر انستاباي إلى العنوان المعرف أو رقم الهاتف ثم ارفع سكرين شوت الإيصال.',
-            tag: 'تحويل مصر',
-        },
-        {
-            id: 'orange_cash',
-            code: 'orange_cash',
-            country: 'egypt',
-            name: 'أورنج كاش',
-            subName: 'أورنج كاش',
-            currency: 'EGY',
-            min_amount: 50,
-            account_number: '01234567890',
-            note: 'برجاء كتابة رقم العملية لضمان التنفيذ 0 ثانيه',
-            instruction: 'أقل تحويل 50 ج، سيتم إضافة الرصيد تلقائياً بعد الفحص.',
-            tag: 'تحويل مصر',
-        },
-
-        // 🇸🇾 SYRIA
-        {
-            id: 'sham_cash',
-            code: 'sham_cash',
-            country: 'syria',
-            name: 'شام كاش (Sham Cash)',
-            subName: 'شام كاش',
-            currency: 'USD',
-            min_amount: 5,
-            account_number: '963987654321',
-            note: 'تحويل مباشر وسريع داخل سوريا بالدولار الأمريكي',
-            instruction: 'اكتب رقم الحوالة واسم المستلم لسرعة الإيداع في المحفظة.',
-            tag: 'تحويل سوريا',
-        },
-
-        // 🇯🇴 JORDAN
-        {
-            id: 'cliq_jordan',
+            id: 2,
             code: 'cliq_jordan',
             country: 'jordan',
+            country_name: 'تحويل الأردن',
             name: 'كليك (CliQ Jordan)',
             subName: 'CliQ الأردن',
             currency: 'JOD',
@@ -150,87 +92,27 @@ export default function DepositPage() {
             account_number: 'EMPEROR_CLIQ',
             note: 'تحويل فوري عبر نظام كليك الأردني بدون عمولات',
             instruction: 'حول عبر اسم المستخدم أو الآيبان ثم أرفق إشعار التحويل.',
-            tag: 'تحويل الاردن',
+            tag: 'تحويل الأردن',
         },
         {
-            id: 'zain_cash_jo',
-            code: 'zain_cash',
-            country: 'jordan',
-            name: 'زين كاش الأردن',
-            subName: 'زين كاش',
-            currency: 'JOD',
-            min_amount: 5,
-            account_number: '0791234567',
-            note: 'شحن فوري ومباشر عبر محفظة زين كاش',
-            instruction: 'أدخل رقم المحفظة المحول منها ورقم الإشعار.',
-            tag: 'تحويل الاردن',
-        },
-
-        // 🇸🇦 SAUDI ARABIA
-        {
-            id: 'stc_pay_sa',
-            code: 'stc_pay',
-            country: 'saudi',
-            name: 'STC Pay / الراجحي',
-            subName: 'stc pay السعودية',
-            currency: 'SAR',
-            min_amount: 25,
-            account_number: '0501234567',
-            note: 'تحويل فوري من stc pay أو الحسابات البنكية السعودية',
-            instruction: 'أقل تحويل 25 ريال، اكتب اسم المحول ورقم الحوالة بدقة.',
-            tag: 'تحويل السعودية',
-        },
-
-        // 🇦🇪 UAE
-        {
-            id: 'uae_bank',
-            code: 'uae_bank',
-            country: 'uae',
-            name: 'تحويل الإمارات / درهم',
-            subName: 'درهم إماراتي',
-            currency: 'AED',
-            min_amount: 25,
-            account_number: 'AE2503300000124587963',
-            note: 'تحويل بنكي أو محفظة إماراتية معتمدة',
-            instruction: 'أقل تحويل 25 درهم، التحويل فوري ومعتمد.',
-            tag: 'تحويل الامارات',
-        },
-
-        // 🇾🇪 YEMEN
-        {
-            id: 'kuraimi_ye',
-            code: 'kuraimi',
-            country: 'yemen',
-            name: 'الكريمي إكسبرس (اليمن)',
-            subName: 'الكريمي جوال',
-            currency: 'YER',
-            min_amount: 5000,
-            account_number: '12345678',
-            note: 'تحويل عبر الكريمي أو ون كاش بالريال اليمني',
-            instruction: 'أدخل رقم الحوالة ورقم هاتف المرسل بدقة.',
-            tag: 'تحويل اليمن',
-        },
-
-        // 🇹🇷 TURKEY
-        {
-            id: 'ziraat_bank',
-            code: 'ziraat_bank',
-            country: 'turkey',
-            name: 'Ziraat Bankası (تركيا)',
-            subName: 'Ziraat Bankası',
-            currency: 'TRY',
+            id: 3,
+            code: 'instapay',
+            country: 'egypt',
+            country_name: 'تحويل مصر',
+            name: 'انستا بي (InstaPay)',
+            subName: 'انستا بي',
+            currency: 'EGY',
             min_amount: 50,
-            account_number: 'TR120001000254879654123547',
-            note: 'Havale / EFT تحويل فوري ليرة تركية',
-            instruction: 'اكتب اسم المحول في خانة الملاحظات وأرفق إيصال البنك.',
-            tag: 'تحويل تركيا',
+            account_number: 'ahmedsalah@instapay',
+            note: 'ahmedsalah',
+            instruction: 'حول عبر انستاباي إلى العنوان المعرف ثم ارفع سكرين شوت الإيصال.',
+            tag: 'تحويل مصر',
         },
-
-        // 🌐 GLOBAL / CRYPTO
         {
-            id: 'usdt_trc20',
+            id: 4,
             code: 'usdt_crypto',
             country: 'crypto',
+            country_name: 'تحويل USDT دولي',
             name: 'USDT (TRC-20)',
             subName: 'USDT TRC20',
             currency: 'USD',
@@ -240,33 +122,48 @@ export default function DepositPage() {
             instruction: 'حول عملة USDT عبر شبكة TRC20 وأدخل معرف العملية TXID ولقطة الشاشة.',
             tag: 'تحويل USDT دولي',
         },
-        {
-            id: 'binance_pay',
-            code: 'binance_pay',
-            country: 'crypto',
-            name: 'Binance Pay (باينانس)',
-            subName: 'BINANCE PAY ID',
-            currency: 'USD',
-            min_amount: 5,
-            account_number: '891024519',
-            note: 'دفع فوري بدون رسوم شبكة 0% عبر باينانس باي',
-            instruction: 'افتح تطبيق Binance Pay وأرسل المبلغ للـ Pay ID الموضح.',
-            tag: 'تحويل USDT دولي',
-        },
     ];
 
-    const countries = [
-        { id: 'egypt', name: language === 'en' ? 'Egypt' : 'تحويل مصر', currency: 'EGY' },
-        { id: 'jordan', name: language === 'en' ? 'Jordan' : 'تحويل الاردن', currency: 'JOD' },
-        { id: 'syria', name: language === 'en' ? 'Syria' : 'تحويل سوريا', currency: 'USD' },
-        { id: 'saudi', name: language === 'en' ? 'Saudi Arabia' : 'تحويل السعودية', currency: 'SAR' },
-        { id: 'uae', name: language === 'en' ? 'UAE' : 'تحويل الامارات', currency: 'AED' },
-        { id: 'yemen', name: language === 'en' ? 'Yemen' : 'تحويل اليمن', currency: 'YER' },
-        { id: 'turkey', name: language === 'en' ? 'Turkey' : 'تحويل تركيا', currency: 'TRY' },
-        { id: 'crypto', name: language === 'en' ? 'Global USDT' : 'تحويل USDT دولي', currency: 'USD' },
-    ];
+    useEffect(() => {
+        setLoadingMethods(true);
+        depositsApi.getMethods()
+            .then(res => {
+                const data = res?.data || res;
+                if (Array.isArray(data) && data.length > 0) {
+                    setDbMethods(data);
+                }
+            })
+            .catch(() => {})
+            .finally(() => {
+                setLoadingMethods(false);
+            });
+    }, []);
 
-    const filteredMethods = allPaymentMethods.filter(m => {
+    // Current active payment methods source (DB first, fallback second)
+    const activeMethods = dbMethods.length > 0 ? dbMethods : fallbackPaymentMethods;
+
+    // Dynamically generate the country tabs from whatever the Admin created in Dashboard
+    const countries = React.useMemo(() => {
+        const list = [
+            { id: 'all', name: language === 'en' ? 'Wallet' : 'المحفظة', currency: 'USD' }
+        ];
+        const seen = new Set();
+
+        activeMethods.forEach((m) => {
+            const countryKey = m.country || 'other';
+            if (!seen.has(countryKey)) {
+                seen.add(countryKey);
+                list.push({
+                    id: countryKey,
+                    name: m.country_name || m.tag || m.country,
+                    currency: m.currency || 'USD',
+                });
+            }
+        });
+        return list;
+    }, [activeMethods, language]);
+
+    const filteredMethods = activeMethods.filter(m => {
         if (activeCountry === 'all') return true;
         return m.country === activeCountry;
     });
@@ -312,11 +209,10 @@ export default function DepositPage() {
         try {
             const formData = new FormData();
             
-            const matchedDbMethod = dbMethods.find(m => m.code === selectedMethod?.code || m.id === selectedMethod?.id);
-            if (matchedDbMethod) {
-                formData.append('payment_method_id', matchedDbMethod.id);
+            if (selectedMethod?.id) {
+                formData.append('payment_method_id', String(selectedMethod.id));
             }
-            formData.append('method', selectedMethod?.code || 'vodafone_cash');
+            formData.append('method', selectedMethod?.code || selectedMethod?.name || 'manual');
             formData.append('amount', String(numAmount));
             if (senderWallet.trim()) {
                 formData.append('sender_account', senderWallet.trim());
@@ -476,19 +372,7 @@ export default function DepositPage() {
                     {selectedMethod ? (
                         <button
                             onClick={() => setSelectedMethod(null)}
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                padding: '8px 18px',
-                                borderRadius: '20px',
-                                background: 'rgba(212, 165, 55, 0.1)',
-                                border: '1px solid rgba(212, 165, 55, 0.3)',
-                                color: '#F5D061',
-                                fontSize: '13px',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                            }}
+                            className="ka-top-back-btn"
                         >
                             <span>{t('backToPaymentMethods', 'الرجوع لطرق الدفع')}</span>
                             {isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
@@ -496,19 +380,7 @@ export default function DepositPage() {
                     ) : (
                         <button
                             onClick={() => navigate(-1)}
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                padding: '8px 18px',
-                                borderRadius: '20px',
-                                background: 'rgba(255, 255, 255, 0.04)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                color: '#D1D1DB',
-                                fontSize: '13px',
-                                fontWeight: '600',
-                                cursor: 'pointer',
-                            }}
+                            className="ka-top-back-btn"
                         >
                             <span>{t('back', 'رجوع')}</span>
                             {isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
@@ -562,7 +434,7 @@ export default function DepositPage() {
                             </div>
 
                             {/* Country & Currency Selector Pills */}
-                            <div className="deposit-filter-pills-row" style={{ flexWrap: 'wrap' }}>
+                            <div className="deposit-filter-pills-row">
                                 {countries.map((c) => {
                                     const active = activeCountry === c.id;
                                     return (
@@ -592,35 +464,48 @@ export default function DepositPage() {
                                     {/* Top Bar with Recharge & Flame */}
                                     <div className="ka-card-top-bar">
                                         <span className="ka-card-recharge-tag">
-                                            {language === 'en' ? 'Recharge' : 'شحن'}
+                                            Recharge
                                         </span>
                                         <span className="ka-card-flame-tag">
-                                            <Flame size={14} color="#F5D061" />
-                                            {t('chargeNow', 'اشحن رصيدك')}
+                                            <Flame size={isMobile ? 11 : 13} color="#FCD34D" fill="#FCD34D" />
+                                            <span>{t('chargeNow', 'اشحن رصيدك')}</span>
                                         </span>
                                     </div>
 
                                     {/* Elevated White Capsule with Brand Logo */}
                                     <div className="ka-card-white-capsule">
                                         <div className="ka-card-logo-circle">
-                                            <PaymentBrandLogo methodId={method.id} size={64} />
+                                            {method.logo ? (
+                                                <img
+                                                    src={method.logo}
+                                                    alt={method.name}
+                                                    style={{
+                                                        maxWidth: isMobile ? '38px' : '52px',
+                                                        maxHeight: isMobile ? '38px' : '52px',
+                                                        objectFit: 'contain',
+                                                        borderRadius: '6px'
+                                                    }}
+                                                />
+                                            ) : (
+                                                <PaymentBrandLogo methodId={method.code || method.id} size={isMobile ? 44 : 62} />
+                                            )}
                                         </div>
                                     </div>
 
-                                    {/* Golden 0000 Pins */}
+                                    {/* Outlined 0000 Pins Box */}
                                     <div className="ka-card-pins-box">
-                                        0000
+                                        <span className="ka-card-pins-badge">0000</span>
                                     </div>
 
-                                    {/* Method Name Badge */}
-                                    <div className="ka-card-name-pill">
-                                        {method.subName || method.name}
+                                    {/* Method Name Text */}
+                                    <div className="ka-card-name-text">
+                                        {method.subName || method.sub_name || method.name}
                                     </div>
 
                                     {/* Translucent Note Box */}
                                     <div className="ka-card-note-box">
-                                        <span className="ka-card-note-title">{t('notes', 'ملاحظة')}:</span>
-                                        <span>{method.note}</span>
+                                        <span className="ka-card-note-title">{t('notes', 'ملاحظة')}</span>
+                                        <span className="ka-card-note-text">{method.note || t('instantTransfer', 'تحويل فوري ومعتمد')}</span>
                                     </div>
 
                                     {/* Bottom Footer Bar */}
@@ -629,8 +514,7 @@ export default function DepositPage() {
                                             {method.currency}
                                         </span>
                                         <span className="ka-card-action-text">
-                                            <span>{method.tag}</span>
-                                            {isRtl ? <ArrowLeft size={12} /> : <ArrowRight size={12} />}
+                                            <span>{method.country_name || method.tag || method.name}</span>
                                         </span>
                                     </div>
                                 </div>
@@ -662,8 +546,17 @@ export default function DepositPage() {
                                     justifyContent: 'center',
                                     boxShadow: isLight ? '0 4px 15px rgba(15, 23, 42, 0.1)' : '0 4px 15px rgba(0, 0, 0, 0.5)',
                                     flexShrink: 0,
+                                    overflow: 'hidden',
                                 }}>
-                                    <PaymentBrandLogo methodId={selectedMethod.id} size={56} />
+                                    {selectedMethod.logo ? (
+                                        <img
+                                            src={selectedMethod.logo}
+                                            alt={selectedMethod.name}
+                                            style={{ maxWidth: '48px', maxHeight: '48px', objectFit: 'contain' }}
+                                        />
+                                    ) : (
+                                        <PaymentBrandLogo methodId={selectedMethod.code || selectedMethod.id} size={56} />
+                                    )}
                                 </div>
 
                                 <div style={{ flex: 1 }}>
@@ -676,7 +569,7 @@ export default function DepositPage() {
                                         </span>
                                     </div>
                                     <p style={{ margin: '4px 0 0', fontSize: '13px', color: isLight ? '#475569' : '#A0A0B0' }}>
-                                        {selectedMethod.instruction}
+                                        {selectedMethod.instruction || selectedMethod.note}
                                     </p>
                                 </div>
                             </div>
@@ -685,7 +578,7 @@ export default function DepositPage() {
                             <div className="deposit-account-box">
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                                     <span style={{ fontSize: '12px', fontWeight: '800', color: isLight ? '#b45309' : '#F5D061' }}>
-                                        {selectedMethod.id.includes('usdt') ? (language === 'en' ? 'TRC-20 Wallet Address:' : 'عنوان المحفظة (TRC-20 Address):') : (selectedMethod.id.includes('binance') ? 'Binance Pay ID:' : (language === 'en' ? 'Account / Receiving Wallet Number:' : 'رقم الحساب / المحفظة للتحويل:'))}
+                                        {String(selectedMethod.code || selectedMethod.id || '').toLowerCase().includes('usdt') ? (language === 'en' ? 'TRC-20 Wallet Address:' : 'عنوان المحفظة (TRC-20 Address):') : (String(selectedMethod.code || selectedMethod.id || '').toLowerCase().includes('binance') ? 'Binance Pay ID:' : (language === 'en' ? 'Account / Receiving Wallet Number:' : 'رقم الحساب / المحفظة للتحويل:'))}
                                     </span>
                                     <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: '700' }}>
                                         ✓ {language === 'en' ? 'Verified & Active Now' : 'معتمد ونشط الآن'}
