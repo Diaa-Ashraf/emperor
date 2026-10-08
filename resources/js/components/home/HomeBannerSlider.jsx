@@ -3,9 +3,12 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck } from 'lucide-react';
 import { bannersApi } from '../../api/endpoints';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function HomeBannerSlider() {
     const { isRtl } = useLanguage();
+    const { theme } = useTheme();
+    const isLight = theme === 'light';
     const [banners, setBanners] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isHovered, setIsHovered] = useState(false);
@@ -360,14 +363,27 @@ export default function HomeBannerSlider() {
             <div style={{
                 textAlign: 'center',
                 marginTop: '16px',
-                fontSize: '13.5px',
+                fontSize: 'clamp(13px, 2vw, 15px)',
                 fontWeight: '800',
-                color: 'rgba(212, 165, 55, 0.88)',
+                color: isLight ? '#78350F' : '#F5D061',
                 fontFamily: 'var(--font-cairo)',
-                letterSpacing: '0.2px',
-                textShadow: '0 2px 8px rgba(0,0,0,0.8)',
+                letterSpacing: '0.3px',
+                lineHeight: '1.7',
+                textShadow: isLight ? 'none' : '0 2px 10px rgba(0,0,0,0.85), 0 0 14px rgba(212, 165, 55, 0.3)',
             }}>
-                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ {'{'}وَأَحَلَّ اللَّهُ الْبَيْعَ وَحَرَّمَ الرِّبَا{'}'} صَدَقَ اللَّهُ الْعَظِيمُ
+                <span style={{ color: isLight ? '#78350F' : '#E6C665' }}>
+                    بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ 
+                </span>
+                <span style={{
+                    color: isLight ? '#92400E' : '#FFE57F',
+                    fontWeight: '900',
+                    margin: '0 4px',
+                }}>
+                    {'{'}وَأَحَلَّ اللَّهُ الْبَيْعَ وَحَرَّمَ الرِّبَا{'}'}
+                </span>
+                <span style={{ color: isLight ? '#78350F' : '#E6C665' }}>
+                    صَدَقَ اللَّهُ الْعَظِيمُ
+                </span>
             </div>
 
             {/* Embedded CSS Animations */}
