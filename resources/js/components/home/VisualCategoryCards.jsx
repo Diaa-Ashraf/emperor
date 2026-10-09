@@ -49,247 +49,315 @@ export default function VisualCategoryCards() {
     );
 }
 
+function getCategoryClassification(cat) {
+    const name = (cat?.name || '').toLowerCase();
+    const slug = (cat?.slug || '').toLowerCase();
+
+    // Priority 1: Check category name (explicit user naming)
+    if (name.includes('لعب') || name.includes('ألعاب') || name.includes('العاب') || name.includes('game') || name.includes('ببجي') || name.includes('pubg')) {
+        return 'games';
+    }
+    if (name.includes('تطبيق') || name.includes('تطبيقات') || name.includes('بث') || name.includes('شات') || name.includes('app') || name.includes('voice')) {
+        return 'apps';
+    }
+    if (name.includes('اتصال') || name.includes('شبك') || name.includes('رصيد') || name.includes('telecom')) {
+        return 'telecom';
+    }
+    if (name.includes('عملات') || name.includes('رقمية') || name.includes('كريبتو') || name.includes('crypto') || name.includes('usdt')) {
+        return 'crypto';
+    }
+    if (name.includes('تارجت') || name.includes('سحب') || name.includes('target')) {
+        return 'target';
+    }
+    if (name.includes('بطاق') || name.includes('كروت') || name.includes('اشتراك') || name.includes('card')) {
+        return 'cards';
+    }
+    if (name.includes('سوشيال') || name.includes('تواصل') || name.includes('social')) {
+        return 'social';
+    }
+    if (name.includes('تصميم') || name.includes('مونتاج') || name.includes('design')) {
+        return 'design';
+    }
+    if (name.includes('تحويل') || name.includes('كاش') || name.includes('مالي') || name.includes('finance')) {
+        return 'finance';
+    }
+    if (name.includes('ذكاء') || name.includes('اصطناع') || name.includes('ai')) {
+        return 'ai';
+    }
+    if (name.includes('تلفاز') || name.includes('شاش') || name.includes('tv')) {
+        return 'tv';
+    }
+
+    // Priority 2: Fallback to slug if name did not match
+    if (slug.includes('game') || slug.includes('لعب')) return 'games';
+    if (slug.includes('app') || slug.includes('تطبيق')) return 'apps';
+    if (slug.includes('telecom') || slug.includes('اتصال')) return 'telecom';
+    if (slug.includes('crypto') || slug.includes('عملات')) return 'crypto';
+    if (slug.includes('target') || slug.includes('تارجت')) return 'target';
+    if (slug.includes('card') || slug.includes('بطاق')) return 'cards';
+    if (slug.includes('social') || slug.includes('سوشيال')) return 'social';
+    if (slug.includes('design') || slug.includes('تصميم')) return 'design';
+    if (slug.includes('finance') || slug.includes('تحويل')) return 'finance';
+    if (slug.includes('ai') || slug.includes('ذكاء')) return 'ai';
+    if (slug.includes('tv') || slug.includes('تلفاز')) return 'tv';
+
+    return 'default';
+}
+
 function getCategoryDisplayName(cat, language) {
     if (language !== 'en') return cat.name;
     if (cat.name_en) return cat.name_en;
-    const s = (cat.name || '').toLowerCase();
-    const slug = (cat.slug || '').toLowerCase();
+    const catType = getCategoryClassification(cat);
 
-    if (slug === 'games' || s.includes('ألعاب') || s.includes('العاب')) return 'Electronic Games';
-    if (slug === 'apps' || slug === 'voice_apps' || s.includes('تطبيقات') || s.includes('بث') || s.includes('شات')) return 'Live & Chat Apps';
-    if (slug === 'cards' || slug === 'gift-cards' || s.includes('بطاقات') || s.includes('اشتراكات')) return 'Digital Cards & Subs';
-    if (slug === 'telecom' || s.includes('اتصالات') || s.includes('شبكات')) return 'Telecom Recharge';
-    if (slug === 'social' || s.includes('سوشيال') || s.includes('تواصل')) return 'Social Media';
-    if (slug === 'design' || s.includes('تصميم') || s.includes('مونتاج')) return 'Design Apps';
-    if (slug === 'finance' || s.includes('تحويل') || s.includes('مالية') || s.includes('كاش')) return 'Financial Transfers';
-    if (slug === 'ai' || s.includes('ذكاء') || s.includes('اصطناعي')) return 'AI Tools';
-    if (slug === 'tv' || s.includes('تلفاز') || s.includes('شاشات')) return 'TV & Cinema';
-    if (slug === 'target' || s.includes('تارجت') || s.includes('سحب')) return 'Sell Target';
-    if (s.includes('ببجي') || s.includes('pubg')) return 'PUBG Mobile';
-    if (s.includes('فري فاير') || s.includes('free fire')) return 'Free Fire';
-    if (s.includes('روبلوكس') || s.includes('roblox')) return 'Roblox';
-    return cat.name;
+    switch (catType) {
+        case 'games': return 'Electronic Games';
+        case 'apps': return 'Live & Chat Apps';
+        case 'cards': return 'Digital Cards & Subs';
+        case 'telecom': return 'Telecom Recharge';
+        case 'crypto': return 'Digital Currencies & Crypto';
+        case 'social': return 'Social Media';
+        case 'design': return 'Design Apps';
+        case 'finance': return 'Financial Transfers';
+        case 'ai': return 'AI Tools';
+        case 'tv': return 'TV & Cinema';
+        case 'target': return 'Sell Target';
+        default: return cat.name;
+    }
 }
 
 function getCategorySubLabel(cat, language) {
     if (language === 'en') {
-        return 'Recharge & Services';
+        return 'Instant Delivery & Support';
     }
-    const s = ((cat.slug || '') + ' ' + (cat.name || '')).toLowerCase();
-    if (s.includes('لعب') || s.includes('ألعاب') || s.includes('game')) return 'قسم شحن الألعاب';
-    if (s.includes('تطبيق') || s.includes('بث') || s.includes('شات') || s.includes('app')) return 'قسم شحن التطبيقات';
-    if (s.includes('اتصال') || s.includes('شبك') || s.includes('telecom')) return 'شحن الرصيد والشبكات';
-    if (s.includes('سوشيال') || s.includes('تواصل') || s.includes('social')) return 'خدمات السوشيال ميديا';
-    if (s.includes('تصميم') || s.includes('design')) return 'اشتراكات برامج التصميم';
-    if (s.includes('تحويل') || s.includes('مالي') || s.includes('finance')) return 'خدمات التحويل المالي';
-    if (s.includes('ذكاء') || s.includes('اصطناع') || s.includes('ai')) return 'أقوى أدوات الذكاء الاصطناعي';
-    if (s.includes('تلفاز') || s.includes('اشتراك') || s.includes('tv')) return 'باقات الأفلام والمسلسلات';
-    if (s.includes('بطاق') || s.includes('card')) return 'بطاقات وباقات رقمية';
-    if (s.includes('ببجي') || s.includes('pubg')) return 'شحن شدات ببجي فوري';
-    if (s.includes('تارجت') || s.includes('target')) return 'سحب واستبدال التارجت';
-    return 'خدمات وشحن فوري';
+    const catType = getCategoryClassification(cat);
+    switch (catType) {
+        case 'games':
+            return 'شحن ألعاب وبطاقات فورية';
+        case 'apps':
+            return 'شحن كوينز وبث مباشر';
+        case 'telecom':
+            return 'شحن رصيد وباقات إنترنت';
+        case 'crypto':
+            return 'شحن وتحويلات رقمية فورية';
+        case 'cards':
+            return 'بطاقات هدايا واشتراكات';
+        case 'target':
+            return 'سحب واستبدال التارجت';
+        case 'social':
+            return 'خدمات وتوثيق السوشيال ميديا';
+        case 'design':
+            return 'اشتراكات برامج التصميم';
+        case 'finance':
+            return 'خدمات التحويل والمحافظ';
+        case 'ai':
+            return 'أدوات الذكاء الاصطناعي';
+        case 'tv':
+            return 'باقات الأفلام والمسلسلات';
+        default:
+            return 'خدمات وشحن فوري';
+    }
 }
 
 /**
  * Curated brand medallions with micro-labels for all categories
  */
 function getCategoryFlankingBadges(cat) {
-    const s = ((cat.slug || '') + ' ' + (cat.name || '')).toLowerCase();
+    const catType = getCategoryClassification(cat);
 
     // 1. Electronic Games
-    if (s.includes('game') || s.includes('لعب') || s.includes('ألعاب')) {
+    if (catType === 'games') {
         return {
             left: [
-                { id: 'pubg', label: 'PUBG', color: '#F59E0B', bg: '#221505', icon: 'pubg', offset: '4px' },
-                { id: 'freefire', label: 'Free Fire', color: '#EF4444', bg: '#290707', icon: 'freefire', offset: '0px' },
-                { id: 'roblox', label: 'Roblox', color: '#00D2FF', bg: '#041724', icon: 'roblox', offset: '0px' },
-                { id: 'cod', label: 'COD Mobile', color: '#10B981', bg: '#051D12', icon: 'cod', offset: '4px' },
+                { id: 'pubg', label: 'PUBG', color: '#F59E0B', bg: '#221505', icon: 'pubg' },
+                { id: 'freefire', label: 'Free Fire', color: '#EF4444', bg: '#290707', icon: 'freefire' },
+                { id: 'roblox', label: 'Roblox', color: '#00D2FF', bg: '#041724', icon: 'roblox' },
+                { id: 'cod', label: 'COD', color: '#10B981', bg: '#051D12', icon: 'cod' },
             ],
             right: [
-                { id: 'brawl', label: 'Brawl Stars', color: '#FBBF24', bg: '#231A05', icon: 'brawl', offset: '-4px' },
-                { id: 'valorant', label: 'Valorant', color: '#F43F5E', bg: '#25070E', icon: 'valorant', offset: '0px' },
-                { id: 'fortnite', label: 'Fortnite', color: '#A855F7', bg: '#1C082E', icon: 'fortnite', offset: '0px' },
-                { id: 'minecraft', label: 'Minecraft', color: '#22C55E', bg: '#082512', icon: 'minecraft', offset: '-4px' },
+                { id: 'brawl', label: 'Brawl Stars', color: '#FBBF24', bg: '#231A05', icon: 'brawl' },
+                { id: 'valorant', label: 'Valorant', color: '#F43F5E', bg: '#25070E', icon: 'valorant' },
+                { id: 'fortnite', label: 'Fortnite', color: '#A855F7', bg: '#1C082E', icon: 'fortnite' },
+                { id: 'minecraft', label: 'Minecraft', color: '#22C55E', bg: '#082512', icon: 'minecraft' },
             ]
         };
     }
 
     // 2. Live & Voice Apps
-    if (s.includes('app') || s.includes('تطبيق') || s.includes('بث') || s.includes('شات') || s.includes('voice')) {
+    if (catType === 'apps') {
         return {
             left: [
-                { id: 'tiktok', label: 'TikTok', color: '#00F2FE', bg: '#050D14', icon: 'tiktok', offset: '4px' },
-                { id: 'bigo', label: 'Bigo Live', color: '#00D2FF', bg: '#051928', icon: 'bigo', offset: '0px' },
-                { id: 'poppo', label: 'Poppo Live', color: '#EC4899', bg: '#260818', icon: 'poppo', offset: '0px' },
-                { id: 'likee', label: 'Likee', color: '#F43F5E', bg: '#250711', icon: 'likee', offset: '4px' },
+                { id: 'tiktok', label: 'TikTok', color: '#00F2FE', bg: '#050D14', icon: 'tiktok' },
+                { id: 'bigo', label: 'Bigo Live', color: '#00D2FF', bg: '#051928', icon: 'bigo' },
+                { id: 'poppo', label: 'Poppo Live', color: '#EC4899', bg: '#260818', icon: 'poppo' },
+                { id: 'likee', label: 'Likee', color: '#F43F5E', bg: '#250711', icon: 'likee' },
             ],
             right: [
-                { id: 'chamet', label: 'Chamet', color: '#A855F7', bg: '#1C082E', icon: 'chamet', offset: '-4px' },
-                { id: 'olla', label: 'Olla / Soul', color: '#38BDF8', bg: '#081D29', icon: 'olla', offset: '0px' },
-                { id: 'starmaker', label: 'StarMaker', color: '#F59E0B', bg: '#221605', icon: 'star', offset: '0px' },
-                { id: 'yoho', label: 'YoHo', color: '#10B981', bg: '#051D12', icon: 'mic', offset: '-4px' },
+                { id: 'chamet', label: 'Chamet', color: '#A855F7', bg: '#1C082E', icon: 'chamet' },
+                { id: 'olla', label: 'Olla / Soul', color: '#38BDF8', bg: '#081D29', icon: 'olla' },
+                { id: 'starmaker', label: 'StarMaker', color: '#F59E0B', bg: '#221605', icon: 'star' },
+                { id: 'yoho', label: 'YoHo', color: '#10B981', bg: '#051D12', icon: 'mic' },
             ]
         };
     }
 
-    // 3. Social Media
-    if (s.includes('social') || s.includes('سوشيال') || s.includes('تواصل')) {
+    // 3. Telecom Recharge
+    if (catType === 'telecom') {
         return {
             left: [
-                { id: 'tiktok', label: 'TikTok', color: '#00F2FE', bg: '#050D14', icon: 'tiktok', offset: '4px' },
-                { id: 'insta', label: 'Instagram', color: '#E1306C', bg: '#260613', icon: 'instagram', offset: '0px' },
-                { id: 'fb', label: 'Facebook', color: '#1877F2', bg: '#061730', icon: 'facebook', offset: '0px' },
-                { id: 'tg', label: 'Telegram', color: '#2AABEE', bg: '#071F2C', icon: 'telegram', offset: '4px' },
+                { id: 'vf', label: 'فودافون', color: '#E60000', bg: '#2B0000', icon: 'vodafone' },
+                { id: 'org', label: 'أورنج', color: '#FF7900', bg: '#2B1400', icon: 'orange' },
+                { id: 'et', label: 'اتصالات', color: '#78BE20', bg: '#132403', icon: 'etisalat' },
+                { id: 'we', label: 'وي WE', color: '#5A2D82', bg: '#1C082D', icon: 'we' },
             ],
             right: [
-                { id: 'snap', label: 'Snapchat', color: '#FFFC00', bg: '#262602', icon: 'snapchat', offset: '-4px' },
-                { id: 'yt', label: 'YouTube', color: '#FF0000', bg: '#2B0404', icon: 'youtube', offset: '0px' },
-                { id: 'x', label: 'Twitter / X', color: '#FFFFFF', bg: '#1A1A1A', icon: 'x', offset: '0px' },
-                { id: 'discord', label: 'Discord', color: '#5865F2', bg: '#0F122B', icon: 'discord', offset: '-4px' },
+                { id: 'ip', label: 'إنستاباي', color: '#A855F7', bg: '#1F0A33', icon: 'instapay' },
+                { id: 'faw', label: 'فوري', color: '#FACC15', bg: '#221D04', icon: 'fawry' },
+                { id: 'aman', label: 'أمان', color: '#38BDF8', bg: '#061D2B', icon: 'shield' },
+                { id: 'card', label: 'كروت شحن', color: '#10B981', bg: '#051E12', icon: 'bolt' },
             ]
         };
     }
 
-    // 4. Telecom Recharge
-    if (s.includes('telecom') || s.includes('اتصال') || s.includes('شبك')) {
+    // 4. Digital Currencies & Crypto
+    if (catType === 'crypto') {
         return {
             left: [
-                { id: 'vf', label: 'فودافون', color: '#E60000', bg: '#2B0000', icon: 'vodafone', offset: '4px' },
-                { id: 'org', label: 'أورنج', color: '#FF7900', bg: '#2B1400', icon: 'orange', offset: '0px' },
-                { id: 'et', label: 'اتصالات', color: '#78BE20', bg: '#132403', icon: 'etisalat', offset: '0px' },
-                { id: 'we', label: 'وي WE', color: '#5A2D82', bg: '#1C082D', icon: 'we', offset: '4px' },
+                { id: 'usdt', label: 'USDT', color: '#26A17B', bg: '#052219', icon: 'usdt' },
+                { id: 'binance', label: 'Binance', color: '#F3BA2F', bg: '#251D04', icon: 'crown' },
+                { id: 'btc', label: 'Bitcoin', color: '#F7931A', bg: '#261603', icon: 'star' },
+                { id: 'bolt', label: 'فوري', color: '#00D2FF', bg: '#051928', icon: 'bolt' },
             ],
             right: [
-                { id: 'ip', label: 'إنستاباي', color: '#A855F7', bg: '#1F0A33', icon: 'instapay', offset: '-4px' },
-                { id: 'faw', label: 'فوري', color: '#FACC15', bg: '#221D04', icon: 'fawry', offset: '0px' },
-                { id: 'aman', label: 'أمان', color: '#38BDF8', bg: '#061D2B', icon: 'shield', offset: '0px' },
-                { id: 'card', label: 'كروت شحن', color: '#10B981', bg: '#051E12', icon: 'bolt', offset: '-4px' },
+                { id: 'wallet', label: 'محافظ', color: '#A855F7', bg: '#1C082E', icon: 'card' },
+                { id: 'fast', label: 'سحب سريع', color: '#10B981', bg: '#052012', icon: 'shield' },
+                { id: 'support', label: 'دعم 24/7', color: '#38BDF8', bg: '#061D2B', icon: 'headset' },
+                { id: 'guarantee', label: 'ضمان 100%', color: '#22C55E', bg: '#052210', icon: 'shield' },
             ]
         };
     }
 
-    // 5. Design Apps
-    if (s.includes('design') || s.includes('تصميم') || s.includes('مونتاج')) {
+    // 5. Social Media
+    if (catType === 'social') {
         return {
             left: [
-                { id: 'ps', label: 'Photoshop', color: '#31A8FF', bg: '#071B2B', icon: 'ps', offset: '4px' },
-                { id: 'ai', label: 'Illustrator', color: '#FF9A00', bg: '#2A1702', icon: 'ai_app', offset: '0px' },
-                { id: 'canva', label: 'Canva', color: '#00C4CC', bg: '#031E20', icon: 'canva', offset: '0px' },
-                { id: 'pr', label: 'Premiere', color: '#EA77FF', bg: '#250B29', icon: 'pr', offset: '4px' },
+                { id: 'tiktok', label: 'TikTok', color: '#00F2FE', bg: '#050D14', icon: 'tiktok' },
+                { id: 'insta', label: 'Instagram', color: '#E1306C', bg: '#260613', icon: 'instagram' },
+                { id: 'fb', label: 'Facebook', color: '#1877F2', bg: '#061730', icon: 'facebook' },
+                { id: 'tg', label: 'Telegram', color: '#2AABEE', bg: '#071F2C', icon: 'telegram' },
             ],
             right: [
-                { id: 'ae', label: 'After Effects', color: '#9999FF', bg: '#121229', icon: 'ae', offset: '-4px' },
-                { id: 'capcut', label: 'CapCut', color: '#FFFFFF', bg: '#1A1A1A', icon: 'capcut', offset: '0px' },
-                { id: 'figma', label: 'Figma', color: '#F24E1E', bg: '#260D06', icon: 'figma', offset: '0px' },
-                { id: 'vn', label: 'VN Video', color: '#38BDF8', bg: '#071E2B', icon: 'vn', offset: '-4px' },
+                { id: 'snap', label: 'Snapchat', color: '#FFFC00', bg: '#262602', icon: 'snapchat' },
+                { id: 'yt', label: 'YouTube', color: '#FF0000', bg: '#2B0404', icon: 'youtube' },
+                { id: 'x', label: 'Twitter', color: '#FFFFFF', bg: '#1A1A1A', icon: 'x' },
+                { id: 'discord', label: 'Discord', color: '#5865F2', bg: '#0F122B', icon: 'discord' },
             ]
         };
     }
 
-    // 6. Financial Transfers
-    if (s.includes('finance') || s.includes('تحويل') || s.includes('مالي') || s.includes('كاش')) {
+    // 6. Design Apps
+    if (catType === 'design') {
         return {
             left: [
-                { id: 'vfcash', label: 'فودافون كاش', color: '#E60000', bg: '#2B0000', icon: 'vodafone', offset: '4px' },
-                { id: 'instapay', label: 'إنستاباي', color: '#A855F7', bg: '#1F0A33', icon: 'instapay', offset: '0px' },
-                { id: 'etcash', label: 'اتصالات كاش', color: '#78BE20', bg: '#132403', icon: 'etisalat', offset: '0px' },
-                { id: 'orgcash', label: 'أورنج كاش', color: '#FF7900', bg: '#2B1400', icon: 'orange', offset: '4px' },
+                { id: 'ps', label: 'Photoshop', color: '#31A8FF', bg: '#071B2B', icon: 'ps' },
+                { id: 'ai', label: 'Illustrator', color: '#FF9A00', bg: '#2A1702', icon: 'ai_app' },
+                { id: 'canva', label: 'Canva', color: '#00C4CC', bg: '#031E20', icon: 'canva' },
+                { id: 'pr', label: 'Premiere', color: '#EA77FF', bg: '#250B29', icon: 'pr' },
             ],
             right: [
-                { id: 'wepay', label: 'وي باي', color: '#5A2D82', bg: '#1C082D', icon: 'we', offset: '-4px' },
-                { id: 'usdt', label: 'USDT TRC20', color: '#26A17B', bg: '#052219', icon: 'usdt', offset: '0px' },
-                { id: 'fawry', label: 'فوري باي', color: '#FACC15', bg: '#221D04', icon: 'fawry', offset: '0px' },
-                { id: 'bank', label: 'تحويل بنكي', color: '#38BDF8', bg: '#061D2B', icon: 'bank', offset: '-4px' },
+                { id: 'ae', label: 'After Effects', color: '#9999FF', bg: '#121229', icon: 'ae' },
+                { id: 'capcut', label: 'CapCut', color: '#FFFFFF', bg: '#1A1A1A', icon: 'capcut' },
+                { id: 'figma', label: 'Figma', color: '#F24E1E', bg: '#260D06', icon: 'figma' },
+                { id: 'vn', label: 'VN Video', color: '#38BDF8', bg: '#071E2B', icon: 'vn' },
             ]
         };
     }
 
-    // 7. AI Tools
-    if (s.includes('ai') || s.includes('ذكاء') || s.includes('اصطناع')) {
+    // 7. Financial Transfers
+    if (catType === 'finance') {
         return {
             left: [
-                { id: 'chatgpt', label: 'ChatGPT', color: '#10A37F', bg: '#041E17', icon: 'chatgpt', offset: '4px' },
-                { id: 'claude', label: 'Claude AI', color: '#D97706', bg: '#241403', icon: 'claude', offset: '0px' },
-                { id: 'midjourney', label: 'Midjourney', color: '#FFFFFF', bg: '#1C1C1E', icon: 'midjourney', offset: '0px' },
-                { id: 'dalle', label: 'DALL-E', color: '#EC4899', bg: '#260818', icon: 'sparkle', offset: '4px' },
+                { id: 'vfcash', label: 'فودافون كاش', color: '#E60000', bg: '#2B0000', icon: 'vodafone' },
+                { id: 'instapay', label: 'إنستاباي', color: '#A855F7', bg: '#1F0A33', icon: 'instapay' },
+                { id: 'etcash', label: 'اتصالات كاش', color: '#78BE20', bg: '#132403', icon: 'etisalat' },
+                { id: 'orgcash', label: 'أورنج كاش', color: '#FF7900', bg: '#2B1400', icon: 'orange' },
             ],
             right: [
-                { id: 'perplexity', label: 'Perplexity', color: '#22D3EE', bg: '#041F24', icon: 'perplexity', offset: '-4px' },
-                { id: 'canvaai', label: 'Canva AI', color: '#00C4CC', bg: '#031E20', icon: 'canva', offset: '0px' },
-                { id: 'notion', label: 'Notion AI', color: '#FFFFFF', bg: '#1A1A1A', icon: 'notion', offset: '0px' },
-                { id: 'runway', label: 'Runway ML', color: '#A855F7', bg: '#1B082E', icon: 'bolt', offset: '-4px' },
+                { id: 'wepay', label: 'وي باي', color: '#5A2D82', bg: '#1C082D', icon: 'we' },
+                { id: 'usdt', label: 'USDT', color: '#26A17B', bg: '#052219', icon: 'usdt' },
+                { id: 'fawry', label: 'فوري باي', color: '#FACC15', bg: '#221D04', icon: 'fawry' },
+                { id: 'bank', label: 'تحويل بنكي', color: '#38BDF8', bg: '#061D2B', icon: 'bank' },
             ]
         };
     }
 
-    // 8. TV & Streaming
-    if (s.includes('tv') || s.includes('تلفاز') || s.includes('شاش') || s.includes('سينما')) {
+    // 8. AI Tools
+    if (catType === 'ai') {
         return {
             left: [
-                { id: 'netflix', label: 'Netflix', color: '#E50914', bg: '#270507', icon: 'netflix', offset: '4px' },
-                { id: 'shahid', label: 'شاهد VIP', color: '#22C55E', bg: '#052210', icon: 'shahid', offset: '0px' },
-                { id: 'bein', label: 'beIN Connect', color: '#5B21B6', bg: '#180733', icon: 'bein', offset: '0px' },
-                { id: 'osn', label: 'OSN+', color: '#EF4444', bg: '#260707', icon: 'osn', offset: '4px' },
+                { id: 'chatgpt', label: 'ChatGPT', color: '#10A37F', bg: '#041E17', icon: 'chatgpt' },
+                { id: 'claude', label: 'Claude', color: '#D97706', bg: '#241403', icon: 'claude' },
+                { id: 'midjourney', label: 'Midjourney', color: '#FFFFFF', bg: '#1C1C1E', icon: 'midjourney' },
+                { id: 'dalle', label: 'DALL-E', color: '#EC4899', bg: '#260818', icon: 'sparkle' },
             ],
             right: [
-                { id: 'starz', label: 'StarzPlay', color: '#F59E0B', bg: '#221505', icon: 'star', offset: '-4px' },
-                { id: 'apple', label: 'Apple TV', color: '#FFFFFF', bg: '#1C1C1E', icon: 'apple', offset: '0px' },
-                { id: 'prime', label: 'Prime Video', color: '#00A8E1', bg: '#031B24', icon: 'prime_video', offset: '0px' },
-                { id: 'disney', label: 'Disney+', color: '#3B82F6', bg: '#061730', icon: 'disney', offset: '-4px' },
+                { id: 'perplexity', label: 'Perplexity', color: '#22D3EE', bg: '#041F24', icon: 'perplexity' },
+                { id: 'canvaai', label: 'Canva AI', color: '#00C4CC', bg: '#031E20', icon: 'canva' },
+                { id: 'notion', label: 'Notion AI', color: '#FFFFFF', bg: '#1A1A1A', icon: 'notion' },
+                { id: 'runway', label: 'Runway ML', color: '#A855F7', bg: '#1B082E', icon: 'bolt' },
             ]
         };
     }
 
-    // 9. Digital Cards & Subscriptions
-    if (s.includes('card') || s.includes('بطاق') || s.includes('اشتراك') || s.includes('gift')) {
+    // 9. TV & Streaming
+    if (catType === 'tv') {
         return {
             left: [
-                { id: 'ps', label: 'PlayStation', color: '#0070D1', bg: '#001D38', icon: 'playstation', offset: '4px' },
-                { id: 'xbox', label: 'Xbox', color: '#107C10', bg: '#052A05', icon: 'xbox', offset: '0px' },
-                { id: 'steam', label: 'Steam', color: '#66C0F4', bg: '#0C1B2A', icon: 'steam', offset: '0px' },
-                { id: 'razer', label: 'Razer Gold', color: '#22C55E', bg: '#052210', icon: 'bolt', offset: '4px' },
+                { id: 'netflix', label: 'Netflix', color: '#E50914', bg: '#270507', icon: 'netflix' },
+                { id: 'shahid', label: 'شاهد VIP', color: '#22C55E', bg: '#052210', icon: 'shahid' },
+                { id: 'bein', label: 'beIN', color: '#5B21B6', bg: '#180733', icon: 'bein' },
+                { id: 'osn', label: 'OSN+', color: '#EF4444', bg: '#260707', icon: 'osn' },
             ],
             right: [
-                { id: 'apple', label: 'Apple iTunes', color: '#F8FAFC', bg: '#1E293B', icon: 'apple', offset: '-4px' },
-                { id: 'google', label: 'Google Play', color: '#34A853', bg: '#092411', icon: 'google', offset: '0px' },
-                { id: 'netflix', label: 'Netflix', color: '#E50914', bg: '#270507', icon: 'netflix', offset: '0px' },
-                { id: 'spotify', label: 'Spotify', color: '#1ED760', bg: '#04240F', icon: 'music', offset: '-4px' },
+                { id: 'starz', label: 'StarzPlay', color: '#F59E0B', bg: '#221505', icon: 'star' },
+                { id: 'apple', label: 'Apple TV', color: '#FFFFFF', bg: '#1C1C1E', icon: 'apple' },
+                { id: 'prime', label: 'Prime Video', color: '#00A8E1', bg: '#031B24', icon: 'prime_video' },
+                { id: 'disney', label: 'Disney+', color: '#3B82F6', bg: '#061730', icon: 'disney' },
             ]
         };
     }
 
-    // 10. PUBG Mobile Dedicated
-    if (s.includes('ببجي') || s.includes('pubg') || s.includes('bbgy')) {
+    // 10. Digital Cards & Subscriptions
+    if (catType === 'cards') {
         return {
             left: [
-                { id: 'uc60', label: '60 UC', color: '#F5D061', bg: '#201804', icon: 'uc', offset: '4px' },
-                { id: 'uc325', label: '325 UC', color: '#F5D061', bg: '#201804', icon: 'uc', offset: '0px' },
-                { id: 'uc660', label: '660 UC', color: '#F5D061', bg: '#201804', icon: 'uc', offset: '0px' },
-                { id: 'uc1800', label: '1800 UC', color: '#F5D061', bg: '#201804', icon: 'uc', offset: '4px' },
+                { id: 'ps', label: 'PlayStation', color: '#0070D1', bg: '#001D38', icon: 'playstation' },
+                { id: 'xbox', label: 'Xbox', color: '#107C10', bg: '#052A05', icon: 'xbox' },
+                { id: 'steam', label: 'Steam', color: '#66C0F4', bg: '#0C1B2A', icon: 'steam' },
+                { id: 'razer', label: 'Razer Gold', color: '#22C55E', bg: '#052210', icon: 'bolt' },
             ],
             right: [
-                { id: 'pass', label: 'رويال باس', color: '#EAB308', bg: '#1F1404', icon: 'pass', offset: '-4px' },
-                { id: 'gl', label: 'العالمية', color: '#38BDF8', bg: '#061D2C', icon: 'global', offset: '0px' },
-                { id: 'kr', label: 'الكورية', color: '#F43F5E', bg: '#24060E', icon: 'korea', offset: '0px' },
-                { id: 'prime', label: 'برايم بلس', color: '#A855F7', bg: '#1A082C', icon: 'prime', offset: '-4px' },
+                { id: 'apple', label: 'iTunes', color: '#F8FAFC', bg: '#1E293B', icon: 'apple' },
+                { id: 'google', label: 'Google Play', color: '#34A853', bg: '#092411', icon: 'google' },
+                { id: 'netflix', label: 'Netflix', color: '#E50914', bg: '#270507', icon: 'netflix' },
+                { id: 'spotify', label: 'Spotify', color: '#1ED760', bg: '#04240F', icon: 'music' },
             ]
         };
     }
 
     // 11. Target Selling
-    if (s.includes('target') || s.includes('تارجت') || s.includes('سحب')) {
+    if (catType === 'target') {
         return {
             left: [
-                { id: 'bigo', label: 'Bigo Live', color: '#00D2FF', bg: '#051928', icon: 'bigo', offset: '4px' },
-                { id: 'poppo', label: 'Poppo Live', color: '#EC4899', bg: '#260818', icon: 'poppo', offset: '0px' },
-                { id: 'usdt', label: 'USDT TRC20', color: '#26A17B', bg: '#052219', icon: 'usdt', offset: '0px' },
-                { id: 'vf', label: 'فودافون كاش', color: '#E60000', bg: '#2B0000', icon: 'vodafone', offset: '4px' },
+                { id: 'bigo', label: 'Bigo Live', color: '#00D2FF', bg: '#051928', icon: 'bigo' },
+                { id: 'poppo', label: 'Poppo Live', color: '#EC4899', bg: '#260818', icon: 'poppo' },
+                { id: 'usdt', label: 'USDT', color: '#26A17B', bg: '#052219', icon: 'usdt' },
+                { id: 'vf', label: 'فودافون كاش', color: '#E60000', bg: '#2B0000', icon: 'vodafone' },
             ],
             right: [
-                { id: 'likee', label: 'Likee Target', color: '#F43F5E', bg: '#250711', icon: 'likee', offset: '-4px' },
-                { id: 'chamet', label: 'Chamet Live', color: '#A855F7', bg: '#1C082E', icon: 'chamet', offset: '0px' },
-                { id: 'instapay', label: 'إنستاباي فوري', color: '#A855F7', bg: '#1F0A33', icon: 'instapay', offset: '0px' },
-                { id: 'dollar', label: 'سحب أرباح', color: '#F5D061', bg: '#201804', icon: 'dollar', offset: '-4px' },
+                { id: 'likee', label: 'Likee Target', color: '#F43F5E', bg: '#250711', icon: 'likee' },
+                { id: 'chamet', label: 'Chamet Live', color: '#A855F7', bg: '#1C082E', icon: 'chamet' },
+                { id: 'instapay', label: 'إنستاباي', color: '#A855F7', bg: '#1F0A33', icon: 'instapay' },
+                { id: 'dollar', label: 'سحب أرباح', color: '#F5D061', bg: '#201804', icon: 'dollar' },
             ]
         };
     }
@@ -297,16 +365,16 @@ function getCategoryFlankingBadges(cat) {
     // Default Fallback
     return {
         left: [
-            { id: 'crown', label: 'VIP ذهبي', color: '#F5D061', bg: '#1E1604', icon: 'crown', offset: '4px' },
-            { id: 'bolt', label: 'شحن فوري', color: '#00D2FF', bg: '#051928', icon: 'bolt', offset: '0px' },
-            { id: 'shield', label: 'معتمد 100%', color: '#10B981', bg: '#062013', icon: 'shield', offset: '0px' },
-            { id: 'star', label: 'الأفضل تقييماً', color: '#F5D061', bg: '#1E1604', icon: 'star', offset: '4px' },
+            { id: 'crown', label: 'VIP', color: '#F5D061', bg: '#1E1604', icon: 'crown' },
+            { id: 'bolt', label: 'فوري', color: '#00D2FF', bg: '#051928', icon: 'bolt' },
+            { id: 'shield', label: 'معتمد', color: '#10B981', bg: '#062013', icon: 'shield' },
+            { id: 'star', label: 'الأفضل', color: '#F5D061', bg: '#1E1604', icon: 'star' },
         ],
         right: [
-            { id: 'card', label: 'كروت وأكواد', color: '#38BDF8', bg: '#071F2E', icon: 'card', offset: '-4px' },
-            { id: 'sparkle', label: 'عروض حصرية', color: '#EC4899', bg: '#250716', icon: 'sparkle', offset: '0px' },
-            { id: 'support', label: 'دعم 24/7', color: '#A855F7', bg: '#1D0830', icon: 'headset', offset: '0px' },
-            { id: 'check', label: 'ضمان كامل', color: '#22C55E', bg: '#052210', icon: 'shield', offset: '-4px' },
+            { id: 'card', label: 'أكواد', color: '#38BDF8', bg: '#071F2E', icon: 'card' },
+            { id: 'sparkle', label: 'عروض', color: '#EC4899', bg: '#250716', icon: 'sparkle' },
+            { id: 'support', label: 'دعم 24/7', color: '#A855F7', bg: '#1D0830', icon: 'headset' },
+            { id: 'check', label: 'ضمان', color: '#22C55E', bg: '#052210', icon: 'shield' },
         ]
     };
 }
@@ -667,13 +735,23 @@ function EmperorCategoryCard({ cat, isRtl, language, index }) {
 
     let finalImage = formattedImg;
     if (!finalImage) {
-        const s = (cat.slug || cat.name || '').toLowerCase();
-        if (s.includes('target') || s.includes('تارجت') || s.includes('سحب')) {
-            finalImage = '/images/artwork/cat_target.jpg';
-        } else if (s.includes('app') || s.includes('تطبيق') || s.includes('بث') || s.includes('شات') || s.includes('voice')) {
-            finalImage = '/images/artwork/cat_apps.jpg';
-        } else {
-            finalImage = '/images/artwork/cat_games.jpg';
+        const catType = getCategoryClassification(cat);
+        switch (catType) {
+            case 'target':
+                finalImage = '/images/artwork/cat_target.jpg';
+                break;
+            case 'apps':
+            case 'social':
+            case 'telecom':
+                finalImage = '/images/artwork/cat_apps.jpg';
+                break;
+            case 'crypto':
+                finalImage = '/images/artwork/cat_target.jpg';
+                break;
+            case 'games':
+            default:
+                finalImage = '/images/artwork/cat_games.jpg';
+                break;
         }
     }
 
@@ -707,15 +785,12 @@ function EmperorCategoryCard({ cat, isRtl, language, index }) {
                     {/* Top Emperor Spartan Laurel Crest */}
                     <EmperorArchCrest />
 
-                    {/* ═══ 2. Left Curved Side Medallions with Micro-Labels ═══ */}
+                    {/* ═══ 2. Left Side Medallions with Micro-Labels ═══ */}
                     <div className="emperor-side-rail emperor-rail-left">
                         {flankingBadges.left.map((badge, bIdx) => (
                             <div
                                 key={badge.id || bIdx}
                                 className={`emperor-side-item ${bIdx >= 2 ? 'emperor-badge-desktop-only' : ''}`}
-                                style={{
-                                    transform: `translateX(${badge.offset || '0px'})`,
-                                }}
                             >
                                 <div
                                     className="emperor-side-badge"
@@ -733,15 +808,12 @@ function EmperorCategoryCard({ cat, isRtl, language, index }) {
                         ))}
                     </div>
 
-                    {/* ═══ 3. Right Curved Side Medallions with Micro-Labels ═══ */}
+                    {/* ═══ 3. Right Side Medallions with Micro-Labels ═══ */}
                     <div className="emperor-side-rail emperor-rail-right">
                         {flankingBadges.right.map((badge, bIdx) => (
                             <div
                                 key={badge.id || bIdx}
                                 className={`emperor-side-item ${bIdx >= 2 ? 'emperor-badge-desktop-only' : ''}`}
-                                style={{
-                                    transform: `translateX(${badge.offset || '0px'})`,
-                                }}
                             >
                                 <div
                                     className="emperor-side-badge"
