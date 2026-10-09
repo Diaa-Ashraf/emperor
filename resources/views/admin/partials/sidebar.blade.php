@@ -82,10 +82,6 @@
                 <span class="badge rounded-pill bg-warning text-dark ms-auto">{{ $pendingDeposits }}</span>
             @endif
         </a>
-        <a href="{{ route('admin.withdrawals.index') }}" class="nav-link {{ request()->routeIs('admin.withdrawals.*') ? 'active' : '' }}">
-            <i class="ti ti-cash-banknote"></i>
-            <span class="nav-text">طلبات السحب</span>
-        </a>
         <a href="{{ route('admin.payment-methods.index') }}" class="nav-link {{ request()->routeIs('admin.payment-methods.*') ? 'active' : '' }}">
             <i class="ti ti-credit-card"></i>
             <span class="nav-text">طرق الدفع وبطاقات التحويل</span>
