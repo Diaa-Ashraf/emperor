@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
-use App\Models\Notification;
 use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -72,12 +71,13 @@ class DeveloperApiController extends Controller
         try {
             $admins = User::where('role', UserRole::ADMIN)->get();
             foreach ($admins as $admin) {
-                Notification::create([
-                    'user_id' => $admin->id,
-                    'title' => 'طلب تفعيل ربط برمجي جديد (B2B API)',
-                    'body' => "قدم العميل {$user->name} ({$user->email}) طلباً لتفعيل الربط البرمجي وتوليد التوكنات.",
-                    'type' => 'api_request',
+                $admin->notifications()->create([
+                    'id' => (string) Str::uuid(),
+                    'type' => 'App\\Notifications\\ApiAccessRequestedNotification',
                     'data' => [
+                        'title' => 'طلب تفعيل ربط برمجي جديد (B2B API)',
+                        'body' => "قدم العميل {$user->name} ({$user->email}) طلباً لتفعيل الربط البرمجي.",
+                        'link' => route('admin.api-clients.index'),
                         'user_id' => $user->id,
                         'user_name' => $user->name,
                         'notes' => $notes,
@@ -85,7 +85,7 @@ class DeveloperApiController extends Controller
                 ]);
             }
         } catch (\Throwable $e) {
-            // Ignore notification failure
+            \Illuminate\Support\Facades\Log::warning("Failed to notify admins of API access request: " . $e->getMessage());
         }
 
         return $this->successResponse([

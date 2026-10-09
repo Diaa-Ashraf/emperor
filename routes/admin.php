@@ -45,6 +45,7 @@ Route::middleware(['auth', 'admin.only', 'locale', 'throttle:180,1'])->prefix('a
 
     // Vouchers (Digital Codes Inventory)
     Route::get('/vouchers', [\App\Http\Controllers\Admin\VoucherController::class, 'index'])->name('vouchers.index');
+    Route::get('/vouchers/products/{id}/tiers', [\App\Http\Controllers\Admin\VoucherController::class, 'productTiers'])->name('vouchers.product-tiers');
     Route::post('/vouchers', [\App\Http\Controllers\Admin\VoucherController::class, 'store'])->name('vouchers.store');
     Route::delete('/vouchers/{id}', [\App\Http\Controllers\Admin\VoucherController::class, 'destroy'])->name('vouchers.destroy');
     Route::post('/vouchers/bulk-delete', [\App\Http\Controllers\Admin\VoucherController::class, 'bulkDestroy'])->name('vouchers.bulk-destroy');

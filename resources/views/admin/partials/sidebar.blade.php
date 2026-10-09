@@ -109,8 +109,13 @@
         <a href="{{ route('admin.api-clients.index') }}" class="nav-link {{ request()->routeIs('admin.api-clients.*') ? 'active' : '' }}">
             <i class="ti ti-api-app"></i>
             <span class="nav-text">عملاء الـ API (الموزعين)</span>
-            @php $apiClientsCount = \App\Models\User::where('role', \App\Enums\UserRole::API_CLIENT)->count(); @endphp
-            @if($apiClientsCount > 0)
+            @php
+                $apiClientsCount = \App\Models\User::where('role', \App\Enums\UserRole::API_CLIENT)->count();
+                $pendingApiClientsCount = \App\Models\User::where('api_access_status', 'pending')->count();
+            @endphp
+            @if($pendingApiClientsCount > 0)
+                <span class="badge rounded-pill bg-danger text-white ms-auto font-monospace" title="{{ $pendingApiClientsCount }} طلب بانتظار التفعيل">{{ $pendingApiClientsCount }} جديد</span>
+            @elseif($apiClientsCount > 0)
                 <span class="badge rounded-pill bg-warning text-dark ms-auto font-monospace">{{ $apiClientsCount }}</span>
             @endif
         </a>

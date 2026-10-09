@@ -26,19 +26,20 @@
             <!-- Client Summary Bar -->
             <div class="card-body border-top border-bottom border-dark py-3 bg-dark">
                 <div class="row g-3 align-items-center">
-                    <div class="col-md-4">
+                    <div class="col-lg-4 col-md-6">
                         <span class="text-muted small d-block">البريد الإلكتروني ومفتاح الـ API:</span>
                         <span class="text-white font-monospace">{{ $client->email }}</span>
                         <span class="badge bg-black text-warning border border-secondary font-monospace ms-2">{{ Str::limit($client->api_key, 15) }}</span>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-lg-3 col-md-6">
                         <span class="text-muted small d-block">رصيد المحفظة المتاح:</span>
                         <span class="text-success fw-bold font-monospace fs-5">{{ number_format($client->wallet?->balance ?? 0, 2) }} {{ $client->wallet?->currency ?? 'EGP' }}</span>
                     </div>
-                    <div class="col-md-4 text-md-end">
-                        <span class="badge bg-warning-subtle text-warning border border-warning px-3 py-2">
-                            <i class="ti ti-info-circle me-1"></i> يتم تطبيق السعر المخصص إذا تم إدخاله، وإلا سيتم استخدام سعر الـ API الافتراضي للباقة
-                        </span>
+                    <div class="col-lg-5 col-md-12">
+                        <div class="alert alert-warning border border-warning d-flex align-items-center gap-2 mb-0 py-2 px-3 small text-warning bg-warning-subtle">
+                            <i class="ti ti-info-circle fs-5 flex-shrink-0"></i>
+                            <span>يتم تطبيق السعر المخصص إذا تم إدخاله، وإلا سيتم استخدام سعر الـ API الافتراضي للباقة.</span>
+                        </div>
                     </div>
                 </div>
             </div>

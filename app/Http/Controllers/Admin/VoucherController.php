@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductTier;
 use App\Models\Voucher;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +49,16 @@ class VoucherController extends Controller
         $products = Product::where('is_active', true)->with('tiers:id,product_id,name')->select(['id', 'name'])->get();
 
         return view('admin.vouchers.index', compact('vouchers', 'stats', 'products'));
+    }
+
+    /**
+     * Get active tiers for a specific product as JSON.
+     */
+    public function productTiers(int $id): JsonResponse
+    {
+        $product = Product::findOrFail($id);
+        $tiers = $product->tiers()->select(['id', 'product_id', 'name'])->orderBy('sort_order')->get();
+        return response()->json($tiers);
     }
 
     public function store(Request $request): RedirectResponse

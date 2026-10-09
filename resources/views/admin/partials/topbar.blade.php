@@ -36,19 +36,23 @@
             $pendingOrdersQuery = \App\Models\Order::whereIn('status', ['pending', 'processing', 'manual_review']);
             $pendingDepositsQuery = \App\Models\DepositRequest::where('status', 'pending');
             $pendingTargetsQuery = \App\Models\TargetSellOrder::where('status', 'pending');
+            $pendingApiRequestsQuery = \App\Models\User::where('api_access_status', 'pending');
 
             if ($dismissedAt) {
                 $pendingOrdersCount = (clone $pendingOrdersQuery)->where('created_at', '>', $dismissedAt)->count();
                 $pendingDepositsCount = (clone $pendingDepositsQuery)->where('created_at', '>', $dismissedAt)->count();
                 $pendingTargetsCount = (clone $pendingTargetsQuery)->where('created_at', '>', $dismissedAt)->count();
+                $pendingApiRequestsCount = (clone $pendingApiRequestsQuery)->where('api_access_requested_at', '>', $dismissedAt)->count();
             } else {
                 $pendingOrdersCount = $pendingOrdersQuery->count();
                 $pendingDepositsCount = $pendingDepositsQuery->count();
                 $pendingTargetsCount = $pendingTargetsQuery->count();
+                $pendingApiRequestsCount = $pendingApiRequestsQuery->count();
             }
 
             $adminUnreadNotifs = auth()->check() ? \Illuminate\Support\Facades\DB::table('notifications')->where('notifiable_id', auth()->id())->whereNull('read_at')->count() : 0;
-            $totalAlertsCount = $pendingOrdersCount + $pendingDepositsCount + $pendingTargetsCount + $adminUnreadNotifs;
+            $adminRecentNotifs = auth()->check() ? \Illuminate\Support\Facades\DB::table('notifications')->where('notifiable_id', auth()->id())->whereNull('read_at')->latest('created_at')->limit(3)->get() : collect();
+            $totalAlertsCount = $pendingOrdersCount + $pendingDepositsCount + $pendingTargetsCount + $pendingApiRequestsCount + $adminUnreadNotifs;
         @endphp
         <div class="dropdown" id="adminNotifDropdownContainer">
             <button class="btn btn-dark-outline p-2 position-relative dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="التنبيهات والطلبات المعلقة">
@@ -59,7 +63,7 @@
                     </span>
                 @endif
             </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-secondary py-0" style="min-width: 320px; background: #12131a;">
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-secondary py-0" style="min-width: 330px; background: #12131a;">
                 <li class="px-3 py-2 border-bottom border-dark d-flex justify-content-between align-items-center">
                     <span class="fw-bold text-white fs-7">التنبيهات والإشعارات</span>
                     @if($totalAlertsCount > 0)
@@ -71,6 +75,23 @@
                         <span class="badge bg-secondary text-light fs-8">لا توجد تنبيهات جديدة</span>
                     @endif
                 </li>
+
+                @if($pendingApiRequestsCount > 0)
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center justify-content-between py-2 border-bottom border-dark" href="{{ route('admin.api-clients.index') }}">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-circle bg-warning bg-opacity-10 p-2 text-warning">
+                                    <i class="ti ti-api-app fs-6"></i>
+                                </div>
+                                <div>
+                                    <div class="text-white fs-7 fw-semibold">طلبات تفعيل ربط (B2B API)</div>
+                                    <small class="text-muted">بانتظار موافقة الإدارة والتفعيل</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-warning text-dark">{{ $pendingApiRequestsCount }}</span>
+                        </a>
+                    </li>
+                @endif
 
                 @if($pendingOrdersCount > 0)
                     <li>
@@ -122,6 +143,29 @@
                         </a>
                     </li>
                 @endif
+
+                @foreach($adminRecentNotifs as $notif)
+                    @php
+                        $notifData = is_array($notif->data) ? $notif->data : (json_decode($notif->data ?? '', true) ?? []);
+                        $notifLink = $notifData['link'] ?? route('admin.notifications.index');
+                        $notifTitle = $notifData['title'] ?? 'إشعار جديد';
+                        $notifBody = $notifData['body'] ?? '';
+                    @endphp
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center justify-content-between py-2 border-bottom border-dark" href="{{ $notifLink }}">
+                            <div class="d-flex align-items-center gap-2 min-w-0">
+                                <div class="rounded-circle bg-primary bg-opacity-10 p-2 text-primary flex-shrink-0">
+                                    <i class="ti ti-bell-ringing fs-6"></i>
+                                </div>
+                                <div class="text-truncate">
+                                    <div class="text-white fs-7 fw-semibold text-truncate">{{ $notifTitle }}</div>
+                                    <small class="text-muted text-truncate d-block">{{ Str::limit($notifBody, 35) }}</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-secondary text-light fs-8">{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}</span>
+                        </a>
+                    </li>
+                @endforeach
 
                 @if($totalAlertsCount === 0)
                     <li class="text-center py-4 text-muted">
