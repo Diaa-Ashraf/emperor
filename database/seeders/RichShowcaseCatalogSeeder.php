@@ -21,7 +21,7 @@ class RichShowcaseCatalogSeeder extends Seeder
             ['driver' => 'manual'],
             [
                 'name' => 'إمبراطور للشحن الفوري المباشر',
-                'balance' => 999999.00,
+                'balance' => 0.00,
                 'balance_currency' => 'EGP',
                 'is_active' => true,
                 'auto_fulfill' => true,

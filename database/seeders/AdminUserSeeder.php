@@ -43,7 +43,7 @@ class AdminUserSeeder extends Seeder
         Wallet::updateOrCreate(
             ['user_id' => $admin->id, 'currency' => 'EGP'],
             [
-                'balance' => 100000.0000,
+                'balance' => 0.0000,
                 'frozen_balance' => 0.0000,
                 'is_locked' => false,
             ]

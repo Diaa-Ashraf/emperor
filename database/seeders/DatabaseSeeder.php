@@ -11,14 +11,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolesAndPermissionsSeeder::class,
             AdminUserSeeder::class,
-            BannerSeeder::class,
             SettingSeeder::class,
+            SupportContactSeeder::class,
             PaymentMethodSeeder::class,
-            SampleUsersAndDepositsSeeder::class,
-            SampleCatalogAndOrdersSeeder::class,
+            BannerSeeder::class,
+            ProviderSeeder::class,
             RichShowcaseCatalogSeeder::class,
-            SampleSupportAndReferralsSeeder::class,
-            SampleApiClientSeeder::class,
+            TargetAppsSeeder::class,
         ]);
     }
 }
