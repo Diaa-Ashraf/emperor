@@ -364,13 +364,15 @@ export default function HomeBannerSlider() {
             {/* ── 3. Quranic Verse Below Banner (Matching KA-Cards Screenshot) ── */}
             <div style={{
                 textAlign: 'center',
-                marginTop: '16px',
-                fontSize: 'clamp(13px, 2vw, 15px)',
+                marginTop: '14px',
+                padding: '0 8px',
+                fontSize: 'clamp(11.5px, 2.5vw, 15px)',
                 fontWeight: '800',
                 color: isLight ? '#78350F' : '#F5D061',
                 fontFamily: 'var(--font-cairo)',
-                letterSpacing: '0.3px',
-                lineHeight: '1.7',
+                letterSpacing: '0.2px',
+                lineHeight: '1.6',
+                boxSizing: 'border-box',
                 textShadow: isLight ? 'none' : '0 2px 10px rgba(0,0,0,0.85), 0 0 14px rgba(212, 165, 55, 0.3)',
             }}>
                 <span style={{ color: isLight ? '#78350F' : '#E6C665' }}>

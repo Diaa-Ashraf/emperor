@@ -79,6 +79,7 @@ export default function ProductCard({ product, onClick }) {
             >
                 {/* ── Top-Corner Emperor Luxury Emblem Badge (KA-CARD Match) ── */}
                 <div
+                    className="emperor-card-corner-badge"
                     style={{
                         position: 'absolute',
                         top: '7px',
@@ -149,20 +150,8 @@ export default function ProductCard({ product, onClick }) {
             <span
                 className="product-poster-title"
                 style={{
-                    marginTop: '8px',
-                    fontSize: '13.5px',
-                    fontWeight: '800',
                     color: isLight ? '#0F172A' : '#FFFFFF',
-                    textAlign: 'center',
-                    lineHeight: '18px',
-                    maxWidth: '100%',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    padding: '0 4px',
                     fontFamily: 'var(--font-cairo)',
-                    boxSizing: 'border-box',
-                    letterSpacing: '0.2px',
                 }}
                 title={product.name}
             >

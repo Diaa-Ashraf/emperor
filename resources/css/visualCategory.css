@@ -2,11 +2,16 @@
    EMPEROR PLATFORM - LUXURY VISUAL CATEGORY & PRODUCT POSTER GRIDS
    ══════════════════════════════════════════════════════════════ */
 
-/* ── 1. Category Posters Grid (Home Page Categories) ── */
+/* ── 1. Emperor Royal Category Cards Grid (Home Page Categories) ── */
+.emperor-category-section {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .emperor-category-poster-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
+    gap: 20px;
     width: 100%;
     box-sizing: border-box;
     align-items: start;
@@ -15,65 +20,569 @@
 @media (min-width: 1400px) {
     .emperor-category-poster-grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 20px;
+        gap: 24px;
     }
 }
 
 @media (max-width: 1100px) {
     .emperor-category-poster-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
     }
 }
 
 @media (max-width: 900px) {
     .emperor-category-poster-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        gap: 10px !important;
+        gap: 12px !important;
     }
 }
 
-/* On mobile phones: Categories are EXACTLY 3 SIDE-BY-SIDE with compact luxury card frames */
+/* On mobile phones: 2 columns grid with perfect luxury card proportions */
 @media (max-width: 768px) {
     .emperor-category-poster-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        gap: 8px 6px !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px 10px !important;
     }
-    
-    .category-poster-frame {
-        border-radius: 14px !important;
-        border-width: 1.2px !important;
+}
+
+@media (max-width: 360px) {
+    .emperor-category-poster-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
     }
-    
-    .category-poster-title {
+}
+
+/* ── 2. Emperor 3D Sculpted Royal Category Card Styling ── */
+.emperor-category-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.emperor-royal-category-card {
+    position: relative;
+    display: block;
+    width: 100%;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 3D Sculpted Roman Arch Shell */
+.emperor-card-arched-shell {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1.18;
+    border-radius: 38px 38px 24px 24px;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: #080B10;
+    border: 2px solid #F5D061;
+    box-shadow: 
+        0 0 0 1px #966C15, 
+        0 0 0 3px #FDE68A, 
+        0 0 0 4.5px #78520A, 
+        0 14px 35px rgba(0, 0, 0, 0.85), 
+        0 0 25px rgba(212, 165, 55, 0.18), 
+        inset 0 0 25px rgba(0, 0, 0, 0.85),
+        inset 0 0 12px rgba(245, 208, 97, 0.2);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-light .emperor-card-arched-shell {
+    background: #FFFFFF;
+    border: 2px solid #D4A537;
+    box-shadow: 
+        0 0 0 1px #966C15, 
+        0 0 0 3px #FDE68A, 
+        0 0 0 4px #78520A, 
+        0 10px 28px rgba(0, 0, 0, 0.12), 
+        0 0 20px rgba(212, 165, 55, 0.25);
+}
+
+/* Hover Dynamics */
+.emperor-royal-category-card:hover .emperor-card-arched-shell,
+.emperor-royal-category-card.is-hovered .emperor-card-arched-shell {
+    transform: translateY(-9px) scale(1.02);
+    border-color: #FFF176;
+    box-shadow: 
+        0 0 0 1px #966C15, 
+        0 0 0 3.5px #FFF9D2, 
+        0 0 0 5px #78520A, 
+        0 24px 55px rgba(0, 0, 0, 0.95), 
+        0 0 45px rgba(245, 208, 97, 0.5), 
+        0 0 22px rgba(0, 210, 255, 0.35), 
+        inset 0 0 28px rgba(245, 208, 97, 0.28);
+}
+
+.theme-light.emperor-royal-category-card:hover .emperor-card-arched-shell,
+.theme-light.emperor-royal-category-card.is-hovered .emperor-card-arched-shell {
+    box-shadow: 
+        0 0 0 1px #966C15, 
+        0 0 0 3px #FDE68A, 
+        0 0 0 4.5px #78520A, 
+        0 18px 40px rgba(0, 0, 0, 0.18), 
+        0 0 30px rgba(245, 208, 97, 0.45);
+}
+
+/* Card Artwork Image */
+.emperor-card-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.emperor-royal-category-card:hover .emperor-card-bg-img {
+    transform: scale(1.08);
+}
+
+/* Volumetric Lighting & Depth Vignette Overlay */
+.emperor-card-lighting-overlay {
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 50% 38%, rgba(245, 208, 97, 0.14) 0%, rgba(0, 210, 255, 0.08) 35%, transparent 68%),
+        linear-gradient(180deg, rgba(8, 11, 16, 0.5) 0%, transparent 28%, rgba(6, 8, 12, 0.7) 65%, rgba(4, 6, 10, 0.98) 100%);
+    pointer-events: none;
+    transition: all 0.35s ease;
+}
+
+.theme-light .emperor-card-lighting-overlay {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 35%, rgba(255, 255, 255, 0.75) 70%, rgba(255, 255, 255, 0.98) 100%);
+}
+
+/* Top Emperor Spartan Arch Crown */
+.emperor-card-crest {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    pointer-events: none;
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 6px rgba(245, 208, 97, 0.45));
+    transition: transform 0.35s ease;
+}
+
+.emperor-royal-category-card:hover .emperor-card-crest {
+    transform: translateX(-50%) translateY(-1px) scale(1.05);
+}
+
+/* Flanking Side Rails */
+.emperor-side-rail {
+    position: absolute;
+    top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    z-index: 6;
+    pointer-events: none;
+}
+
+.emperor-rail-left {
+    left: 7px;
+}
+
+.emperor-rail-right {
+    right: 7px;
+}
+
+/* Individual Flanking Item (Circle + Label) */
+.emperor-side-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    box-sizing: border-box;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 3D Gold Coin Medallion */
+.emperor-side-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 35% 35%, rgba(28, 38, 54, 0.95) 0%, var(--badge-bg, #0A0E17) 100%);
+    border: 1.8px solid #F5D061;
+    box-shadow: 
+        0 3px 8px rgba(0, 0, 0, 0.85), 
+        0 0 0 1px #8A6413, 
+        inset 0 1px 2px rgba(255, 255, 255, 0.45), 
+        0 0 6px rgba(245, 208, 97, 0.35);
+    backdrop-filter: blur(6px);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Micro-Label under badge */
+.emperor-side-badge-label {
+    font-size: 8px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-top: 2px;
+    color: #F8FAFC;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 44px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 5px rgba(0, 0, 0, 0.85);
+    letter-spacing: -0.2px;
+    font-family: var(--font-cairo, sans-serif);
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.theme-light .emperor-side-badge-label {
+    color: #0F172A;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.emperor-royal-category-card:hover .emperor-side-badge {
+    border-color: #FFF176;
+    box-shadow: 
+        0 5px 14px rgba(0, 0, 0, 0.9), 
+        0 0 0 1px #FFF9D2, 
+        0 0 12px var(--badge-color, rgba(245, 208, 97, 0.7));
+    transform: scale(1.12);
+}
+
+.emperor-royal-category-card:hover .emperor-side-badge-label {
+    color: #FDE68A;
+    text-shadow: 0 0 6px rgba(245, 208, 97, 0.7), 0 1px 3px #000000;
+}
+
+/* Bottom Sculpted 3D Gilded Plaque */
+.emperor-bottom-plaque {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 7;
+    padding: 8px 10px 12px;
+    background: linear-gradient(180deg, rgba(14, 18, 28, 0.7) 0%, rgba(8, 11, 18, 0.96) 45%, #05070B 100%);
+    border-top: 2px solid #F5D061;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.theme-light .emperor-bottom-plaque {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.98) 100%);
+    border-top: 2px solid #D4A537;
+    box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Plaque Ribbon Title Crest */
+.emperor-plaque-ribbon-crest {
+    background: linear-gradient(180deg, rgba(245, 208, 97, 0.18) 0%, rgba(212, 165, 55, 0.06) 100%);
+    border: 1px solid rgba(245, 208, 97, 0.45);
+    border-radius: 12px;
+    padding: 3px 12px;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.25), 0 2px 8px rgba(0, 0, 0, 0.6);
+    max-width: 90%;
+    box-sizing: border-box;
+}
+
+.theme-light .emperor-plaque-ribbon-crest {
+    background: #FEF3C7;
+    border: 1px solid #D4A537;
+    box-shadow: none;
+}
+
+.emperor-plaque-title {
+    text-align: center;
+    font-size: 14.5px;
+    font-weight: 900;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFF2A8 25%, #F5D061 55%, #D4A537 80%, #996A13 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
+}
+
+.theme-light .emperor-plaque-title {
+    background: none;
+    -webkit-text-fill-color: initial;
+    color: #0F172A;
+    filter: none;
+}
+
+/* Plaque Interactive CTA Button */
+.emperor-plaque-cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: fit-content;
+    padding: 4px 16px;
+    border-radius: 9999px;
+    background: linear-gradient(180deg, #FFF9D2 0%, #F5D061 35%, #D4A537 70%, #996A13 100%);
+    border: 1px solid #78520A;
+    box-shadow: 0 4px 14px rgba(212, 165, 55, 0.45), inset 0 1px 1px #FFFFFF;
+    color: #0B0E14;
+    font-weight: 900;
+    font-size: 11.5px;
+    letter-spacing: -0.2px;
+    transition: all 0.25s ease;
+}
+
+.emperor-plaque-cta-btn .cta-text {
+    font-weight: 900;
+}
+
+.emperor-plaque-cta-btn .cta-arrow {
+    transition: transform 0.25s ease;
+}
+
+.emperor-royal-category-card:hover .emperor-plaque-cta-btn {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFF3B0 30%, #F5D061 70%, #B8860B 100%);
+    box-shadow: 0 6px 20px rgba(245, 208, 97, 0.7), 0 0 12px rgba(0, 210, 255, 0.4), inset 0 1px 2px #FFFFFF;
+    transform: translateY(-1px) scale(1.05);
+}
+
+.emperor-royal-category-card:hover .cta-arrow {
+    transform: translateX(-3px);
+}
+
+/* Plaque Subtext Ribbon */
+.emperor-plaque-subtext {
+    font-size: 10px;
+    font-weight: 700;
+    color: #F5D061;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    opacity: 0.9;
+    letter-spacing: 0.2px;
+    text-align: center;
+}
+
+.theme-light .emperor-plaque-subtext {
+    color: #B45309;
+    text-shadow: none;
+}
+
+/* Card Hover Shimmer Streak */
+.emperor-card-shimmer {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(245, 208, 97, 0.15) 50%, transparent 60%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.emperor-royal-category-card:hover .emperor-card-shimmer {
+    opacity: 1;
+}
+
+/* Footer Subtitle Below Card */
+.emperor-card-footer-title {
+    margin: 12px 0 0;
+    font-size: 15px;
+    font-weight: 800;
+    color: #FFFFFF;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: -0.2px;
+    transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.theme-light ~ .emperor-card-footer-title,
+.theme-light + .emperor-card-footer-title,
+[data-theme="light"] .emperor-card-footer-title {
+    color: #0F172A;
+}
+
+.emperor-royal-category-card:hover ~ .emperor-card-footer-title,
+.emperor-category-card-wrapper:hover .emperor-card-footer-title {
+    color: #F5D061;
+    transform: translateY(-2px);
+}
+
+/* Mobile responsive scaling */
+@media (max-width: 768px) {
+    .emperor-category-poster-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px 8px !important;
+    }
+
+    .emperor-card-arched-shell {
+        border-radius: 26px 26px 16px 16px !important;
+        aspect-ratio: 1 / 1.36 !important;
+        box-shadow: 
+            0 0 0 1px #966C15, 
+            0 0 0 2px #FDE68A, 
+            0 0 0 3px #78520A, 
+            0 8px 22px rgba(0, 0, 0, 0.8) !important;
+    }
+
+    .emperor-card-bg-img {
+        object-fit: cover !important;
+        object-position: center !important;
+    }
+
+    .emperor-card-lighting-overlay {
+        background: 
+            radial-gradient(circle at 50% 35%, rgba(245, 208, 97, 0.1) 0%, transparent 60%),
+            linear-gradient(180deg, rgba(8, 11, 16, 0.25) 0%, transparent 30%, rgba(6, 8, 12, 0.45) 65%, rgba(4, 6, 10, 0.96) 100%) !important;
+    }
+
+    .emperor-card-crest {
+        top: 5px !important;
+        transform: translateX(-50%) scale(0.72) !important;
+    }
+
+    .emperor-royal-category-card:hover .emperor-card-crest {
+        transform: translateX(-50%) scale(0.76) !important;
+    }
+
+    /* On mobile: keep only top 2 badges per side to keep center wide & open */
+    .emperor-badge-desktop-only {
+        display: none !important;
+    }
+
+    .emperor-side-rail {
+        top: 28px !important;
+        gap: 4px !important;
+    }
+
+    .emperor-rail-left {
+        left: 4px !important;
+    }
+
+    .emperor-rail-right {
+        right: 4px !important;
+    }
+
+    .emperor-side-item {
+        width: 32px !important;
+    }
+
+    .emperor-side-badge {
+        width: 21px !important;
+        height: 21px !important;
+        border-width: 1.3px !important;
+    }
+
+    .emperor-side-badge svg {
+        width: 9.5px !important;
+        height: 9.5px !important;
+    }
+
+    .emperor-side-badge-label {
+        font-size: 6.8px !important;
+        max-width: 32px !important;
+        margin-top: 1px !important;
+        line-height: 1 !important;
+    }
+
+    /* Plaque becomes compact so artwork is prominently visible */
+    .emperor-bottom-plaque {
+        padding: 5px 6px 8px !important;
+        gap: 3px !important;
+    }
+
+    .emperor-plaque-ribbon-crest {
+        padding: 2px 6px !important;
+        border-radius: 8px !important;
+        max-width: 96% !important;
+        box-sizing: border-box !important;
+    }
+
+    .emperor-plaque-title {
         font-size: 11px !important;
-        margin-top: 5px !important;
-        line-height: 1.2 !important;
+        max-width: 100% !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
+        display: block !important;
+        line-height: 1.2 !important;
+    }
+
+    .emperor-plaque-cta-btn {
+        padding: 2.5px 10px !important;
+        font-size: 9px !important;
+    }
+
+    .emperor-plaque-cta-btn .cta-arrow {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    /* Hide 3rd subtitle line inside plaque on mobile to prevent overflow */
+    .emperor-plaque-subtext {
+        display: none !important;
+    }
+
+    .emperor-card-footer-title {
+        font-size: 11.5px !important;
+        margin-top: 5px !important;
+        max-width: 100% !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: block !important;
+        text-align: center !important;
         padding: 0 2px !important;
     }
 }
 
 @media (max-width: 360px) {
     .emperor-category-poster-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        gap: 6px 4px !important;
+        gap: 8px 6px !important;
     }
-    
-    .category-poster-frame {
-        border-radius: 10px !important;
-        border-width: 1px !important;
+
+    .emperor-card-arched-shell {
+        border-radius: 22px 22px 14px 14px !important;
+        aspect-ratio: 1 / 1.38 !important;
     }
-    
-    .category-poster-title {
+
+    .emperor-side-item {
+        width: 28px !important;
+    }
+
+    .emperor-side-badge {
+        width: 19px !important;
+        height: 19px !important;
+    }
+
+    .emperor-side-badge-label {
+        font-size: 6.2px !important;
+        max-width: 28px !important;
+    }
+
+    .emperor-plaque-title {
         font-size: 10px !important;
-        margin-top: 3px !important;
+    }
+
+    .emperor-plaque-cta-btn {
+        font-size: 8.5px !important;
+        padding: 2px 8px !important;
+    }
+
+    .emperor-card-footer-title {
+        font-size: 10.5px !important;
     }
 }
 
-/* ── 2. Products & Voice Apps Grid (Category Page & Apps) ── */
+/* ── 3. Products & Voice Apps Grid (Category Page & Apps) ── */
 .emperor-products-poster-grid,
 .emperor-products-grid {
     display: grid !important;
@@ -113,45 +622,59 @@
     .emperor-products-poster-grid,
     .emperor-products-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        gap: 10px 8px !important;
+        gap: 12px 8px !important;
+    }
+    
+    /* Hide top-corner Emperor badge on mobile to leave 100% unobstructed room for app artwork */
+    .emperor-card-corner-badge {
+        display: none !important;
     }
     
     .product-poster-frame {
-        border-radius: 14px !important;
+        border-radius: 16px !important;
+        border: 1.5px solid rgba(245, 208, 97, 0.45) !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    }
+    
+    .product-poster-title {
+        font-size: 11.5px !important;
+        height: auto !important;
+        min-height: 28px !important;
+        max-height: 32px !important;
+        line-height: 1.35 !important;
+        margin-top: 5px !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        word-break: break-word !important;
+        padding: 0 2px !important;
+        font-weight: 800 !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .emperor-products-poster-grid,
+    .emperor-products-grid {
+        gap: 8px 6px !important;
+    }
+    
+    .product-poster-frame {
+        border-radius: 13px !important;
         border-width: 1.2px !important;
     }
     
     .product-poster-title {
-        font-size: 11px !important;
-        height: 32px !important;
-        min-height: 32px !important;
-        max-height: 32px !important;
-        line-height: 16px !important;
-        margin-top: 5px !important;
+        font-size: 10px !important;
+        height: auto !important;
+        min-height: 25px !important;
+        max-height: 28px !important;
+        line-height: 1.25 !important;
     }
 }
 
-@media (max-width: 340px) {
-    .emperor-products-poster-grid,
-    .emperor-products-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 8px !important;
-    }
-    
-    .product-poster-frame {
-        border-radius: 12px !important;
-    }
-    
-    .product-poster-title {
-        font-size: 10.5px !important;
-        height: 30px !important;
-        min-height: 30px !important;
-        max-height: 30px !important;
-        line-height: 15px !important;
-    }
-}
-
-/* ── 3. Strict 1:1 Aspect Ratio Rules for Perfect Uniformity ── */
+/* ── 4. Strict 1:1 Aspect Ratio Rules for Products ── */
 .emperor-product-poster-card {
     display: flex !important;
     flex-direction: column !important;
@@ -162,7 +685,6 @@
     box-sizing: border-box !important;
 }
 
-.category-poster-frame,
 .product-poster-frame {
     position: relative !important;
     width: 100% !important;
@@ -176,7 +698,6 @@
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
 }
 
-.category-poster-frame img,
 .product-poster-frame img {
     position: absolute !important;
     top: 0 !important;
@@ -186,11 +707,6 @@
     object-fit: cover !important;
     object-position: center !important;
     display: block !important;
-}
-
-.category-poster-title {
-    width: 100% !important;
-    box-sizing: border-box !important;
 }
 
 .product-poster-title {
@@ -212,41 +728,25 @@
     padding: 0 4px !important;
 }
 
-/* ── Hover Animations ── */
-.emperor-product-poster-card:hover .product-poster-frame,
-.category-poster-frame:hover {
+/* ── Hover Animations for Products ── */
+.emperor-product-poster-card:hover .product-poster-frame {
     transform: translateY(-4px) scale(1.02);
     border-color: #F5D061 !important;
 }
 
-/* Light Theme: strictly no black shadows around cards and banners */
-[data-theme="light"] .category-poster-frame,
+/* Light Theme overrides */
 [data-theme="light"] .product-poster-frame,
-[data-theme="light"] .emperor-target-banner-card,
-[data-theme="light"] .emperor-whatsapp-banner-card,
-.light .category-poster-frame,
-.light .product-poster-frame,
-.light .emperor-target-banner-card,
-.light .emperor-whatsapp-banner-card {
+.light .product-poster-frame {
     box-shadow: none !important;
-    animation: none !important;
 }
 
-[data-theme="light"] .category-poster-frame:hover,
 [data-theme="light"] .emperor-product-poster-card:hover .product-poster-frame,
-[data-theme="light"] .emperor-target-banner-card:hover,
-[data-theme="light"] .emperor-whatsapp-banner-card:hover,
-.light .category-poster-frame:hover,
-.light .emperor-product-poster-card:hover .product-poster-frame,
-.light .emperor-target-banner-card:hover,
-.light .emperor-whatsapp-banner-card:hover {
+.light .emperor-product-poster-card:hover .product-poster-frame {
     box-shadow: 0 0 20px rgba(212, 165, 55, 0.3) !important;
 }
 
 /* Dark Theme hover shadow */
-[data-theme="dark"] .category-poster-frame:hover,
 [data-theme="dark"] .emperor-product-poster-card:hover .product-poster-frame,
-.dark .category-poster-frame:hover,
 .dark .emperor-product-poster-card:hover .product-poster-frame {
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 165, 55, 0.3) !important;
 }

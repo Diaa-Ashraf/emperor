@@ -202,28 +202,28 @@ export default function CategoryPage() {
 
     return (
         <MainLayout>
-            <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: '0 4px 60px' }}>
+            <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: '0 8px 60px', boxSizing: 'border-box' }}>
                 
                 {/* ── 1. Search Bar (Responsive Luxury Input) ── */}
                 <div style={{
                     position: 'relative',
                     width: '100%',
-                    marginBottom: '16px',
+                    marginBottom: '14px',
                     boxSizing: 'border-box',
                 }}>
                     <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={t('searchProductPrompt', 'ابحث عن منتج أو لعبة...')}
+                        placeholder={t('searchProductPrompt', 'ابحث عن منتج أو تطبيق...')}
                         style={{
                             width: '100%',
                             boxSizing: 'border-box',
                             background: isLight ? '#FFFFFF' : '#0e0e14',
                             border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.25)',
                             borderRadius: '16px',
-                            padding: isRtl ? '12px 42px 12px 14px' : '12px 14px 12px 42px',
-                            fontSize: '13.5px',
+                            padding: isRtl ? '11px 40px 11px 14px' : '11px 14px 11px 40px',
+                            fontSize: '13px',
                             fontWeight: '600',
                             color: isLight ? '#0F172A' : '#FFFFFF',
                             outline: 'none',
@@ -258,9 +258,8 @@ export default function CategoryPage() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    flexWrap: 'wrap',
                     gap: '8px',
-                    marginBottom: '16px',
+                    marginBottom: '14px',
                     padding: '8px 12px',
                     borderRadius: '14px',
                     background: isLight ? 'rgba(255, 255, 255, 0.6)' : 'rgba(18, 18, 24, 0.5)',
@@ -272,7 +271,7 @@ export default function CategoryPage() {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '6px',
-                        fontSize: '13px',
+                        fontSize: '12.5px',
                         fontWeight: '800',
                         minWidth: 0,
                         overflow: 'hidden',
@@ -333,7 +332,8 @@ export default function CategoryPage() {
                             background: 'rgba(212, 165, 55, 0.12)',
                             padding: '2px 8px',
                             borderRadius: '6px',
-                            flexShrink: 0
+                            flexShrink: 0,
+                            whiteSpace: 'nowrap'
                         }}>
                             {filteredProducts.length} {t('items', 'عنصر')}
                         </span>
@@ -346,7 +346,9 @@ export default function CategoryPage() {
                         className="no-scrollbar"
                         style={{
                             display: 'flex',
-                            flexWrap: 'wrap',
+                            flexWrap: 'nowrap',
+                            overflowX: 'auto',
+                            WebkitOverflowScrolling: 'touch',
                             gap: '8px',
                             paddingBottom: '10px',
                             marginBottom: '16px',
