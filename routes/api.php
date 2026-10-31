@@ -238,6 +238,10 @@ Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
 
             Route::post('/payment-groups', [\App\Http\Controllers\Api\V1\Admin\AdminPaymentMethodController::class, 'storeGroup']);
             Route::delete('/payment-groups/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminPaymentMethodController::class, 'destroyGroup']);
+
+            // System Settings Management
+            Route::get('/settings', [\App\Http\Controllers\Api\V1\Admin\AdminSettingController::class, 'index']);
+            Route::post('/settings', [\App\Http\Controllers\Api\V1\Admin\AdminSettingController::class, 'update']);
         });
     });
 });

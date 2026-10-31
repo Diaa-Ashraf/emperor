@@ -48,9 +48,12 @@ class AdminCategoryController extends Controller
 
         $name = !empty($validated['name']) ? $validated['name'] : (!empty($validated['name_en']) ? $validated['name_en'] : 'قسم جديد');
         $slugBase = !empty($validated['name_en']) ? $validated['name_en'] : $name;
-        $slug = Str::slug($slugBase);
+        $slug = Str::slug($slugBase, '-', null);
+        if (empty($slug) || $slug === '-') {
+            $slug = 'category-' . Str::lower(Str::random(6));
+        }
         if (Category::where('slug', $slug)->exists()) {
-            $slug .= '-' . Str::random(4);
+            $slug .= '-' . Str::lower(Str::random(4));
         }
 
         $iconPath = 'gamepad-2';
@@ -118,14 +121,15 @@ class AdminCategoryController extends Controller
      */
     public function reorder(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'orders' => ['required', 'array'],
-            'orders.*.id' => ['required', 'integer', 'exists:categories,id'],
-            'orders.*.sort_order' => ['required', 'integer', 'min:0'],
-        ]);
+        $items = $request->input('orders', $request->input('items', []));
+        if (!is_array($items)) {
+            $items = [];
+        }
 
-        foreach ($validated['orders'] as $item) {
-            Category::where('id', $item['id'])->update(['sort_order' => $item['sort_order']]);
+        foreach ($items as $item) {
+            if (isset($item['id']) && isset($item['sort_order'])) {
+                Category::where('id', $item['id'])->update(['sort_order' => (int) $item['sort_order']]);
+            }
         }
 
         return $this->successResponse(null, 'تم حفظ ترتيب الأقسام بنجاح');

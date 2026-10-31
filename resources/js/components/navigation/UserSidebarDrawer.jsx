@@ -214,6 +214,13 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
             iconBadgeBg: 'rgba(245, 208, 97, 0.18)',
             iconBadgeColor: '#F5D061',
         },
+        {
+            path: '/admin/settings',
+            label: 'الإعدادات العامة',
+            icon: Settings,
+            iconBadgeBg: 'rgba(245, 208, 97, 0.18)',
+            iconBadgeColor: '#F5D061',
+        },
     ];
 
     const navItems = [

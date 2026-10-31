@@ -63,6 +63,7 @@ const AdminActivityLogsPage = lazyRetry(() => import('./pages/admin/AdminActivit
 const AdminStaffPage = lazyRetry(() => import('./pages/admin/AdminStaffPage'));
 const AdminReferralsPage = lazyRetry(() => import('./pages/admin/AdminReferralsPage'));
 const AdminUserLedgerPage = lazyRetry(() => import('./pages/admin/AdminUserLedgerPage'));
+const AdminSettingsPage = lazyRetry(() => import('./pages/admin/AdminSettingsPage'));
 
 // Protected Route Guard
 export function ProtectedRoute({ children }) {
@@ -264,6 +265,8 @@ export function AppRoutes() {
                 <Route path="/admin/appearance" element={<AdminProtectedRoute><AdminDashboardPage /></AdminProtectedRoute>} />
                 <Route path="/admin/whatsapp" element={<AdminProtectedRoute><AdminProvidersPage /></AdminProtectedRoute>} />
                 <Route path="/admin/currencies" element={<AdminProtectedRoute><AdminWalletPage /></AdminProtectedRoute>} />
+                <Route path="/admin/settings" element={<AdminProtectedRoute><AdminSettingsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/setting" element={<AdminProtectedRoute><AdminSettingsPage /></AdminProtectedRoute>} />
 
                 {/* 404 Fallback */}
                 <Route path="*" element={<NotFoundPage />} />
