@@ -14,8 +14,14 @@ class CategoryResource extends JsonResource
             if (!$path) {
                 return null;
             }
-            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:')) {
                 return $path;
+            }
+            if (str_starts_with($path, '/storage/')) {
+                return $path;
+            }
+            if (str_starts_with($path, 'storage/')) {
+                return '/' . $path;
             }
             // If it's just an icon name (no slash and no image extension), it's an icon identifier, not a file URL
             if (!str_contains($path, '/') && !preg_match('/\.(png|jpe?g|svg|webp|gif|ico|avif)$/i', $path)) {

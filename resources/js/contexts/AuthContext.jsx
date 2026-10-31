@@ -138,12 +138,14 @@ export function AuthProvider({ children }) {
         document.addEventListener('visibilitychange', handleVisibilityOrFocus);
         window.addEventListener('focus', handleVisibilityOrFocus);
         window.addEventListener('emperor:unauthorized', handleUnauthorized);
+        window.addEventListener('emperor:refresh-profile', fetchProfile);
 
         return () => {
             interactionEvents.forEach(evt => window.removeEventListener(evt, touchActivity));
             document.removeEventListener('visibilitychange', handleVisibilityOrFocus);
             window.removeEventListener('focus', handleVisibilityOrFocus);
             window.removeEventListener('emperor:unauthorized', handleUnauthorized);
+            window.removeEventListener('emperor:refresh-profile', fetchProfile);
         };
     }, [fetchProfile, logout, touchActivity]);
 
@@ -316,6 +318,7 @@ export function AuthProvider({ children }) {
         setSession,
         logout,
         fetchProfile,
+        refreshUser: fetchProfile,
         completeProfile,
         updateProfile,
     };

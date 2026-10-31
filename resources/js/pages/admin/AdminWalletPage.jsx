@@ -212,18 +212,29 @@ export default function AdminWalletPage() {
 
         setAddingBalance(true);
         try {
-            await adminApi.adjustWalletBalance({
+            const res = await adminApi.adjustWalletBalance({
                 amount: amt,
                 action: quickAction,
                 currency: selectedCurrency,
                 description: quickDesc.trim() || undefined,
             });
+            const newBal = res?.data?.data?.new_balance;
+            if (newBal !== undefined) {
+                setSummary(prev => ({
+                    ...prev,
+                    admin_wallet: {
+                        ...prev.admin_wallet,
+                        balance: parseFloat(newBal) || 0
+                    }
+                }));
+            }
             const actionText = quickAction === 'credit' ? 'إضافة' : quickAction === 'debit' ? 'خصم' : 'تعديل';
             success(`تمت عملية ${actionText} رصيد الأدمن بنجاح`);
             setQuickAmount('');
             setQuickDesc('');
             fetchData();
             if (refreshUser) refreshUser();
+            window.dispatchEvent(new CustomEvent('emperor:refresh-profile'));
         } catch (err) {
             console.error('Adjust balance error:', err);
             toastError(err.response?.data?.message || 'فشل تعديل الرصيد');

@@ -34,9 +34,9 @@ export default function AdminSettingsPage() {
 
     // Settings State
     const [settings, setSettings] = useState({
-        site_name: 'مهره و سند كارد',
+        site_name: 'سند ومهره كارد',
         site_description: 'خدماتك الرقمية والمالية في مكان واحد',
-        footer_slogan: 'المنصة الرائدة والأولى لشحن الألعاب والبطاقات الرقمية وبيع التارجت بأفضل الأسعار.',
+        footer_slogan: 'سند ومهره كارد — المنصة الرائدة والأولى لشحن الألعاب والبطاقات الرقمية وبيع التارجت بأفضل الأسعار.',
         site_logo: '/images/mohra_sand_logo.png',
         site_favicon: '/images/mohra_sand_logo.png',
         whatsapp_support: '+201000000000',
@@ -302,7 +302,7 @@ export default function AdminSettingsPage() {
                                             value={settings.site_name}
                                             onChange={(e) => handleChange('site_name', e.target.value)}
                                             required
-                                            placeholder="مثال: مهره و سند كارد"
+                                            placeholder="مثال: سند ومهره كارد"
                                             className="w-full px-4 py-2.5 rounded-xl bg-[#040711] border border-white/10 text-white text-xs focus:border-[#F5D061] focus:outline-none transition-colors"
                                         />
                                         <span className="text-[10px] text-gray-500 mt-1 block">يظهر في الشريط العلوي ورسائل التأكيد وعنوان المتصفح.</span>
@@ -449,7 +449,7 @@ export default function AdminSettingsPage() {
                                     rows={3}
                                     value={settings.announcement_text}
                                     onChange={(e) => handleChange('announcement_text', e.target.value)}
-                                    placeholder="مثال: مرحباً بكم في منصة مهره و سند كارد! بمناسبة الافتتاح خصم 5% على كافة بطاقات الألعاب..."
+                                    placeholder="مثال: مرحباً بكم في منصة سند ومهره كارد! بمناسبة الافتتاح خصم 5% على كافة بطاقات الألعاب..."
                                     className="w-full px-4 py-2.5 rounded-xl bg-[#040711] border border-white/10 text-white text-xs focus:border-[#F5D061] focus:outline-none transition-colors"
                                 />
                             </div>

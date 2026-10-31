@@ -68,6 +68,8 @@ export default function CategoryShowcase({ categories = [], products = [] }) {
                     .filter(p => p.category_id === cat.id || (p.category && p.category.id === cat.id))
                     .slice(0, 6);
 
+                const catImage = formatImageUrl(cat.icon_url || cat.icon || cat.banner_url || cat.banner);
+
                 return (
                     <div key={cat.id} className="emperor-showcase-card">
                         <div className="emperor-showcase-card-inner">
@@ -80,9 +82,27 @@ export default function CategoryShowcase({ categories = [], products = [] }) {
                                     </h3>
                                     <p className="emperor-showcase-desc">{cat.description || meta.desc}</p>
                                 </div>
-                                <div className="emperor-showcase-icon-badge">
-                                    <Icon size={24} />
-                                </div>
+                                {catImage ? (
+                                    <div className="emperor-showcase-image-badge" title={cat.name}>
+                                        <img
+                                            src={catImage}
+                                            alt={cat.name}
+                                            className="emperor-showcase-cat-img"
+                                            onError={(e) => {
+                                                e.currentTarget.style.display = 'none';
+                                                const fallback = e.currentTarget.parentElement?.querySelector('.emperor-showcase-fallback-icon');
+                                                if (fallback) fallback.style.display = 'flex';
+                                            }}
+                                        />
+                                        <div className="emperor-showcase-fallback-icon" style={{ display: 'none' }}>
+                                            <Icon size={28} color="#F5D061" />
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="emperor-showcase-icon-badge">
+                                        <Icon size={24} />
+                                    </div>
+                                )}
                             </div>
 
                             {/* Visual sample products / logos row */}

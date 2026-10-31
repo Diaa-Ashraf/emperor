@@ -235,11 +235,12 @@ export default function AdminStaffPage() {
         return keys;
     };
 
-    const fetchStaff = async () => {
+    const fetchStaff = async (searchQueryOverride = null) => {
         try {
             setRefreshing(true);
+            const querySearch = searchQueryOverride !== null ? searchQueryOverride : search;
             const res = await adminApi.getStaff({
-                search: search.trim() || undefined,
+                search: querySearch.trim() || undefined,
                 status: selectedStatus || undefined,
             });
 
@@ -380,7 +381,8 @@ export default function AdminStaffPage() {
             setStaffEmail('');
             setStaffPhone('');
             setStaffPassword('');
-            fetchStaff();
+            setSearch('');
+            fetchStaff('');
         } catch (err) {
             const errors = err.response?.data?.errors;
             const errorMsg = errors ? Object.values(errors).flat().join(' - ') : (err.response?.data?.message || 'فشل إضافة المشرف');
@@ -599,10 +601,15 @@ export default function AdminStaffPage() {
                                 type="text"
                                 placeholder="ابحث باسم المشرف، البريد الإلكتروني..."
                                 value={search}
-                                onChange={(e) => setSearch(e.target.value)}
+                                onChange={(e) => {
+                                    setSearch(e.target.value);
+                                    if (!e.target.value.trim()) {
+                                        fetchStaff('');
+                                    }
+                                }}
                                 style={{
                                     width: '100%',
-                                    padding: '10px 38px 10px 14px',
+                                    padding: '10px 38px 10px 34px',
                                     borderRadius: '12px',
                                     backgroundColor: isLight ? '#F8FAFC' : '#040711',
                                     border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
@@ -617,6 +624,31 @@ export default function AdminStaffPage() {
                                 color="#94A3B8"
                                 style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)' }}
                             />
+                            {search && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setSearch('');
+                                        fetchStaff('');
+                                    }}
+                                    style={{
+                                        position: 'absolute',
+                                        left: '10px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: 'none',
+                                        border: 'none',
+                                        color: '#94A3B8',
+                                        cursor: 'pointer',
+                                        padding: '2px',
+                                        fontSize: '14px',
+                                        lineHeight: 1,
+                                    }}
+                                    title="مسح البحث"
+                                >
+                                    ✕
+                                </button>
+                            )}
                         </div>
 
                         <select

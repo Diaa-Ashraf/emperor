@@ -32,7 +32,7 @@ export default function PaymentNoticeModal() {
 
     if (!isOpen) return null;
 
-    const siteName = getSiteName() || 'مهره و سند كارد';
+    const siteName = getSiteName() || 'سند ومهره كارد';
     const siteLogo = getSiteLogo() || '/images/mohra_sand_logo.png';
 
     return (

@@ -10,7 +10,7 @@ export default function AppFooter() {
     const { t, language } = useLanguage();
     const isLight = theme === 'light';
     const currentYear = new Date().getFullYear();
-    const siteName = getSiteName() || 'مهره و سند كارد';
+    const siteName = getSiteName() || 'سند ومهره كارد';
 
     return (
         <footer className="emperor-app-footer">

@@ -19,7 +19,7 @@ export default function HeroSection({ products = [] }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchFocused, setSearchFocused] = useState(false);
 
-    const siteName = getSiteName() || 'مهره و سند كارد';
+    const siteName = getSiteName() || 'سند ومهره كارد';
     const siteDesc = getSiteDescription() || 'خدماتك الرقمية والمالية في مكان واحد';
 
     const filteredItems = (searchQuery.trim()

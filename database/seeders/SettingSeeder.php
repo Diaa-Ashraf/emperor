@@ -53,16 +53,16 @@ class SettingSeeder extends Seeder
         ];
 
         $settings = [
-            ['key' => 'site_name', 'value' => 'مهره و سند كارد', 'group' => 'general', 'type' => 'string', 'is_public' => true],
+            ['key' => 'site_name', 'value' => 'سند ومهره كارد', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'site_description', 'value' => 'خدماتك الرقمية والمالية في مكان واحد', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'site_logo', 'value' => '/images/mohra_sand_logo.png', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'site_favicon', 'value' => '/images/mohra_sand_logo.png', 'group' => 'general', 'type' => 'string', 'is_public' => true],
-            ['key' => 'footer_slogan', 'value' => 'مهره و سند كارد — خدماتك الرقمية والمالية في مكان واحد', 'group' => 'general', 'type' => 'string', 'is_public' => true],
+            ['key' => 'footer_slogan', 'value' => 'سند ومهره كارد — خدماتك الرقمية والمالية في مكان واحد', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'whatsapp_support', 'value' => '+201025515743', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'whatsapp_channel', 'value' => 'https://whatsapp.com/channel/0029Vb97YHSB4hdZjFJysw14', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'telegram_support', 'value' => 'MohraSandSupport', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'target_agency_id', 'value' => 'EMP-TARGET-001', 'group' => 'target', 'type' => 'string', 'is_public' => true],
-            ['key' => 'target_agency_name', 'value' => 'وكالة مهره و سند كارد', 'group' => 'target', 'type' => 'string', 'is_public' => true],
+            ['key' => 'target_agency_name', 'value' => 'وكالة سند ومهره الرسمية', 'group' => 'target', 'type' => 'string', 'is_public' => true],
             ['key' => 'default_currency', 'value' => 'EGP', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'min_wallet_deposit', 'value' => '50', 'group' => 'wallet', 'type' => 'integer', 'is_public' => true],
             ['key' => 'theme_primary_color', 'value' => '#F5D061', 'group' => 'appearance', 'type' => 'string', 'is_public' => true],
@@ -72,7 +72,7 @@ class SettingSeeder extends Seeder
             ['key' => 'referral_percentage', 'value' => '2.5', 'group' => 'general', 'type' => 'float', 'is_public' => true],
             ['key' => 'referral_trigger', 'value' => 'deposit', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'referral_terms', 'value' => 'يحصل المحيل على نسبة عمولة تلقائية بقيمة 2.5% تُضاف لمحفظته فور تأكيد شحن الرصيد من قِبل أي صديق مسجل برابطه.', 'group' => 'general', 'type' => 'string', 'is_public' => true],
-            ['key' => 'about_us_text', 'value' => 'منصة مهره و سند كارد هي وجهتك الأولى والآمنة لخدمات الشحن الرقمي والتحويلات المالية الدولية والمحلية وسحب التارجت بأفضل الأسعار وأسرع تنفيذ.', 'group' => 'general', 'type' => 'string', 'is_public' => true],
+            ['key' => 'about_us_text', 'value' => 'منصة سند ومهره كارد هي وجهتك الأولى والآمنة لخدمات الشحن الرقمي والتحويلات المالية الدولية والمحلية وسحب التارجت بأفضل الأسعار وأسرع تنفيذ.', 'group' => 'general', 'type' => 'string', 'is_public' => true],
         ];
 
         foreach ($settings as $setting) {

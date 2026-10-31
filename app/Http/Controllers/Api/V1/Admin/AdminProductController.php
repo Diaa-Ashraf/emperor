@@ -203,7 +203,7 @@ class AdminProductController extends Controller
             $product->type = ProductType::PLAYER_ID;
             $product->player_id_label = $validated['player_id_label'] ?? 'آيدي الحساب (User ID)';
             $product->is_active = true;
-            $product->catalog_source_id = $validated['provider_id'] ?? 1;
+            $product->catalog_source_id = null;
             $product->external_product_id = $validated['provider_product_id'] ?? null;
 
             if (!$id && empty($product->slug)) {
@@ -212,7 +212,7 @@ class AdminProductController extends Controller
             $product->save();
 
             // Create or update Tier
-            $providerName = $validated['provider_name'] ?? 'Brand one Card';
+            $providerName = $validated['provider_name'] ?? 'منصة إمبراطور (Embrator Store)';
             $providerProductId = $validated['provider_product_id'] ?? null;
             $providerProductName = $validated['provider_product_name'] ?? $product->name;
             $minQty = (int) ($validated['min_qty'] ?? 10000);
@@ -234,7 +234,7 @@ class AdminProductController extends Controller
             $tier->is_active = true;
             $tier->sort_order = 1;
             $tier->metadata = [
-                'provider_id' => $validated['provider_id'] ?? 1,
+                'provider_id' => $validated['provider_id'] ?? null,
                 'provider_name' => $providerName,
                 'provider_product_id' => $providerProductId,
                 'provider_product_name' => $providerProductName,
@@ -246,24 +246,27 @@ class AdminProductController extends Controller
             ];
             $tier->save();
 
-            // Also maintain product_providers row for fulfillment engine mapping
+            // Also maintain product_providers row for fulfillment engine mapping IF provider exists
             if (!empty($validated['provider_id']) && !empty($providerProductId)) {
-                DB::table('product_providers')->updateOrInsert(
-                    [
-                        'product_tier_id' => $tier->id,
-                        'provider_id' => (int) $validated['provider_id'],
-                    ],
-                    [
-                        'product_id' => $product->id,
-                        'provider_sku' => (string) $providerProductId,
-                        'cost_price' => $basePrice,
-                        'cost_currency' => 'USD',
-                        'priority' => 1,
-                        'is_active' => true,
-                        'updated_at' => now(),
-                        'created_at' => now(),
-                    ]
-                );
+                $providerId = (int) $validated['provider_id'];
+                if (\App\Models\Provider::where('id', $providerId)->exists()) {
+                    DB::table('product_providers')->updateOrInsert(
+                        [
+                            'product_tier_id' => $tier->id,
+                            'provider_id' => $providerId,
+                        ],
+                        [
+                            'product_id' => $product->id,
+                            'provider_sku' => (string) $providerProductId,
+                            'cost_price' => $basePrice,
+                            'cost_currency' => 'USD',
+                            'priority' => 1,
+                            'is_active' => true,
+                            'updated_at' => now(),
+                            'created_at' => now(),
+                        ]
+                    );
+                }
             }
 
             return $this->successResponse([

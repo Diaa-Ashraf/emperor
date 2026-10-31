@@ -8,7 +8,7 @@ export function getSiteSettings() {
 }
 
 export function getSiteName() {
-    return window.__APP_SETTINGS__?.site_name || 'مهره و سند كارد';
+    return window.__APP_SETTINGS__?.site_name || 'سند ومهره كارد';
 }
 
 export function getSiteDescription() {
@@ -24,7 +24,7 @@ export function getSiteFavicon() {
 }
 
 export function getFooterSlogan() {
-    return window.__APP_SETTINGS__?.footer_slogan || 'مهره و سند كارد — خدماتك الرقمية والمالية في مكان واحد';
+    return window.__APP_SETTINGS__?.footer_slogan || 'سند ومهره كارد — خدماتك الرقمية والمالية في مكان واحد';
 }
 
 export function getHeroServices() {

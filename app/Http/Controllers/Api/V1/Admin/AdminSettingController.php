@@ -23,9 +23,9 @@ class AdminSettingController extends Controller
 
         // Ensure defaults for critical fields
         $data = [
-            'site_name' => $allSettings['site_name'] ?? 'مهره و سند كارد',
+            'site_name' => $allSettings['site_name'] ?? 'سند ومهره كارد',
             'site_description' => $allSettings['site_description'] ?? 'خدماتك الرقمية والمالية في مكان واحد',
-            'footer_slogan' => $allSettings['footer_slogan'] ?? 'المنصة الرائدة لشحن الألعاب والبطاقات الرقمية وبيع التارجت بأفضل الأسعار.',
+            'footer_slogan' => $allSettings['footer_slogan'] ?? 'سند ومهره كارد — المنصة الرائدة لشحن الألعاب والبطاقات الرقمية وبيع التارجت بأفضل الأسعار.',
             'site_logo' => $allSettings['site_logo'] ?? '/images/mohra_sand_logo.png',
             'site_favicon' => $allSettings['site_favicon'] ?? '/images/mohra_sand_logo.png',
             'whatsapp_support' => $allSettings['whatsapp_support'] ?? '+201000000000',
