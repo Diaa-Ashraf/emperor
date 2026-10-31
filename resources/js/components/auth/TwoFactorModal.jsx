@@ -202,7 +202,7 @@ export default function TwoFactorModal({ isOpen, onClose, isEnabled, onStatusCha
     };
 
     const handleDownloadRecoveryCodes = (codesList) => {
-        const text = `رموز الاسترداد الاحتياطية لمنصة إمبراطور (2FA Backup Codes):\n\n` +
+        const text = `رموز الاسترداد الاحتياطية لمنصة سند ومهره كارد (2FA Backup Codes):\n\n` +
             codesList.map((c, i) => `${i + 1}. ${c}`).join('\n') +
             `\n\nتاريخ الإنشاء: ${new Date().toLocaleString('ar-EG')}\n* احتفظ بهذه الرموز في مكان آمن. كل رمز يستخدم لمرة واحدة فقط.`;
 
@@ -210,7 +210,7 @@ export default function TwoFactorModal({ isOpen, onClose, isEnabled, onStatusCha
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `emperor-2fa-recovery-codes.txt`;
+        link.download = `mohra-sand-2fa-recovery-codes.txt`;
         link.click();
         URL.revokeObjectURL(url);
         addToast('تم تحميل ملف رموز الاسترداد', 'success');

@@ -1,24 +1,19 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\PasswordController;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// Admin Authentication (Web Session) with Anti-Brute-Force Throttling
-Route::get('/admin/login', [AuthenticatedSessionController::class, 'create'])->middleware('guest')->name('login');
-Route::post('/admin/login', [AuthenticatedSessionController::class, 'store'])->middleware(['throttle:admin-auth']);
+// 1. Force permanent redirect from legacy /admin/login to unified SPA login
+Route::any('/admin/login', fn () => redirect('/login', 301));
 
-// Admin Profile & Session Actions
-Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/admin/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/admin/password', [PasswordController::class, 'update'])->name('password.update');
-    Route::delete('/admin/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/admin/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-});
+// 2. Google OAuth Web Routes (Direct browser redirect flow)
+Route::get('/auth/google', [\App\Http\Controllers\Api\V1\AuthController::class, 'getGoogleRedirectUrl'])->name('auth.google');
+Route::get('/auth/google/callback', [\App\Http\Controllers\Api\V1\AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
-// React SPA catch-all for all client-side routing
+// 3. Named login route for Laravel auth middleware redirection
+Route::get('/login', fn () => view('spa'))->name('login');
+
+// 4. React SPA catch-all for all client-side routing (including SPA /admin/*)
 Route::get('/{any?}', function () {
     return view('spa');
-})->where('any', '^(?!admin(?:/|$)|api(?:/|$)|storage(?:/|$)).*$')->name('spa');
+})->where('any', '^(?!api(?:/|$)|storage(?:/|$)|legacy-admin(?:/|$)).*$')->name('spa');
+

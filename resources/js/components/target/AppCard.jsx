@@ -115,7 +115,7 @@ export default function AppCard({ app }) {
                             الوكالة المعتمدة
                         </span>
                         <strong style={{ fontSize: '13px', color: '#38BDF8' }}>
-                            {app.agency_id || 'وكالة إمبراطور'}
+                            {app.agency_id || 'وكالة سند ومهره'}
                         </strong>
                     </div>
 

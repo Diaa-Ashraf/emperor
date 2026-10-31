@@ -35,13 +35,13 @@ export default function TargetAppsPage() {
 
     return (
         <MainLayout>
-            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '10px 0 40px' }}>
-                {/* ═══ Top Action Bar with Gold Accents ═══ */}
+            <div style={{ width: '100%', maxWidth: '100%', margin: '0', padding: '10px 0 40px' }}>
+                {/* ═══ Top Action Bar with Gold/Cyan Accents ═══ */}
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    marginBottom: '22px',
+                    marginBottom: '20px',
                     gap: '12px',
                 }}>
                     <Link
@@ -51,11 +51,11 @@ export default function TargetAppsPage() {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '8px',
-                            padding: '10px 20px',
+                            padding: '9px 20px',
                             borderRadius: '24px',
-                            background: isLight ? 'rgba(212, 165, 55, 0.14)' : 'rgba(229, 195, 120, 0.08)',
-                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.5)' : '1.5px solid rgba(229, 195, 120, 0.4)',
-                            color: isLight ? '#9A7210' : '#E5C378',
+                            background: isLight ? 'rgba(212, 165, 55, 0.14)' : 'rgba(9, 23, 46, 0.85)',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.5)' : '1.5px solid rgba(56, 189, 248, 0.4)',
+                            color: isLight ? '#9A7210' : '#38BDF8',
                             fontSize: '13.5px',
                             fontWeight: '800',
                             textDecoration: 'none',
@@ -63,14 +63,14 @@ export default function TargetAppsPage() {
                             boxShadow: isLight ? '0 4px 15px rgba(212, 165, 55, 0.15)' : '0 4px 15px rgba(0, 0, 0, 0.4)',
                         }}
                         onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = isLight ? '#9A7210' : '#FFDF73';
-                            e.currentTarget.style.boxShadow = '0 0 15px rgba(229, 195, 120, 0.3)';
-                            e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.22)' : 'rgba(229, 195, 120, 0.15)';
+                            e.currentTarget.style.borderColor = '#38BDF8';
+                            e.currentTarget.style.boxShadow = '0 0 15px rgba(56, 189, 248, 0.35)';
+                            e.currentTarget.style.background = 'rgba(14, 30, 56, 0.95)';
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.5)' : 'rgba(229, 195, 120, 0.4)';
+                            e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.5)' : 'rgba(56, 189, 248, 0.4)';
                             e.currentTarget.style.boxShadow = isLight ? '0 4px 15px rgba(212, 165, 55, 0.15)' : '0 4px 15px rgba(0, 0, 0, 0.4)';
-                            e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.14)' : 'rgba(229, 195, 120, 0.08)';
+                            e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.14)' : 'rgba(9, 23, 46, 0.85)';
                         }}
                     >
                         <FileText size={16} />
@@ -85,9 +85,9 @@ export default function TargetAppsPage() {
                             gap: '6px',
                             padding: '9px 18px',
                             borderRadius: '24px',
-                            background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.04)',
-                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.12)',
-                            color: isLight ? '#475569' : '#D1D1DB',
+                            background: isLight ? '#FFFFFF' : 'rgba(9, 23, 46, 0.75)',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(56, 189, 248, 0.3)',
+                            color: isLight ? '#475569' : '#F5D061',
                             fontSize: '13.5px',
                             fontWeight: '700',
                             cursor: 'pointer',
@@ -95,12 +95,12 @@ export default function TargetAppsPage() {
                             boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.04)' : 'none',
                         }}
                         onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = '#E5C378';
-                            e.currentTarget.style.color = isLight ? '#0F172A' : '#FFFFFF';
+                            e.currentTarget.style.borderColor = '#38BDF8';
+                            e.currentTarget.style.color = '#38BDF8';
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(255, 255, 255, 0.12)';
-                            e.currentTarget.style.color = isLight ? '#475569' : '#D1D1DB';
+                            e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(56, 189, 248, 0.3)';
+                            e.currentTarget.style.color = isLight ? '#475569' : '#F5D061';
                         }}
                     >
                         <span>{t('back', 'رجوع')}</span>
@@ -108,29 +108,31 @@ export default function TargetAppsPage() {
                     </button>
                 </div>
 
-                {/* ═══ Ultra-Luxury Gold Frame Container Box ═══ */}
+                {/* ═══ Ultra-Luxury Full Width Container Box ═══ */}
                 <div style={{
+                    width: '100%',
                     background: isLight
                         ? 'radial-gradient(ellipse at 50% 0%, #FFFDF8 0%, #FEF8EA 50%, #FDF1D5 100%)'
-                        : 'radial-gradient(ellipse at 50% 0%, #151522 0%, #0C0C12 70%, #08080C 100%)',
-                    border: isLight ? '2px solid rgba(212, 165, 55, 0.55)' : '2px solid #E5C378',
+                        : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                    border: isLight ? '2px solid rgba(212, 165, 55, 0.55)' : '1.5px solid rgba(56, 189, 248, 0.45)',
                     borderRadius: '28px',
                     padding: 'clamp(20px, 3.5vw, 36px)',
                     boxShadow: isLight
                         ? '0 12px 35px rgba(212, 165, 55, 0.15), 0 4px 15px rgba(0, 0, 0, 0.04)'
-                        : '0 0 35px rgba(212, 165, 55, 0.18), 0 20px 60px rgba(0, 0, 0, 0.9)',
+                        : '0 0 35px rgba(56, 189, 248, 0.15), 0 20px 60px rgba(0, 0, 0, 0.9)',
                     position: 'relative',
                     overflow: 'hidden',
+                    boxSizing: 'border-box'
                 }}>
-                    {/* Subtle Golden Ambient Top Light */}
+                    {/* Subtle Top Cyan Light Beam */}
                     <div style={{
                         position: 'absolute',
                         top: 0,
-                        left: '15%',
-                        right: '15%',
+                        left: '10%',
+                        right: '10%',
                         height: '2px',
-                        background: 'linear-gradient(90deg, transparent, #FFE082, transparent)',
-                        opacity: isLight ? 0.9 : 0.8,
+                        background: 'linear-gradient(90deg, transparent, #38BDF8, transparent)',
+                        opacity: 0.8,
                     }} />
 
                     {/* Section Header: • اختر التطبيق */}
@@ -142,22 +144,22 @@ export default function TargetAppsPage() {
                         gap: '12px',
                         marginBottom: '28px',
                         paddingBottom: '16px',
-                        borderBottom: isLight ? '1px solid rgba(212, 165, 55, 0.25)' : '1px solid rgba(229, 195, 120, 0.15)',
+                        borderBottom: isLight ? '1px solid rgba(212, 165, 55, 0.25)' : '1px solid rgba(56, 189, 248, 0.2)',
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <span style={{
-                                color: isLight ? '#D4A537' : '#FFD700',
+                                color: '#38BDF8',
                                 fontSize: '24px',
                                 lineHeight: '1',
-                                textShadow: isLight ? 'none' : '0 0 12px rgba(255, 215, 0, 0.8)',
+                                textShadow: '0 0 12px rgba(56, 189, 248, 0.8)',
                             }}>
                                 •
                             </span>
                             <h2 style={{
                                 margin: 0,
-                                fontSize: '20px',
+                                fontSize: '22px',
                                 fontWeight: '900',
-                                color: isLight ? '#0F172A' : '#FFFFFF',
+                                color: '#F5D061',
                                 letterSpacing: '-0.3px',
                             }}>
                                 {t('selectApp', 'اختر التطبيق')}
@@ -170,13 +172,14 @@ export default function TargetAppsPage() {
                             gap: '6px',
                             fontSize: '12.5px',
                             fontWeight: '800',
-                            color: isLight ? '#9A7210' : '#E5C378',
-                            background: isLight ? 'rgba(212, 165, 55, 0.18)' : 'rgba(229, 195, 120, 0.08)',
-                            border: isLight ? '1px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(229, 195, 120, 0.25)',
-                            padding: '4px 12px',
+                            color: '#38BDF8',
+                            background: 'rgba(56, 189, 248, 0.12)',
+                            border: '1px solid rgba(56, 189, 248, 0.35)',
+                            padding: '4px 14px',
                             borderRadius: '20px',
+                            boxShadow: '0 0 12px rgba(56, 189, 248, 0.15)',
                         }}>
-                            <Sparkles size={13} color={isLight ? '#9A7210' : '#FFD700'} />
+                            <Sparkles size={14} color="#38BDF8" />
                             <span>{t('instantCashTopRate', 'استلام فوري كاش بأعلى سعر صرف')}</span>
                         </div>
                     </div>
@@ -213,15 +216,15 @@ export default function TargetAppsPage() {
                                             const iconBox = e.currentTarget.querySelector('.app-icon-frame');
                                             if (iconBox) {
                                                 iconBox.style.transform = 'translateY(-6px) scale(1.04)';
-                                                iconBox.style.borderColor = '#FFE082';
-                                                iconBox.style.boxShadow = isLight ? '0 10px 25px rgba(212, 165, 55, 0.35)' : '0 14px 32px rgba(212, 165, 55, 0.45)';
+                                                iconBox.style.borderColor = '#38BDF8';
+                                                iconBox.style.boxShadow = isLight ? '0 10px 25px rgba(212, 165, 55, 0.35)' : '0 14px 32px rgba(56, 189, 248, 0.45)';
                                             }
                                         }}
                                         onMouseLeave={(e) => {
                                             const iconBox = e.currentTarget.querySelector('.app-icon-frame');
                                             if (iconBox) {
                                                 iconBox.style.transform = 'translateY(0) scale(1)';
-                                                iconBox.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.7)' : 'rgba(229, 195, 120, 0.85)';
+                                                iconBox.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.7)' : 'rgba(56, 189, 248, 0.45)';
                                                 iconBox.style.boxShadow = isLight ? '0 6px 16px rgba(0, 0, 0, 0.08)' : '0 8px 24px rgba(0, 0, 0, 0.65)';
                                             }
                                         }}
@@ -233,9 +236,9 @@ export default function TargetAppsPage() {
                                                 width: '94px',
                                                 height: '94px',
                                                 borderRadius: '24px',
-                                                border: isLight ? '2.5px solid rgba(212, 165, 55, 0.7)' : '2.5px solid rgba(229, 195, 120, 0.85)',
-                                                background: isLight ? '#FFFFFF' : '#0E0E14',
-                                                boxShadow: isLight ? '0 6px 16px rgba(0, 0, 0, 0.08)' : '0 8px 24px rgba(0, 0, 0, 0.65)',
+                                                border: isLight ? '2.5px solid rgba(212, 165, 55, 0.7)' : '2px solid rgba(56, 189, 248, 0.45)',
+                                                background: isLight ? '#FFFFFF' : '#071224',
+                                                boxShadow: isLight ? '0 6px 16px rgba(0, 0, 0, 0.08)' : '0 8px 24px rgba(0, 0, 0, 0.65), 0 0 12px rgba(56, 189, 248, 0.1)',
                                                 overflow: 'hidden',
                                                 display: 'flex',
                                                 alignItems: 'center',
@@ -248,11 +251,11 @@ export default function TargetAppsPage() {
                                             <TargetAppIconRenderer app={app} size={94} />
                                         </div>
 
-                                        {/* ── App Name in Crisp Dark / White ── */}
+                                        {/* ── App Name in Crisp Gold / Cyan ── */}
                                         <div style={{
                                             fontSize: '14.5px',
                                             fontWeight: '800',
-                                            color: isLight ? '#0F172A' : '#FFFFFF',
+                                            color: isLight ? '#0F172A' : '#F8E8B8',
                                             marginTop: '10px',
                                             marginBottom: '4px',
                                             lineHeight: '1.3',
@@ -265,7 +268,7 @@ export default function TargetAppsPage() {
                                         <div style={{
                                             fontSize: '13px',
                                             fontWeight: '800',
-                                            color: isLight ? '#9A7210' : '#E5C378',
+                                            color: isLight ? '#9A7210' : '#38BDF8',
                                             letterSpacing: '-0.2px',
                                             textShadow: isLight ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.6)',
                                         }}>

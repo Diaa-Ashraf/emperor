@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Emperor') }} - تسجيل الدخول</title>
+    <title>{{ config('app.name', 'سند ومهره كارد') }} - تسجيل الدخول</title>
 
     @php
-        $siteFavicon = \App\Models\Setting::get('site_favicon') ? asset(\App\Models\Setting::get('site_favicon')) : asset('images/logo.png');
-        $siteLogo = \App\Models\Setting::get('site_logo') ? asset(\App\Models\Setting::get('site_logo')) : asset('images/logo.png');
-        $siteName = \App\Models\Setting::get('site_name', 'Emperor');
+        $siteFavicon = \App\Models\Setting::get('site_favicon') ? asset(\App\Models\Setting::get('site_favicon')) : asset('images/mohra_sand_logo.png');
+        $siteLogo = \App\Models\Setting::get('site_logo') ? asset(\App\Models\Setting::get('site_logo')) : asset('images/mohra_sand_logo.png');
+        $siteName = \App\Models\Setting::get('site_name', 'سند ومهره كارد');
     @endphp
 
     <!-- Favicon -->
@@ -24,9 +24,9 @@
     <div class="container" style="max-width: 460px;">
         <!-- Logo & Branding -->
         <div class="text-center mb-4">
-            <img src="{{ $siteLogo }}" alt="Emperor Logo" class="mb-3" style="width: 72px; height: 72px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(212, 165, 55, 0.5));">
+            <img src="{{ $siteLogo }}" alt="Logo" class="mb-3" style="width: 72px; height: 72px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(212, 165, 55, 0.5));">
             <h2 class="fw-black text-white tracking-wide mb-1">{{ $siteName }}</h2>
-            <p class="text-gold fw-semibold fs-6 mb-0">منصة إمبراطور للخدمات الرقمية وشحن الألعاب</p>
+            <p class="text-gold fw-semibold fs-6 mb-0">خدماتك الرقمية والمالية في مكان واحد</p>
         </div>
 
         <!-- Auth Card -->
@@ -35,7 +35,7 @@
         </div>
 
         <div class="text-center mt-4 text-muted fs-7">
-            <span>&copy; {{ date('Y') }} منصة إمبراطور. جميع الحقوق محفوظة.</span>
+            <span>&copy; {{ date('Y') }} {{ $siteName }}. جميع الحقوق محفوظة.</span>
         </div>
     </div>
 </body>

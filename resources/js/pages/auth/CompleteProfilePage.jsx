@@ -103,7 +103,7 @@ export default function CompleteProfilePage() {
             const updated = await completeProfile(payload);
 
             if (updated) {
-                success('تم استكمال الملف الشخصي بنجاح! أهلاً بك في منصة إمبراطور');
+                success('تم استكمال الملف الشخصي بنجاح! أهلاً بك في منصة سند ومهره كارد');
                 navigate('/', { replace: true });
             }
         } catch (err) {

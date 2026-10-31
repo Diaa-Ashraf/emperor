@@ -202,7 +202,7 @@ export default function CategoryPage() {
 
     return (
         <MainLayout>
-            <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: '0 8px 60px', boxSizing: 'border-box' }}>
+            <div style={{ width: '100%', maxWidth: '100%', margin: '0', padding: '0 8px 60px', boxSizing: 'border-box' }}>
                 
                 {/* ── 1. Search Bar (Responsive Luxury Input) ── */}
                 <div style={{
@@ -219,24 +219,24 @@ export default function CategoryPage() {
                         style={{
                             width: '100%',
                             boxSizing: 'border-box',
-                            background: isLight ? '#FFFFFF' : '#0e0e14',
-                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.25)',
+                            background: isLight ? '#FFFFFF' : '#071224',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(56, 189, 248, 0.35)',
                             borderRadius: '16px',
                             padding: isRtl ? '11px 40px 11px 14px' : '11px 14px 11px 40px',
                             fontSize: '13px',
                             fontWeight: '600',
-                            color: isLight ? '#0F172A' : '#FFFFFF',
+                            color: isLight ? '#0F172A' : '#F8E8B8',
                             outline: 'none',
                             boxShadow: isLight ? '0 4px 16px rgba(0, 0, 0, 0.04)' : '0 6px 20px rgba(0, 0, 0, 0.4)',
                             transition: 'all 0.25s ease',
                             fontFamily: 'var(--font-cairo)',
                         }}
                         onFocus={(e) => {
-                            e.currentTarget.style.borderColor = '#F5D061';
-                            e.currentTarget.style.boxShadow = '0 0 0 2px rgba(212, 165, 55, 0.25)';
+                            e.currentTarget.style.borderColor = '#38BDF8';
+                            e.currentTarget.style.boxShadow = '0 0 0 2px rgba(56, 189, 248, 0.25)';
                         }}
                         onBlur={(e) => {
-                            e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.45)' : 'rgba(212, 165, 55, 0.25)';
+                            e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.45)' : 'rgba(56, 189, 248, 0.35)';
                             e.currentTarget.style.boxShadow = isLight ? '0 4px 16px rgba(0, 0, 0, 0.04)' : '0 6px 20px rgba(0, 0, 0, 0.4)';
                         }}
                     />
@@ -262,8 +262,8 @@ export default function CategoryPage() {
                     marginBottom: '14px',
                     padding: '8px 12px',
                     borderRadius: '14px',
-                    background: isLight ? 'rgba(255, 255, 255, 0.6)' : 'rgba(18, 18, 24, 0.5)',
-                    border: isLight ? '1px solid rgba(212, 165, 55, 0.2)' : '1px solid rgba(255, 255, 255, 0.05)',
+                    background: isLight ? 'rgba(255, 255, 255, 0.6)' : 'rgba(9, 23, 46, 0.65)',
+                    border: isLight ? '1px solid rgba(212, 165, 55, 0.2)' : '1px solid rgba(56, 189, 248, 0.2)',
                     boxSizing: 'border-box',
                 }}>
                     {/* Breadcrumb path */}
@@ -363,15 +363,15 @@ export default function CategoryPage() {
                                 padding: '6px 14px',
                                 borderRadius: '12px',
                                 background: isAllTabActive
-                                    ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
-                                    : (isLight ? '#FFFFFF' : 'rgba(24, 24, 32, 0.85)'),
-                                color: isAllTabActive ? '#0A0A0E' : (isLight ? '#1E293B' : '#E2E8F0'),
+                                    ? 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)'
+                                    : (isLight ? '#FFFFFF' : 'rgba(9, 23, 46, 0.85)'),
+                                color: isAllTabActive ? '#FFFFFF' : (isLight ? '#1E293B' : '#F5D061'),
                                 fontWeight: '800',
                                 fontSize: '12px',
                                 textDecoration: 'none',
                                 whiteSpace: 'nowrap',
-                                border: isAllTabActive ? 'none' : (isLight ? '1px solid rgba(212, 165, 55, 0.3)' : '1px solid rgba(255, 255, 255, 0.08)'),
-                                boxShadow: isAllTabActive ? '0 4px 12px rgba(212, 165, 55, 0.35)' : 'none',
+                                border: isAllTabActive ? '1px solid #38BDF8' : (isLight ? '1px solid rgba(212, 165, 55, 0.3)' : '1px solid rgba(56, 189, 248, 0.25)'),
+                                boxShadow: isAllTabActive ? '0 4px 12px rgba(2, 132, 199, 0.35)' : 'none',
                                 transition: 'all 0.2s ease',
                                 flexShrink: 0
                             }}
@@ -390,15 +390,15 @@ export default function CategoryPage() {
                                         padding: '6px 12px',
                                         borderRadius: '12px',
                                         background: isActive
-                                            ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
-                                            : (isLight ? '#FFFFFF' : 'rgba(24, 24, 32, 0.85)'),
-                                        color: isActive ? '#0A0A0E' : (isLight ? '#1E293B' : '#E2E8F0'),
+                                            ? 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)'
+                                            : (isLight ? '#FFFFFF' : 'rgba(9, 23, 46, 0.85)'),
+                                        color: isActive ? '#FFFFFF' : (isLight ? '#1E293B' : '#F5D061'),
                                         fontWeight: '800',
                                         fontSize: '12px',
                                         textDecoration: 'none',
                                         whiteSpace: 'nowrap',
-                                        border: isActive ? 'none' : (isLight ? '1px solid rgba(212, 165, 55, 0.3)' : '1px solid rgba(255, 255, 255, 0.08)'),
-                                        boxShadow: isActive ? '0 4px 12px rgba(212, 165, 55, 0.35)' : 'none',
+                                        border: isActive ? '1px solid #38BDF8' : (isLight ? '1px solid rgba(212, 165, 55, 0.3)' : '1px solid rgba(56, 189, 248, 0.25)'),
+                                        boxShadow: isActive ? '0 4px 12px rgba(2, 132, 199, 0.35)' : 'none',
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '6px',

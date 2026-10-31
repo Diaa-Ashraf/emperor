@@ -13,12 +13,15 @@ function checkIsSessionExpired() {
 
     const lastActiveStr = localStorage.getItem('emperor_last_activity');
     if (!lastActiveStr) {
-        // If there is an old token from before without activity timestamp, treat as expired
-        return true;
+        localStorage.setItem('emperor_last_activity', Date.now().toString());
+        return false;
     }
 
     const lastActiveTime = parseInt(lastActiveStr, 10);
-    if (isNaN(lastActiveTime)) return true;
+    if (isNaN(lastActiveTime)) {
+        localStorage.setItem('emperor_last_activity', Date.now().toString());
+        return false;
+    }
 
     const isRemembered = localStorage.getItem('emperor_remember') === '1';
     const maxIdle = isRemembered ? REMEMBER_IDLE_TIMEOUT_MS : STANDARD_IDLE_TIMEOUT_MS;
@@ -268,11 +271,43 @@ export function AuthProvider({ children }) {
         return null;
     };
 
+    const isAdmin = Boolean(
+        user?.is_admin ||
+        user?.role === 'admin' ||
+        (Array.isArray(user?.roles) && (user.roles.includes('admin') || user.roles.includes('super_admin')))
+    );
+
+    const isStaff = Boolean(
+        isAdmin ||
+        user?.is_staff ||
+        (Array.isArray(user?.roles) && user.roles.some(r => ['operations_manager', 'finance_manager', 'support_agent', 'admin', 'super_admin'].includes(r)))
+    );
+
+    const canAccessAdmin = Boolean(user?.can_access_admin || isAdmin || isStaff);
+
+    const hasApiAccess = Boolean(
+        user?.has_api_access ||
+        user?.api_access_status === 'active' ||
+        user?.role === 'api_client' ||
+        isAdmin
+    );
+
+    const can = useCallback((permission) => {
+        if (isAdmin) return true;
+        if (!user || !Array.isArray(user.permissions)) return false;
+        return user.permissions.includes(permission);
+    }, [isAdmin, user]);
+
     const value = {
         user,
         setUser,
         token,
         isAuthenticated: !!token,
+        isAdmin,
+        isStaff,
+        canAccessAdmin,
+        hasApiAccess,
+        can,
         loading,
         login,
         login2FA,

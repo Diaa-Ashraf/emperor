@@ -37,12 +37,13 @@ import UserSidebarDrawer from '../components/navigation/UserSidebarDrawer';
 import AppFooter from '../components/navigation/AppFooter';
 import SupportContactModal from '../components/support/SupportContactModal';
 import AppSplashScreen from '../components/ui/AppSplashScreen';
+import PaymentNoticeModal from '../components/ui/PaymentNoticeModal';
 import HomeBannerSlider from '../components/home/HomeBannerSlider';
 import PromotionalPopup from '../components/ui/PromotionalPopup';
 import { playNotificationSound } from '../utils/soundHelper';
-import { getSiteLogo, getSiteName, getWhatsAppChannel } from '../utils/settingsHelper';
+import { getSiteLogo, getSiteName, getSiteDescription, getWhatsAppChannel } from '../utils/settingsHelper';
 
-export default function MainLayout({ children, showBanner = true }) {
+export default function MainLayout({ children, showBanner = false }) {
     const { user, isAuthenticated } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { language, switchLanguage, t, isRtl } = useLanguage();
@@ -175,9 +176,12 @@ export default function MainLayout({ children, showBanner = true }) {
         return false;
     };
 
+    const rawBalanceNum = Number(user?.wallet?.balance || 0);
     const formattedBalance = user?.wallet?.balance !== undefined
-        ? Number(user.wallet.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-        : '0.00';
+        ? (rawBalanceNum % 1 === 0
+            ? rawBalanceNum.toLocaleString('en-US', { maximumFractionDigits: 0 })
+            : rawBalanceNum.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 }))
+        : '0';
 
     const currency = language === 'en' ? 'EGP' : 'ج.م';
 
@@ -215,510 +219,214 @@ export default function MainLayout({ children, showBanner = true }) {
             fontFamily: 'var(--font-cairo)',
             direction: isRtl ? 'rtl' : 'ltr',
         }}>
-            {/* ═══ Ultra-Chic Floating Glass Navbar ═══ */}
+            {/* ═══ Full-Width Top Glass Navbar ═══ */}
             <header className="emperor-header" style={{
                 position: 'sticky',
                 top: 0,
                 zIndex: 1000,
                 transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                width: '100%',
+                padding: 0,
             }}>
                 <div className="emperor-navbar-container" style={{
-                    maxWidth: '1440px',
-                    margin: '0 auto',
-                    padding: '8px 18px',
                     background: isLight
                         ? (headerScrolled ? 'rgba(255, 255, 255, 0.96)' : 'rgba(240, 247, 255, 0.94)')
-                        : (headerScrolled ? 'rgba(11, 11, 15, 0.95)' : 'rgba(14, 14, 20, 0.90)'),
+                        : (headerScrolled ? 'rgba(5, 12, 24, 0.98)' : 'rgba(6, 15, 30, 0.94)'),
                     backdropFilter: 'blur(20px) saturate(1.8)',
                     WebkitBackdropFilter: 'blur(20px) saturate(1.8)',
-                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1.5px solid rgba(229, 195, 120, 0.75)',
-                    borderRadius: '24px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
+                    borderBottom: '1.5px solid rgba(56, 189, 248, 0.35)',
                     boxShadow: isLight
-                        ? '0 10px 30px rgba(15, 23, 42, 0.08), 0 0 20px rgba(212, 165, 55, 0.12)'
-                        : (headerScrolled
-                            ? '0 12px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(212, 165, 55, 0.22)'
-                            : '0 6px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 165, 55, 0.15)'),
-                    transition: 'all 0.3s ease',
+                        ? '0 10px 30px rgba(15, 23, 42, 0.08)'
+                        : '0 10px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 130, 255, 0.12)',
                 }}>
                     {/* ── Brand Logo ── */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: 0, flexShrink: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: 0, flexShrink: 0 }}>
                         <Link
                             to="/"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px',
+                                gap: '10px',
                                 textDecoration: 'none',
                                 minWidth: 0,
                                 flexShrink: 0,
                             }}
                         >
                             <div className="header-logo-icon" style={{
-                                width: '38px',
-                                height: '38px',
-                                borderRadius: '10px',
+                                width: '44px',
+                                height: '44px',
+                                borderRadius: '12px',
                                 overflow: 'hidden',
-                                border: '1.2px solid rgba(212, 165, 55, 0.6)',
-                                boxShadow: '0 0 15px rgba(212, 165, 55, 0.4)',
+                                border: '1.5px solid rgba(56, 189, 248, 0.45)',
+                                boxShadow: '0 0 15px rgba(56, 189, 248, 0.35)',
                                 flexShrink: 0,
-                                background: isLight ? '#ffffff' : '#050508',
+                                background: '#071325',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
                             }}>
                                 <img
                                     src={getSiteLogo()}
-                                    alt="EMPEROR CARD"
-                                    style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'contain',
+                                    alt={getSiteName()}
+                                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                    onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                        e.currentTarget.parentNode.innerHTML = '<span style="color:#F5D061;font-size:22px;font-weight:900;">👑</span>';
                                     }}
                                 />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                                 <span className="brand-title" style={{
-                                    fontSize: '17px',
+                                    fontSize: '19px',
                                     fontWeight: '900',
-                                    color: isLight ? '#0f172a' : '#FFFFFF',
-                                    letterSpacing: '1px',
-                                    lineHeight: 1.1,
+                                    color: '#F5D061',
+                                    letterSpacing: '0.3px',
+                                    lineHeight: 1.15,
                                     whiteSpace: 'nowrap',
+                                    textShadow: '0 2px 10px rgba(0,0,0,0.6), 0 0 15px rgba(245, 208, 97, 0.35)'
                                 }}>
-                                    EMPEROR
+                                    {getSiteName()}
                                 </span>
                                 <span className="brand-subtitle" style={{
-                                    fontSize: '9px',
+                                    fontSize: '10px',
                                     fontWeight: '800',
-                                    color: isLight ? '#b45309' : '#D4A537',
-                                    letterSpacing: '0.4px',
+                                    color: '#38BDF8',
+                                    letterSpacing: '0.2px',
                                     whiteSpace: 'nowrap',
                                 }}>
-                                    {t('tagline', 'إمبراطور للشحن الرقمي')}
+                                    {getSiteDescription()}
                                 </span>
                             </div>
                         </Link>
+                    </div>
 
-                        {/* ── Desktop Nav Links ── */}
-                        <nav
-                            className="desktop-nav-links"
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '3px',
-                            }}
-                        >
-                            {desktopNavLinks.map((link) => {
-                                if (link.authRequired && !isAuthenticated) return null;
-                                const active = !link.isModalTrigger && !link.isExternal && isActive(link.to);
-                                const isExtra = link.to === '/orders' || link.to === '/account-issues' || link.to === '/deposit';
+                    {/* ── Center Desktop Nav Links ── */}
+                    <nav
+                        className="desktop-nav-links"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            justifyContent: 'center',
+                            flex: 1,
+                            margin: '0 16px'
+                        }}
+                    >
+                        {desktopNavLinks.map((link) => {
+                            if (link.authRequired && !isAuthenticated) return null;
+                            const active = !link.isModalTrigger && !link.isExternal && isActive(link.to);
 
-                                if (link.isExternal) {
-                                    return (
-                                        <a
-                                            key={link.label}
-                                            href={link.href}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="nav-link-item"
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '5px',
-                                                padding: '7px 11px',
-                                                borderRadius: '12px',
-                                                textDecoration: 'none',
-                                                fontSize: '13px',
-                                                fontWeight: '800',
-                                                color: '#22c55e',
-                                                background: 'rgba(34, 197, 94, 0.08)',
-                                                border: '1px solid rgba(34, 197, 94, 0.25)',
-                                                transition: 'all 0.2s',
-                                                whiteSpace: 'nowrap',
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.background = 'rgba(34, 197, 94, 0.16)';
-                                                e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.5)';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.background = 'rgba(34, 197, 94, 0.08)';
-                                                e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.25)';
-                                            }}
-                                        >
-                                            <link.icon size={14} color="#22c55e" />
-                                            <span>{link.label}</span>
-                                            {link.badge && (
-                                                <span style={{
-                                                    fontSize: '9.5px',
-                                                    fontWeight: '900',
-                                                    background: '#22c55e',
-                                                    color: '#FFFFFF',
-                                                    padding: '1px 5px',
-                                                    borderRadius: '5px',
-                                                    marginRight: '2px',
-                                                }}>
-                                                    {link.badge}
-                                                </span>
-                                            )}
-                                        </a>
-                                    );
-                                }
-
-                                if (link.isModalTrigger) {
-                                    return (
-                                        <button
-                                            key={link.label}
-                                            type="button"
-                                            onClick={() => setSupportModalOpen(true)}
-                                            className="nav-link-item"
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '5px',
-                                                padding: '7px 11px',
-                                                borderRadius: '12px',
-                                                border: '1px solid transparent',
-                                                background: 'transparent',
-                                                fontSize: '13px',
-                                                fontWeight: '700',
-                                                color: isLight ? '#475569' : '#D1D1DB',
-                                                cursor: 'pointer',
-                                                fontFamily: 'inherit',
-                                                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                                                whiteSpace: 'nowrap',
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.color = isLight ? '#b45309' : '#F5D061';
-                                                e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.12)' : 'rgba(212, 165, 55, 0.08)';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.color = isLight ? '#475569' : '#D1D1DB';
-                                                e.currentTarget.style.background = 'transparent';
-                                            }}
-                                        >
-                                            <link.icon size={14} color={isLight ? '#64748b' : '#A0A0B0'} />
-                                            <span>{link.label}</span>
-                                        </button>
-                                    );
-                                }
-
+                            if (link.isExternal) {
                                 return (
-                                    <Link
-                                        key={link.to}
-                                        to={link.to}
-                                        className={`nav-link-item ${isExtra ? 'nav-link-extra' : ''}`}
+                                    <a
+                                        key={link.label}
+                                        href={link.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="nav-link-item"
                                         style={{
                                             display: 'flex',
                                             alignItems: 'center',
                                             gap: '5px',
-                                            padding: '7px 11px',
-                                            borderRadius: '12px',
+                                            padding: '7px 14px',
+                                            borderRadius: '10px',
                                             textDecoration: 'none',
-                                            fontSize: '13px',
-                                            fontWeight: active ? '900' : '700',
-                                            color: active
-                                                ? (isLight ? '#b45309' : '#F5D061')
-                                                : (isLight ? '#334155' : '#D1D1DB'),
-                                            background: active
-                                                ? (isLight ? 'rgba(212, 165, 55, 0.16)' : 'rgba(212, 165, 55, 0.12)')
-                                                : link.isSpecial
-                                                    ? (isLight ? 'rgba(212, 165, 55, 0.09)' : 'rgba(212, 165, 55, 0.06)')
-                                                    : 'transparent',
-                                            border: active
-                                                ? (isLight ? '1px solid rgba(212, 165, 55, 0.5)' : '1px solid rgba(212, 165, 55, 0.35)')
-                                                : link.isSpecial
-                                                    ? '1px solid rgba(212, 165, 55, 0.2)'
-                                                    : '1px solid transparent',
-                                            transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                                            position: 'relative',
+                                            fontSize: '13.5px',
+                                            fontWeight: '800',
+                                            color: '#22c55e',
+                                            background: 'rgba(34, 197, 94, 0.08)',
+                                            border: '1px solid rgba(34, 197, 94, 0.25)',
+                                            transition: 'all 0.2s',
                                             whiteSpace: 'nowrap',
                                         }}
-                                        onMouseEnter={(e) => {
-                                            if (!active) {
-                                                e.currentTarget.style.color = isLight ? '#b45309' : '#F5D061';
-                                                e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.12)' : 'rgba(212, 165, 55, 0.08)';
-                                            }
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            if (!active) {
-                                                e.currentTarget.style.color = isLight ? '#334155' : '#D1D1DB';
-                                                e.currentTarget.style.background = link.isSpecial ? (isLight ? 'rgba(212, 165, 55, 0.09)' : 'rgba(212, 165, 55, 0.06)') : 'transparent';
-                                            }
-                                        }}
                                     >
-                                        <link.icon size={14} color={active || link.isSpecial ? (isLight ? '#b45309' : '#F5D061') : (isLight ? '#64748b' : '#A0A0B0')} />
+                                        <link.icon size={15} color="#22c55e" />
                                         <span>{link.label}</span>
-
-                                        {link.badge && (
-                                            <span style={{
-                                                fontSize: '9.5px',
-                                                fontWeight: '900',
-                                                background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
-                                                color: '#000000',
-                                                padding: '1px 5px',
-                                                borderRadius: '5px',
-                                                marginRight: '2px',
-                                            }}>
-                                                {link.badge}
-                                            </span>
-                                        )}
-                                    </Link>
+                                    </a>
                                 );
-                            })}
-                        </nav>
-                    </div>
+                            }
 
-                    {/* ── Left Actions (Theme + Notifications + Wallet + User) ── */}
-                    <div className="header-actions" style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        flexShrink: 0,
-                    }}>
-                        {/* Theme Toggle (Sun / Moon) */}
-                        <button
-                            onClick={toggleTheme}
-                            title={theme === 'dark' ? t('lightMode', 'الوضع النهاري') : t('darkMode', 'الوضع الليلي')}
-                            className="header-action-circle-btn header-theme-btn"
-                            style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '11px',
-                                background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.04)',
-                                border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: isLight ? '#b45309' : '#F5D061',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                flexShrink: 0,
-                                boxShadow: isLight ? '0 2px 8px rgba(15, 23, 42, 0.05)' : 'none',
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = isLight ? '#b45309' : '#F5D061';
-                                e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.15)' : 'rgba(212, 165, 55, 0.12)';
-                                e.currentTarget.style.transform = 'scale(1.05)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(212, 165, 55, 0.25)';
-                                e.currentTarget.style.background = isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.04)';
-                                e.currentTarget.style.transform = 'scale(1)';
-                            }}
-                        >
-                            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-                        </button>
+                            return (
+                                <Link
+                                    key={link.to}
+                                    to={link.to}
+                                    className="nav-link-item"
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '5px',
+                                        padding: '7px 15px',
+                                        borderRadius: '10px',
+                                        textDecoration: 'none',
+                                        fontSize: '13.5px',
+                                        fontWeight: active ? '900' : '800',
+                                        color: active
+                                            ? '#38BDF8'
+                                            : '#F5D061',
+                                        background: active
+                                            ? 'rgba(14, 165, 233, 0.15)'
+                                            : 'transparent',
+                                        border: active
+                                            ? '1px solid rgba(56, 189, 248, 0.45)'
+                                            : '1px solid transparent',
+                                        boxShadow: active ? '0 0 15px rgba(56, 189, 248, 0.2)' : 'none',
+                                        transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    <link.icon size={15} color={active ? '#38BDF8' : '#F5D061'} />
+                                    <span>{link.label}</span>
+                                </Link>
+                            );
+                        })}
+                    </nav>
 
-                        {/* Notifications Bell */}
-                        <Link
-                            to={isAuthenticated ? "/notifications" : "/login"}
-                            title={t('notifications', 'الإشعارات')}
-                            className="header-action-circle-btn header-notifications-btn"
-                            style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '11px',
-                                background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.04)',
-                                border: isLight ? '1px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(212, 165, 55, 0.25)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: unreadNotifications > 0 ? (isLight ? '#b45309' : '#F5D061') : (isLight ? '#64748b' : '#D1D1DB'),
-                                textDecoration: 'none',
-                                position: 'relative',
-                                transition: 'all 0.2s ease',
-                                flexShrink: 0,
-                                boxShadow: isLight ? '0 2px 8px rgba(15, 23, 42, 0.05)' : 'none',
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = isLight ? '#b45309' : '#F5D061';
-                                e.currentTarget.style.background = isLight ? 'rgba(212, 165, 55, 0.15)' : 'rgba(212, 165, 55, 0.12)';
-                                e.currentTarget.style.transform = 'scale(1.05)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(212, 165, 55, 0.25)';
-                                e.currentTarget.style.background = isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.04)';
-                                e.currentTarget.style.transform = 'scale(1)';
-                            }}
-                        >
-                            <Bell size={16} />
-                            {unreadNotifications > 0 && (
-                                <span style={{
-                                    position: 'absolute',
-                                    top: '-3px',
-                                    right: '-3px',
-                                    minWidth: '15px',
-                                    height: '15px',
-                                    borderRadius: '7.5px',
-                                    background: '#EF4444',
-                                    color: '#FFFFFF',
-                                    fontSize: '8.5px',
-                                    fontWeight: '900',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    padding: '0 3px',
-                                    border: isLight ? '2px solid #ffffff' : '2px solid #070709',
-                                }}>
-                                    {unreadNotifications > 99 ? '99+' : unreadNotifications}
-                                </span>
-                            )}
-                        </Link>
+                    {/* ── Left Actions (Auth / User / Drawer) ── */}
+                    <div className="header-actions">
+                        {!isAuthenticated ? (
+                            <>
+                                <Link
+                                    to="/register"
+                                    className="header-register-btn"
+                                >
+                                    {t('createAccount', 'إنشاء حساب')}
+                                </Link>
 
-                        {/* Luxury Wallet Capsule with Direct "+ اشحن" Button */}
-                        <div className="header-wallet-capsule" style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            background: isLight ? '#ffffff' : 'rgba(15, 15, 22, 0.95)',
-                            border: isLight ? '1.2px solid rgba(212, 165, 55, 0.5)' : '1.2px solid rgba(212, 165, 55, 0.45)',
-                            borderRadius: '13px',
-                            padding: '3px 4px 3px 10px',
-                            gap: '6px',
-                            boxShadow: isLight
-                                ? '0 4px 16px rgba(15, 23, 42, 0.06), 0 0 10px rgba(212, 165, 55, 0.08)'
-                                : '0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(212, 165, 55, 0.1)',
-                            flexShrink: 0,
-                        }}>
-                            <Link
-                                to={isAuthenticated ? "/wallet" : "/login"}
-                                title={t('wallet', 'المحفظة والرصيد')}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '5px',
-                                    textDecoration: 'none',
-                                    color: isLight ? '#0f172a' : '#FFFFFF',
-                                    fontSize: '12.5px',
-                                    fontWeight: '800',
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                <div style={{
-                                    width: '22px',
-                                    height: '22px',
-                                    borderRadius: '6px',
-                                    background: isLight ? 'rgba(212, 165, 55, 0.2)' : 'rgba(212, 165, 55, 0.15)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
-                                    <Wallet size={13} color={isLight ? '#b45309' : '#F5D061'} />
-                                </div>
-                                <span style={{ letterSpacing: '0.3px' }}>{formattedBalance}</span>
-                                <span className="wallet-currency-label" style={{ fontSize: '10.5px', color: '#16a34a', fontWeight: '900' }}>{currency}</span>
-                            </Link>
-
-                            <Link
-                                to="/deposit"
-                                title={t('chargeWallet', 'شحن رصيد المحفظة')}
-                                className="header-recharge-btn"
-                                style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '3px',
-                                    padding: '4px 8px',
-                                    borderRadius: '8px',
-                                    background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
-                                    color: '#000000',
-                                    fontSize: '11px',
-                                    fontWeight: '900',
-                                    textDecoration: 'none',
-                                    boxShadow: '0 2px 8px rgba(212, 165, 55, 0.25)',
-                                    transition: 'all 0.15s ease',
-                                    whiteSpace: 'nowrap',
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'scale(1.05)';
-                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 165, 55, 0.45)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'scale(1)';
-                                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(212, 165, 55, 0.25)';
-                                }}
-                            >
-                                <Plus size={12} strokeWidth={3} />
-                                <span className="recharge-btn-text">{t('recharge', 'اشحن')}</span>
-                            </Link>
-                        </div>
-
-                        {/* User Profile Pill (Desktop only) or Login Button */}
-                        {isAuthenticated ? (
-                            <Link
-                                to="/profile"
-                                className="user-profile-header-btn"
-                                title={t('myAccount', 'الملف الشخصي')}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    padding: '4px 8px',
-                                    borderRadius: '11px',
-                                    background: isLight ? '#ffffff' : 'rgba(212, 165, 55, 0.08)',
-                                    border: isLight ? '1.2px solid rgba(212, 165, 55, 0.45)' : '1.2px solid rgba(212, 165, 55, 0.35)',
-                                    color: isLight ? '#0f172a' : '#FFFFFF',
-                                    textDecoration: 'none',
-                                    transition: 'all 0.2s ease',
-                                    flexShrink: 0,
-                                    boxShadow: isLight ? '0 2px 8px rgba(15, 23, 42, 0.05)' : 'none',
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background = isLight ? '#f8fafc' : 'rgba(212, 165, 55, 0.18)';
-                                    e.currentTarget.style.borderColor = '#D4A537';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background = isLight ? '#ffffff' : 'rgba(212, 165, 55, 0.08)';
-                                    e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.45)' : 'rgba(212, 165, 55, 0.35)';
-                                }}
-                            >
-                                <div style={{
-                                    width: '26px',
-                                    height: '26px',
-                                    borderRadius: '8px',
-                                    background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: '#070709',
-                                    fontSize: '12px',
-                                    fontWeight: '900',
-                                }}>
-                                    {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                                </div>
-                                <span className="user-profile-name" style={{
-                                    fontSize: '12px',
-                                    fontWeight: '800',
-                                    maxWidth: '75px',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                    color: isLight ? '#0f172a' : '#FFFFFF',
-                                }}>
-                                    {user?.name?.split(' ')[0] || t('myAccount', 'حسابي')}
-                                </span>
-                            </Link>
+                                <Link
+                                    to="/login"
+                                    className="header-login-btn"
+                                >
+                                    <User size={15} color="#38BDF8" />
+                                    <span>{t('login', 'دخول')}</span>
+                                </Link>
+                            </>
                         ) : (
-                            <Link
-                                to="/login"
-                                className="header-login-btn"
-                                style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '5px',
-                                    padding: '6px 12px',
-                                    borderRadius: '11px',
-                                    background: isLight ? 'linear-gradient(135deg, #F8E8B8 0%, #D4A537 100%)' : 'rgba(212, 165, 55, 0.12)',
-                                    border: isLight ? '1.2px solid rgba(212, 165, 55, 0.5)' : '1.2px solid rgba(212, 165, 55, 0.4)',
-                                    color: isLight ? '#0f172a' : '#F5D061',
-                                    fontSize: '12.5px',
-                                    fontWeight: '800',
-                                    textDecoration: 'none',
-                                    transition: 'all 0.2s ease',
-                                    flexShrink: 0,
-                                }}
-                            >
-                                <LogIn size={14} />
-                                <span>{t('login', 'دخول')}</span>
-                            </Link>
+                            <>
+                                {/* Wallet Balance Badge */}
+                                <Link
+                                    to="/deposit"
+                                    className="header-wallet-badge"
+                                    title={t('walletBalance', 'رصيد المحفظة')}
+                                >
+                                    <Wallet size={14} color="#38BDF8" style={{ flexShrink: 0 }} />
+                                    <span className="balance-num">{formattedBalance}</span>
+                                    <span className="balance-curr">{currency}</span>
+                                </Link>
+
+                                {/* Notifications Icon with Badge */}
+                                <Link
+                                    to="/notifications"
+                                    className="header-notif-btn"
+                                    title={t('notifications', 'الإشعارات')}
+                                >
+                                    <Bell size={17} color="#F5D061" />
+                                    {unreadNotifications > 0 && (
+                                        <span className="notif-badge-dot">
+                                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                        </span>
+                                    )}
+                                </Link>
+                            </>
                         )}
 
                         {/* Dedicated Hamburger / Drawer Toggle Button (ALWAYS VISIBLE) */}
@@ -726,30 +434,6 @@ export default function MainLayout({ children, showBanner = true }) {
                             onClick={() => setDrawerOpen(true)}
                             title={t('mainMenu', 'القائمة الكاملة')}
                             className="header-hamburger-btn"
-                            style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '11px',
-                                background: 'rgba(212, 165, 55, 0.15)',
-                                border: '1.2px solid #D4A537',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: '#F5D061',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                flexShrink: 0,
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'rgba(212, 165, 55, 0.3)';
-                                e.currentTarget.style.transform = 'scale(1.05)';
-                                e.currentTarget.style.boxShadow = '0 0 12px rgba(212, 165, 55, 0.4)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'rgba(212, 165, 55, 0.15)';
-                                e.currentTarget.style.transform = 'scale(1)';
-                                e.currentTarget.style.boxShadow = 'none';
-                            }}
                         >
                             <Menu size={18} />
                         </button>
@@ -759,6 +443,9 @@ export default function MainLayout({ children, showBanner = true }) {
 
             {/* Initial Luxury App Splash Screen / Preloader */}
             <AppSplashScreen />
+
+            {/* Payment Warning Notice Modal (Shown on platform entry) */}
+            <PaymentNoticeModal />
 
             {/* Sidebar Drawer */}
             <UserSidebarDrawer
@@ -794,20 +481,20 @@ export default function MainLayout({ children, showBanner = true }) {
                 <BottomNavItem
                     href={getWhatsAppChannel()}
                     icon={MessageCircle}
-                    label={t('whatsappChannel', 'قناة الواتساب')}
+                    label={t('whatsappChannel', 'الواتساب')}
                     isExternal={true}
                     color="#25D366"
                 />
                 <BottomNavItem
                     to="/target/apps"
                     icon={Target}
-                    label={t('targetSelling', 'بيع التارجت')}
+                    label={t('targetSelling', 'التارجت')}
                     active={isActive('/target/apps')}
                 />
                 <BottomNavItem
                     to="/deposit"
                     icon={Wallet}
-                    label={t('chargeWallet', 'شحن رصيد')}
+                    label={t('chargeWallet', 'المحفظة')}
                     active={isActive('/deposit')}
                 />
                 <button
@@ -837,7 +524,7 @@ export default function MainLayout({ children, showBanner = true }) {
                         lineHeight: 1.1,
                         fontFamily: 'var(--font-cairo)',
                     }}>
-                        {isAuthenticated ? t('myAccount', 'حسابي') : t('login', 'دخول')}
+                        {isAuthenticated ? t('myAccount', 'حسابي') : 'دخول'}
                     </span>
                 </button>
             </nav>

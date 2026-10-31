@@ -101,18 +101,8 @@ export default function LoginPage() {
             }
 
             if (data?.token) {
-                const user = data?.user;
-                const userRole = user?.role?.value || user?.role;
-                const isAdmin = user?.is_admin === true || userRole === 'admin';
-
-                if (isAdmin) {
-                    success('تم تسجيل الدخول بنجاح! مرحباً بك يا مدير، جاري توجيهك إلى لوحة الإدارة...');
-                    window.location.href = '/admin';
-                    return;
-                }
-
-                success('تم تسجيل الدخول بنجاح، مرحباً بك');
-                navigate(from, { replace: true });
+                success('تم تسجيل الدخول بنجاح، مرحباً بك في المنصة');
+                navigate(from || '/', { replace: true });
             }
         } catch (err) {
             if (err.errors) {
@@ -195,18 +185,8 @@ export default function LoginPage() {
 
             const data = await login2FA(payload);
             if (data?.token) {
-                const user = data?.user;
-                const userRole = user?.role?.value || user?.role;
-                const isAdmin = user?.is_admin === true || userRole === 'admin';
-
-                if (isAdmin) {
-                    success('تم التحقق وتسجيل الدخول بنجاح! جاري توجيهك إلى لوحة الإدارة...');
-                    window.location.href = '/admin';
-                    return;
-                }
-
-                success('تم التحقق وتسجيل الدخول بنجاح');
-                navigate(from, { replace: true });
+                success('تم التحقق وتسجيل الدخول بنجاح، مرحباً بك');
+                navigate(from || '/', { replace: true });
             }
         } catch (err) {
             console.error('2FA login error:', err);
@@ -217,23 +197,10 @@ export default function LoginPage() {
         }
     };
 
-    // Trigger Google OAuth Login
-    const handleGoogleAuth = async () => {
+    // Trigger Google OAuth Login (Standard real browser OAuth redirect)
+    const handleGoogleAuth = () => {
         setGoogleLoading(true);
-        try {
-            const res = await authApi.getGoogleRedirectUrl();
-            const url = res.data?.data?.url || res.data?.url;
-            if (url) {
-                window.location.href = url;
-            } else {
-                window.location.href = '/api/v1/auth/google/redirect';
-            }
-        } catch (err) {
-            console.error('Google OAuth URL generation error:', err);
-            window.location.href = '/api/v1/auth/google/redirect';
-        } finally {
-            setGoogleLoading(false);
-        }
+        window.location.href = '/auth/google';
     };
 
     return (
@@ -242,7 +209,7 @@ export default function LoginPage() {
             subtitle={
                 requires2FA
                     ? 'أدخل رمز الأمان من تطبيق Google Authenticator للمتابعة'
-                    : 'أهلاً بك مجدداً في إمبراطور، سجل دخولك للوصول إلى محفظتك'
+                    : 'أهلاً بك مجدداً في سند ومهره كارد، سجل دخولك للوصول إلى محفظتك'
             }
         >
             {/* 2FA Challenge View */}

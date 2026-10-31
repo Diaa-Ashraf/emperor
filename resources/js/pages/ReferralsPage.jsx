@@ -98,15 +98,15 @@ export default function ReferralsPage() {
     };
 
     const shareMessage = language === 'en'
-        ? `Join Emperor platform now for game and app top-ups and receive instant rewards! Register via: ${referralLink}`
-        : `انضم الآن إلى منصة إمبراطور لشحن الألعاب والتطبيقات واستلم عروض وهدايا فورية! سجل عبر الرابط التالي: ${referralLink}`;
+        ? `Join Mohra & Sand Card platform now for game and app top-ups and receive instant rewards! Register via: ${referralLink}`
+        : `انضم الآن إلى منصة سند ومهره كارد لشحن الألعاب والتطبيقات واستلم عروض وهدايا فورية! سجل عبر الرابط التالي: ${referralLink}`;
 
     const handleWhatsAppShare = () => {
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareMessage)}`, '_blank');
     };
 
     const handleTelegramShare = () => {
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(language === 'en' ? 'Register on Emperor platform and top up games at the best prices!' : 'سجل في منصة إمبراطور واشحن ألعابك بأفضل الأسعار!')}`, '_blank');
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(language === 'en' ? 'Register on Mohra & Sand Card platform and top up games at the best prices!' : 'سجل في منصة سند ومهره كارد واشحن ألعابك بأفضل الأسعار!')}`, '_blank');
     };
 
     const handleNativeShare = () => {
@@ -116,7 +116,7 @@ export default function ReferralsPage() {
     const handleSystemShare = () => {
         if (navigator.share) {
             navigator.share({
-                title: language === 'en' ? 'Emperor Top-up Platform' : 'منصة إمبراطور للشحن الرقمي',
+                title: language === 'en' ? 'Mohra & Sand Card Platform' : 'منصة سند ومهره كارد للشحن الرقمي',
                 text: shareMessage,
                 url: referralLink,
             }).catch(() => {});
@@ -157,14 +157,14 @@ export default function ReferralsPage() {
 
             {/* Top Referral Hero Poster Banner */}
             <div style={{
-                background: isLight ? '#FFFFFF' : 'linear-gradient(135deg, #1C1917 0%, #2A1F0D 50%, #151108 100%)',
-                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.4)',
+                background: isLight ? '#FFFFFF' : 'linear-gradient(135deg, #09172e 0%, #060e1d 100%)',
+                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1.5px solid rgba(56, 189, 248, 0.45)',
                 borderRadius: '24px',
                 padding: '24px',
                 marginBottom: '20px',
                 position: 'relative',
                 overflow: 'hidden',
-                boxShadow: isLight ? '0 8px 24px rgba(0, 0, 0, 0.05)' : '0 10px 30px rgba(0, 0, 0, 0.4)',
+                boxShadow: isLight ? '0 8px 24px rgba(0, 0, 0, 0.05)' : '0 10px 30px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.15)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -174,8 +174,8 @@ export default function ReferralsPage() {
                 <div style={{ zIndex: 1, maxWidth: '480px' }}>
                     <span style={{
                         display: 'inline-block',
-                        background: 'linear-gradient(135deg, #F3E5AB 0%, #D4A537 100%)',
-                        color: '#000',
+                        background: 'linear-gradient(135deg, #0284C7 0%, #38BDF8 100%)',
+                        color: '#FFFFFF',
                         fontSize: '11px',
                         fontWeight: '900',
                         padding: '3px 10px',
@@ -184,7 +184,7 @@ export default function ReferralsPage() {
                     }}>
                         {t('referrals', 'رابط الإحالة')}
                     </span>
-                    <h2 style={{ margin: '0 0 8px', fontSize: '26px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', lineHeight: 1.2 }}>
+                    <h2 style={{ margin: '0 0 8px', fontSize: '26px', fontWeight: '900', color: isLight ? '#0F172A' : '#F5D061', lineHeight: 1.2 }}>
                         {t('referralTitle', 'اكسب فلوس واسحبها')}
                     </h2>
                     <p style={{ margin: 0, fontSize: '13.5px', color: isLight ? '#475569' : '#CBD5E1', lineHeight: 1.5 }}>

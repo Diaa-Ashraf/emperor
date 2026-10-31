@@ -27,7 +27,25 @@ import {
     Key,
     Globe,
     ChevronDown,
-    ExternalLink
+    ExternalLink,
+    LayoutDashboard,
+    Coins,
+    Users,
+    Percent,
+    UserCheck,
+    History,
+    Layers,
+    Package,
+    Palette,
+    ShoppingBag,
+    Server,
+    CreditCard,
+    MessageSquare,
+    DollarSign,
+    Eye,
+    EyeOff,
+    RefreshCw,
+    Terminal
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -36,7 +54,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { getSiteLogo, getSiteName } from '../../utils/settingsHelper';
 
 export default function UserSidebarDrawer({ isOpen, onClose }) {
-    const { user, isAuthenticated, logout } = useAuth();
+    const { user, isAuthenticated, logout, isAdmin, isStaff, canAccessAdmin, hasApiAccess } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { language, switchLanguage, t, isRtl } = useLanguage();
     const { success } = useToast();
@@ -44,6 +62,14 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
     const navigate = useNavigate();
 
     const [copiedId, setCopiedId] = useState(false);
+
+    const hasDeveloperAccess = Boolean(
+        hasApiAccess ||
+        user?.has_api_access ||
+        user?.api_access_status === 'active' ||
+        user?.role === 'api_client' ||
+        isAdmin
+    );
 
     // Body scroll lock & Escape listener
     React.useEffect(() => {
@@ -82,13 +108,113 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
         navigate('/login');
     };
 
-    const hasDeveloperAccess = Boolean(
-        user?.has_api_access ||
-        user?.api_access_status === 'active' ||
-        user?.role === 'api_client' ||
-        user?.is_admin ||
-        user?.role === 'admin'
-    );
+    const adminNavItems = [
+        {
+            path: '/admin/dashboard',
+            label: 'لوحة التحكم',
+            icon: LayoutDashboard,
+            iconBadgeBg: 'rgba(245, 208, 97, 0.18)',
+            iconBadgeColor: '#F5D061',
+        },
+        {
+            path: '/admin/wallet',
+            label: 'محفظة الأدمن',
+            icon: Coins,
+            iconBadgeBg: 'rgba(245, 208, 97, 0.18)',
+            iconBadgeColor: '#F5D061',
+        },
+        {
+            path: '/admin/users',
+            label: 'المستخدمين',
+            icon: Users,
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
+        },
+        {
+            path: '/admin/referrals',
+            label: 'أرباح كود الإحالة',
+            icon: Percent,
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
+        },
+        {
+            path: '/admin/staff',
+            label: 'المشرفين',
+            icon: UserCheck,
+            iconBadgeBg: 'rgba(245, 208, 97, 0.18)',
+            iconBadgeColor: '#F5D061',
+        },
+        {
+            path: '/admin/activity-logs',
+            label: 'مراقبة المشرفين',
+            icon: History,
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
+        },
+        {
+            path: '/admin/pricing-tiers',
+            label: 'إدارة المجموعات',
+            icon: Layers,
+            iconBadgeBg: 'rgba(245, 208, 97, 0.18)',
+            iconBadgeColor: '#F5D061',
+        },
+        {
+            path: '/admin/products',
+            label: 'إدارة المنتجات',
+            icon: Package,
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
+        },
+        {
+            path: '/admin/orders',
+            label: 'إدارة الطلبات',
+            icon: ShoppingBag,
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
+        },
+        {
+            path: '/admin/targets',
+            label: 'طلبات التارجت',
+            icon: Target,
+            iconBadgeBg: 'rgba(245, 208, 97, 0.18)',
+            iconBadgeColor: '#F5D061',
+        },
+        {
+            path: '/admin/providers',
+            label: 'إدارة الموردين',
+            icon: Server,
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
+        },
+        {
+            path: '/admin/deposits',
+            label: 'طلبات الشحن اليدوي',
+            icon: CreditCard,
+            iconBadgeBg: 'rgba(245, 208, 97, 0.18)',
+            iconBadgeColor: '#F5D061',
+        },
+        {
+            path: '/admin/payment-methods',
+            label: 'طرق الدفع',
+            icon: Wallet,
+            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
+            iconBadgeColor: '#38BDF8',
+        },
+        {
+            path: '/admin/whatsapp',
+            label: 'تكامل الواتساب',
+            icon: MessageSquare,
+            iconBadgeBg: 'rgba(34, 197, 94, 0.16)',
+            iconBadgeColor: '#22C55E',
+        },
+        {
+            path: '/admin/currencies',
+            label: 'العملات',
+            icon: DollarSign,
+            iconBadgeBg: 'rgba(245, 208, 97, 0.18)',
+            iconBadgeColor: '#F5D061',
+        },
+    ];
 
     const navItems = [
         {
@@ -217,10 +343,10 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                     position: 'sticky',
                     top: 0,
                     zIndex: 40,
-                    background: isLight ? 'rgba(255, 255, 255, 0.94)' : 'rgba(12, 12, 18, 0.94)',
+                    background: isLight ? 'rgba(255, 255, 255, 0.94)' : 'rgba(9, 23, 46, 0.95)',
                     backdropFilter: 'blur(12px)',
                     WebkitBackdropFilter: 'blur(12px)',
-                    borderBottom: isLight ? '1px solid rgba(212, 165, 55, 0.2)' : '1px solid rgba(212, 165, 55, 0.12)',
+                    borderBottom: isLight ? '1px solid rgba(212, 165, 55, 0.2)' : '1px solid rgba(56, 189, 248, 0.25)',
                 }}>
                     {/* Collapse Drawer Arrow Button (Circle) */}
                     <button
@@ -231,8 +357,8 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             height: '34px',
                             borderRadius: '50%',
                             background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.05)',
-                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(255, 255, 255, 0.12)',
-                            color: isLight ? '#0F172A' : '#CBD5E1',
+                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(56, 189, 248, 0.3)',
+                            color: isLight ? '#0F172A' : '#F5D061',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -240,12 +366,12 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             transition: 'all 0.2s ease',
                         }}
                         onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = '#D4A537';
-                            e.currentTarget.style.color = '#F5D061';
+                            e.currentTarget.style.borderColor = '#38BDF8';
+                            e.currentTarget.style.color = '#38BDF8';
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.4)' : 'rgba(255, 255, 255, 0.12)';
-                            e.currentTarget.style.color = isLight ? '#0F172A' : '#CBD5E1';
+                            e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.4)' : 'rgba(56, 189, 248, 0.3)';
+                            e.currentTarget.style.color = isLight ? '#0F172A' : '#F5D061';
                         }}
                     >
                         {isRtl ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
@@ -258,23 +384,23 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             height: '34px',
                             borderRadius: '9px',
                             overflow: 'hidden',
-                            border: '1.2px solid rgba(212, 165, 55, 0.6)',
-                            boxShadow: '0 0 12px rgba(212, 165, 55, 0.35)',
-                            background: isLight ? '#ffffff' : '#050508',
+                            border: '1.2px solid rgba(56, 189, 248, 0.5)',
+                            boxShadow: '0 0 12px rgba(56, 189, 248, 0.35)',
+                            background: isLight ? '#ffffff' : '#071325',
                         }}>
                             <img
                                 src={getSiteLogo()}
-                                alt="EMPEROR"
+                                alt={getSiteName()}
                                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                             />
                         </div>
                         <span style={{
-                            fontSize: '17px',
+                            fontSize: '16px',
                             fontWeight: '900',
-                            color: isLight ? '#0F172A' : '#FFFFFF',
-                            letterSpacing: '1px',
+                            color: isLight ? '#0F172A' : '#F5D061',
+                            letterSpacing: '0.3px',
                         }}>
-                            EMPEROR
+                            {getSiteName()}
                         </span>
                     </div>
 
@@ -442,7 +568,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                         fontWeight: '800',
                                         color: isLight ? '#9A7210' : '#F5D061',
                                     }}>
-                                        {user?.role === 'admin' ? t('vipMember', 'عميل إمبراطور VIP') : t('storeMember', 'عضو المتجر')}
+                                        {user?.role === 'admin' ? t('vipMember', 'عضو سند ومهره VIP') : t('storeMember', 'عضو المتجر')}
                                     </span>
                                 </div>
                             </div>
@@ -702,6 +828,128 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                             </Link>
                         );
                     })}
+
+                    {/* ── 6.5. Administration Section (الإدارة) ── */}
+                    {canAccessAdmin && (
+                        <>
+                            <div style={{
+                                margin: '14px 4px 6px',
+                                padding: '8px 12px',
+                                borderRadius: '12px',
+                                background: isLight
+                                    ? 'linear-gradient(90deg, rgba(212, 165, 55, 0.15) 0%, rgba(56, 189, 248, 0.08) 100%)'
+                                    : 'linear-gradient(90deg, rgba(212, 165, 55, 0.22) 0%, rgba(9, 23, 46, 0.8) 100%)',
+                                border: '1px solid rgba(212, 165, 55, 0.35)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <div style={{
+                                        width: '24px',
+                                        height: '24px',
+                                        borderRadius: '7px',
+                                        background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: '#000',
+                                        boxShadow: '0 2px 8px rgba(212, 165, 55, 0.4)'
+                                    }}>
+                                        <Crown size={14} />
+                                    </div>
+                                    <span style={{
+                                        fontSize: '12.5px',
+                                        fontWeight: '900',
+                                        color: isLight ? '#9A7210' : '#F5D061'
+                                    }}>
+                                        {t('administration', 'الإدارة')}
+                                    </span>
+                                </div>
+
+                                <span style={{
+                                    fontSize: '10px',
+                                    fontWeight: '900',
+                                    padding: '2px 8px',
+                                    borderRadius: '6px',
+                                    background: 'rgba(212, 165, 55, 0.2)',
+                                    color: '#F5D061',
+                                    border: '1px solid rgba(212, 165, 55, 0.35)'
+                                }}>
+                                    لوحة الإدارة
+                                </span>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                {adminNavItems.map((item) => {
+                                    const active = isActive(item.path);
+
+                                    return (
+                                        <Link
+                                            key={item.path + item.label}
+                                            to={item.path}
+                                            onClick={onClose}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                padding: '9px 12px',
+                                                borderRadius: '13px',
+                                                textDecoration: 'none',
+                                                background: active
+                                                    ? (isLight
+                                                        ? 'linear-gradient(135deg, rgba(212, 165, 55, 0.22) 0%, rgba(255, 255, 255, 0.95) 100%)'
+                                                        : 'linear-gradient(135deg, rgba(212, 165, 55, 0.25) 0%, rgba(30, 26, 16, 0.95) 100%)')
+                                                    : (isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.03)'),
+                                                border: active
+                                                    ? (isLight ? '1.5px solid rgba(212, 165, 55, 0.7)' : '1px solid rgba(212, 165, 55, 0.65)')
+                                                    : (isLight ? '1px solid rgba(226, 232, 240, 0.9)' : '1px solid rgba(255, 255, 255, 0.05)'),
+                                                color: active
+                                                    ? (isLight ? '#9A7210' : '#F5D061')
+                                                    : (isLight ? '#1E293B' : '#FFFFFF'),
+                                                fontWeight: active ? '900' : '800',
+                                                fontSize: '13px',
+                                                transition: 'all 0.2s ease',
+                                                boxShadow: active
+                                                    ? '0 3px 12px rgba(212, 165, 55, 0.25)'
+                                                    : 'none',
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <div style={{
+                                                    width: '32px',
+                                                    height: '32px',
+                                                    borderRadius: '9px',
+                                                    background: active
+                                                        ? 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)'
+                                                        : (isLight ? 'rgba(56, 189, 248, 0.12)' : (item.iconBadgeBg || 'rgba(56, 189, 248, 0.14)')),
+                                                    border: active
+                                                        ? '1px solid rgba(212, 165, 55, 0.8)'
+                                                        : (isLight ? '1px solid rgba(56, 189, 248, 0.3)' : '1px solid rgba(56, 189, 248, 0.25)'),
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    color: active ? '#08080A' : (item.iconBadgeColor || '#38BDF8'),
+                                                    flexShrink: 0,
+                                                }}>
+                                                    <item.icon size={16} />
+                                                </div>
+                                                <span>{item.label}</span>
+                                            </div>
+
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                {isRtl ? (
+                                                    <ChevronLeft size={15} color={active ? '#F5D061' : (isLight ? '#94A3B8' : '#64748B')} />
+                                                ) : (
+                                                    <ChevronRight size={15} color={active ? '#F5D061' : (isLight ? '#94A3B8' : '#64748B')} />
+                                                )}
+                                            </div>
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        </>
+                    )}
 
                     {/* ── 7. Logout / Login Action Button ── */}
                     {isAuthenticated ? (

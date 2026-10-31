@@ -36,6 +36,11 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
         $request->session()->put('admin_last_activity_time', time());
 
+        $user = $request->user();
+        if ($user && ($user->isAdmin() || ($user->role?->value ?? $user->role) === 'admin' || (method_exists($user, 'hasAnyRole') && $user->hasAnyRole(['admin', 'super_admin', 'operations_manager', 'finance_manager', 'support_agent'])))) {
+            return redirect('/admin/dashboard');
+        }
+
         return redirect()->intended(route('admin.dashboard'));
     }
 

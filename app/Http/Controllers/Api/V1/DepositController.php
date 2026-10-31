@@ -39,6 +39,19 @@ class DepositController extends Controller
     }
 
     /**
+     * Get active supported countries for deposits and financial services.
+     */
+    public function supportedCountries(): JsonResponse
+    {
+        $countries = $this->depositService->getSupportedCountries();
+
+        return $this->successResponse(
+            $countries,
+            'تم جلب قائمة الدول المدعومة بنجاح'
+        );
+    }
+
+    /**
      * Submit a new deposit request.
      */
     public function store(StoreDepositRequest $request): JsonResponse

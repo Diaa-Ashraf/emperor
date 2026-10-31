@@ -17,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         then: function () {
             Route::middleware('web')
+                ->prefix('legacy-admin')
+                ->name('legacy-admin.')
                 ->group(base_path('routes/admin.php'));
         }
     )
@@ -26,6 +28,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Global Firewall and Anti-DDoS Burst Shield
         $middleware->append(\App\Http\Middleware\FirewallShieldMiddleware::class);
+
+        // Sanctum Stateful API for SPA Authentication (Session Cookies)
+        $middleware->statefulApi();
 
         // Global web middleware
         $middleware->web(append: [

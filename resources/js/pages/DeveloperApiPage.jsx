@@ -162,19 +162,161 @@ export default function DeveloperApiPage() {
         }
     };
 
+    const [copiedFullDocs, setCopiedFullDocs] = useState(false);
+
     const copyToClipboard = (text, label) => {
         if (!text) return;
         navigator.clipboard.writeText(text);
         addToast(isEn ? `${label} copied to clipboard` : `تم نسخ ${label} إلى الحافظة`, 'success');
     };
 
+    const getFullDocumentationMarkdown = () => {
+        const origin = window.location.origin;
+        const currentKey = apiKey || 'YOUR_TOKEN';
+        const userEmail = user?.email || 'reseller@example.com';
+
+        return `========================================
+B2B Reseller API Documentation
+========================================
+
+1) Base URLs
+----------------------
+API Base URL:
+${origin}/api/v1/reseller
+(Alternative: ${origin}/api/v1/external)
+
+Note: All the following endpoints must be appended to the API Base URL.
+
+2) Authentication
+-------------------------
+You must send your API Token in the HTTP Headers with every request:
+x-api-key: ${currentKey}
+
+3) Profile & Balance
+-------------------------------
+GET /balance
+Full URL: ${origin}/api/v1/reseller/balance
+
+Description: Returns reseller account data, balance, and credit limits.
+
+Success JSON Response:
+{
+  "success": true,
+  "data": {
+    "email": "${userEmail}",
+    "balance": 245.75,
+    "walletBalance": 245.75,
+    "creditLimit": 0,
+    "creditUsed": 0,
+    "currency": "USD"
+  }
+}
+
+4) Products
+-----------------------------------
+GET /products
+Full URL: ${origin}/api/v1/reseller/products
+
+Description: Returns active products and required dynamic fields.
+
+Success JSON Response:
+{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "name": "PUBG Mobile UC 60",
+      "price": 1.5,
+      "minQty": 1,
+      "maxQty": 50,
+      "currency": "USD",
+      "fields": [
+        { "key": "playerId", "label": "Player ID", "required": true, "type": "text" }
+      ]
+    }
+  ]
+}
+
+5) Place Order
+--------------------------
+POST /orders
+Full URL: ${origin}/api/v1/reseller/orders
+
+Headers:
+x-api-key: ${currentKey}
+Content-Type: application/json
+
+Request Body Parameters:
+- productId (String, Required)
+- quantity (Number, Required)
+- idempotencyKey (String/UUID, Required): Prevents duplicate orders.
+- [dynamic_fields]: Send required fields (e.g., playerId).
+
+Success JSON Response:
+{
+  "success": true,
+  "data": {
+    "orderId": "66a88f8c4b40f4a9f0d41010",
+    "orderNumber": "ORD-12345",
+    "status": "PENDING",
+    "idempotencyKey": "uuid-here"
+  }
+}
+
+6) Check Orders (Batch Support)
+--------------------------------
+GET /orders?keys=uuid1,uuid2
+Full URL: ${origin}/api/v1/reseller/orders?keys=uuid1,uuid2
+
+Description: Check the status of one or multiple orders simultaneously.
+
+Success JSON Response:
+{
+  "success": true,
+  "data": [
+    {
+      "orderId": "66a88f8c4b40f4a9f0d41010",
+      "status": "COMPLETED",
+      "idempotencyKey": "uuid1"
+    }
+  ]
+}
+
+7) Error Handling & Codes
+------------------------
+Failure Response Format:
+{
+  "success": false,
+  "error": { "code": 100, "message": "Insufficient balance" }
+}
+
+Error Codes:
+100: Insufficient balance
+101: Product unavailable/inactive
+102: Quantity out of range
+120: API Key missing
+121: Invalid API Key
+122: API not allowed / Suspended
+123: Validation Error
+500: Internal Server Error
+`;
+    };
+
+    const copyFullDocumentation = () => {
+        const fullDocs = getFullDocumentationMarkdown();
+        navigator.clipboard.writeText(fullDocs);
+        setCopiedFullDocs(true);
+        addToast(isEn ? 'Full B2B Documentation copied to clipboard!' : 'تم نسخ دليل الربط البرمجي الكامل (B2B Docs) بنجاح!', 'success');
+        setTimeout(() => setCopiedFullDocs(false), 3000);
+    };
+
     return (
         <MainLayout>
             <div className="developer-api-page" style={{
-                maxWidth: '1100px',
+                maxWidth: '100%',
                 width: '100%',
                 boxSizing: 'border-box',
-                margin: '0 auto',
+                margin: '0',
                 padding: '10px 0 60px',
                 color: isLight ? '#0F172A' : '#f3f4f6',
                 fontFamily: 'inherit',
@@ -189,20 +331,20 @@ export default function DeveloperApiPage() {
                 flexWrap: 'wrap',
                 gap: '15px',
                 marginBottom: '30px',
-                borderBottom: isLight ? '1px solid rgba(212, 165, 55, 0.3)' : '1px solid rgba(212, 165, 55, 0.2)',
+                borderBottom: isLight ? '1px solid rgba(212, 165, 55, 0.3)' : '1px solid rgba(56, 189, 248, 0.25)',
                 paddingBottom: '20px'
             }}>
                 <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <span style={{ fontSize: '24px' }}>🔑</span>
-                        <h1 style={{ fontSize: '24px', fontWeight: '800', color: isLight ? '#0F172A' : '#fff', margin: 0 }}>
+                        <h1 style={{ fontSize: '24px', fontWeight: '800', color: isLight ? '#0F172A' : '#F5D061', margin: 0 }}>
                             {isEn ? 'B2B API & Integration Management' : 'إدارة الربط البرمجي والمفاتيح (B2B API)'}
                         </h1>
                     </div>
                     <p style={{ color: isLight ? '#475569' : '#9ca3af', fontSize: '14px', marginTop: '6px' }}>
                         {isEn
-                            ? 'Connect your external store or application to Emperor to automate digital top-ups and PIN codes with zero delay'
-                            : 'اربط متجرك أو تطبيقك الخارجي بمنصة Emperor لتنفيذ طلبات الشحن وسحب الأكواد تلقائياً وبأسرع وقت'}
+                            ? 'Connect your external store or application to Mohra & Sand Card to automate digital top-ups and PIN codes with zero delay'
+                            : 'اربط متجرك أو تطبيقك الخارجي بمنصة سند ومهره كارد لتنفيذ طلبات الشحن وسحب الأكواد تلقائياً وبأسرع وقت'}
                     </p>
                 </div>
 
@@ -550,13 +692,13 @@ export default function DeveloperApiPage() {
                             {/* API Key Box */}
                             <div style={{ marginBottom: '16px' }}>
                                 <label style={{ display: 'block', fontSize: '13px', color: isLight ? '#0F172A' : '#d1d5db', marginBottom: '6px', fontWeight: '700' }}>
-                                    X-API-Key:
+                                    {isEn ? 'API Token (X-API-Key):' : 'توكن الربط البرمجي (X-API-Key):'}
                                 </label>
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                     <input
                                         type="text"
                                         readOnly
-                                        value={apiKey || (isEn ? 'No key generated yet' : 'لم يتم إنشاء مفتاح بعد')}
+                                        value={apiKey || (isEn ? 'No token generated yet' : 'لم يتم إنشاء توكن بعد')}
                                         style={{
                                             flex: 1,
                                             background: isLight ? '#F8FAFC' : '#1f2937',
@@ -571,19 +713,24 @@ export default function DeveloperApiPage() {
                                     />
                                     {apiKey && (
                                         <button
-                                            onClick={() => copyToClipboard(apiKey, 'API Key')}
+                                            type="button"
+                                            onClick={() => copyToClipboard(apiKey, isEn ? 'API Token' : 'توكن الـ API')}
                                             style={{
                                                 background: isLight ? '#E2E8F0' : '#374151',
                                                 border: 'none',
                                                 borderRadius: '8px',
-                                                padding: '0 14px',
+                                                padding: '0 16px',
                                                 color: isLight ? '#0F172A' : '#fff',
                                                 cursor: 'pointer',
                                                 fontSize: '13px',
-                                                fontWeight: '700'
+                                                fontWeight: '800',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px'
                                             }}
                                         >
-                                            {isEn ? 'Copy' : 'نسخ'}
+                                            <span>📋</span>
+                                            <span>{isEn ? 'Copy Token' : 'نسخ التوكن'}</span>
                                         </button>
                                     )}
                                 </div>
@@ -592,7 +739,7 @@ export default function DeveloperApiPage() {
                             {/* API Secret Box */}
                             <div style={{ marginBottom: '20px' }}>
                                 <label style={{ display: 'block', fontSize: '13px', color: isLight ? '#0F172A' : '#d1d5db', marginBottom: '6px', fontWeight: '700' }}>
-                                    X-API-Secret:
+                                    {isEn ? 'API Secret (X-API-Secret):' : 'المفتاح السري (X-API-Secret):'}
                                 </label>
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                     <input
@@ -613,16 +760,17 @@ export default function DeveloperApiPage() {
                                     />
                                     {apiSecret && (
                                         <button
+                                            type="button"
                                             onClick={() => copyToClipboard(apiSecret, 'API Secret')}
                                             style={{
                                                 background: '#059669',
                                                 border: 'none',
                                                 borderRadius: '8px',
-                                                padding: '0 14px',
+                                                padding: '0 16px',
                                                 color: '#fff',
                                                 cursor: 'pointer',
                                                 fontSize: '13px',
-                                                fontWeight: '700'
+                                                fontWeight: '800'
                                             }}
                                         >
                                             {isEn ? 'Copy' : 'نسخ'}
@@ -638,31 +786,63 @@ export default function DeveloperApiPage() {
                                 )}
                             </div>
 
-                            {/* Generate Button */}
-                            <button
-                                onClick={handleGenerateKeys}
-                                disabled={generating}
-                                style={{
-                                    width: '100%',
-                                    padding: '12px',
-                                    borderRadius: '10px',
-                                    border: 'none',
-                                    background: 'linear-gradient(135deg, #D4A537, #B38622)',
-                                    color: '#000',
-                                    fontWeight: '800',
-                                    fontSize: '14px',
-                                    cursor: 'pointer',
-                                    transition: 'opacity 0.2s',
-                                    opacity: generating ? 0.7 : 1,
-                                    boxShadow: '0 4px 15px rgba(212, 165, 55, 0.25)',
-                                }}
-                            >
-                                {generating
-                                    ? (isEn ? 'Generating...' : 'جاري الإنشاء...')
-                                    : (apiKey
-                                        ? (isEn ? '🔄 Regenerate API Keys' : '🔄 إعادة توليد المفاتيح (Regenerate)')
-                                        : (isEn ? '⚡ Generate API Keys' : '⚡ إنشاء مفاتيح جديدة (Generate API Keys)'))}
-                            </button>
+                            {/* Action Buttons: Regenerate & Copy Full Documentation */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <button
+                                    type="button"
+                                    onClick={handleGenerateKeys}
+                                    disabled={generating}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px',
+                                        borderRadius: '10px',
+                                        border: 'none',
+                                        background: 'linear-gradient(135deg, #D4A537, #B38622)',
+                                        color: '#000',
+                                        fontWeight: '800',
+                                        fontSize: '14px',
+                                        cursor: 'pointer',
+                                        transition: 'opacity 0.2s',
+                                        opacity: generating ? 0.7 : 1,
+                                        boxShadow: '0 4px 15px rgba(212, 165, 55, 0.25)',
+                                    }}
+                                >
+                                    {generating
+                                        ? (isEn ? 'Generating...' : 'جاري الإنشاء...')
+                                        : (apiKey
+                                            ? (isEn ? '🔄 Regenerate API Token & Keys' : '🔄 إعادة توليد التوكن والمفاتيح (Regenerate)')
+                                            : (isEn ? '⚡ Generate API Token & Keys' : '⚡ توليد توكن ومفاتيح جديدة (Generate Token)'))}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={copyFullDocumentation}
+                                    style={{
+                                        width: '100%',
+                                        padding: '11px',
+                                        borderRadius: '10px',
+                                        border: isLight ? '1px solid #0284C7' : '1px solid rgba(56, 189, 248, 0.4)',
+                                        background: copiedFullDocs
+                                            ? 'rgba(34, 197, 94, 0.2)'
+                                            : (isLight ? 'rgba(2, 132, 199, 0.08)' : 'rgba(56, 189, 248, 0.12)'),
+                                        color: copiedFullDocs ? '#22C55E' : (isLight ? '#0284C7' : '#38BDF8'),
+                                        fontWeight: '800',
+                                        fontSize: '13px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '8px',
+                                        transition: 'all 0.2s',
+                                    }}
+                                >
+                                    <span>{copiedFullDocs ? '✓' : '📄'}</span>
+                                    <span>{copiedFullDocs
+                                        ? (isEn ? 'Full Documentation Copied!' : 'تم نسخ دليل الربط بالكامل!')
+                                        : (isEn ? 'Copy Complete B2B Documentation (Docs)' : 'نسخ دليل التوثيق والربط بالكامل (Copy Full Docs)')}
+                                    </span>
+                                </button>
+                            </div>
                         </div>
 
                         {/* Card 2: Allowed IPs & Webhooks */}
@@ -769,94 +949,343 @@ export default function DeveloperApiPage() {
                     </div>
                 )
             ) : (
-                /* Tab 2: Interactive API Documentation */
+                /* Tab 2: Interactive B2B Reseller API Documentation */
                 <div className="developer-api-docs" style={{
-                    background: isLight ? '#FFFFFF' : '#111827',
-                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.25)',
-                    borderRadius: '16px',
-                    padding: 'clamp(16px, 3.5vw, 28px)',
-                    boxShadow: isLight ? '0 10px 30px rgba(30, 80, 140, 0.08)' : '0 8px 30px rgba(0, 0, 0, 0.4)'
+                    background: isLight ? '#FFFFFF' : '#0B1322',
+                    border: isLight ? '1.5px solid rgba(56, 189, 248, 0.4)' : '1px solid rgba(56, 189, 248, 0.3)',
+                    borderRadius: '20px',
+                    padding: 'clamp(16px, 3.5vw, 32px)',
+                    boxShadow: isLight ? '0 10px 30px rgba(30, 80, 140, 0.08)' : '0 10px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.1)'
                 }}>
-                    <h2 style={{ fontSize: '20px', fontWeight: '800', color: isLight ? '#B45309' : '#D4A537', marginBottom: '10px' }}>
-                        {isEn ? '📖 API Reference & Endpoints' : '📖 دليل نقاط الاتصال (API Reference)'}
-                    </h2>
-                    <p className="developer-api-base-url" style={{ color: isLight ? '#475569' : '#9ca3af', fontSize: '14px', marginBottom: '24px' }}>
-                        {isEn ? 'Base URL for all merchant requests:' : 'الرابط الأساسي لجميع طلبات الموزعين:'}{' '}
-                        <code className="developer-api-base-url-value" style={{ color: isLight ? '#0F172A' : '#fff', background: isLight ? '#F1F5F9' : '#1f2937', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '3px 8px', borderRadius: '6px', fontWeight: '700', wordBreak: 'break-all', display: 'inline-block', maxWidth: '100%' }}>
-                            {window.location.origin}/api/v1/external
-                        </code>
-                    </p>
-
-                    {/* Endpoint 1: Balance */}
-                    <div className="developer-api-endpoint" style={{ background: isLight ? '#F8FAFC' : '#1e293b', border: isLight ? '1px solid #E2E8F0' : 'none', borderRadius: '12px', padding: '16px', marginBottom: '18px' }}>
-                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                            <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>GET</span>
-                            <code style={{ fontSize: '15px', color: isLight ? '#0F172A' : '#f8fafc', fontWeight: '700' }}>/balance</code>
-                            <span style={{ color: isLight ? '#475569' : '#94a3b8', fontSize: '13px' }}>
-                                {isEn ? '- Query current merchant wallet balance' : '- الاستعلام عن رصيد المحفظة الحالي'}
-                            </span>
+                    {/* Top Action Bar: Title + Single Click Copy Entire Documentation */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: '14px',
+                        marginBottom: '24px',
+                        paddingBottom: '18px',
+                        borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
+                    }}>
+                        <div>
+                            <h2 style={{
+                                fontSize: '22px',
+                                fontWeight: '900',
+                                color: isLight ? '#0369A1' : '#38BDF8',
+                                margin: '0 0 6px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                            }}>
+                                <Terminal size={22} color="#38BDF8" />
+                                <span>{isEn ? 'B2B Reseller API Documentation' : 'توثيق الربط البرمجي للموزعين (B2B API)'}</span>
+                            </h2>
+                            <p style={{ margin: 0, fontSize: '13px', color: isLight ? '#64748B' : '#94A3B8' }}>
+                                {isEn ? 'Standard and unified integration guide for distributors and external stores.' : 'دليل موحد وشامل لربط المتاجر والموزعين بنقاط الـ API وتنفيذ العمليات آلياً.'}
+                            </p>
                         </div>
-                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: 'clamp(10px, 2.5vw, 14px)', borderRadius: '8px', overflowX: 'auto', maxWidth: '100%', boxSizing: 'border-box', fontSize: '13px', color: isLight ? '#0F172A' : '#38bdf8', direction: 'ltr', textAlign: 'left', fontWeight: '600', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                            {`curl -X GET "${window.location.origin}/api/v1/external/balance" \\
-  -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
-  -H "X-API-Secret: YOUR_API_SECRET"`}
+
+                        {/* Copy Entire Documentation Button */}
+                        <button
+                            type="button"
+                            onClick={copyFullDocumentation}
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '10px 20px',
+                                borderRadius: '12px',
+                                background: copiedFullDocs
+                                    ? 'linear-gradient(135deg, #16A34A 0%, #15803D 100%)'
+                                    : 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                color: copiedFullDocs ? '#FFFFFF' : '#08080A',
+                                border: 'none',
+                                fontSize: '13.5px',
+                                fontWeight: '900',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 16px rgba(245, 208, 97, 0.35)',
+                                transition: 'all 0.2s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 6px 22px rgba(245, 208, 97, 0.5)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 4px 16px rgba(245, 208, 97, 0.35)';
+                            }}
+                        >
+                            {copiedFullDocs ? <Check size={16} /> : <Copy size={16} />}
+                            <span>{copiedFullDocs ? (isEn ? 'Full Docs Copied!' : '✓ تم نسخ الدوك كاملاً!') : (isEn ? 'Copy Full Documentation' : '📋 نسخ التوثيق بالكامل')}</span>
+                        </button>
+                    </div>
+
+                    {/* Section 1: Base URLs */}
+                    <div style={{ marginBottom: '24px' }}>
+                        <h3 style={{ fontSize: '16px', fontWeight: '800', color: isLight ? '#0F172A' : '#F8FAFC', marginBottom: '8px' }}>
+                            1) {isEn ? 'Base URLs' : 'الرابط الأساسي (Base URL)'}
+                        </h3>
+                        <p style={{ fontSize: '13.5px', color: isLight ? '#475569' : '#94A3B8', marginBottom: '10px' }}>
+                            {isEn ? 'All requests must be prefixed with the API Base URL:' : 'يجب أن تبدأ جميع نقاط الاتصال بالرابط الأساسي التالي:'}
+                        </p>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            background: isLight ? '#F1F5F9' : '#040914',
+                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.25)',
+                            borderRadius: '10px',
+                            padding: '10px 14px',
+                            gap: '10px',
+                        }}>
+                            <code style={{ fontSize: '13px', fontWeight: '700', color: isLight ? '#0F172A' : '#38BDF8', direction: 'ltr' }}>
+                                {window.location.origin}/api/v1/reseller
+                            </code>
+                            <button
+                                type="button"
+                                onClick={() => copyToClipboard(`${window.location.origin}/api/v1/reseller`, 'Base URL')}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#64748B',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '2px',
+                                }}
+                                title="نسخ"
+                            >
+                                <Copy size={14} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Section 2: Authentication */}
+                    <div style={{ marginBottom: '24px' }}>
+                        <h3 style={{ fontSize: '16px', fontWeight: '800', color: isLight ? '#0F172A' : '#F8FAFC', marginBottom: '8px' }}>
+                            2) {isEn ? 'Authentication' : 'المصادقة وتمرير التوكن'}
+                        </h3>
+                        <p style={{ fontSize: '13.5px', color: isLight ? '#475569' : '#94A3B8', marginBottom: '10px' }}>
+                            {isEn ? 'Pass your API Token in HTTP Headers with every request:' : 'يجب إرسال التوكن الخاص بك في ترويسات الطلب (Headers) مع كل استدعاء:'}
+                        </p>
+                        <pre style={{
+                            background: isLight ? '#F1F5F9' : '#040914',
+                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.25)',
+                            padding: '12px 14px',
+                            borderRadius: '10px',
+                            fontSize: '13px',
+                            color: isLight ? '#0F172A' : '#38BDF8',
+                            direction: 'ltr',
+                            textAlign: 'left',
+                            fontWeight: '700',
+                            margin: 0,
+                        }}>
+                            {`x-api-key: ${apiKey || 'YOUR_TOKEN'}`}
                         </pre>
                     </div>
 
-                    {/* Endpoint 2: Products */}
-                    <div className="developer-api-endpoint" style={{ background: isLight ? '#F8FAFC' : '#1e293b', border: isLight ? '1px solid #E2E8F0' : 'none', borderRadius: '12px', padding: '16px', marginBottom: '18px' }}>
-                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                            <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>GET</span>
-                            <code style={{ fontSize: '15px', color: isLight ? '#0F172A' : '#f8fafc', fontWeight: '700' }}>/products</code>
-                            <span style={{ color: isLight ? '#475569' : '#94a3b8', fontSize: '13px' }}>
-                                {isEn ? '- Retrieve list of products and your custom prices' : '- جلب قائمة المنتجات والأسعار الخاصة بك'}
-                            </span>
+                    {/* Section 3: Profile & Balance */}
+                    <div style={{ marginBottom: '24px' }}>
+                        <h3 style={{ fontSize: '16px', fontWeight: '800', color: isLight ? '#0F172A' : '#F8FAFC', marginBottom: '8px' }}>
+                            3) {isEn ? 'Profile & Balance' : 'الرصيد والحساب'}
+                        </h3>
+                        <div style={{ background: isLight ? '#F8FAFC' : '#071224', border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.2)', borderRadius: '12px', padding: '16px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                                <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>GET</span>
+                                <code style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#F8FAFC' }}>/balance</code>
+                            </div>
+                            <pre style={{ background: isLight ? '#F1F5F9' : '#030712', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '12px', borderRadius: '8px', fontSize: '12.5px', color: isLight ? '#0F172A' : '#38BDF8', direction: 'ltr', textAlign: 'left', overflowX: 'auto', marginBottom: '10px' }}>
+                                {`curl -X GET "${window.location.origin}/api/v1/reseller/balance" \\
+  -H "x-api-key: ${apiKey || 'YOUR_TOKEN'}"`}
+                            </pre>
+                            <p style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', margin: '0 0 6px' }}>Success Response (200 OK):</p>
+                            <pre style={{ background: isLight ? '#F1F5F9' : '#030712', padding: '12px', borderRadius: '8px', fontSize: '12px', color: '#22C55E', direction: 'ltr', textAlign: 'left', overflowX: 'auto', margin: 0 }}>
+{`{
+  "success": true,
+  "data": {
+    "email": "${user?.email || 'reseller@example.com'}",
+    "balance": 245.75,
+    "walletBalance": 245.75,
+    "creditLimit": 0,
+    "creditUsed": 0,
+    "currency": "USD"
+  }
+}`}
+                            </pre>
                         </div>
-                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: 'clamp(10px, 2.5vw, 14px)', borderRadius: '8px', overflowX: 'auto', maxWidth: '100%', boxSizing: 'border-box', fontSize: '13px', color: isLight ? '#0F172A' : '#38bdf8', direction: 'ltr', textAlign: 'left', fontWeight: '600', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                            {`curl -X GET "${window.location.origin}/api/v1/external/products" \\
-  -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
-  -H "X-API-Secret: YOUR_API_SECRET"`}
-                        </pre>
                     </div>
 
-                    {/* Endpoint 3: Create Order */}
-                    <div className="developer-api-endpoint" style={{ background: isLight ? '#F8FAFC' : '#1e293b', border: isLight ? '1px solid #E2E8F0' : 'none', borderRadius: '12px', padding: '16px', marginBottom: '18px' }}>
-                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                            <span style={{ background: '#16a34a', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>POST</span>
-                            <code style={{ fontSize: '15px', color: isLight ? '#0F172A' : '#f8fafc', fontWeight: '700' }}>/orders</code>
-                            <span style={{ color: isLight ? '#475569' : '#94a3b8', fontSize: '13px' }}>
-                                {isEn ? '- Place and execute an instant top-up order' : '- إنشاء وتنفيذ طلب شحن مباشر'}
-                            </span>
+                    {/* Section 4: Products */}
+                    <div style={{ marginBottom: '24px' }}>
+                        <h3 style={{ fontSize: '16px', fontWeight: '800', color: isLight ? '#0F172A' : '#F8FAFC', marginBottom: '8px' }}>
+                            4) {isEn ? 'Products Catalog' : 'قائمة المنتجات والحقول الديناميكية'}
+                        </h3>
+                        <div style={{ background: isLight ? '#F8FAFC' : '#071224', border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.2)', borderRadius: '12px', padding: '16px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                                <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>GET</span>
+                                <code style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#F8FAFC' }}>/products</code>
+                            </div>
+                            <pre style={{ background: isLight ? '#F1F5F9' : '#030712', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '12px', borderRadius: '8px', fontSize: '12.5px', color: isLight ? '#0F172A' : '#38BDF8', direction: 'ltr', textAlign: 'left', overflowX: 'auto', marginBottom: '10px' }}>
+                                {`curl -X GET "${window.location.origin}/api/v1/reseller/products" \\
+  -H "x-api-key: ${apiKey || 'YOUR_TOKEN'}"`}
+                            </pre>
+                            <p style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', margin: '0 0 6px' }}>Success Response (200 OK):</p>
+                            <pre style={{ background: isLight ? '#F1F5F9' : '#030712', padding: '12px', borderRadius: '8px', fontSize: '12px', color: '#22C55E', direction: 'ltr', textAlign: 'left', overflowX: 'auto', margin: 0 }}>
+{`{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "name": "PUBG Mobile UC 60",
+      "price": 1.5,
+      "minQty": 1,
+      "maxQty": 50,
+      "currency": "USD",
+      "fields": [
+        { "key": "playerId", "label": "Player ID", "required": true, "type": "text" }
+      ]
+    }
+  ]
+}`}
+                            </pre>
                         </div>
-                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: 'clamp(10px, 2.5vw, 14px)', borderRadius: '8px', overflowX: 'auto', maxWidth: '100%', boxSizing: 'border-box', fontSize: '13px', color: isLight ? '#15803D' : '#4ade80', direction: 'ltr', textAlign: 'left', fontWeight: '600', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                            {`curl -X POST "${window.location.origin}/api/v1/external/orders" \\
-  -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
-  -H "X-API-Secret: YOUR_API_SECRET" \\
+                    </div>
+
+                    {/* Section 5: Place Order */}
+                    <div style={{ marginBottom: '24px' }}>
+                        <h3 style={{ fontSize: '16px', fontWeight: '800', color: isLight ? '#0F172A' : '#F8FAFC', marginBottom: '8px' }}>
+                            5) {isEn ? 'Place Order' : 'إنشاء وتنفيذ طلب جديد'}
+                        </h3>
+                        <div style={{ background: isLight ? '#F8FAFC' : '#071224', border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.2)', borderRadius: '12px', padding: '16px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                                <span style={{ background: '#16a34a', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>POST</span>
+                                <code style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#F8FAFC' }}>/orders</code>
+                            </div>
+                            <pre style={{ background: isLight ? '#F1F5F9' : '#030712', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '12px', borderRadius: '8px', fontSize: '12.5px', color: isLight ? '#0F172A' : '#4ADE80', direction: 'ltr', textAlign: 'left', overflowX: 'auto', marginBottom: '10px' }}>
+                                {`curl -X POST "${window.location.origin}/api/v1/reseller/orders" \\
+  -H "x-api-key: ${apiKey || 'YOUR_TOKEN'}" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "product_id": 1,
-    "product_tier_id": 10,
+    "productId": "1",
     "quantity": 1,
-    "player_id": "123456789",
-    "reference_id": "YOUR-ORDER-123"
+    "idempotencyKey": "a9b8c7d6-e5f4-3210-fedc-ba9876543210",
+    "playerId": "512345678"
   }'`}
-                        </pre>
+                            </pre>
+                            <p style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', margin: '0 0 6px' }}>Success Response (200 OK):</p>
+                            <pre style={{ background: isLight ? '#F1F5F9' : '#030712', padding: '12px', borderRadius: '8px', fontSize: '12px', color: '#22C55E', direction: 'ltr', textAlign: 'left', overflowX: 'auto', margin: 0 }}>
+{`{
+  "success": true,
+  "data": {
+    "orderId": "66a88f8c4b40f4a9f0d41010",
+    "orderNumber": "ORD-12345",
+    "status": "PENDING",
+    "idempotencyKey": "a9b8c7d6-e5f4-3210-fedc-ba9876543210"
+  }
+}`}
+                            </pre>
+                        </div>
                     </div>
 
-                    {/* Endpoint 4: Check Order */}
-                    <div className="developer-api-endpoint" style={{ background: isLight ? '#F8FAFC' : '#1e293b', border: isLight ? '1px solid #E2E8F0' : 'none', borderRadius: '12px', padding: '16px' }}>
-                        <div className="developer-api-endpoint-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                            <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>GET</span>
-                            <code style={{ fontSize: '15px', color: isLight ? '#0F172A' : '#f8fafc', fontWeight: '700' }}>/orders/{'{id}'}</code>
-                            <span style={{ color: isLight ? '#475569' : '#94a3b8', fontSize: '13px' }}>
-                                {isEn ? '- Query order status and retrieved vouchers/pins' : '- الاستعلام عن حالة الطلب والأكواد'}
-                            </span>
+                    {/* Section 6: Check Orders (Batch Support) */}
+                    <div style={{ marginBottom: '24px' }}>
+                        <h3 style={{ fontSize: '16px', fontWeight: '800', color: isLight ? '#0F172A' : '#F8FAFC', marginBottom: '8px' }}>
+                            6) {isEn ? 'Check Orders (Batch Support)' : 'الاستعلام عن حالة الطلبات (دعم الفحص الجماعي)'}
+                        </h3>
+                        <div style={{ background: isLight ? '#F8FAFC' : '#071224', border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.2)', borderRadius: '12px', padding: '16px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                                <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '800' }}>GET</span>
+                                <code style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#F8FAFC' }}>/orders?keys=uuid1,uuid2</code>
+                            </div>
+                            <pre style={{ background: isLight ? '#F1F5F9' : '#030712', border: isLight ? '1px solid #CBD5E1' : 'none', padding: '12px', borderRadius: '8px', fontSize: '12.5px', color: isLight ? '#0F172A' : '#38BDF8', direction: 'ltr', textAlign: 'left', overflowX: 'auto', marginBottom: '10px' }}>
+                                {`curl -X GET "${window.location.origin}/api/v1/reseller/orders?keys=uuid1,uuid2" \\
+  -H "x-api-key: ${apiKey || 'YOUR_TOKEN'}"`}
+                            </pre>
+                            <p style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', margin: '0 0 6px' }}>Success Response (200 OK):</p>
+                            <pre style={{ background: isLight ? '#F1F5F9' : '#030712', padding: '12px', borderRadius: '8px', fontSize: '12px', color: '#22C55E', direction: 'ltr', textAlign: 'left', overflowX: 'auto', margin: 0 }}>
+{`{
+  "success": true,
+  "data": [
+    {
+      "orderId": "66a88f8c4b40f4a9f0d41010",
+      "status": "COMPLETED",
+      "idempotencyKey": "uuid1"
+    }
+  ]
+}`}
+                            </pre>
                         </div>
-                        <pre style={{ background: isLight ? '#F1F5F9' : '#0f172a', border: isLight ? '1px solid #CBD5E1' : 'none', padding: 'clamp(10px, 2.5vw, 14px)', borderRadius: '8px', overflowX: 'auto', maxWidth: '100%', boxSizing: 'border-box', fontSize: '13px', color: isLight ? '#0F172A' : '#38bdf8', direction: 'ltr', textAlign: 'left', fontWeight: '600', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                            {`curl -X GET "${window.location.origin}/api/v1/external/orders/EMP-12345" \\
-  -H "X-API-Key: ${apiKey || 'YOUR_API_KEY'}" \\
-  -H "X-API-Secret: YOUR_API_SECRET"`}
-                        </pre>
+                    </div>
+
+                    {/* Section 7: Error Codes */}
+                    <div>
+                        <h3 style={{ fontSize: '16px', fontWeight: '800', color: isLight ? '#0F172A' : '#F8FAFC', marginBottom: '8px' }}>
+                            7) {isEn ? 'Error Handling & Standard Codes' : 'الأخطاء وأكواد الاستجابة القياسية'}
+                        </h3>
+                        <div style={{ background: isLight ? '#F8FAFC' : '#071224', border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.2)', borderRadius: '12px', padding: '16px' }}>
+                            <p style={{ fontSize: '12px', fontWeight: '700', color: '#EF4444', margin: '0 0 8px' }}>Standard Failure Response Format:</p>
+                            <pre style={{ background: isLight ? '#F1F5F9' : '#030712', padding: '12px', borderRadius: '8px', fontSize: '12px', color: '#F87171', direction: 'ltr', textAlign: 'left', overflowX: 'auto', marginBottom: '14px' }}>
+{`{
+  "success": false,
+  "error": { "code": 100, "message": "Insufficient balance" }
+}`}
+                            </pre>
+
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', textAlign: 'right' }}>
+                                    <thead>
+                                        <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: '#38BDF8' }}>
+                                            <th style={{ padding: '8px 10px' }}>كود الخطأ (Code)</th>
+                                            <th style={{ padding: '8px 10px' }}>الرسالة القياسية</th>
+                                            <th style={{ padding: '8px 10px' }}>الوصف والسبب</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style={{ color: isLight ? '#334155' : '#CBD5E1' }}>
+                                        <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                                            <td style={{ padding: '8px 10px', fontWeight: '800', color: '#EF4444' }}>100</td>
+                                            <td style={{ padding: '8px 10px', direction: 'ltr', textAlign: 'left' }}>Insufficient balance</td>
+                                            <td style={{ padding: '8px 10px' }}>رصيد المحفظة غير كافٍ لتنفيذ العملية</td>
+                                        </tr>
+                                        <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                                            <td style={{ padding: '8px 10px', fontWeight: '800', color: '#EF4444' }}>101</td>
+                                            <td style={{ padding: '8px 10px', direction: 'ltr', textAlign: 'left' }}>Product unavailable/inactive</td>
+                                            <td style={{ padding: '8px 10px' }}>المنتج المطلوب غير متاح أو متوقف مؤقتاً</td>
+                                        </tr>
+                                        <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                                            <td style={{ padding: '8px 10px', fontWeight: '800', color: '#EF4444' }}>102</td>
+                                            <td style={{ padding: '8px 10px', direction: 'ltr', textAlign: 'left' }}>Quantity out of range</td>
+                                            <td style={{ padding: '8px 10px' }}>الكمية المطلوبة خارج الحدود المسموح بها</td>
+                                        </tr>
+                                        <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                                            <td style={{ padding: '8px 10px', fontWeight: '800', color: '#F59E0B' }}>120</td>
+                                            <td style={{ padding: '8px 10px', direction: 'ltr', textAlign: 'left' }}>API Key missing</td>
+                                            <td style={{ padding: '8px 10px' }}>لم يتم إرسال ترويسة x-api-key في الطلب</td>
+                                        </tr>
+                                        <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                                            <td style={{ padding: '8px 10px', fontWeight: '800', color: '#F59E0B' }}>121</td>
+                                            <td style={{ padding: '8px 10px', direction: 'ltr', textAlign: 'left' }}>Invalid API Key</td>
+                                            <td style={{ padding: '8px 10px' }}>مفتاح الـ API غير صالح أو تم إبطاله</td>
+                                        </tr>
+                                        <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                                            <td style={{ padding: '8px 10px', fontWeight: '800', color: '#F59E0B' }}>122</td>
+                                            <td style={{ padding: '8px 10px', direction: 'ltr', textAlign: 'left' }}>API not allowed / Suspended</td>
+                                            <td style={{ padding: '8px 10px' }}>صلاحية الربط معلقة أو غير مفعلة للحساب</td>
+                                        </tr>
+                                        <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                                            <td style={{ padding: '8px 10px', fontWeight: '800', color: '#38BDF8' }}>123</td>
+                                            <td style={{ padding: '8px 10px', direction: 'ltr', textAlign: 'left' }}>Validation Error</td>
+                                            <td style={{ padding: '8px 10px' }}>نقص في الحقول المطلوبة (مثل معرّف اللاعب)</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ padding: '8px 10px', fontWeight: '800', color: '#94A3B8' }}>500</td>
+                                            <td style={{ padding: '8px 10px', direction: 'ltr', textAlign: 'left' }}>Internal Server Error</td>
+                                            <td style={{ padding: '8px 10px' }}>خطأ داخلي أثناء معالجة الطلب في الخادم</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

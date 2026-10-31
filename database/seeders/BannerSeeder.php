@@ -7,43 +7,22 @@ use Illuminate\Database\Seeder;
 
 class BannerSeeder extends Seeder
 {
+    /**
+     * Seeds clean primary official platform banner only.
+     */
     public function run(): void
     {
-        $banners = [
+        Banner::updateOrCreate(
+            ['link' => '/category/all'],
             [
-                'title' => 'إيداع فودافون كاش أوتوماتيك خلال 0 ثانية',
-                'subtitle' => 'أسرع وأسهل شحن رصيد للمحفظة فورياً',
-                'link' => '/deposit',
-                'image' => '/images/banners/banner_vodafone_cash.jpg',
+                'title' => 'مهره و سند كارد — خدماتك الرقمية والمالية في مكان واحد',
+                'subtitle' => 'شحن الألعاب، سحب التارجت، تحويل العملات وإصدار البطاقات الافتراضية بأفضل الأسعار وأسرع تنفيذ',
+                'link' => '/category/all',
+                'image' => '/images/mohra_sand_card_banner.png',
                 'type' => 'slider',
                 'is_active' => true,
                 'sort_order' => 1,
-            ],
-            [
-                'title' => 'أقل سعر في مصر لبرامج الدردشة الصوتية',
-                'subtitle' => 'عروض يومية مميزة على كوينز وباقات الشات',
-                'link' => '/category/apps',
-                'image' => '/images/banners/banner_chat_apps.jpg',
-                'type' => 'slider',
-                'is_active' => true,
-                'sort_order' => 2,
-            ],
-            [
-                'title' => 'انضم إلى مجتمعنا على واتساب',
-                'subtitle' => 'تابع أحدث التحديثات والعروض الحصرية',
-                'link' => 'https://whatsapp.com/channel/0029Vb97YHSB4hdZjFJysw14',
-                'image' => '/images/banners/whatsapp_channel_banner.jpg',
-                'type' => 'slider',
-                'is_active' => true,
-                'sort_order' => 3,
-            ],
-        ];
-
-        foreach ($banners as $bannerData) {
-            Banner::updateOrCreate(
-                ['title' => $bannerData['title']],
-                $bannerData
-            );
-        }
+            ]
+        );
     }
 }

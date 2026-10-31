@@ -62,7 +62,7 @@ export default function SettingsPage() {
         <MainLayout>
             {/* Header */}
             <div style={{ marginBottom: '28px' }}>
-                <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '900', color: 'var(--text-primary, #FFFFFF)' }}>
+                <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '900', color: '#F5D061' }}>
                     {t('settings', 'الإعدادات')}
                 </h1>
                 <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary, #9E9EA8)' }}>

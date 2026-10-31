@@ -73,7 +73,8 @@ export default class ErrorBoundary extends React.Component {
 
                     {this.state.error && (
                         <div style={{
-                            maxWidth: '600px',
+                            maxWidth: '750px',
+                            width: '100%',
                             background: 'rgba(239, 68, 68, 0.1)',
                             border: '1px solid rgba(239, 68, 68, 0.3)',
                             borderRadius: '12px',
@@ -85,8 +86,21 @@ export default class ErrorBoundary extends React.Component {
                             direction: 'ltr',
                             fontFamily: 'monospace',
                             wordBreak: 'break-all',
+                            maxHeight: '260px',
+                            overflowY: 'auto',
+                            whiteSpace: 'pre-wrap',
                         }}>
-                            {this.state.error.toString()}
+                            <strong>{this.state.error.toString()}</strong>
+                            {this.state.error.stack && (
+                                <div style={{ marginTop: '8px', opacity: 0.85, fontSize: '11px' }}>
+                                    {this.state.error.stack}
+                                </div>
+                            )}
+                            {this.state.errorInfo?.componentStack && (
+                                <div style={{ marginTop: '8px', color: '#FCD34D', fontSize: '11px' }}>
+                                    {this.state.errorInfo.componentStack}
+                                </div>
+                            )}
                         </div>
                     )}
 

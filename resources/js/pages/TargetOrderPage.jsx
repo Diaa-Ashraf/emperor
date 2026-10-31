@@ -24,6 +24,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { formatImageUrl } from '../utils/imageHelper';
 
 export default function TargetOrderPage() {
     const { theme } = useTheme();
@@ -161,14 +162,15 @@ export default function TargetOrderPage() {
         return (
             <MainLayout>
                 <div style={{
-                    maxWidth: '560px',
+                    width: '100%',
+                    maxWidth: '680px',
                     margin: '40px auto',
-                    background: '#0E0E14',
-                    border: '1px solid #D4A537',
+                    background: 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                    border: '1.5px solid rgba(56, 189, 248, 0.45)',
                     borderRadius: '24px',
                     padding: '40px 32px',
                     textAlign: 'center',
-                    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 165, 55, 0.15)',
+                    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15)',
                 }}>
                     <div style={{
                         width: '80px',
@@ -237,7 +239,7 @@ export default function TargetOrderPage() {
 
     return (
         <MainLayout>
-            <div style={{ maxWidth: '680px', margin: '0 auto', paddingBottom: '60px' }}>
+            <div style={{ width: '100%', maxWidth: '880px', margin: '0 auto', paddingBottom: '60px' }}>
 
                 {/* Top Action / Nav Bar */}
                 <div style={{
@@ -254,9 +256,9 @@ export default function TargetOrderPage() {
                             gap: '8px',
                             padding: '8px 18px',
                             borderRadius: '20px',
-                            background: isLight ? '#FFFFFF' : 'rgba(212, 165, 55, 0.08)',
-                            border: isLight ? '1px solid #D4A537' : '1px solid rgba(212, 165, 55, 0.25)',
-                            color: isLight ? '#B45309' : '#F5D061',
+                            background: isLight ? '#FFFFFF' : 'rgba(9, 23, 46, 0.85)',
+                            border: isLight ? '1px solid #D4A537' : '1px solid rgba(56, 189, 248, 0.35)',
+                            color: isLight ? '#B45309' : '#38BDF8',
                             fontSize: '13px',
                             fontWeight: '700',
                             textDecoration: 'none',
@@ -274,9 +276,9 @@ export default function TargetOrderPage() {
                             gap: '6px',
                             padding: '8px 18px',
                             borderRadius: '20px',
-                            background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.04)',
-                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.1)',
-                            color: isLight ? '#0F172A' : '#D1D1DB',
+                            background: isLight ? '#FFFFFF' : 'rgba(9, 23, 46, 0.75)',
+                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.3)',
+                            color: isLight ? '#0F172A' : '#F5D061',
                             fontSize: '13px',
                             fontWeight: '700',
                             cursor: 'pointer',
@@ -292,8 +294,8 @@ export default function TargetOrderPage() {
                 <div
                     onClick={() => setShowWithdrawalModal(true)}
                     style={{
-                        background: isLight ? '#FFFFFF' : '#0D0D12',
-                        border: isLight ? '1.5px solid #D4A537' : '1px solid #D4A537',
+                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                        border: isLight ? '1.5px solid #D4A537' : '1.5px solid rgba(56, 189, 248, 0.45)',
                         borderRadius: '22px',
                         padding: '16px 20px',
                         marginBottom: '18px',
@@ -301,27 +303,27 @@ export default function TargetOrderPage() {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         cursor: 'pointer',
-                        boxShadow: isLight ? '0 8px 24px rgba(0, 0, 0, 0.06)' : '0 8px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 165, 55, 0.1)',
+                        boxShadow: isLight ? '0 8px 24px rgba(0, 0, 0, 0.06)' : '0 8px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.15)',
                         transition: 'all 0.2s ease',
                     }}
                     onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = '#F5D061';
+                        e.currentTarget.style.borderColor = '#38BDF8';
                         e.currentTarget.style.transform = 'translateY(-2px)';
                     }}
                     onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = '#D4A537';
+                        e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.45)';
                         e.currentTarget.style.transform = 'translateY(0)';
                     }}
                 >
-                    <div style={{ color: '#D4A537', display: 'flex', alignItems: 'center' }}>
+                    <div style={{ color: '#38BDF8', display: 'flex', alignItems: 'center' }}>
                         {isRtl ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
                     </div>
 
                     <div style={{ textAlign: 'center', flex: 1, padding: '0 12px' }}>
-                        <div style={{ fontSize: '15px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', marginBottom: '3px' }}>
+                        <div style={{ fontSize: '15px', fontWeight: '900', color: isLight ? '#0F172A' : '#F5D061', marginBottom: '3px' }}>
                             اضغط هنا للاطلاع على بيانات السحب
                         </div>
-                        <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#9E9EA8', fontWeight: '600' }}>
+                        <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#94A3B8', fontWeight: '600' }}>
                             اضغط على البطاقة لعرض آيدي السحب ومدة التنفيذ
                         </div>
                     </div>
@@ -341,14 +343,10 @@ export default function TargetOrderPage() {
                     }}>
                         {Boolean(activeApp.icon_url || activeApp.iconUrl || activeApp.image_url) ? (
                             <img
-                                src={(() => {
-                                    const u = activeApp.icon_url || activeApp.iconUrl || activeApp.image_url;
-                                    return typeof u === 'string' && u.includes('/storage/')
-                                        ? ('/storage/' + u.split('/storage/')[1])
-                                        : u;
-                                })()}
+                                src={formatImageUrl(activeApp.icon_url || activeApp.iconUrl || activeApp.image_url)}
                                 alt={activeApp.name}
                                 style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }}
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
                             />
                         ) : (
                             <Smartphone size={24} color={isLight ? '#B45309' : '#F5D061'} strokeWidth={1.8} />
@@ -365,31 +363,31 @@ export default function TargetOrderPage() {
                 }}>
                     {/* Rate Pill */}
                     <div style={{
-                        background: isLight ? '#FFFFFF' : '#121218',
-                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.4)',
+                        background: isLight ? '#FFFFFF' : 'rgba(9, 23, 46, 0.85)',
+                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.35)',
                         borderRadius: '18px',
                         padding: '14px 16px',
                         textAlign: 'center',
                         boxShadow: isLight ? '0 4px 12px rgba(0,0,0,0.03)' : 'none',
                     }}>
-                        <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#9E9EA8', marginBottom: '4px', fontWeight: '600' }}>
+                        <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#94A3B8', marginBottom: '4px', fontWeight: '600' }}>
                             سعر الصرف
                         </div>
-                        <div style={{ fontSize: '15px', fontWeight: '900', color: '#16A34A' }}>
+                        <div style={{ fontSize: '15px', fontWeight: '900', color: '#38BDF8' }}>
                             {exchangeRate} EGP / دولار
                         </div>
                     </div>
 
                     {/* Commission Pill */}
                     <div style={{
-                        background: isLight ? '#FFFFFF' : '#121218',
-                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.4)',
+                        background: isLight ? '#FFFFFF' : 'rgba(9, 23, 46, 0.85)',
+                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.35)',
                         borderRadius: '18px',
                         padding: '14px 16px',
                         textAlign: 'center',
                         boxShadow: isLight ? '0 4px 12px rgba(0,0,0,0.03)' : 'none',
                     }}>
-                        <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#9E9EA8', marginBottom: '4px', fontWeight: '600' }}>
+                        <div style={{ fontSize: '12px', color: isLight ? '#64748B' : '#94A3B8', marginBottom: '4px', fontWeight: '600' }}>
                             نسبة العمولة
                         </div>
                         <div style={{ fontSize: '15px', fontWeight: '900', color: isLight ? '#B45309' : '#F5D061' }}>
@@ -400,11 +398,11 @@ export default function TargetOrderPage() {
 
                 {/* Main Order Form Card */}
                 <div style={{
-                    background: isLight ? '#FFFFFF' : '#0B0B0F',
-                    border: isLight ? '1px solid #E2E8F0' : '1px solid #D4A537',
+                    background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                    border: isLight ? '1px solid #E2E8F0' : '1.5px solid rgba(56, 189, 248, 0.45)',
                     borderRadius: '24px',
                     padding: '24px 20px',
-                    boxShadow: isLight ? '0 10px 30px rgba(0, 0, 0, 0.05)' : '0 12px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 165, 55, 0.08)',
+                    boxShadow: isLight ? '0 10px 30px rgba(0, 0, 0, 0.05)' : '0 12px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.1)',
                 }}>
                     {/* Card Header with Agency ID on Top Left */}
                     <div style={{
@@ -843,8 +841,8 @@ export default function TargetOrderPage() {
 
                         {/* Warning Box */}
                         <div style={{
-                            background: isLight ? '#FFFBEB' : '#121218',
-                            border: isLight ? '1px solid #FCD34D' : '1px solid #D4A537',
+                            background: isLight ? '#FFFBEB' : 'rgba(9, 23, 46, 0.85)',
+                            border: isLight ? '1px solid #FCD34D' : '1px solid rgba(56, 189, 248, 0.35)',
                             borderRadius: '14px',
                             padding: '14px 18px',
                             marginBottom: '24px',
@@ -915,12 +913,12 @@ export default function TargetOrderPage() {
                 }}>
                     <div style={{
                         width: '100%',
-                        maxWidth: '460px',
-                        background: isLight ? '#FFFFFF' : '#0B0B0F',
-                        border: isLight ? '1.5px solid #E2E8F0' : '1.5px solid #D4A537',
+                        maxWidth: '520px',
+                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                        border: isLight ? '1.5px solid #E2E8F0' : '1.5px solid rgba(56, 189, 248, 0.45)',
                         borderRadius: '26px',
                         padding: '28px 24px',
-                        boxShadow: isLight ? '0 25px 70px rgba(0, 0, 0, 0.2)' : '0 25px 70px rgba(0, 0, 0, 0.95), 0 0 40px rgba(212, 165, 55, 0.2)',
+                        boxShadow: isLight ? '0 25px 70px rgba(0, 0, 0, 0.2)' : '0 25px 70px rgba(0, 0, 0, 0.95), 0 0 40px rgba(56, 189, 248, 0.2)',
                         animation: 'scaleUp 0.25s ease-out',
                     }}>
                         {/* Modal Header */}
@@ -971,14 +969,10 @@ export default function TargetOrderPage() {
                                 }}>
                                     {Boolean(activeApp.icon_url || activeApp.iconUrl || activeApp.image_url) ? (
                                         <img
-                                            src={(() => {
-                                                const u = activeApp.icon_url || activeApp.iconUrl || activeApp.image_url;
-                                                return typeof u === 'string' && u.includes('/storage/')
-                                                    ? ('/storage/' + u.split('/storage/')[1])
-                                                    : u;
-                                            })()}
+                                            src={formatImageUrl(activeApp.icon_url || activeApp.iconUrl || activeApp.image_url)}
                                             alt={activeApp.name}
                                             style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }}
+                                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                         />
                                     ) : (
                                         <Smartphone size={22} color={isLight ? '#B45309' : '#F5D061'} strokeWidth={1.8} />

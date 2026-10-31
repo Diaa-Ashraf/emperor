@@ -8,23 +8,28 @@ export function getSiteSettings() {
 }
 
 export function getSiteName() {
-    return window.__APP_SETTINGS__?.site_name || 'إمبراطور';
+    return window.__APP_SETTINGS__?.site_name || 'مهره و سند كارد';
 }
 
 export function getSiteDescription() {
-    return window.__APP_SETTINGS__?.site_description || 'شحن ألعاب، بطاقات رقمية وبيع تارجت';
+    return window.__APP_SETTINGS__?.site_description || 'خدماتك الرقمية والمالية في مكان واحد';
 }
 
 export function getSiteLogo() {
-    return window.__APP_SETTINGS__?.site_logo || '/images/logo.png';
+    return window.__APP_SETTINGS__?.site_logo || '/images/mohra_sand_logo.png';
 }
 
 export function getSiteFavicon() {
-    return window.__APP_SETTINGS__?.site_favicon || window.__APP_SETTINGS__?.site_logo || '/images/logo.png';
+    return window.__APP_SETTINGS__?.site_favicon || window.__APP_SETTINGS__?.site_logo || '/images/mohra_sand_logo.png';
 }
 
 export function getFooterSlogan() {
-    return window.__APP_SETTINGS__?.footer_slogan || 'المنصة الرائدة والأولى لشحن الألعاب والبطاقات الرقمية وبيع التارجت بأفضل الأسعار.';
+    return window.__APP_SETTINGS__?.footer_slogan || 'مهره و سند كارد — خدماتك الرقمية والمالية في مكان واحد';
+}
+
+export function getHeroServices() {
+    const services = window.__APP_SETTINGS__?.hero_services;
+    return Array.isArray(services) && services.length > 0 ? services : null;
 }
 
 export function getWhatsAppSupport() {
@@ -72,8 +77,8 @@ export function getAnnouncement() {
 
 export function getTargetAgencySettings() {
     return {
-        id: window.__APP_SETTINGS__?.target_agency_id || 'EMP-TARGET-001',
-        name: window.__APP_SETTINGS__?.target_agency_name || 'وكالة إمبراطور الرسمية',
+        id: window.__APP_SETTINGS__?.target_agency_id || 'SAND-MOHRA-001',
+        name: window.__APP_SETTINGS__?.target_agency_name || 'وكالة سند ومهره الرسمية',
     };
 }
 

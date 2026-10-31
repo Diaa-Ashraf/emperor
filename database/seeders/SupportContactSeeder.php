@@ -16,12 +16,12 @@ class SupportContactSeeder extends Seeder
         Setting::set('referral_trigger', 'deposit');
         Setting::set('referral_terms', 'يحصل المحيل على نسبة عمولة تلقائية بقيمة 2.5% تُضاف لمحفظته فور تأكيد شحن الرصيد من قِبل أي صديق مسجل برابطه.');
 
-        // 2. Official Customer Support Contacts
+        // 2. Clean Platform Support Contacts
         SupportContact::updateOrCreate(
             ['channel' => 'whatsapp'],
             [
                 'name' => 'خدمة العملاء والشحن السريع (واتساب)',
-                'value' => '+201025515743',
+                'value' => '+201000000000',
                 'description' => 'متاح على مدار الساعة للإيداع والاستفسارات السريعة',
                 'is_active' => true,
                 'sort_order' => 1,
@@ -32,7 +32,7 @@ class SupportContactSeeder extends Seeder
             ['channel' => 'telegram'],
             [
                 'name' => 'قناة الدعم الفني الرسمية (تيليجرام)',
-                'value' => '@EmperorSupport_Bot',
+                'value' => '@MohraSandSupport',
                 'description' => 'تحديثات الأسعار والعروض والدعم الفني المباشر',
                 'is_active' => true,
                 'sort_order' => 2,
@@ -43,7 +43,7 @@ class SupportContactSeeder extends Seeder
             ['channel' => 'email'],
             [
                 'name' => 'بريد الاستفسارات والشكاوى',
-                'value' => 'support@emperor-topup.com',
+                'value' => 'support@mohra-sand.com',
                 'description' => 'للشكاوى والاقتراحات وعقود الوكلاء والموزعين',
                 'is_active' => true,
                 'sort_order' => 3,

@@ -19,17 +19,15 @@ class ProviderManagerService
     public function resolveAdapter(string $driver, array $config = []): ProviderAdapter
     {
         $className = match ($driver) {
-            'hala', 'hala_api' => \App\Adapters\Providers\HalaAdapter::class,
-            'tami', 'tami_api' => \App\Adapters\Providers\TamiAdapter::class,
-            'ka_cards_api' => \App\Adapters\Providers\KaCardsProviderAdapter::class,
-            default => \App\Adapters\Providers\ManualProviderAdapter::class,
+            'manual', 'manual_review' => \App\Adapters\Providers\ManualProviderAdapter::class,
+            default => \App\Adapters\Providers\EmbratorProviderAdapter::class,
         };
 
         if (class_exists($className)) {
             return new $className($config);
         }
 
-        return new \App\Adapters\Providers\ManualProviderAdapter($config);
+        return new \App\Adapters\Providers\EmbratorProviderAdapter($config);
     }
 
     /**

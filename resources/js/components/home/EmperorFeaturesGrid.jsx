@@ -49,7 +49,7 @@ export default function EmperorFeaturesGrid() {
             <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 32px' }}>
                 <div className="emperor-badge" style={{ margin: '0 auto 12px' }}>
                     <Award size={13} color="var(--gold-400)" />
-                    <span>المعايير القياسية لإمبراطور</span>
+                    <span>المعايير القياسية لسند ومهره كارد</span>
                 </div>
                 <h2 style={{
                     fontSize: 'clamp(22px, 3.5vw, 28px)',
@@ -57,7 +57,7 @@ export default function EmperorFeaturesGrid() {
                     color: 'var(--text-primary)',
                     marginBottom: '8px',
                 }}>
-                    لماذا يفضل مئات الآلاف إمبراطور؟
+                    لماذا يفضل مئات الآلاف سند ومهره كارد؟
                 </h2>
                 <p style={{
                     fontSize: '13.5px',

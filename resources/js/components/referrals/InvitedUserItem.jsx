@@ -69,7 +69,7 @@ export default function InvitedUserItem({ invitedUser }) {
 
                 <div>
                     <h4 style={{ margin: '0 0 2px', fontSize: '15px', fontWeight: '800', color: '#FFFFFF' }}>
-                        {invitedUser.name || 'مستخدم إمبراطور'}
+                        {invitedUser.name || 'مستخدم سند ومهره'}
                     </h4>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#8E8E98' }}>

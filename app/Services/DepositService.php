@@ -135,4 +135,122 @@ class DepositService
 
         event(new DepositRejected($request));
     }
+
+    /**
+     * Get active supported countries with metadata and flags dynamically.
+     *
+     * @return array<int, array{id: string, code: string, name: string, full_name: string, flag: string, currency: string, methods_count: int}>
+     */
+    public function getSupportedCountries(): array
+    {
+        $methods = PaymentMethod::where('is_active', true)
+            ->where('allow_deposit', true)
+            ->select(['id', 'country', 'country_name', 'currency', 'sort_order'])
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        $flagMap = [
+            'egypt' => '🇪🇬',
+            'eg' => '🇪🇬',
+            'مصر' => '🇪🇬',
+            'palestine' => '🇵🇸',
+            'ps' => '🇵🇸',
+            'فلسطين' => '🇵🇸',
+            'jordan' => '🇯🇴',
+            'jo' => '🇯🇴',
+            'الأردن' => '🇯🇴',
+            'syria' => '🇸🇾',
+            'sy' => '🇸🇾',
+            'سوريا' => '🇸🇾',
+            'saudi' => '🇸🇦',
+            'sa' => '🇸🇦',
+            'السعودية' => '🇸🇦',
+            'المملكة العربية السعودية' => '🇸🇦',
+            'uae' => '🇦🇪',
+            'ae' => '🇦🇪',
+            'الإمارات' => '🇦🇪',
+            'الإمارات العربية المتحدة' => '🇦🇪',
+            'yemen' => '🇾🇪',
+            'ye' => '🇾🇪',
+            'اليمن' => '🇾🇪',
+            'turkey' => '🇹🇷',
+            'tr' => '🇹🇷',
+            'تركيا' => '🇹🇷',
+            'lebanon' => '🇱🇧',
+            'lb' => '🇱🇧',
+            'لبنان' => '🇱🇧',
+            'kuwait' => '🇰🇼',
+            'kw' => '🇰🇼',
+            'الكويت' => '🇰🇼',
+            'qatar' => '🇶🇦',
+            'qa' => '🇶🇦',
+            'قطر' => '🇶🇦',
+            'oman' => '🇴🇲',
+            'om' => '🇴🇲',
+            'عمان' => '🇴🇲',
+            'سلطنة عمان' => '🇴🇲',
+            'bahrain' => '🇧🇭',
+            'bh' => '🇧🇭',
+            'البحرين' => '🇧🇭',
+            'iraq' => '🇮🇶',
+            'iq' => '🇮🇶',
+            'العراق' => '🇮🇶',
+            'libya' => '🇱🇾',
+            'ly' => '🇱🇾',
+            'ليبيا' => '🇱🇾',
+            'algeria' => '🇩🇿',
+            'dz' => '🇩🇿',
+            'الجزائر' => '🇩🇿',
+            'morocco' => '🇲🇦',
+            'ma' => '🇲🇦',
+            'المغرب' => '🇲🇦',
+            'sudan' => '🇸🇩',
+            'sd' => '🇸🇩',
+            'السودان' => '🇸🇩',
+            'crypto' => '🌐',
+            'usdt' => '🪙',
+        ];
+
+        $countries = [];
+        $seen = [];
+
+        foreach ($methods as $method) {
+            $rawCountry = strtolower(trim((string) ($method->country ?: 'other')));
+            $rawName = trim((string) ($method->country_name ?: $method->name));
+
+            $key = $rawCountry !== 'other' ? $rawCountry : strtolower($rawName);
+
+            if (isset($seen[$key])) {
+                $countries[$seen[$key]]['methods_count']++;
+                continue;
+            }
+
+            // Clean display name by stripping "تحويل " prefix
+            $cleanName = trim((string) preg_replace('/^تحويل\s+/u', '', $rawName));
+            if (empty($cleanName)) {
+                $cleanName = $rawName;
+            }
+
+            // Flag detection
+            $flag = $flagMap[$rawCountry] 
+                ?? $flagMap[strtolower($cleanName)] 
+                ?? $flagMap[strtolower($rawName)] 
+                ?? '🌐';
+
+            $index = count($countries);
+            $seen[$key] = $index;
+
+            $countries[] = [
+                'id' => $rawCountry,
+                'code' => strtoupper(substr($rawCountry, 0, 2)),
+                'name' => $cleanName,
+                'full_name' => $rawName,
+                'flag' => $flag,
+                'currency' => $method->currency ?: 'USD',
+                'methods_count' => 1,
+            ];
+        }
+
+        return $countries;
+    }
 }

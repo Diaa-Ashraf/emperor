@@ -68,7 +68,7 @@ export default function CustomerReviewsSection() {
                     color: 'var(--text-secondary)',
                     margin: 0,
                 }}>
-                    أكثر من 50,000 عميل وتاجر يثقون في منصة إمبراطور يومياً
+                    أكثر من 50,000 عميل وتاجر يثقون في منصة سند ومهره كارد يومياً
                 </p>
             </div>
 

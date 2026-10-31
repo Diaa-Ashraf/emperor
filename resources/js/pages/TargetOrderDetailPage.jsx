@@ -108,7 +108,7 @@ export default function TargetOrderDetailPage() {
 
     return (
         <MainLayout>
-            <div style={{ maxWidth: '640px', margin: '0 auto', paddingBottom: '60px' }}>
+            <div style={{ width: '100%', maxWidth: '880px', margin: '0 auto', paddingBottom: '60px' }}>
                 {/* Nav Bar */}
                 <div style={{
                     display: 'flex',
@@ -122,7 +122,7 @@ export default function TargetOrderDetailPage() {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '8px',
-                            color: '#D4A537',
+                            color: '#38BDF8',
                             fontSize: '13px',
                             fontWeight: '700',
                             textDecoration: 'none',
@@ -139,9 +139,9 @@ export default function TargetOrderDetailPage() {
                             gap: '6px',
                             padding: '8px 18px',
                             borderRadius: '20px',
-                            background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.04)',
-                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.1)',
-                            color: isLight ? '#0F172A' : '#D1D1DB',
+                            background: isLight ? '#FFFFFF' : 'rgba(9, 23, 46, 0.75)',
+                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.3)',
+                            color: isLight ? '#0F172A' : '#F5D061',
                             fontSize: '13px',
                             fontWeight: '700',
                             cursor: 'pointer',
@@ -155,13 +155,13 @@ export default function TargetOrderDetailPage() {
 
                 {/* Status Card */}
                 <div style={{
-                    background: isLight ? '#FFFFFF' : '#0D0D12',
-                    border: isLight ? '1px solid #E2E8F0' : `1px solid ${order.auto_verified ? '#22C55E' : '#D4A537'}`,
+                    background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                    border: isLight ? '1px solid #E2E8F0' : `1.5px solid ${order.auto_verified ? '#22C55E' : 'rgba(56, 189, 248, 0.45)'}`,
                     borderRadius: '24px',
                     padding: '28px 24px',
                     textAlign: 'center',
                     marginBottom: '20px',
-                    boxShadow: isLight ? '0 8px 25px rgba(0, 0, 0, 0.05)' : '0 12px 40px rgba(0, 0, 0, 0.8)',
+                    boxShadow: isLight ? '0 8px 25px rgba(0, 0, 0, 0.05)' : '0 12px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(56, 189, 248, 0.1)',
                     position: 'relative',
                     overflow: 'hidden',
                 }}>

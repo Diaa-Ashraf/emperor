@@ -3,8 +3,9 @@
    ========================================================================== */
 
 .emperor-deposit-container {
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
     padding: 12px 16px 90px;
     box-sizing: border-box;
 }
@@ -13,14 +14,14 @@
    TOP HERO HEADER CARD
    ══════════════════════════════════════════════════════════════════════ */
 .deposit-hero-banner {
-    background: linear-gradient(135deg, rgba(20, 15, 25, 0.88) 0%, rgba(10, 8, 15, 0.96) 100%), url('/images/artwork/hero_banner.jpg') center/cover no-repeat;
-    border: 1.5px solid rgba(212, 165, 55, 0.45);
+    background: linear-gradient(135deg, rgba(7, 18, 36, 0.94) 0%, rgba(5, 12, 24, 0.98) 100%), url('/images/artwork/hero_banner.jpg') center/cover no-repeat;
+    border: 1.5px solid rgba(56, 189, 248, 0.45);
     border-radius: 24px;
     padding: clamp(16px, 3.5vw, 28px);
     margin-bottom: 22px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 165, 55, 0.15);
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15);
     transition: all 0.3s ease;
 }
 
@@ -31,7 +32,7 @@
     right: -15%;
     width: 380px;
     height: 380px;
-    background: radial-gradient(circle, rgba(212, 165, 55, 0.18) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, transparent 70%);
     pointer-events: none;
 }
 
@@ -48,7 +49,7 @@
 .deposit-hero-title {
     font-size: clamp(22px, 3.5vw, 30px);
     font-weight: 900;
-    color: #ffffff;
+    color: #F5D061;
     margin: 0 0 6px 0;
     letter-spacing: -0.3px;
     display: flex;
@@ -65,14 +66,14 @@
 }
 
 .deposit-balance-capsule {
-    background: rgba(14, 14, 20, 0.85);
-    border: 1.5px solid rgba(212, 165, 55, 0.45);
+    background: rgba(7, 18, 36, 0.9);
+    border: 1.5px solid rgba(56, 189, 248, 0.45);
     border-radius: 18px;
     padding: 12px 22px;
     text-align: center;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 165, 55, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.15);
 }
 
 .deposit-balance-label {
@@ -192,37 +193,79 @@
     gap: 16px;
 }
 
+/* ══════════════════════════════════════════════════════════════
+   ROTATING RAINBOW BORDER BEAM ANIMATION (LIKE HOMEPAGE)
+   ══════════════════════════════════════════════════════════════ */
+@keyframes emperorDepositRainbowSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 .ka-deposit-card {
-    background: linear-gradient(180deg, #881124 0%, #560815 55%, #38030D 100%);
-    border: 1.5px solid rgba(239, 68, 68, 0.45);
-    border-radius: 20px;
-    padding: 16px 14px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75), 0 0 20px rgba(185, 28, 28, 0.25);
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
     position: relative;
+    border-radius: 24px;
+    padding: 2px; /* Border beam thickness */
     overflow: hidden;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.75), 0 0 20px rgba(56, 189, 248, 0.15);
+    display: flex;
     user-select: none;
 }
 
 .ka-deposit-card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 90px;
-    background: radial-gradient(ellipse at top, rgba(239, 68, 68, 0.2) 0%, transparent 70%);
-    pointer-events: none;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        #38BDF8 45deg,
+        #F5D061 90deg,
+        #10B981 150deg,
+        transparent 210deg,
+        #EC4899 270deg,
+        #38BDF8 330deg,
+        transparent 360deg
+    );
+    animation: emperorDepositRainbowSpin 4.5s linear infinite;
+    z-index: 0;
 }
 
 .ka-deposit-card:hover {
-    transform: translateY(-5px);
-    border-color: #EF4444;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 28px rgba(239, 68, 68, 0.35);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.85), 0 0 35px rgba(56, 189, 248, 0.45);
+}
+
+.ka-deposit-card:hover::before {
+    animation-duration: 2.2s;
+}
+
+.ka-deposit-card-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #07152b 0%, #040c1a 100%);
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: background 0.25s ease;
+}
+
+.ka-deposit-card:hover .ka-deposit-card-inner {
+    background: linear-gradient(180deg, #091a35 0%, #051022 100%);
 }
 
 /* Card Header Pills */
@@ -255,19 +298,27 @@
     gap: 4px;
 }
 
-/* Elevated White Capsule with Brand Logo */
+/* Luxury Dark Emblem Capsule for Brand Logo (Replaced stark white box) */
 .ka-card-white-capsule {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 12px 8px;
+    background: radial-gradient(circle at center, rgba(30, 58, 138, 0.35) 0%, rgba(6, 15, 30, 0.9) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 18px;
+    padding: 14px 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 10px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.4);
     position: relative;
     z-index: 2;
-    min-height: 74px;
+    min-height: 80px;
+    transition: all 0.25s ease;
+}
+
+.ka-deposit-card:hover .ka-card-white-capsule {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: radial-gradient(circle at center, rgba(30, 64, 160, 0.45) 0%, rgba(8, 18, 38, 0.95) 100%);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3), 0 0 22px rgba(56, 189, 248, 0.25);
 }
 
 .ka-card-logo-circle {
@@ -371,16 +422,16 @@
    DETAIL DEPOSIT FORM / SUBMIT CARD
    ══════════════════════════════════════════════════════════════════════ */
 .deposit-form-card {
-    background: linear-gradient(180deg, #151522 0%, #0d0d14 100%);
-    border: 1.5px solid rgba(212, 165, 55, 0.45);
+    background: linear-gradient(180deg, #09172e 0%, #060e1d 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.45);
     border-radius: 24px;
     padding: clamp(18px, 3.5vw, 32px);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 165, 55, 0.15);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.2);
 }
 
 .deposit-account-box {
-    background: linear-gradient(135deg, rgba(212, 165, 55, 0.1) 0%, rgba(18, 18, 26, 0.95) 100%);
-    border: 1.5px solid rgba(212, 165, 55, 0.4);
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(9, 23, 46, 0.95) 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.4);
     border-radius: 16px;
     padding: 16px;
     margin-bottom: 20px;
@@ -463,17 +514,21 @@
 }
 
 .light .ka-deposit-card {
-    background: #ffffff;
-    border: 1.5px solid #E2E8F0;
+    background: transparent;
+    border: none;
     box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
 }
 
-.light .ka-deposit-card::before {
-    display: none;
+.light .ka-deposit-card-inner {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+    border: 1px solid #E2E8F0;
+}
+
+.light .ka-deposit-card:hover .ka-deposit-card-inner {
+    background: #FFFFFF;
 }
 
 .light .ka-deposit-card:hover {
-    border-color: #D4A537;
     box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12), 0 0 20px rgba(212, 165, 55, 0.25);
 }
 
@@ -488,7 +543,7 @@
 }
 
 .light .ka-card-white-capsule {
-    background: #F8FAFC;
+    background: linear-gradient(145deg, #F8FAFC 0%, #EDF2F7 100%);
     border: 1px solid #E2E8F0;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.03);
 }
@@ -634,6 +689,11 @@
     }
 
     .ka-deposit-card {
+        padding: 2px !important;
+        border-radius: 16px !important;
+    }
+
+    .ka-deposit-card-inner {
         padding: 8px 6px !important;
         border-radius: 14px !important;
     }

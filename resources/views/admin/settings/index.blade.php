@@ -87,6 +87,63 @@
                         </div>
                     </div>
 
+                    <!-- 3. Hero Core Services Capsules -->
+                    <div class="card p-4 mb-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
+                                <i class="ti ti-layout-grid text-gold"></i>
+                                <span>كبسولات الخدمات بالصفحة الرئيسية (Hero Services Capsules)</span>
+                            </h5>
+                            <span class="badge bg-dark border border-secondary text-info">تظهر أسفل شريط البحث</span>
+                        </div>
+                        <p class="text-muted fs-7 mb-3">يمكنك تعديل أسماء وروابط وأيقونات الخدمات الخمس الظاهرة بالصفحة الرئيسية مباشرة، أو تعطيل/تفعيل أي منها.</p>
+
+                        <div class="d-flex flex-column gap-3">
+                            @foreach($heroServices as $idx => $srv)
+                                <div class="p-3 rounded-3 border border-secondary" style="background: rgba(255, 255, 255, 0.02);">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge bg-gold text-dark fw-bold">#{{ $idx + 1 }}</span>
+                                            <span class="text-white fw-bold fs-7">{{ $srv['title'] ?? 'خدمة' }}</span>
+                                        </div>
+                                        <div class="form-check form-switch mb-0">
+                                            <input type="hidden" name="hero_services[{{ $idx }}][is_active]" value="0">
+                                            <input class="form-check-input" type="checkbox" name="hero_services[{{ $idx }}][is_active]" value="1" id="srv_active_{{ $idx }}" {{ !isset($srv['is_active']) || $srv['is_active'] ? 'checked' : '' }}>
+                                            <label class="form-check-label text-muted fs-8" for="srv_active_{{ $idx }}">مفعّل</label>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="hero_services[{{ $idx }}][id]" value="{{ $srv['id'] ?? ($idx + 1) }}">
+
+                                    <div class="row g-2">
+                                        <div class="col-12 col-md-6">
+                                            <label class="form-label text-muted fs-8 mb-1">عنوان الخدمة</label>
+                                            <input type="text" name="hero_services[{{ $idx }}][title]" class="form-control form-control-sm" value="{{ old('hero_services.'.$idx.'.title', $srv['title'] ?? '') }}" required>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <label class="form-label text-muted fs-8 mb-1">الوصف الفرعي المختصر</label>
+                                            <input type="text" name="hero_services[{{ $idx }}][subtitle]" class="form-control form-control-sm" value="{{ old('hero_services.'.$idx.'.subtitle', $srv['subtitle'] ?? '') }}">
+                                        </div>
+                                        <div class="col-12 col-md-7">
+                                            <label class="form-label text-muted fs-8 mb-1">الرابط الموجه إليه</label>
+                                            <input type="text" name="hero_services[{{ $idx }}][link]" class="form-control form-control-sm font-monospace" value="{{ old('hero_services.'.$idx.'.link', $srv['link'] ?? '') }}" placeholder="/category/games أو /deposit أو https://...">
+                                        </div>
+                                        <div class="col-12 col-md-5">
+                                            <label class="form-label text-muted fs-8 mb-1">الأيقونة</label>
+                                            <select name="hero_services[{{ $idx }}][icon]" class="form-select form-select-sm">
+                                                <option value="credit-card" {{ ($srv['icon'] ?? '') == 'credit-card' ? 'selected' : '' }}>بطاقة فيزا (credit-card)</option>
+                                                <option value="coins" {{ ($srv['icon'] ?? '') == 'coins' ? 'selected' : '' }}>عملات وتحويل (coins)</option>
+                                                <option value="target" {{ ($srv['icon'] ?? '') == 'target' ? 'selected' : '' }}>سحب تارجت (target)</option>
+                                                <option value="gamepad-2" {{ ($srv['icon'] ?? '') == 'gamepad-2' ? 'selected' : '' }}>ألعاب (gamepad-2)</option>
+                                                <option value="smartphone" {{ ($srv['icon'] ?? '') == 'smartphone' ? 'selected' : '' }}>موبايل وتطبيقات (smartphone)</option>
+                                                <option value="sparkles" {{ ($srv['icon'] ?? '') == 'sparkles' ? 'selected' : '' }}>نجمة مميزة (sparkles)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
                     <!-- 3. Contact & Support Info -->
                     <div class="card p-4 mb-4">
                         <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
@@ -203,7 +260,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <label class="form-label text-white fw-semibold">اسم الوكالة المعروض</label>
-                                <input type="text" name="target_agency_name" class="form-control" value="{{ old('target_agency_name', $settings['target_agency_name'] ?? 'وكالة إمبراطور الرسمية') }}" required>
+                                <input type="text" name="target_agency_name" class="form-control" value="{{ old('target_agency_name', $settings['target_agency_name'] ?? 'وكالة سند ومهره الرسمية') }}" required>
                             </div>
                         </div>
 
@@ -222,7 +279,7 @@
 
                         <div class="mb-3">
                             <label class="form-label text-white fw-semibold">نص صفحة «من نحن» (About Us)</label>
-                            <textarea name="about_us_text" class="form-control" rows="4" placeholder="اكتب نبذة عن منصة إمبراطور وتاريخها ومميزاتها...">{{ old('about_us_text', $settings['about_us_text'] ?? '') }}</textarea>
+                            <textarea name="about_us_text" class="form-control" rows="4" placeholder="اكتب نبذة عن منصة سند ومهره كارد وتاريخها ومميزاتها...">{{ old('about_us_text', $settings['about_us_text'] ?? '') }}</textarea>
                         </div>
 
                         <div class="mb-3">

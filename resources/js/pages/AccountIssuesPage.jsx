@@ -112,7 +112,7 @@ export default function AccountIssuesPage() {
 *Account ID:* ${user?.id ? `EMP-${user.id}` : 'Guest / Unregistered'}
 ----------------------------------------
 _Sent via Official Account Issues Page_`
-        : `*رسالة دعم فني إلى إدارة منصة إمبراطور*
+        : `*رسالة دعم فني إلى إدارة منصة سند ومهره كارد*
 ----------------------------------------
 *نوع الشكوى:* ${selectedLabel}
 *تفاصيل المشكلة:* ${details.trim() || 'لم تتم كتابة تفاصيل إضافية'}
@@ -131,7 +131,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
 
     return (
         <MainLayout>
-            <div style={{ maxWidth: '1100px', margin: '0 auto', paddingBottom: '40px' }}>
+            <div style={{ width: '100%', maxWidth: '100%', margin: '0', paddingBottom: '40px' }}>
                 {/* Header Back Bar */}
                 <div style={{
                     display: 'flex',
@@ -153,9 +153,9 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                             gap: '6px',
                             padding: '8px 16px',
                             borderRadius: '20px',
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            color: '#D1D1DB',
+                            background: isLight ? '#FFFFFF' : 'rgba(9, 23, 46, 0.75)',
+                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.3)',
+                            color: isLight ? '#0F172A' : '#F5D061',
                             fontSize: '13px',
                             fontWeight: '600',
                             textDecoration: 'none',
@@ -172,11 +172,11 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                 }}>
                     {/* Left Form: Select Issue & Input Details */}
                     <div style={{
-                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #14141A 0%, #0D0D12 100%)',
-                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.3)',
+                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                        border: isLight ? '1px solid #E2E8F0' : '1.5px solid rgba(56, 189, 248, 0.4)',
                         borderRadius: '24px',
                         padding: 'clamp(16px, 4vw, 28px)',
-                        boxShadow: isLight ? '0 4px 20px rgba(0,0,0,0.05)' : '0 12px 40px rgba(0,0,0,0.5)',
+                        boxShadow: isLight ? '0 4px 20px rgba(0,0,0,0.05)' : '0 12px 40px rgba(0,0,0,0.5), 0 0 20px rgba(56, 189, 248, 0.1)',
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                             <div style={{
@@ -201,7 +201,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                             style={{
                                 fontSize: '24px',
                                 fontWeight: '900',
-                                color: isLight ? '#0F172A' : '#FFFFFF',
+                                color: isLight ? '#0F172A' : '#F5D061',
                                 margin: '0 0 8px',
                             }}>
                             {displayText || text}
@@ -372,8 +372,8 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                     {/* Right Side: Live Message Preview Card */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         <div style={{
-                            background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #121218 0%, #0A0A0E 100%)',
-                            border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.2)',
+                            background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                            border: isLight ? '1px solid #E2E8F0' : '1.5px solid rgba(56, 189, 248, 0.35)',
                             borderRadius: '24px',
                             padding: 'clamp(16px, 3.5vw, 24px)',
                             boxShadow: isLight ? '0 4px 20px rgba(0,0,0,0.05)' : '0 8px 30px rgba(0,0,0,0.5)',

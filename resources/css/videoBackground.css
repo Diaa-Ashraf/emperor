@@ -3,18 +3,14 @@
     overflow: hidden;
     isolation: isolate;
     margin-bottom: 24px;
-    border-radius: 20px;
-    background: linear-gradient(145deg, #101018 0%, #08080C 100%);
-    border: 1px solid rgba(212, 165, 55, 0.18);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    border-radius: 24px;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .emperor-bg-glow {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% -20%, rgba(212, 165, 55, 0.12) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 1;
+    display: none !important;
 }
 
 .video-content {

@@ -42,11 +42,12 @@ class SecurityHeadersMiddleware
             }
 
            $csp = "default-src 'self'; "
-                . "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://*.firebaseio.com{$viteDevServerSource}; "
+                . "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://*.firebaseio.com{$viteDevServerSource}; "
+                . "script-src-elem 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://*.firebaseio.com{$viteDevServerSource}; "
                 . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com{$viteDevServerSource}; "
                 . "font-src 'self' https://fonts.gstatic.com data:{$viteDevServerSource}; "
                 . "img-src 'self' data: blob: https:; "
-                . "connect-src 'self' http: https: ws: wss:; "
+                . "connect-src 'self' http: https: ws: wss: https://accounts.google.com https://*.googleapis.com; "
                 . "media-src 'self' blob:{$viteDevServerSource}; "
                 . "frame-src 'self' https://accounts.google.com https://*.firebaseapp.com;";
 

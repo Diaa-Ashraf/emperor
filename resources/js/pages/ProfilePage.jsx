@@ -199,17 +199,17 @@ export default function ProfilePage() {
 
     return (
         <MainLayout>
-            <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '10px 0 60px' }}>
+            <div style={{ width: '100%', maxWidth: '100%', margin: '0', padding: '10px 0 60px' }}>
                 {/* Top User Hero Card */}
                 <div style={{
-                    background: isLight ? '#FFFFFF' : 'linear-gradient(135deg, rgba(28, 28, 38, 0.95) 0%, rgba(18, 18, 24, 0.95) 100%)',
-                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1px solid rgba(212, 165, 55, 0.25)',
+                    background: isLight ? '#FFFFFF' : 'linear-gradient(135deg, #09172e 0%, #060e1d 100%)',
+                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1.5px solid rgba(56, 189, 248, 0.4)',
                     borderRadius: '24px',
                     padding: 'clamp(18px, 3.5vw, 30px)',
                     marginBottom: '28px',
                     position: 'relative',
                     overflow: 'hidden',
-                    boxShadow: isLight ? '0 10px 30px rgba(30, 80, 140, 0.08)' : '0 12px 30px rgba(0, 0, 0, 0.4)',
+                    boxShadow: isLight ? '0 10px 30px rgba(30, 80, 140, 0.08)' : '0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.15)',
                 }}>
 
                 {/* Background Gold Glow */}
@@ -296,7 +296,7 @@ export default function ProfilePage() {
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
                                 <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
-                                    {user?.name || t('emperorUser', 'مستخدم إمبراطور')}
+                                    {user?.name || t('emperorUser', 'مستخدم سند ومهره')}
                                 </h2>
                                 <span style={{
                                     padding: '2px 8px',
@@ -342,18 +342,18 @@ export default function ProfilePage() {
 
                     {/* Quick Wallet Stats Box */}
                     <div style={{
-                        background: isLight ? '#F8FAFC' : 'rgba(13, 13, 16, 0.8)',
-                        border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#F8FAFC' : 'rgba(9, 23, 46, 0.85)',
+                        border: isLight ? '1px solid #CBD5E1' : '1.5px solid rgba(56, 189, 248, 0.35)',
                         borderRadius: '16px',
                         padding: '16px 20px',
                         minWidth: '200px',
                         textAlign: 'center',
                         boxShadow: isLight ? '0 4px 12px rgba(30, 80, 140, 0.05)' : 'none',
                     }}>
-                        <span style={{ fontSize: '12px', color: isLight ? '#64748B' : '#9E9EA8', display: 'block', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '12px', color: isLight ? '#64748B' : '#94A3B8', display: 'block', marginBottom: '4px' }}>
                             {t('availableBalanceInWallet', 'الرصيد المتاح بالمحفظة')}
                         </span>
-                        <div style={{ fontSize: '24px', fontWeight: '900', color: isLight ? '#B45309' : '#D4A537', marginBottom: '8px' }}>
+                        <div style={{ fontSize: '24px', fontWeight: '900', color: isLight ? '#B45309' : '#38BDF8', marginBottom: '8px' }}>
                             {user?.wallet?.balance !== undefined ? Number(user.wallet.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}{' '}
                             <span style={{ fontSize: '14px' }}>{language === 'en' ? 'EGP' : 'ج.م'}</span>
                         </div>
@@ -411,8 +411,8 @@ export default function ProfilePage() {
                 <Link
                     to="/target/apps"
                     style={{
-                        background: isLight ? '#FFFFFF' : 'rgba(22, 22, 30, 0.7)',
-                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(56, 189, 248, 0.35)',
                         borderRadius: '14px',
                         padding: '14px 18px',
                         display: 'flex',
@@ -423,21 +423,21 @@ export default function ProfilePage() {
                         transition: 'all 0.2s ease',
                         boxShadow: isLight ? '0 4px 12px rgba(30, 80, 140, 0.05)' : 'none',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#D4A537')}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(255, 255, 255, 0.08)')}
+                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#38BDF8')}
+                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(56, 189, 248, 0.35)')}
                 >
                     <CreditCard size={20} color="#38BDF8" />
                     <div>
                         <div style={{ fontSize: '14px', fontWeight: '700' }}>{t('targetSelling', 'بيع التارجت')}</div>
-                        <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#9E9EA8' }}>{t('transferAppProfits', 'تحويل أرباح التطبيقات')}</div>
+                        <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#94A3B8' }}>{t('transferAppProfits', 'تحويل أرباح التطبيقات')}</div>
                     </div>
                 </Link>
 
                 <Link
                     to="/referrals"
                     style={{
-                        background: isLight ? '#FFFFFF' : 'rgba(22, 22, 30, 0.7)',
-                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(56, 189, 248, 0.35)',
                         borderRadius: '14px',
                         padding: '14px 18px',
                         display: 'flex',
@@ -448,21 +448,21 @@ export default function ProfilePage() {
                         transition: 'all 0.2s ease',
                         boxShadow: isLight ? '0 4px 12px rgba(30, 80, 140, 0.05)' : 'none',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#D4A537')}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(255, 255, 255, 0.08)')}
+                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#38BDF8')}
+                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(56, 189, 248, 0.35)')}
                 >
                     <Users size={20} color="#22C55E" />
                     <div>
                         <div style={{ fontSize: '14px', fontWeight: '700' }}>{t('referralProgram', 'برنامج الإحالات')}</div>
-                        <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#9E9EA8' }}>{t('profitsAndCommissions', 'الأرباح والعمولات')}</div>
+                        <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#94A3B8' }}>{t('profitsAndCommissions', 'الأرباح والعمولات')}</div>
                     </div>
                 </Link>
 
                 <Link
                     to="/settings"
                     style={{
-                        background: isLight ? '#FFFFFF' : 'rgba(22, 22, 30, 0.7)',
-                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                        border: isLight ? '1.5px solid rgba(212, 165, 55, 0.35)' : '1px solid rgba(56, 189, 248, 0.35)',
                         borderRadius: '14px',
                         padding: '14px 18px',
                         display: 'flex',
@@ -473,13 +473,13 @@ export default function ProfilePage() {
                         transition: 'all 0.2s ease',
                         boxShadow: isLight ? '0 4px 12px rgba(30, 80, 140, 0.05)' : 'none',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#D4A537')}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(255, 255, 255, 0.08)')}
+                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#38BDF8')}
+                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.35)' : 'rgba(56, 189, 248, 0.35)')}
                 >
                     <SettingsIcon size={20} color="#F59E0B" />
                     <div>
                         <div style={{ fontSize: '14px', fontWeight: '700' }}>{t('accountSettings', 'إعدادات الحساب')}</div>
-                        <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#9E9EA8' }}>{t('preferencesAndAppearance', 'التفضيلات والمظهر')}</div>
+                        <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#94A3B8' }}>{t('preferencesAndAppearance', 'التفضيلات والمظهر')}</div>
                     </div>
                 </Link>
             </div>
@@ -540,13 +540,13 @@ export default function ProfilePage() {
             {/* Tab 1: Personal Info Form */}
             {activeTab === 'info' && (
                 <div style={{
-                    background: isLight ? '#FFFFFF' : 'rgba(22, 22, 30, 0.8)',
-                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
+                    background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                    border: isLight ? '1px solid #E2E8F0' : '1.5px solid rgba(56, 189, 248, 0.35)',
                     borderRadius: '20px',
                     padding: '28px',
-                    boxShadow: isLight ? '0 4px 20px rgba(0, 0, 0, 0.04)' : 'none',
+                    boxShadow: isLight ? '0 4px 20px rgba(0, 0, 0, 0.04)' : '0 8px 30px rgba(0, 0, 0, 0.5)',
                 }}>
-                    <h3 style={{ margin: '0 0 20px', fontSize: '18px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                    <h3 style={{ margin: '0 0 20px', fontSize: '18px', fontWeight: '800', color: isLight ? '#0F172A' : '#F5D061' }}>
                         {t('editPersonalInfo', 'تعديل البيانات الشخصية')}
                     </h3>
 
@@ -655,15 +655,15 @@ export default function ProfilePage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     {/* Password Change Box */}
                     <div style={{
-                        background: isLight ? '#FFFFFF' : 'rgba(22, 22, 30, 0.8)',
-                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                        border: isLight ? '1px solid #E2E8F0' : '1.5px solid rgba(56, 189, 248, 0.35)',
                         borderRadius: '20px',
                         padding: '28px',
-                        boxShadow: isLight ? '0 4px 20px rgba(0, 0, 0, 0.04)' : 'none',
+                        boxShadow: isLight ? '0 4px 20px rgba(0, 0, 0, 0.04)' : '0 8px 30px rgba(0, 0, 0, 0.5)',
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                            <Lock size={20} color="#D4A537" />
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                            <Lock size={20} color="#38BDF8" />
+                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: isLight ? '#0F172A' : '#F5D061' }}>
                                 {t('changePassword', 'تغيير كلمة المرور')}
                             </h3>
                         </div>

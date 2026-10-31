@@ -10,7 +10,7 @@ export default function AppFooter() {
     const { t, language } = useLanguage();
     const isLight = theme === 'light';
     const currentYear = new Date().getFullYear();
-    const siteName = getSiteName() || (language === 'en' ? 'EMPEROR CARD' : 'إمبراطور كارد');
+    const siteName = getSiteName() || 'مهره و سند كارد';
 
     return (
         <footer className="emperor-app-footer">
@@ -19,22 +19,22 @@ export default function AppFooter() {
                 <div className="emperor-app-footer-brand">
                     <div
                         style={{
-                            width: '24px',
-                            height: '24px',
-                            borderRadius: '7px',
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '8px',
                             overflow: 'hidden',
-                            border: '1px solid rgba(212, 165, 55, 0.4)',
-                            background: isLight ? '#ffffff' : '#0a0a10',
+                            border: '1px solid rgba(56, 189, 248, 0.45)',
+                            background: isLight ? '#ffffff' : '#071325',
                             display: 'inline-flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             flexShrink: 0,
-                            boxShadow: '0 0 8px rgba(212, 165, 55, 0.25)',
+                            boxShadow: '0 0 10px rgba(56, 189, 248, 0.3)',
                         }}
                     >
                         <img
                             src={getSiteLogo()}
-                            alt="Logo"
+                            alt={siteName}
                             style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                         />
                     </div>

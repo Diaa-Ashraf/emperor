@@ -20,10 +20,15 @@ class AuthenticateApiClient
         $apiKey = $request->header('X-API-Key') ?? $request->header('x-api-key') ?? $request->bearerToken();
         $apiSecret = $request->header('X-API-Secret') ?? $request->header('x-api-secret');
 
-        if (!$apiKey || !$apiSecret) {
+        if (!$apiKey) {
             return response()->json([
+                'success' => false,
                 'status' => 'error',
-                'message' => 'بيانات الاعتماد غير مكتملة. يرجى تمرير X-API-Key و X-API-Secret في ترويسة الطلب (Headers).',
+                'error' => [
+                    'code' => 120,
+                    'message' => 'API Key missing (يرجى إرسال x-api-key في ترويسة الطلب)',
+                ],
+                'message' => 'بيانات الاعتماد غير مكتملة. يرجى تمرير x-api-key في ترويسة الطلب (Headers).',
                 'code' => 'UNAUTHORIZED_MISSING_CREDENTIALS',
             ], Response::HTTP_UNAUTHORIZED);
         }
@@ -32,20 +37,32 @@ class AuthenticateApiClient
 
         if (!$client || !$client->hasApiAccess()) {
             return response()->json([
+                'success' => false,
                 'status' => 'error',
+                'error' => [
+                    'code' => 121,
+                    'message' => 'Invalid API Key / صلاحية الربط غير مفعلة لهذا المفتاح',
+                ],
                 'message' => 'مفتاح الـ API غير صالح أو أن صلاحية الربط البرمجي (B2B API) غير مفعّلة لحسابك من قبل إدارة المنصة.',
                 'code' => 'API_ACCESS_DISABLED',
             ], Response::HTTP_FORBIDDEN);
         }
 
-        // Verify Secret Hash
-        $hashedInput = hash('sha256', $apiSecret);
-        if ($client->api_secret !== $hashedInput && $client->api_secret !== $apiSecret) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'الرمز السري (API Secret) غير صحيح.',
-                'code' => 'INVALID_API_SECRET',
-            ], Response::HTTP_UNAUTHORIZED);
+        // Verify Secret Hash only if client has secret configured and request provided secret
+        if ($apiSecret && !empty($client->api_secret)) {
+            $hashedInput = hash('sha256', $apiSecret);
+            if ($client->api_secret !== $hashedInput && $client->api_secret !== $apiSecret) {
+                return response()->json([
+                    'success' => false,
+                    'status' => 'error',
+                    'error' => [
+                        'code' => 121,
+                        'message' => 'Invalid API Secret (الرمز السري غير صحيح)',
+                    ],
+                    'message' => 'الرمز السري (API Secret) غير صحيح.',
+                    'code' => 'INVALID_API_SECRET',
+                ], Response::HTTP_UNAUTHORIZED);
+            }
         }
 
         if ($client->status !== UserStatus::ACTIVE) {

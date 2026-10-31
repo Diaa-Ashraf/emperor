@@ -87,9 +87,9 @@ export default function TargetOrdersPage() {
                             gap: '6px',
                             padding: '8px 18px',
                             borderRadius: '20px',
-                            background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.04)',
-                            border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.1)',
-                            color: isLight ? '#334155' : '#D1D1DB',
+                            background: isLight ? '#F1F5F9' : 'rgba(9, 23, 46, 0.75)',
+                            border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.3)',
+                            color: isLight ? '#334155' : '#F5D061',
                             fontSize: '13px',
                             fontWeight: '700',
                             cursor: 'pointer',
@@ -101,8 +101,8 @@ export default function TargetOrdersPage() {
                 </div>
 
                 <div style={{
-                    background: isLight ? '#FFFFFF' : '#0D0D12',
-                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid #D4A537',
+                    background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1.5px solid rgba(56, 189, 248, 0.45)',
                     borderRadius: '22px',
                     padding: '22px 24px',
                     display: 'flex',
@@ -113,10 +113,10 @@ export default function TargetOrdersPage() {
                     boxShadow: isLight ? '0 8px 24px rgba(0, 0, 0, 0.05)' : '0 8px 30px rgba(0,0,0,0.6)',
                 }}>
                     <div>
-                        <h1 style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                        <h1 style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: '900', color: isLight ? '#0F172A' : '#F5D061' }}>
                             {t('targetOrdersHistory', 'سجل طلبات بيع التارجت')}
                         </h1>
-                        <p style={{ margin: 0, fontSize: '13px', color: isLight ? '#475569' : '#9E9EA8' }}>
+                        <p style={{ margin: 0, fontSize: '13px', color: isLight ? '#475569' : '#94A3B8' }}>
                             {t('trackTargetStatus', 'متابعة حالة تحويل الكاش ومراجعة طلبات التارجت')}
                         </p>
                     </div>
@@ -129,13 +129,13 @@ export default function TargetOrdersPage() {
                                 gap: '8px',
                                 padding: '12px 22px',
                                 borderRadius: '14px',
-                                background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                background: 'linear-gradient(135deg, #0284C7 0%, #38BDF8 100%)',
                                 border: 'none',
-                                color: '#000000',
+                                color: '#FFFFFF',
                                 fontSize: '14px',
                                 fontWeight: '800',
                                 cursor: 'pointer',
-                                boxShadow: '0 4px 15px rgba(212, 165, 55, 0.3)',
+                                boxShadow: '0 4px 15px rgba(2, 132, 199, 0.35)',
                             }}
                         >
                             <PlusCircle size={16} />

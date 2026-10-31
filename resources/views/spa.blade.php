@@ -1,8 +1,8 @@
 @php
-    $siteLogo = \App\Models\Setting::get('site_logo') ?: '/images/logo.png';
-    $siteFavicon = \App\Models\Setting::get('site_favicon') ?: ($siteLogo ?: '/images/logo.png');
-    $siteName = \App\Models\Setting::get('site_name', 'إمبراطور | Emperor Card');
-    $siteDesc = \App\Models\Setting::get('site_description', 'شحن ألعاب، بطاقات رقمية وبيع تارجت');
+    $siteLogo = \App\Models\Setting::get('site_logo') ?: '/images/mohra_sand_logo.png';
+    $siteFavicon = \App\Models\Setting::get('site_favicon') ?: ($siteLogo ?: '/images/mohra_sand_logo.png');
+    $siteName = \App\Models\Setting::get('site_name', 'سند ومهره كارد');
+    $siteDesc = \App\Models\Setting::get('site_description', 'خدماتك الرقمية والمالية في مكان واحد');
 @endphp
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -55,21 +55,43 @@
             announcement_enabled: {!! json_encode(\App\Models\Setting::get('announcement_enabled', '0') == '1') !!},
             announcement_text: {!! json_encode(\App\Models\Setting::get('announcement_text', '')) !!},
             target_agency_id: {!! json_encode(\App\Models\Setting::get('target_agency_id', 'EMP-TARGET-001')) !!},
-            target_agency_name: {!! json_encode(\App\Models\Setting::get('target_agency_name', 'وكالة إمبراطور الرسمية')) !!},
+            target_agency_name: {!! json_encode(\App\Models\Setting::get('target_agency_name', 'وكالة سند ومهره الرسمية')) !!},
             min_wallet_deposit: {!! json_encode((int) \App\Models\Setting::get('min_wallet_deposit', 50)) !!},
+            hero_services: {!! json_encode(\App\Models\Setting::get('hero_services')) !!},
             about_us_text: {!! json_encode(\App\Models\Setting::get('about_us_text', '')) !!},
             terms_conditions: {!! json_encode(\App\Models\Setting::get('terms_conditions', '')) !!},
-            privacy_policy: {!! json_encode(\App\Models\Setting::get('privacy_policy', '')) !!}
+            privacy_policy: {!! json_encode(\App\Models\Setting::get('privacy_policy', '')) !!},
+            google_client_id: {!! json_encode(config('services.google.client_id')) !!}
         };
     </script>
+
+    @if (auth()->check())
+    @php
+        $authUser = auth()->user();
+        $authUserData = (new \App\Http\Resources\UserResource($authUser))->resolve();
+        $authToken = $authUser->createToken('spa_session')->plainTextToken;
+    @endphp
+    <script>
+        window.__AUTH_USER__ = {!! json_encode($authUserData) !!};
+        window.__AUTH_TOKEN__ = {!! json_encode($authToken) !!};
+        try {
+            localStorage.setItem('emperor_token', {!! json_encode($authToken) !!});
+            localStorage.setItem('emperor_user', JSON.stringify({!! json_encode($authUserData) !!}));
+            localStorage.setItem('emperor_last_activity', Date.now().toString());
+        } catch(e) {}
+    </script>
+    @endif
+
+    <!-- Google Identity Services (One Tap & Sign In SDK) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <!-- Mobile Web App Metas -->
     <meta name="theme-color" content="#070709">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="EMPEROR">
-    <meta name="application-name" content="EMPEROR CARD">
+    <meta name="apple-mobile-web-app-title" content="سند ومهره كارد">
+    <meta name="application-name" content="سند ومهره كارد">
 
     <!-- Google Font Cairo -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

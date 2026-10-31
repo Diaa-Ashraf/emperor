@@ -5,7 +5,7 @@
 export const formatImageUrl = (src) => {
     if (!src || typeof src !== 'string') return null;
     
-    const trimmed = src.trim();
+    let trimmed = src.trim();
     if (!trimmed) return null;
 
     // Full URLs or data/blob URIs
@@ -16,6 +16,15 @@ export const formatImageUrl = (src) => {
         trimmed.startsWith('blob:')
     ) {
         return trimmed;
+    }
+
+    // Collapse multiple consecutive slashes: e.g. /storage//images/ -> /storage/images/
+    trimmed = trimmed.replace(/\/+/g, '/');
+
+    // If it points to /images/... or /storage/images/...
+    if (trimmed.includes('/images/')) {
+        const idx = trimmed.indexOf('/images/');
+        return trimmed.substring(idx);
     }
 
     // Already properly prefixed with /storage/

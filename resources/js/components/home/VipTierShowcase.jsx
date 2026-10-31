@@ -56,7 +56,7 @@ export default function VipTierShowcase() {
         },
         {
             id: 'emperor',
-            name: 'تاج الإمبراطور (Emperor VIP)',
+            name: 'تاج النخبة (Diamond VIP)',
             title: 'شريك استراتيجي',
             icon: Crown,
             badge: 'موزع رئيسي ومتاجر كبرى',

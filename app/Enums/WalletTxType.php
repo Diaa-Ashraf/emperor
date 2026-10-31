@@ -12,6 +12,8 @@ enum WalletTxType: string
     case TRANSFER_OUT = 'transfer_out';
     case REFERRAL_COMMISSION = 'referral_commission';
     case ADMIN_ADJUSTMENT = 'admin_adjustment';
+    case MANUAL_CREDIT = 'manual_credit';
+    case MANUAL_DEBIT = 'manual_debit';
 
     public function label(): string
     {
@@ -24,14 +26,16 @@ enum WalletTxType: string
             self::TRANSFER_OUT => 'تحويل صادر لمستخدم',
             self::REFERRAL_COMMISSION => 'عمولة إحالة أصدقاء',
             self::ADMIN_ADJUSTMENT => 'تعديل إداري',
+            self::MANUAL_CREDIT => 'إضافة رصيد يدوي',
+            self::MANUAL_DEBIT => 'خصم رصيد يدوي',
         };
     }
 
     public function isCredit(): bool
     {
         return match ($this) {
-            self::DEPOSIT, self::REFUND, self::TARGET_PAYOUT, self::TRANSFER_IN, self::REFERRAL_COMMISSION => true,
-            self::ORDER_PAYMENT, self::TRANSFER_OUT => false,
+            self::DEPOSIT, self::REFUND, self::TARGET_PAYOUT, self::TRANSFER_IN, self::REFERRAL_COMMISSION, self::MANUAL_CREDIT => true,
+            self::ORDER_PAYMENT, self::TRANSFER_OUT, self::MANUAL_DEBIT => false,
             self::ADMIN_ADJUSTMENT => true, // depends on amount sign
         };
     }

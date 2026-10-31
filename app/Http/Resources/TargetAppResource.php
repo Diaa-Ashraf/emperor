@@ -14,10 +14,20 @@ class TargetAppResource extends JsonResource
             if (!$path) {
                 return null;
             }
-            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:')) {
                 return $path;
             }
-            return '/storage/' . ltrim($path, '/');
+            $clean = '/' . ltrim(preg_replace('#/+#', '/', $path), '/');
+            if (str_starts_with($clean, '/images/')) {
+                return $clean;
+            }
+            if (str_starts_with($clean, '/storage/')) {
+                if (preg_match('#^/storage/+images/(.*)$#', $clean, $m)) {
+                    return '/images/' . $m[1];
+                }
+                return $clean;
+            }
+            return '/storage/' . ltrim($clean, '/');
         };
 
         $firstRate = $this->targetRates?->first();

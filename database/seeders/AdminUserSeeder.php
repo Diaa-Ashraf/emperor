@@ -24,8 +24,8 @@ class AdminUserSeeder extends Seeder
         $admin = User::updateOrCreate(
             ['email' => 'admin@emperor.com'],
             [
-                'name' => 'Emperor Admin',
-                'phone' => '+201000000000',
+                'name' => 'مدير منصة مهره و سند كارد',
+                'phone' => '+201025515743',
                 'password' => Hash::make('Admin@123456'),
                 'role' => UserRole::ADMIN,
                 'status' => UserStatus::ACTIVE,

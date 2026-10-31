@@ -115,13 +115,13 @@ export default function WalletPage() {
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '6px',
-                        background: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.06)',
-                        border: isLight ? '1px solid #CBD5E1' : '1px solid var(--border-medium)',
+                        background: isLight ? '#FFFFFF' : 'rgba(9, 23, 46, 0.85)',
+                        border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.35)',
                         borderRadius: '20px',
                         padding: '6px 14px',
                         fontSize: '13px',
                         fontWeight: '700',
-                        color: isLight ? '#0F172A' : 'var(--text-primary)',
+                        color: isLight ? '#0F172A' : '#F5D061',
                         textDecoration: 'none',
                         boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.04)' : 'none',
                     }}
@@ -141,7 +141,7 @@ export default function WalletPage() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{t('availableBalance', 'الرصيد المتاح')}:</span>
-                    <span style={{ fontSize: '15px', fontWeight: '900', color: 'var(--gold-400)' }}>
+                    <span style={{ fontSize: '15px', fontWeight: '900', color: '#38BDF8' }}>
                         {formattedBalance} {currencyLabel}
                     </span>
                 </div>
@@ -149,12 +149,12 @@ export default function WalletPage() {
 
             {/* Financial Account Hero Card (Screenshot 5 Header) */}
             <div style={{
-                background: isLight ? '#FFFFFF' : 'linear-gradient(135deg, #1e1e2d 0%, #2a223f 50%, #151a30 100%)',
-                border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(139, 92, 246, 0.3)',
+                background: isLight ? '#FFFFFF' : 'linear-gradient(135deg, #09172e 0%, #060e1d 100%)',
+                border: isLight ? '1px solid #E2E8F0' : '1.5px solid rgba(56, 189, 248, 0.45)',
                 borderRadius: '24px',
                 padding: 'clamp(16px, 3.5vw, 24px) clamp(14px, 3vw, 20px)',
                 marginBottom: '28px',
-                boxShadow: isLight ? '0 8px 24px rgba(0, 0, 0, 0.05)' : '0 12px 35px rgba(0, 0, 0, 0.35)',
+                boxShadow: isLight ? '0 8px 24px rgba(0, 0, 0, 0.05)' : '0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.15)',
                 position: 'relative',
                 overflow: 'hidden',
                 color: isLight ? '#0F172A' : '#FFFFFF',
@@ -164,23 +164,24 @@ export default function WalletPage() {
                         width: '46px',
                         height: '46px',
                         borderRadius: '50%',
-                        background: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.1)',
+                        background: isLight ? '#F1F5F9' : 'rgba(56, 189, 248, 0.15)',
+                        border: isLight ? 'none' : '1px solid rgba(56, 189, 248, 0.35)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexShrink: 0,
                     }}>
-                        <ReceiptText size={22} color={isLight ? '#475569' : '#CBD5E1'} />
+                        <ReceiptText size={22} color={isLight ? '#475569' : '#38BDF8'} />
                     </div>
 
                     <div style={{ textAlign: isRtl ? 'right' : 'left', flex: 1 }}>
-                        <span style={{ fontSize: '12.5px', color: isLight ? '#64748B' : 'rgba(255, 255, 255, 0.65)', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '12.5px', color: isLight ? '#64748B' : '#38BDF8', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
                             {t('financialAccount', 'حسابك المالي')}
                         </span>
-                        <h2 style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                        <h2 style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: '900', color: isLight ? '#0F172A' : '#F5D061' }}>
                             {t('financialTransfersTitle', 'سجل طلبات إضافة الرصيد')}
                         </h2>
-                        <p style={{ margin: 0, fontSize: '13px', color: isLight ? '#475569' : 'rgba(255, 255, 255, 0.75)' }}>
+                        <p style={{ margin: 0, fontSize: '13px', color: isLight ? '#475569' : '#94A3B8' }}>
                             {t('financialTransfersSub', 'تابع حالة طلباتك ومبلغ وطريقة الدفع في مكان واحد (خلال آخر 5 أيام).')}
                         </p>
                     </div>

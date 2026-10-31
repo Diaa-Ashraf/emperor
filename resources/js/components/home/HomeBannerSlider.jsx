@@ -56,7 +56,7 @@ export default function HomeBannerSlider() {
                         }
                         return {
                             id: b.id,
-                            title: b.title || 'إمبراطور للشحن الرقمي',
+                            title: b.title || 'سند ومهره كارد للشحن الرقمي',
                             link: b.link || '/category/games',
                             isExternal: Boolean(isExt),
                             image: cleanImg,
@@ -230,7 +230,7 @@ export default function HomeBannerSlider() {
                                 <img
                                     key={`banner-img-${currentIndex}-${currentBanner.id}`}
                                     src={currentBanner.image}
-                                    alt={currentBanner.title || 'إعلان إمبراطور'}
+                                    alt={currentBanner.title || 'إعلان سند ومهره كارد'}
                                     className="emperor-slider-kenburns"
                                     onError={(e) => {
                                         e.currentTarget.onerror = null;
@@ -256,7 +256,7 @@ export default function HomeBannerSlider() {
                                 <img
                                     key={`banner-img-${currentIndex}-${currentBanner.id}`}
                                     src={currentBanner.image}
-                                    alt={currentBanner.title || 'إعلان إمبراطور'}
+                                    alt={currentBanner.title || 'إعلان سند ومهره كارد'}
                                     className="emperor-slider-kenburns"
                                     onError={(e) => {
                                         e.currentTarget.onerror = null;
@@ -280,7 +280,7 @@ export default function HomeBannerSlider() {
                             <img
                                 key={`banner-img-${currentIndex}-${currentBanner.id}`}
                                 src={currentBanner.image}
-                                alt={currentBanner.title || 'إعلان إمبراطور'}
+                                alt={currentBanner.title || 'إعلان سند ومهره كارد'}
                                 className="emperor-slider-kenburns"
                                 onError={(e) => {
                                     e.currentTarget.onerror = null;

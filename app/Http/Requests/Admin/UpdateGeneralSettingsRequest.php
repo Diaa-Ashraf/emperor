@@ -38,6 +38,7 @@ class UpdateGeneralSettingsRequest extends FormRequest
             'about_us_text' => ['nullable', 'string', 'max:5000'],
             'terms_conditions' => ['nullable', 'string', 'max:10000'],
             'privacy_policy' => ['nullable', 'string', 'max:10000'],
+            'hero_services' => ['nullable', 'array'],
         ];
     }
 

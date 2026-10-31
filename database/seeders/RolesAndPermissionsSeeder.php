@@ -38,10 +38,10 @@ class RolesAndPermissionsSeeder extends Seeder
         // 2. Predefined Administrative Roles
         $rolesData = [
             'super_admin' => 'المدير العام',
-            'admin' => 'مدير النظام',
-            'operations_manager' => 'مدير العمليات والتنفيذ',
-            'finance_manager' => 'المدير المالي والمحاسبي',
-            'support_agent' => 'مسؤول الدعم الفني',
+            'admin' => 'مشرف إداري عام',
+            'operations_manager' => 'مدير العمليات والطلبات',
+            'finance_manager' => 'مدير مالي وإيداعات',
+            'support_agent' => 'مسؤول دعم فني',
             'agent' => 'وكيل معتمد',
             'customer' => 'عميل المتجر',
             'api_client' => 'عميل الربط البرمجي',
@@ -60,7 +60,8 @@ class RolesAndPermissionsSeeder extends Seeder
             }
         }
 
-        // Admin role also gets all permissions
+        // Admin and Super Admin roles get all permissions
+        $roleObjects['super_admin']->syncPermissions($allPermissions);
         $roleObjects['admin']->syncPermissions($allPermissions);
 
         // Clear cache again after syncing

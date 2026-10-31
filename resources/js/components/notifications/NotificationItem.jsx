@@ -32,7 +32,7 @@ export default function NotificationItem({ notification, onMarkAsRead }) {
         || rawData.title 
         || rawData.subject 
         || rawData.heading 
-        || 'إشعار من منصة إمبراطور';
+        || 'إشعار من منصة سند ومهره كارد';
 
     const body = notification.body 
         || notification.message 

@@ -110,8 +110,8 @@ export default function SupportContactModal({ isOpen, onClose }) {
             const clean = val.replace(/[^0-9]/g, '');
             const phone = clean.startsWith('01') ? `20${clean.substring(1)}` : clean;
             const msg = isEn
-                ? encodeURIComponent('Hello, I need assistance regarding my EMPEROR account.')
-                : encodeURIComponent('السلام عليكم ورحمة الله وبركاته، محتاج مساعدة بخصوص حسابي في منصة إمبراطور EMPEROR.');
+                ? encodeURIComponent('Hello, I need assistance regarding my account.')
+                : encodeURIComponent('السلام عليكم ورحمة الله وبركاته، محتاج مساعدة بخصوص حسابي في منصة سند ومهره كارد.');
             return `https://wa.me/${phone}?text=${msg}`;
         }
         if (ch.includes('telegram') || val.includes('t.me')) {

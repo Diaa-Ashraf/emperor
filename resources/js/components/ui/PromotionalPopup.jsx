@@ -192,7 +192,7 @@ export default function PromotionalPopup() {
                         marginBottom: '12px',
                     }}>
                         <Crown size={13} color="#F5D061" />
-                        <span>إعلان مميز من إمبراطور</span>
+                        <span>إعلان مميز من سند ومهره كارد</span>
                     </div>
 
                     {/* Title */}

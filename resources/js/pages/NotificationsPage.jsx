@@ -147,7 +147,7 @@ export default function NotificationsPage() {
 
     return (
         <MainLayout>
-            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '10px 0 60px' }}>
+            <div style={{ width: '100%', maxWidth: '100%', margin: '0', padding: '10px 0 60px' }}>
                 {/* Header Title Section */}
                 <div style={{
                     display: 'flex',
@@ -163,13 +163,13 @@ export default function NotificationsPage() {
                         width: '52px',
                         height: '52px',
                         borderRadius: '16px',
-                        background: 'linear-gradient(135deg, rgba(212, 165, 55, 0.2) 0%, rgba(212, 165, 55, 0.05) 100%)',
-                        border: '1px solid rgba(212, 165, 55, 0.3)',
+                        background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(9, 23, 46, 0.8) 100%)',
+                        border: '1.5px solid rgba(56, 189, 248, 0.4)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#D4A537',
-                        boxShadow: '0 0 20px rgba(212, 165, 55, 0.15)',
+                        color: '#38BDF8',
+                        boxShadow: '0 0 20px rgba(56, 189, 248, 0.15)',
                     }}>
                         <Bell size={26} />
                     </div>
@@ -178,7 +178,7 @@ export default function NotificationsPage() {
                             margin: 0,
                             fontSize: '24px',
                             fontWeight: '900',
-                            color: '#FFFFFF',
+                            color: '#F5D061',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',

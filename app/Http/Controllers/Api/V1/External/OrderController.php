@@ -25,52 +25,111 @@ class OrderController extends Controller
     ) {}
 
     /**
+     * Batch check orders status by idempotency keys or public IDs.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $client = $request->attributes->get('api_client') ?? $request->user() ?? auth()->user();
+
+        $keysStr = $request->input('keys') ?? $request->input('idempotency_keys') ?? '';
+        $keys = array_filter(array_map('trim', explode(',', $keysStr)));
+
+        $query = Order::where('user_id', $client->id);
+
+        if (!empty($keys)) {
+            $query->where(function ($q) use ($keys) {
+                $q->whereIn('idempotency_key', $keys)
+                    ->orWhereIn('public_id', $keys);
+            });
+        } else {
+            $query->latest('id')->limit(20);
+        }
+
+        $orders = $query->get()->map(function ($order) {
+            return [
+                'orderId' => (string) $order->id,
+                'orderNumber' => $order->public_id,
+                'status' => strtoupper($order->status->value),
+                'idempotencyKey' => $order->idempotency_key,
+                'totalAmount' => (float) $order->total_amount,
+                'currency' => $order->currency,
+                'createdAt' => $order->created_at->toIso8601String(),
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $orders,
+        ]);
+    }
+
+    /**
      * Create an order for the API client.
      */
     public function store(Request $request): JsonResponse
     {
         $client = $request->attributes->get('api_client') ?? $request->user() ?? auth()->user();
 
-        $validator = Validator::make($request->all(), [
-            'tier_id' => 'required_without:sku|nullable|integer|exists:product_tiers,id',
-            'sku' => 'required_without:tier_id|nullable|string|exists:product_tiers,sku',
-            'player_id' => 'required|string|max:100',
-            'server_id' => 'nullable|string|max:100',
-            'account_region' => 'nullable|string|max:50',
-            'quantity' => 'nullable|integer|min:1|max:100',
-            'extra_fields' => 'nullable|array',
-            'idempotency_key' => 'nullable|string|max:64',
-        ], [
-            'tier_id.required_without' => 'معرف الباقة (tier_id) أو كود الـ SKU مطلوب.',
-            'sku.required_without' => 'معرف الباقة (tier_id) أو كود الـ SKU مطلوب.',
-            'player_id.required' => 'معرف اللاعب أو الحساب (player_id) مطلوب.',
-            'quantity.min' => 'الكمية يجب أن تكون 1 على الأقل.',
-        ]);
+        // Normalize parameter aliases (Reseller API compatibility)
+        $tierId = $request->input('tier_id') ?? $request->input('tierId');
+        $productId = $request->input('product_id') ?? $request->input('productId');
+        $sku = $request->input('sku');
+        $playerId = $request->input('player_id') ?? $request->input('playerId');
+        $serverId = $request->input('server_id') ?? $request->input('serverId');
+        $idempotencyKey = $request->input('idempotency_key') ?? $request->input('idempotencyKey') ?? (string) \Illuminate\Support\Str::uuid();
+        $quantity = (int) ($request->input('quantity') ?? 1);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'بيانات الطلب غير صالحة.',
-                'errors' => $validator->errors(),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
+        // Check if tier was not passed directly but product_id was passed
         $tier = null;
-        if ($request->filled('tier_id')) {
-            $tier = ProductTier::with('product')->find($request->input('tier_id'));
-        } elseif ($request->filled('sku')) {
-            $tier = ProductTier::with('product')->where('sku', $request->input('sku'))->first();
+        if ($tierId) {
+            $tier = ProductTier::with('product')->find($tierId);
+        } elseif ($sku) {
+            $tier = ProductTier::with('product')->where('sku', $sku)->first();
+        } elseif ($productId) {
+            // First tier of this product or direct tier
+            $tier = ProductTier::with('product')->where('product_id', $productId)->where('is_active', true)->first();
+            if (!$tier) {
+                $tier = ProductTier::with('product')->find($productId);
+            }
         }
 
         if (!$tier || !$tier->is_active || !$tier->product->is_active) {
             return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 101,
+                    'message' => 'Product unavailable/inactive (المنتج المطلوب غير متوفر حالياً)',
+                ],
                 'status' => 'error',
                 'message' => 'الباقة المطلوبة غير متوفرة أو معطلة حالياً.',
                 'code' => 'TIER_UNAVAILABLE',
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $quantity = (int) ($request->input('quantity') ?? 1);
+        if (!$playerId) {
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 123,
+                    'message' => 'Validation Error: playerId is required (معرف اللاعب أو الحساب مطلوب)',
+                ],
+                'status' => 'error',
+                'message' => 'معرف اللاعب أو الحساب (playerId) مطلوب.',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if ($quantity < 1 || $quantity > 1000) {
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 102,
+                    'message' => 'Quantity out of range (الكمية المطلوبة خارج النطاق المسموح)',
+                ],
+                'status' => 'error',
+                'message' => 'الكمية يجب أن تكون بين 1 و 1000.',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         $unitPrice = $this->pricingService->getPriceForUser($tier, $client);
         $totalPrice = round($unitPrice * $quantity, 2);
 
@@ -78,6 +137,11 @@ class OrderController extends Controller
         $wallet = $client->wallet;
         if (!$wallet || (float) $wallet->balance < $totalPrice) {
             return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 100,
+                    'message' => 'Insufficient balance (رصيد المحفظة الحالي غير كافٍ لتنفيذ الطلب)',
+                ],
                 'status' => 'error',
                 'message' => 'رصيد المحفظة الحالي غير كافٍ لتنفيذ هذا الطلب.',
                 'code' => 'INSUFFICIENT_WALLET_BALANCE',
@@ -95,28 +159,29 @@ class OrderController extends Controller
                 productId: $tier->product_id,
                 productTierId: $tier->id,
                 quantity: $quantity,
-                playerId: $request->input('player_id'),
-                serverId: $request->input('server_id'),
-                accountRegion: $request->input('account_region'),
+                playerId: $playerId,
+                serverId: $serverId,
+                accountRegion: $request->input('account_region') ?? $request->input('accountRegion'),
                 extraFields: $request->input('extra_fields') ?? [],
-                idempotencyKey: $request->input('idempotency_key'),
+                idempotencyKey: $idempotencyKey,
                 channel: 'api'
             );
 
             $order = $this->orderService->createOrder($dto, $client);
 
             return response()->json([
+                'success' => true,
                 'status' => 'success',
                 'message' => 'تم إنشاء الطلب بنجاح وهو قيد المعالجة الآن.',
                 'data' => [
+                    'orderId' => (string) $order->id,
+                    'orderNumber' => $order->public_id,
+                    'status' => strtoupper($order->status->value),
+                    'idempotencyKey' => $idempotencyKey,
                     'order_id' => $order->id,
                     'public_id' => $order->public_id,
-                    'status' => $order->status->value,
                     'product_name' => $tier->product->name,
                     'tier_name' => $tier->name,
-                    'sku' => $tier->sku,
-                    'player_id' => $order->player_id,
-                    'server_id' => $order->server_id,
                     'quantity' => $order->quantity,
                     'unit_price' => (float) $order->unit_price,
                     'total_amount' => (float) $order->total_amount,
@@ -128,6 +193,11 @@ class OrderController extends Controller
 
         } catch (\Throwable $e) {
             return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 500,
+                    'message' => 'Internal Server Error: ' . $e->getMessage(),
+                ],
                 'status' => 'error',
                 'message' => 'فشل في إنشاء الطلب: ' . $e->getMessage(),
                 'code' => 'ORDER_CREATION_FAILED',

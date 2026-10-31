@@ -55,7 +55,7 @@ export default function ApiResellerBanner() {
                         marginBottom: '12px',
                         lineHeight: '1.3',
                     }}>
-                        هل تملك متجراً أو منصة ألعاب؟ اربط متجرك بـ API إمبراطور
+                        هل تملك متجراً أو منصة ألعاب؟ اربط متجرك بـ API سند ومهره كارد
                     </h2>
 
                     <p style={{

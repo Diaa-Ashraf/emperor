@@ -138,7 +138,7 @@ export default function AboutPage() {
                 }
             `}</style>
 
-            <div ref={pageRef} style={{ maxWidth: '1080px', margin: '0 auto', paddingBottom: '60px' }}>
+            <div ref={pageRef} style={{ width: '100%', maxWidth: '100%', margin: '0', paddingBottom: '60px' }}>
                 {/* Header Title with Glowing Badge & Animations */}
                 <div style={{ textAlign: 'center', marginBottom: '44px', position: 'relative' }}>
                     {/* Ambient Glow */}
@@ -149,7 +149,7 @@ export default function AboutPage() {
                         transform: 'translateX(-50%)',
                         width: '320px',
                         height: '160px',
-                        background: 'radial-gradient(circle, rgba(212, 165, 55, 0.2) 0%, transparent 70%)',
+                        background: 'radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%)',
                         pointerEvents: 'none',
                         animation: 'pulseGlow 4s infinite ease-in-out',
                     }} />
@@ -160,22 +160,22 @@ export default function AboutPage() {
                         gap: '8px',
                         padding: '6px 16px',
                         borderRadius: '9999px',
-                        background: 'rgba(212, 165, 55, 0.12)',
-                        border: '1px solid rgba(212, 165, 55, 0.35)',
-                        color: 'var(--gold-300)',
+                        background: 'rgba(56, 189, 248, 0.12)',
+                        border: '1px solid rgba(56, 189, 248, 0.35)',
+                        color: '#38BDF8',
                         fontSize: '13px',
                         fontWeight: '800',
                         marginBottom: '14px',
-                        boxShadow: '0 0 20px rgba(212, 165, 55, 0.15)',
+                        boxShadow: '0 0 20px rgba(56, 189, 248, 0.15)',
                     }}>
-                        <Sparkles size={14} color="#D4A537" />
-                        <span>عن منصة إمبراطور EMPEROR</span>
+                        <Sparkles size={14} color="#38BDF8" />
+                        <span>عن منصة سند ومهره كارد</span>
                     </div>
 
                     <h1 style={{
                         fontSize: 'clamp(26px, 4.5vw, 42px)',
                         fontWeight: '900',
-                        color: isLight ? '#0F172A' : '#FFFFFF',
+                        color: isLight ? '#0F172A' : '#F5D061',
                         margin: '0 0 14px',
                         letterSpacing: '-0.5px',
                         lineHeight: '1.3',
@@ -190,7 +190,7 @@ export default function AboutPage() {
                         margin: '0 auto',
                         lineHeight: '1.8',
                     }}>
-                        تأسست منصة <span style={{ color: '#D4A537', fontWeight: '800' }}>إمبراطور</span> لتقديم حلول شحن رقمي ذكية ومبتكرة، تجمع بين سرعة التسليم البرمجي التلقائي، أفضل أسعار الجملة، وسحب تارجت تطبيقات البث المباشر بأعلى أمان وموثوقية.
+                        تأسست منصة <span style={{ color: '#D4A537', fontWeight: '800' }}>سند ومهره كارد</span> لتقديم حلول شحن رقمي ذكية ومبتكرة، تجمع بين سرعة التسليم البرمجي التلقائي، أفضل أسعار الجملة، وسحب تارجت تطبيقات البث المباشر بأعلى أمان وموثوقية.
                     </p>
                 </div>
 
@@ -289,7 +289,7 @@ export default function AboutPage() {
                                 borderRadius: '3px',
                                 background: 'linear-gradient(180deg, #F5D061 0%, #D4A537 100%)',
                             }} />
-                            <span>ركائز التميز في إمبراطور</span>
+                            <span>ركائز التميز في سند ومهره كارد</span>
                         </h2>
 
                         <span style={{
@@ -464,7 +464,7 @@ export default function AboutPage() {
                 >
                     <div>
                         <h3 style={{ margin: '0 0 8px', fontSize: '21px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
-                            جاهز للبدء والشحن مع منصة إمبراطور؟
+                            جاهز للبدء والشحن مع منصة سند ومهره كارد؟
                         </h3>
                         <p style={{ margin: 0, fontSize: '14px', color: isLight ? '#475569' : '#CBD5E1' }}>
                             سجل حسابك مجاناً الآن واستمتع بالشحن الفوري، العمولات المرتفعة، وخدمات الـ API للشركات.

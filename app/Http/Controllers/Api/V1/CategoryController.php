@@ -40,4 +40,27 @@ class CategoryController extends Controller
             'تم جلب قائمة الأقسام بنجاح'
         );
     }
+
+    /**
+     * Get dynamic hero services capsules for home page.
+     */
+    public function heroServices(): JsonResponse
+    {
+        $services = \App\Models\Setting::get('hero_services');
+
+        if (empty($services) || !is_array($services)) {
+            $services = [
+                ['id' => 1, 'title' => 'إصدار بطاقات افتراضية', 'subtitle' => 'فيزا وماستركارد دولية', 'icon' => 'credit-card', 'link' => '/category/cards', 'is_active' => true],
+                ['id' => 2, 'title' => 'تحويل عملات دولية ومحلية', 'subtitle' => 'شحن فوري متعدد الدول', 'icon' => 'coins', 'link' => '/deposit', 'is_active' => true],
+                ['id' => 3, 'title' => 'سحب تارجت', 'subtitle' => 'استبدال كوينز التارجت لكاش', 'icon' => 'target', 'link' => '/target/apps', 'is_active' => true],
+                ['id' => 4, 'title' => 'شحن ألعاب', 'subtitle' => 'ببجي وفري فاير وغيرها', 'icon' => 'gamepad-2', 'link' => '/category/games', 'is_active' => true],
+                ['id' => 5, 'title' => 'شحن رصيد الموبايل', 'subtitle' => 'فودافون واتصالات وأورنج', 'icon' => 'smartphone', 'link' => '/category/apps', 'is_active' => true],
+            ];
+        }
+
+        return $this->successResponse(
+            $services,
+            'تم جلب خدمات الهيرو بنجاح'
+        );
+    }
 }

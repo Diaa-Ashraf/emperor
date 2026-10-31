@@ -86,10 +86,10 @@ export default function SupportPage() {
         },
         {
             id: 'tg-channel',
-            name: 'قناة إمبراطور الرسمية (تليجرام)',
+            name: 'قناة سند ومهره كارد الرسمية (تليجرام)',
             channel: 'telegram',
             channel_label: 'تليجرام',
-            value: 'https://t.me/EmperorStore',
+            value: 'https://t.me/MohraSandCard',
             description: 'عروض يومية حصرية، تحديثات أسعار التارجت الفورية، ومسابقات وجوائز',
             icon: 'send',
         },
@@ -98,7 +98,7 @@ export default function SupportPage() {
             name: 'البريد الإلكتروني للإدارة',
             channel: 'email',
             channel_label: 'بريد إلكتروني',
-            value: 'support@emperor-store.com',
+            value: 'support@mohrasand.com',
             description: 'للشكاوى والاقتراحات والشراكات التجارية الكبرى',
             icon: 'mail',
         },
@@ -109,7 +109,7 @@ export default function SupportPage() {
     const faqs = [
         {
             q: 'كم يستغرق تنفيذ طلب شحن الألعاب أو البطاقات الرقمية؟',
-            a: 'التنفيذ في منصة إمبراطور فوري وتلقائي بنسبة 100%! في معظم الألعاب (مثل ببجي، فري فاير، وغيرها) يتم شحن حسابك مباشرة عبر الـ ID خلال 1 إلى 5 دقائق من تأكيد الطلب.',
+            a: 'التنفيذ في منصة سند ومهره كارد فوري وتلقائي بنسبة 100%! في معظم الألعاب (مثل ببجي، فري فاير، وغيرها) يتم شحن حسابك مباشرة عبر الـ ID خلال 1 إلى 5 دقائق من تأكيد الطلب.',
         },
         {
             q: 'كيف تتم عملية بيع تارجت التطبيقات واستلام الأرباح؟',
@@ -128,10 +128,10 @@ export default function SupportPage() {
             a: 'بمجرد تسجيلك، تحصل على كود ورابط إحالة خاص بك. شاركه مع أصدقائك أو متابعيك، وستربح نسبة عمولة نقدية مباشرة تضاف لمحفظتك مع كل عملية شحن أو بيع تارجت يقومون بها مدى الحياة!',
         },
         {
-            q: 'من هو مطور ومبرمج منصة إمبراطور؟ وكيف يمكنني طلب مشروع برمجي؟',
+            q: 'من هو مطور ومبرمج منصة سند ومهره كارد؟ وكيف يمكنني طلب مشروع برمجي؟',
             a: (
                 <div>
-                    <span>تم بناء وتطوير منصة إمبراطور بكامل تقنياتها بواسطة المهندس </span>
+                    <span>تم بناء وتطوير منصة سند ومهره كارد بكامل تقنياتها بواسطة المهندس </span>
                     <strong style={{ color: '#D4A537' }}>ضياء الشافعي (Diaa Elshafey)</strong>
                     <span> وفريق </span>
                     <strong style={{ color: '#D4A537' }}>Stackway</strong>.
@@ -190,7 +190,7 @@ export default function SupportPage() {
 
         if (ch.includes('whatsapp') || val.startsWith('+') || /^[0-9]+$/.test(val.replace(/[\s+-]/g, ''))) {
             const cleanPhone = val.replace(/[^0-9]/g, '');
-            const msg = encodeURIComponent('مرحباً فريق إمبراطور، أحتاج إلى مساعدة بخصوص حسابي.');
+            const msg = encodeURIComponent('مرحباً فريق سند ومهره كارد، أحتاج إلى مساعدة بخصوص حسابي.');
             return `https://wa.me/${cleanPhone}?text=${msg}`;
         }
 
@@ -247,21 +247,21 @@ export default function SupportPage() {
 
 
     return (
-        <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '24px 16px 80px' }}>
+        <div style={{ width: '100%', maxWidth: '100%', margin: '0', padding: '24px 16px 80px' }}>
             {/* Hero Header */}
             <VideoBackground>
                 <div
                     className='hero-header'
                     style={{
-                        background: 'linear-gradient(135deg, rgba(28, 28, 38, 0.95) 0%, rgb(18 18 24 / 56%) 100%)',
-                        border: '1px solid rgba(212, 165, 55, 0.25)',
+                        background: 'linear-gradient(135deg, #09172e 0%, #060e1d 100%)',
+                        border: '1.5px solid rgba(56, 189, 248, 0.45)',
                         borderRadius: '24px',
                         padding: '36px 30px',
                         marginBottom: '32px',
                         textAlign: 'center',
                         position: 'relative',
                         overflow: 'hidden',
-                        boxShadow: '0 12px 30px rgba(0, 0, 0, 0.4)',
+                        boxShadow: '0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.15)',
                         marginTop: "30px"
                     }}>
                     <div
@@ -269,24 +269,24 @@ export default function SupportPage() {
                             width: '64px',
                             height: '64px',
                             borderRadius: '20px',
-                            background: 'linear-gradient(135deg, rgba(212, 165, 55, 0.25) 0%, rgba(212, 165, 55, 0.08) 100%)',
-                            border: '1px solid rgba(212, 165, 55, 0.4)',
+                            background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(9, 23, 46, 0.8) 100%)',
+                            border: '1.5px solid rgba(56, 189, 248, 0.45)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: '#D4A537',
+                            color: '#38BDF8',
                             margin: '0 auto 18px',
-                            boxShadow: '0 0 25px rgba(212, 165, 55, 0.2)',
+                            boxShadow: '0 0 25px rgba(56, 189, 248, 0.2)',
                         }}>
                         <Headphones size={32} />
                     </div>
 
-                    <h1 style={{ margin: '0 0 10px', fontSize: '26px', fontWeight: '900', color: '#FFFFFF' }}>
+                    <h1 style={{ margin: '0 0 10px', fontSize: '26px', fontWeight: '900', color: '#F5D061' }}>
                         مركز الدعم الفني وخدمة العملاء
                     </h1>
 
                     <p style={{ margin: '0 auto 24px', fontSize: '15px', color: '#9E9EA8', maxWidth: '600px', lineHeight: '1.6' }}>
-                        فريق دعم منصة إمبراطور متواجد لخدمتكم على مدار 24 ساعة، للإجابة عن استفساراتكم وحل أي مشكلة في أسرع وقت.
+                        فريق دعم منصة سند ومهره كارد متواجد لخدمتكم على مدار 24 ساعة، للإجابة عن استفساراتكم وحل أي مشكلة في أسرع وقت.
                     </p>
 
                     {/* Trust Badges */}
@@ -344,8 +344,8 @@ export default function SupportPage() {
                             <div
                                 key={contact.id || index}
                                 style={{
-                                    background: 'rgba(22, 22, 30, 0.85)',
-                                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                                    background: 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                                    border: '1.5px solid rgba(56, 189, 248, 0.35)',
                                     borderRadius: '18px',
                                     padding: '22px',
                                     display: 'flex',
@@ -353,13 +353,14 @@ export default function SupportPage() {
                                     justifyContent: 'space-between',
                                     gap: '18px',
                                     transition: 'all 0.2s ease',
+                                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
                                 }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.borderColor = '#D4A537';
+                                    e.currentTarget.style.borderColor = '#38BDF8';
                                     e.currentTarget.style.transform = 'translateY(-2px)';
                                 }}
                                 onMouseLeave={(e) => {
-                                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                                    e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.35)';
                                     e.currentTarget.style.transform = 'translateY(0)';
                                 }}
                             >
@@ -464,18 +465,19 @@ export default function SupportPage() {
 
             {/* Interactive FAQ Section */}
             <div style={{
-                background: 'rgba(22, 22, 30, 0.8)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                background: 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                border: '1.5px solid rgba(56, 189, 248, 0.4)',
                 borderRadius: '24px',
                 padding: '30px',
+                boxShadow: '0 12px 35px rgba(0, 0, 0, 0.5)',
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
                     <div style={{
                         width: '42px',
                         height: '42px',
                         borderRadius: '12px',
-                        background: 'rgba(212, 165, 55, 0.15)',
-                        color: '#D4A537',
+                        background: 'rgba(56, 189, 248, 0.15)',
+                        color: '#38BDF8',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -483,7 +485,7 @@ export default function SupportPage() {
                         <HelpCircle size={22} />
                     </div>
                     <div>
-                        <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>
+                        <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: '#F5D061' }}>
                             الأسئلة الشائعة (FAQ)
                         </h2>
                         <p style={{ margin: '2px 0 0', fontSize: '13px', color: '#9E9EA8' }}>

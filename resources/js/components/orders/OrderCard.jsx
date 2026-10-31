@@ -63,8 +63,8 @@ export default function OrderCard({ order }) {
     return (
         <div
             style={{
-                background: isLight ? '#FFFFFF' : 'var(--bg-card, rgba(26, 26, 36, 0.9))',
-                border: isLight ? '1px solid #E2E8F0' : '1px solid var(--border-medium, rgba(255, 255, 255, 0.08))',
+                background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.35)',
                 borderRadius: '20px',
                 padding: '16px 18px',
                 display: 'flex',
@@ -73,7 +73,7 @@ export default function OrderCard({ order }) {
                 transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                 boxSizing: 'border-box',
                 width: '100%',
-                boxShadow: isLight ? '0 4px 16px rgba(0, 0, 0, 0.04)' : '0 4px 20px rgba(0, 0, 0, 0.15)',
+                boxShadow: isLight ? '0 4px 16px rgba(0, 0, 0, 0.04)' : '0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(56, 189, 248, 0.08)',
             }}
         >
             {/* Top Row: Price Pill on Left, Product & ID & Status on Right */}
@@ -215,8 +215,8 @@ export default function OrderCard({ order }) {
             {/* Date & User Info Badges */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <div style={{
-                    background: isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.04)',
-                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
+                    background: isLight ? '#F8FAFC' : 'rgba(9, 23, 46, 0.6)',
+                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.2)',
                     borderRadius: '10px',
                     padding: '6px 12px',
                     fontSize: '12px',
@@ -226,14 +226,14 @@ export default function OrderCard({ order }) {
                     gap: '8px',
                     fontWeight: '600',
                 }}>
-                    <Calendar size={14} color="#D4A537" />
+                    <Calendar size={14} color="#F5D061" />
                     <span>{formattedDate}</span>
                 </div>
 
                 {order.user?.email && (
                     <div style={{
-                        background: isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.04)',
-                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
+                        background: isLight ? '#F8FAFC' : 'rgba(9, 23, 46, 0.6)',
+                        border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.2)',
                         borderRadius: '10px',
                         padding: '6px 12px',
                         fontSize: '12px',
@@ -251,8 +251,8 @@ export default function OrderCard({ order }) {
             {/* User / Player ID Box */}
             {(order.player_id || order.account_id || order.server_id) && (
                 <div style={{
-                    background: isLight ? '#F8FAFC' : 'rgba(255, 255, 255, 0.03)',
-                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
+                    background: isLight ? '#F8FAFC' : 'rgba(9, 23, 46, 0.6)',
+                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.2)',
                     borderRadius: '12px',
                     padding: '10px 14px',
                     display: 'flex',

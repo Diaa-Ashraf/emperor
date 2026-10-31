@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Crown, ShieldCheck, Sun, Moon, Globe } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { getSiteLogo, getSiteName } from '../utils/settingsHelper';
 
 export default function AuthLayout({ children, title, subtitle }) {
     const { theme, toggleTheme } = useTheme();
@@ -16,10 +17,10 @@ export default function AuthLayout({ children, title, subtitle }) {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: isLight ? '#F1F5F9' : '#08080C',
+            backgroundColor: isLight ? '#F1F5F9' : '#060E1D',
             backgroundImage: isLight
                 ? 'radial-gradient(ellipse at 50% -20%, rgba(212, 165, 55, 0.15) 0%, rgba(241, 245, 249, 0) 70%)'
-                : 'radial-gradient(ellipse at 50% -20%, rgba(212, 165, 55, 0.12) 0%, rgba(8, 8, 12, 0) 75%)',
+                : 'radial-gradient(ellipse at 50% -20%, rgba(56, 189, 248, 0.18) 0%, rgba(6, 14, 29, 0) 75%)',
             color: isLight ? '#0F172A' : '#FFFFFF',
             fontFamily: 'Cairo, sans-serif',
             direction: isRtl ? 'rtl' : 'ltr',
@@ -98,16 +99,22 @@ export default function AuthLayout({ children, title, subtitle }) {
                 }}
             >
                 <div style={{
-                    width: '58px',
-                    height: '58px',
-                    borderRadius: '16px',
-                    background: 'linear-gradient(135deg, #F3E5AB 0%, #D4A537 50%, #AA7C11 100%)',
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '18px',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1.5px solid rgba(212, 165, 55, 0.4)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: '0 4px 20px rgba(212, 165, 55, 0.4)',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+                    overflow: 'hidden',
                 }}>
-                    <Crown size={30} color="#050507" strokeWidth={2.5} />
+                    <img
+                        src={getSiteLogo()}
+                        alt="سند ومهره كارد"
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    />
                 </div>
                 <div style={{ textAlign: 'center' }}>
                     <span style={{
@@ -117,10 +124,10 @@ export default function AuthLayout({ children, title, subtitle }) {
                         letterSpacing: '-0.5px',
                         display: 'block',
                     }}>
-                        إمبراطور <span style={{ color: isLight ? '#B8860B' : '#F5D061' }}>EMPEROR</span>
+                        سند ومهره كارد
                     </span>
                     <span style={{ fontSize: '13px', color: isLight ? '#64748B' : '#9E9EA8', fontWeight: '600' }}>
-                        المنصة الرقمية الأولى لشحن الألعاب والتارجت
+                        خدماتك الرقمية والمالية في مكان واحد
                     </span>
                 </div>
             </Link>
@@ -131,15 +138,15 @@ export default function AuthLayout({ children, title, subtitle }) {
                 maxWidth: '460px',
                 background: isLight
                     ? '#FFFFFF'
-                    : 'linear-gradient(135deg, rgba(22, 22, 30, 0.95) 0%, rgba(14, 14, 20, 0.98) 100%)',
+                    : 'linear-gradient(135deg, #09172e 0%, #060e1d 100%)',
                 border: isLight
                     ? '1.5px solid rgba(212, 165, 55, 0.4)'
-                    : '1px solid rgba(212, 165, 55, 0.3)',
+                    : '1.5px solid rgba(56, 189, 248, 0.45)',
                 borderRadius: '22px',
                 padding: '32px 28px',
                 boxShadow: isLight
                     ? '0 12px 40px rgba(15, 23, 42, 0.08), 0 0 20px rgba(212, 165, 55, 0.1)'
-                    : '0 20px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(212, 165, 55, 0.1)',
+                    : '0 20px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(56, 189, 248, 0.15)',
                 backdropFilter: 'blur(20px)',
                 WebkitBackdropFilter: 'blur(20px)',
                 zIndex: 1,

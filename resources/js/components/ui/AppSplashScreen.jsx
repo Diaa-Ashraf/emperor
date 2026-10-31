@@ -76,7 +76,7 @@ export default function AppSplashScreen() {
                 }}>
                     <img
                         src={getSiteLogo()}
-                        alt="EMPEROR CARD"
+                        alt="سند ومهره كارد"
                         style={{
                             width: '100%',
                             height: '100%',
@@ -94,7 +94,7 @@ export default function AppSplashScreen() {
                         margin: '6px 0 2px',
                         fontSize: '26px',
                         fontWeight: '900',
-                        letterSpacing: '2px',
+                        letterSpacing: '1px',
                         fontFamily: 'var(--font-cairo, Cairo, sans-serif)',
                         background: 'linear-gradient(90deg, #F8E8B8 0%, #FFFFFF 25%, #D4A537 50%, #FFFFFF 75%, #F8E8B8 100%)',
                         backgroundSize: '200% auto',
@@ -103,7 +103,7 @@ export default function AppSplashScreen() {
                         animation: 'emperorShimmerText 3s linear infinite',
                         textShadow: '0 0 20px rgba(212, 165, 55, 0.4)',
                     }}>
-                        EMPEROR CARD
+                        سند ومهره كارد
                     </h1>
                     <p style={{
                         margin: 0,
@@ -113,7 +113,7 @@ export default function AppSplashScreen() {
                         letterSpacing: '0.5px',
                         fontFamily: 'var(--font-cairo, Cairo, sans-serif)',
                     }}>
-                        إمبراطور للشحن الرقمي والخدمات الفورية
+                        خدماتك الرقمية والمالية في مكان واحد
                     </p>
                 </div>
 

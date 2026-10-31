@@ -15,7 +15,7 @@ class TargetOrderResource extends JsonResource
             'product' => [
                 'id' => $this->product?->id,
                 'name' => $this->product?->name,
-                'image_url' => $this->product?->image ? (filter_var($this->product->image, FILTER_VALIDATE_URL) ? $this->product->image : asset('storage/' . $this->product->image)) : null,
+                'image_url' => $this->product?->image_url,
             ],
             'app_user_id' => $this->app_user_id,
             'app_username' => $this->app_username,

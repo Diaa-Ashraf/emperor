@@ -19,8 +19,19 @@ class SettingController extends Controller
     {
         $settings = Setting::all()->pluck('value', 'key');
         $paymentMethods = PaymentMethod::orderBy('sort_order')->get();
+        $heroServices = Setting::get('hero_services', []);
 
-        return view('admin.settings.index', compact('settings', 'paymentMethods'));
+        if (empty($heroServices) || !is_array($heroServices)) {
+            $heroServices = [
+                ['id' => 1, 'title' => 'إصدار بطاقات افتراضية', 'subtitle' => 'فيزا وماستركارد دولية', 'link' => '/category/cards', 'icon' => 'credit-card', 'is_active' => true],
+                ['id' => 2, 'title' => 'تحويل عملات دولية ومحلية', 'subtitle' => 'شحن فوري متعدد الدول', 'link' => '/deposit', 'icon' => 'coins', 'is_active' => true],
+                ['id' => 3, 'title' => 'سحب تارجت', 'subtitle' => 'استبدال كوينز التارجت لكاش', 'link' => '/target/apps', 'icon' => 'target', 'is_active' => true],
+                ['id' => 4, 'title' => 'شحن ألعاب', 'subtitle' => 'ببجي وفري فاير وغيرها', 'link' => '/category/games', 'icon' => 'gamepad-2', 'is_active' => true],
+                ['id' => 5, 'title' => 'شحن رصيد الموبايل', 'subtitle' => 'فودافون واتصالات وأورنج', 'link' => '/category/apps', 'icon' => 'smartphone', 'is_active' => true],
+            ];
+        }
+
+        return view('admin.settings.index', compact('settings', 'paymentMethods', 'heroServices'));
     }
 
     /**
@@ -47,8 +58,27 @@ class SettingController extends Controller
             Setting::set('announcement_enabled', '0', 'general', 'string', true);
         }
 
+        // Handle dynamic hero services capsules
+        if ($request->has('hero_services') && is_array($request->input('hero_services'))) {
+            $formattedServices = [];
+            foreach ($request->input('hero_services') as $idx => $srv) {
+                if (!empty($srv['title'])) {
+                    $formattedServices[] = [
+                        'id' => $srv['id'] ?? ($idx + 1),
+                        'title' => trim($srv['title']),
+                        'subtitle' => trim($srv['subtitle'] ?? ''),
+                        'link' => trim($srv['link'] ?? '/category/all'),
+                        'icon' => trim($srv['icon'] ?? 'sparkles'),
+                        'is_active' => filter_var($srv['is_active'] ?? true, FILTER_VALIDATE_BOOLEAN),
+                    ];
+                }
+            }
+            Setting::set('hero_services', $formattedServices, 'appearance', 'json', true);
+            unset($validated['hero_services']);
+        }
+
         foreach ($validated as $key => $value) {
-            if (!in_array($key, ['site_logo', 'site_favicon', 'methods']) && !is_null($value)) {
+            if (!in_array($key, ['site_logo', 'site_favicon', 'methods', 'hero_services']) && !is_null($value)) {
                 Setting::set($key, $value, 'general', 'string', true);
             }
         }

@@ -36,7 +36,12 @@ class Product extends Model
         'sort_order',
     ];
 
-    protected $appends = ['image_url'];
+    protected $appends = ['image_url', 'icon'];
+
+    public function getIconAttribute(): ?string
+    {
+        return $this->image_url ?: $this->image;
+    }
 
     public function getImageUrlAttribute(): ?string
     {
@@ -46,13 +51,17 @@ class Product extends Model
         if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://') || str_starts_with($this->image, 'data:')) {
             return $this->image;
         }
-        if (str_starts_with($this->image, '/storage/')) {
-            return $this->image;
+        $clean = '/' . ltrim(preg_replace('#/+#', '/', $this->image), '/');
+        if (str_starts_with($clean, '/images/')) {
+            return $clean;
         }
-        if (str_starts_with($this->image, 'storage/')) {
-            return '/' . $this->image;
+        if (str_starts_with($clean, '/storage/')) {
+            if (preg_match('#^/storage/+images/(.*)$#', $clean, $m)) {
+                return '/images/' . $m[1];
+            }
+            return $clean;
         }
-        return \Illuminate\Support\Facades\Storage::url($this->image);
+        return '/storage/' . ltrim($clean, '/');
     }
 
     protected function casts(): array

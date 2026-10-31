@@ -139,7 +139,7 @@ export default function TransactionItem({ transaction }) {
                     </div>
 
                     <p style={{ margin: '0 0 2px', fontSize: '12.5px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {transaction.description || 'عملية على محفظة إمبراطور'}
+                        {transaction.description || 'عملية على محفظة سند ومهره'}
                     </p>
 
                     <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>

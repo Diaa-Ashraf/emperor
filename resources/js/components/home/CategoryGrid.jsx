@@ -48,7 +48,11 @@ export default function CategoryGrid({ categories = [], loading = false }) {
         },
     ];
 
-    const displayList = categories.length > 0 ? categories : defaultCategories;
+    if (!loading && categories.length === 0) {
+        return null;
+    }
+
+    const displayList = categories;
 
     if (loading) {
         return (

@@ -39,8 +39,8 @@ export default function CreatedByPage() {
         tagline: isEn ? 'Modern Platform & Digital Product Engineering' : 'تطوير المنصات الرقمية والتطبيقات الحديثة',
         website: 'https://portfolio.stackway.cloud/',
         description: isEn
-            ? 'We design and engineer high-performance digital products and platforms. The Emperor platform is one of our flagship systems, reflecting our commitment to maximum security, ultra-fast speeds, and seamless user experiences.'
-            : 'نحن شركة برمجة نصمم ونبني منتجات رقمية احترافية. منصة إمبراطور أحد أعمالنا التي تعكس اهتمامنا بأدق التفاصيل والسرعة وسهولة الاستخدام.',
+            ? 'We design and engineer high-performance digital products and platforms. The Mohra and Sand Card platform is one of our flagship systems, reflecting our commitment to maximum security, ultra-fast speeds, and seamless user experiences.'
+            : 'نحن شركة برمجة نصمم ونبني منتجات رقمية احترافية. منصة سند ومهره كارد أحد أعمالنا التي تعكس اهتمامنا بأدق التفاصيل والسرعة وسهولة الاستخدام.',
         logoUrl: 'https://portfolio.stackway.cloud/images/logo-company.png',
     };
 
@@ -155,8 +155,9 @@ export default function CreatedByPage() {
     return (
         <MainLayout>
             <div style={{
-                maxWidth: '1000px',
-                margin: '0 auto',
+                width: '100%',
+                maxWidth: '100%',
+                margin: '0',
                 paddingBottom: '50px',
                 direction: isRtl ? 'rtl' : 'ltr',
             }}>
@@ -165,7 +166,7 @@ export default function CreatedByPage() {
                     <span style={{
                         fontSize: '13px',
                         fontWeight: '800',
-                        color: isLight ? '#B45309' : 'var(--gold-400)',
+                        color: isLight ? '#B45309' : '#38BDF8',
                         letterSpacing: '1px',
                         textTransform: 'uppercase',
                         display: 'block',
@@ -176,10 +177,10 @@ export default function CreatedByPage() {
                     <h1 style={{
                         fontSize: 'clamp(24px, 4vw, 34px)',
                         fontWeight: '900',
-                        color: isLight ? '#0F172A' : '#FFFFFF',
+                        color: isLight ? '#0F172A' : '#F5D061',
                         margin: '0 0 10px',
                     }}>
-                        {isEn ? 'Engineering & Development of EMPEROR' : 'تنفيذ وبرمجة منصة إمبراطور'}
+                        {isEn ? 'Engineering & Development of MOHRA & SAND CARD' : 'تنفيذ وبرمجة منصة سند ومهره كارد'}
                     </h1>
                     <p style={{
                         color: isLight ? '#475569' : '#A0A0B0',

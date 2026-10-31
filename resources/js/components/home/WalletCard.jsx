@@ -126,7 +126,7 @@ export default function WalletCard({ balanceData }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '13px', color: '#D4A537', fontWeight: '700' }}>
-                            {t('emperorWallet', 'محفظة إمبراطور')}
+                            {t('emperorWallet', 'محفظة سند ومهره')}
                         </span>
                         <span style={{
                             fontSize: '11px',

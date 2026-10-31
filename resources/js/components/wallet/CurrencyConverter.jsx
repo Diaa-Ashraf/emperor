@@ -192,10 +192,10 @@ export default function CurrencyConverter({ userWallets = [], onConverted }) {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', alignItems: 'center' }}>
                     {/* From Currency & Amount */}
                     <div style={{
-                        background: '#12131A',
+                        background: 'rgba(9, 23, 46, 0.85)',
                         padding: '14px',
                         borderRadius: '14px',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(56, 189, 248, 0.35)',
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '12px' }}>
                             <span style={{ color: '#8E8E98' }}>تحويل من</span>
@@ -267,10 +267,10 @@ export default function CurrencyConverter({ userWallets = [], onConverted }) {
 
                     {/* To Currency */}
                     <div style={{
-                        background: '#12131A',
+                        background: 'rgba(9, 23, 46, 0.85)',
                         padding: '14px',
                         borderRadius: '14px',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(56, 189, 248, 0.35)',
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '12px' }}>
                             <span style={{ color: '#8E8E98' }}>استلام بـ</span>

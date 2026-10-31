@@ -1,7 +1,7 @@
 {
-  "name": "EMPEROR CARD | إمبراطور للشحن الرقمي",
-  "short_name": "EMPEROR",
-  "description": "منصة إمبراطور لشحن الألعاب والبطاقات الرقمية وبيع التارجت",
+  "name": "سند ومهره كارد | Mohra & Sand Card",
+  "short_name": "سند ومهره كارد",
+  "description": "منصة سند ومهره كارد للخدمات الرقمية والبطاقات وشحن الألعاب",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#070709",

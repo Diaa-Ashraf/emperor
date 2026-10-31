@@ -30,6 +30,26 @@ export default function RegisterPage() {
     const [googleLoading, setGoogleLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
+    // Check for OAuth Token in URL parameters (from Google redirect callback)
+    useEffect(() => {
+        const oauthToken = searchParams.get('oauth_token');
+        const oauthError = searchParams.get('error');
+
+        if (oauthToken) {
+            const isNew = searchParams.get('is_new');
+            setSession(oauthToken, null);
+            if (isNew) {
+                success('تم إنشاء الحساب عبر Google بنجاح! يرجى استكمال بياناتك');
+                navigate('/complete-profile', { replace: true });
+            } else {
+                success('تم تسجيل الدخول بنجاح عبر Google');
+                navigate('/', { replace: true });
+            }
+        } else if (oauthError) {
+            toastError(decodeURIComponent(oauthError));
+        }
+    }, [searchParams, setSession, success, toastError, navigate]);
+
     // Read ref code from URL query parameter if present
     useEffect(() => {
         const ref = searchParams.get('ref') || searchParams.get('referral');
@@ -110,29 +130,16 @@ export default function RegisterPage() {
         }
     };
 
-    // Trigger Google OAuth Register
-    const handleGoogleAuth = async () => {
+    // Trigger Google OAuth Register (Standard real browser OAuth redirect)
+    const handleGoogleAuth = () => {
         setGoogleLoading(true);
-        try {
-            const res = await authApi.getGoogleRedirectUrl();
-            const url = res.data?.data?.url || res.data?.url;
-            if (url) {
-                window.location.href = url;
-            } else {
-                window.location.href = '/api/v1/auth/google/redirect';
-            }
-        } catch (err) {
-            console.error('Google OAuth URL generation error:', err);
-            window.location.href = '/api/v1/auth/google/redirect';
-        } finally {
-            setGoogleLoading(false);
-        }
+        window.location.href = '/auth/google';
     };
 
     return (
         <AuthLayout
             title="إنشاء حساب جديد"
-            subtitle="انضم إلى نخبة تجار ومستخدمي إمبراطور وتمتع بأسرع شحن وأعلى أرباح"
+            subtitle="انضم إلى نخبة تجار ومستخدمي سند ومهره كارد وتمتع بأسرع شحن وأعلى أرباح"
         >
             {/* Google Sign In Quick Button */}
             <button
@@ -315,7 +322,7 @@ export default function RegisterPage() {
                             }}
                         />
                         <span>
-                            أوافق على <span style={{ color: isLight ? '#B8860B' : '#D4A537', fontWeight: '600', textDecoration: 'underline' }}>شروط الاستخدام</span> و <span style={{ color: isLight ? '#B8860B' : '#D4A537', fontWeight: '600', textDecoration: 'underline' }}>سياسة الخصوصية</span> لمنصة إمبراطور
+                            أوافق على <span style={{ color: isLight ? '#B8860B' : '#D4A537', fontWeight: '600', textDecoration: 'underline' }}>شروط الاستخدام</span> و <span style={{ color: isLight ? '#B8860B' : '#D4A537', fontWeight: '600', textDecoration: 'underline' }}>سياسة الخصوصية</span> لمنصة سند ومهره كارد
                         </span>
                     </label>
                     {errors.terms && (

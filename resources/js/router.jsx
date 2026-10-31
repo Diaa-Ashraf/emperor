@@ -48,6 +48,22 @@ const AboutPage = lazyRetry(() => import('./pages/AboutPage'));
 const DeveloperApiPage = lazyRetry(() => import('./pages/DeveloperApiPage'));
 const NotFoundPage = lazyRetry(() => import('./pages/NotFoundPage'));
 
+// Admin SPA Pages (Guarded by AdminProtectedRoute)
+const AdminDashboardPage = lazyRetry(() => import('./pages/admin/AdminDashboardPage'));
+const AdminWalletPage = lazyRetry(() => import('./pages/admin/AdminWalletPage'));
+const AdminUsersPage = lazyRetry(() => import('./pages/admin/AdminUsersPage'));
+const AdminDepositsPage = lazyRetry(() => import('./pages/admin/AdminDepositsPage'));
+const AdminOrdersPage = lazyRetry(() => import('./pages/admin/AdminOrdersPage'));
+const AdminTargetsPage = lazyRetry(() => import('./pages/admin/AdminTargetsPage'));
+const AdminProductsPage = lazyRetry(() => import('./pages/admin/AdminProductsPage'));
+const AdminProvidersPage = lazyRetry(() => import('./pages/admin/AdminProvidersPage'));
+const AdminPaymentMethodsPage = lazyRetry(() => import('./pages/admin/AdminPaymentMethodsPage'));
+const AdminPricingTiersPage = lazyRetry(() => import('./pages/admin/AdminPricingTiersPage'));
+const AdminActivityLogsPage = lazyRetry(() => import('./pages/admin/AdminActivityLogsPage'));
+const AdminStaffPage = lazyRetry(() => import('./pages/admin/AdminStaffPage'));
+const AdminReferralsPage = lazyRetry(() => import('./pages/admin/AdminReferralsPage'));
+const AdminUserLedgerPage = lazyRetry(() => import('./pages/admin/AdminUserLedgerPage'));
+
 // Protected Route Guard
 export function ProtectedRoute({ children }) {
     const { isAuthenticated, loading } = useAuth();
@@ -75,6 +91,42 @@ export function ProtectedRoute({ children }) {
 
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
+    }
+
+    return children;
+}
+
+// Admin Protected Route Guard (Verifies is_admin or staff permissions)
+export function AdminProtectedRoute({ children, requiredPermission }) {
+    const { isAuthenticated, canAccessAdmin, can, loading } = useAuth();
+
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '60vh',
+                color: '#F5D061'
+            }}>
+                <div style={{
+                    width: '36px',
+                    height: '36px',
+                    border: '3px solid rgba(245, 208, 97, 0.2)',
+                    borderTopColor: '#F5D061',
+                    borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite'
+                }} />
+            </div>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+
+    if (!canAccessAdmin || (requiredPermission && !can(requiredPermission))) {
+        return <Navigate to="/" replace />;
     }
 
     return children;
@@ -184,6 +236,34 @@ export function AppRoutes() {
                 <Route path="/developers/api" element={<ProtectedRoute><DeveloperApiPage /></ProtectedRoute>} />
                 <Route path="/b2b" element={<ProtectedRoute><DeveloperApiPage /></ProtectedRoute>} />
                 <Route path="/api-docs" element={<ProtectedRoute><DeveloperApiPage /></ProtectedRoute>} />
+
+                {/* Unified Admin Routes (Protected by AdminProtectedRoute) */}
+                <Route path="/admin" element={<AdminProtectedRoute><AdminDashboardPage /></AdminProtectedRoute>} />
+                <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminDashboardPage /></AdminProtectedRoute>} />
+                <Route path="/admin/wallet" element={<AdminProtectedRoute><AdminWalletPage /></AdminProtectedRoute>} />
+                <Route path="/admin/users" element={<AdminProtectedRoute><AdminUsersPage /></AdminProtectedRoute>} />
+                <Route path="/admin/users/ledger" element={<AdminProtectedRoute><AdminUserLedgerPage /></AdminProtectedRoute>} />
+                <Route path="/admin/users/:id/ledger" element={<AdminProtectedRoute><AdminUserLedgerPage /></AdminProtectedRoute>} />
+                <Route path="/admin/deposits" element={<AdminProtectedRoute><AdminDepositsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/orders" element={<AdminProtectedRoute><AdminOrdersPage /></AdminProtectedRoute>} />
+                <Route path="/admin/targets" element={<AdminProtectedRoute><AdminTargetsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/products" element={<AdminProtectedRoute><AdminProductsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/categories" element={<AdminProtectedRoute><AdminProductsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/catalog" element={<AdminProtectedRoute><AdminProductsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/providers" element={<AdminProtectedRoute><AdminProvidersPage /></AdminProtectedRoute>} />
+                <Route path="/admin/payment-methods" element={<AdminProtectedRoute><AdminPaymentMethodsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/payment_methods" element={<AdminProtectedRoute><AdminPaymentMethodsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/pricing-tiers" element={<AdminProtectedRoute><AdminPricingTiersPage /></AdminProtectedRoute>} />
+                <Route path="/admin/groups" element={<AdminProtectedRoute><AdminPricingTiersPage /></AdminProtectedRoute>} />
+                <Route path="/admin/staff" element={<AdminProtectedRoute><AdminStaffPage /></AdminProtectedRoute>} />
+                <Route path="/admin/activity-logs" element={<AdminProtectedRoute><AdminActivityLogsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/audit-logs" element={<AdminProtectedRoute><AdminActivityLogsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/staff-activity" element={<AdminProtectedRoute><AdminActivityLogsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/referrals" element={<AdminProtectedRoute><AdminReferralsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/rewards" element={<AdminProtectedRoute><AdminReferralsPage /></AdminProtectedRoute>} />
+                <Route path="/admin/appearance" element={<AdminProtectedRoute><AdminDashboardPage /></AdminProtectedRoute>} />
+                <Route path="/admin/whatsapp" element={<AdminProtectedRoute><AdminProvidersPage /></AdminProtectedRoute>} />
+                <Route path="/admin/currencies" element={<AdminProtectedRoute><AdminWalletPage /></AdminProtectedRoute>} />
 
                 {/* 404 Fallback */}
                 <Route path="*" element={<NotFoundPage />} />

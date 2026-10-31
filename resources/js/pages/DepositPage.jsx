@@ -461,61 +461,69 @@ export default function DepositPage() {
                                     className="ka-deposit-card"
                                     onClick={() => setSelectedMethod(method)}
                                 >
-                                    {/* Top Bar with Recharge & Flame */}
-                                    <div className="ka-card-top-bar">
-                                        <span className="ka-card-recharge-tag">
-                                            Recharge
-                                        </span>
-                                        <span className="ka-card-flame-tag">
-                                            <Flame size={isMobile ? 11 : 13} color="#FCD34D" fill="#FCD34D" />
-                                            <span>{t('chargeNow', 'اشحن رصيدك')}</span>
-                                        </span>
-                                    </div>
-
-                                    {/* Elevated White Capsule with Brand Logo */}
-                                    <div className="ka-card-white-capsule">
-                                        <div className="ka-card-logo-circle">
-                                            {method.logo ? (
-                                                <img
-                                                    src={method.logo}
-                                                    alt={method.name}
-                                                    style={{
-                                                        maxWidth: isMobile ? '38px' : '52px',
-                                                        maxHeight: isMobile ? '38px' : '52px',
-                                                        objectFit: 'contain',
-                                                        borderRadius: '6px'
-                                                    }}
-                                                />
-                                            ) : (
-                                                <PaymentBrandLogo methodId={method.code || method.id} size={isMobile ? 44 : 62} />
-                                            )}
+                                    <div className="ka-deposit-card-inner">
+                                        {/* Top Bar with Recharge & Flame */}
+                                        <div className="ka-card-top-bar">
+                                            <span className="ka-card-recharge-tag">
+                                                Recharge
+                                            </span>
+                                            <span className="ka-card-flame-tag">
+                                                <Flame size={isMobile ? 11 : 13} color="#FCD34D" fill="#FCD34D" />
+                                                <span>{t('chargeNow', 'اشحن رصيدك')}</span>
+                                            </span>
                                         </div>
-                                    </div>
 
-                                    {/* Outlined 0000 Pins Box */}
-                                    <div className="ka-card-pins-box">
-                                        <span className="ka-card-pins-badge">0000</span>
-                                    </div>
+                                        {/* Elevated Capsule with Brand Logo (Replaced stark white box) */}
+                                        <div className="ka-card-white-capsule">
+                                            <div className="ka-card-logo-circle">
+                                                {method.logo ? (
+                                                    <img
+                                                        src={method.logo}
+                                                        alt={method.name}
+                                                        onError={(e) => {
+                                                            e.currentTarget.style.display = 'none';
+                                                            const fallback = e.currentTarget.parentElement?.querySelector('.brand-vector-fallback');
+                                                            if (fallback) fallback.style.display = 'flex';
+                                                        }}
+                                                        style={{
+                                                            maxWidth: isMobile ? '46px' : '62px',
+                                                            maxHeight: isMobile ? '46px' : '62px',
+                                                            objectFit: 'contain',
+                                                            borderRadius: '8px'
+                                                        }}
+                                                    />
+                                                ) : null}
+                                                <div className="brand-vector-fallback" style={{ display: method.logo ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <PaymentBrandLogo methodId={method.code || method.id} size={isMobile ? 48 : 64} />
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                    {/* Method Name Text */}
-                                    <div className="ka-card-name-text">
-                                        {method.subName || method.sub_name || method.name}
-                                    </div>
+                                        {/* Outlined 0000 Pins Box */}
+                                        <div className="ka-card-pins-box">
+                                            <span className="ka-card-pins-badge">0000</span>
+                                        </div>
 
-                                    {/* Translucent Note Box */}
-                                    <div className="ka-card-note-box">
-                                        <span className="ka-card-note-title">{t('notes', 'ملاحظة')}</span>
-                                        <span className="ka-card-note-text">{method.note || t('instantTransfer', 'تحويل فوري ومعتمد')}</span>
-                                    </div>
+                                        {/* Method Name Text */}
+                                        <div className="ka-card-name-text">
+                                            {method.subName || method.sub_name || method.name}
+                                        </div>
 
-                                    {/* Bottom Footer Bar */}
-                                    <div className="ka-card-footer-bar">
-                                        <span className="ka-card-cur-badge">
-                                            {method.currency}
-                                        </span>
-                                        <span className="ka-card-action-text">
-                                            <span>{method.country_name || method.tag || method.name}</span>
-                                        </span>
+                                        {/* Translucent Note Box */}
+                                        <div className="ka-card-note-box">
+                                            <span className="ka-card-note-title">{t('notes', 'ملاحظة')}</span>
+                                            <span className="ka-card-note-text">{method.note || t('instantTransfer', 'تحويل فوري ومعتمد')}</span>
+                                        </div>
+
+                                        {/* Bottom Footer Bar */}
+                                        <div className="ka-card-footer-bar">
+                                            <span className="ka-card-cur-badge">
+                                                {method.currency}
+                                            </span>
+                                            <span className="ka-card-action-text">
+                                                <span>{method.country_name || method.tag || method.name}</span>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -539,12 +547,13 @@ export default function DepositPage() {
                                 <div style={{
                                     width: '64px',
                                     height: '64px',
-                                    borderRadius: '50%',
-                                    background: '#FFFFFF',
+                                    borderRadius: '20px',
+                                    background: isLight ? '#F8FAFC' : 'radial-gradient(circle, #0e1e38 0%, #060e1d 100%)',
+                                    border: isLight ? '1px solid #E2E8F0' : '1.5px solid rgba(56, 189, 248, 0.35)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    boxShadow: isLight ? '0 4px 15px rgba(15, 23, 42, 0.1)' : '0 4px 15px rgba(0, 0, 0, 0.5)',
+                                    boxShadow: isLight ? '0 4px 15px rgba(15, 23, 42, 0.08)' : '0 6px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.2)',
                                     flexShrink: 0,
                                     overflow: 'hidden',
                                 }}>
@@ -552,11 +561,17 @@ export default function DepositPage() {
                                         <img
                                             src={selectedMethod.logo}
                                             alt={selectedMethod.name}
-                                            style={{ maxWidth: '48px', maxHeight: '48px', objectFit: 'contain' }}
+                                            onError={(e) => {
+                                                e.currentTarget.style.display = 'none';
+                                                const fallback = e.currentTarget.parentElement?.querySelector('.selected-brand-fallback');
+                                                if (fallback) fallback.style.display = 'flex';
+                                            }}
+                                            style={{ maxWidth: '48px', maxHeight: '48px', objectFit: 'contain', borderRadius: '6px' }}
                                         />
-                                    ) : (
-                                        <PaymentBrandLogo methodId={selectedMethod.code || selectedMethod.id} size={56} />
-                                    )}
+                                    ) : null}
+                                    <div className="selected-brand-fallback" style={{ display: selectedMethod.logo ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <PaymentBrandLogo methodId={selectedMethod.code || selectedMethod.id} size={54} />
+                                    </div>
                                 </div>
 
                                 <div style={{ flex: 1 }}>

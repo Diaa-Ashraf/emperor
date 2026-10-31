@@ -483,7 +483,7 @@ export default function ProductDetailPage() {
                         color: '#9CA3AF',
                     }}>
                         <ShieldCheck size={16} color="#D4A537" />
-                        <span>ضمان إمبراطور المعتمد: شحن فوري وآمن 100% داخل حساب اللعبة</span>
+                        <span>ضمان سند ومهره كارد المعتمد: شحن فوري وآمن 100% داخل حساب اللعبة</span>
                     </div>
                 </div>
             </div>

@@ -67,10 +67,10 @@ export default function OrdersPage() {
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
                     <div>
-                        <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                        <h1 style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '900', color: isLight ? '#0F172A' : '#F5D061' }}>
                             {t('ordersAndShippingLog', 'طلباتي وسجل الشحن')}
                         </h1>
-                        <p style={{ margin: 0, fontSize: '14px', color: isLight ? '#475569' : '#CBD5E1' }}>
+                        <p style={{ margin: 0, fontSize: '14px', color: isLight ? '#475569' : '#94A3B8' }}>
                             {t('ordersSubtitle', 'تابع حالة تنفيذ شحن ألعابك وبطاقاتك الرقمية لحظة بلحظة')}
                         </p>
                     </div>
@@ -105,21 +105,21 @@ export default function OrdersPage() {
                                 padding: '8px 18px',
                                 borderRadius: '12px',
                                 background: isActive
-                                    ? 'linear-gradient(135deg, #F3E5AB 0%, #D4A537 100%)'
-                                    : (isLight ? '#FFFFFF' : 'rgba(26, 26, 36, 0.8)'),
+                                    ? 'linear-gradient(135deg, #0284C7 0%, #38BDF8 100%)'
+                                    : (isLight ? '#FFFFFF' : 'rgba(9, 23, 46, 0.85)'),
                                 color: isActive
-                                    ? '#0D0D0F'
+                                    ? '#FFFFFF'
                                     : (isLight ? '#334155' : '#CBD5E1'),
                                 fontWeight: '700',
                                 fontSize: '14px',
                                 border: isActive
                                     ? 'none'
-                                    : (isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.08)'),
+                                    : (isLight ? '1px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.25)'),
                                 cursor: 'pointer',
                                 whiteSpace: 'nowrap',
                                 transition: 'all 0.2s',
                                 fontFamily: 'var(--font-cairo)',
-                                boxShadow: isLight && !isActive ? '0 2px 6px rgba(0,0,0,0.03)' : 'none',
+                                boxShadow: isActive ? '0 4px 15px rgba(2, 132, 199, 0.35)' : (isLight ? '0 2px 6px rgba(0,0,0,0.03)' : 'none'),
                             }}
                         >
                             {tab.label}

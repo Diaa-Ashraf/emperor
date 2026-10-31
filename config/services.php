@@ -38,7 +38,7 @@ return [
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect' => env('GOOGLE_REDIRECT_URI', 'http://localhost:8000/api/v1/auth/google/callback'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', 'http://127.0.0.1:8000/auth/google/callback'),
     ],
 
     'firebase' => [
@@ -59,6 +59,11 @@ return [
         'api_url' => env('KA_CARDS_API_URL', 'https://ka-cards.com/client/api'),
         'api_token' => env('KA_CARDS_API_TOKEN'),
         'timeout' => env('KA_CARDS_TIMEOUT', 30),
+    ],
+
+    'embrator' => [
+        'base_url' => env('EMBRATOR_API_BASE_URL', 'https://embrator.store/api/v1/reseller'),
+        'api_key' => env('EMBRATOR_API_KEY', '8a36b758817f8708502c4e16cd3a4b5f9650133a1968961a68b08f6e4544ed8f'),
     ],
 
 ];

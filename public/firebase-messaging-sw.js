@@ -19,7 +19,7 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage(function (payload) {
     console.log('[firebase-messaging-sw.js] Received background push message:', payload);
 
-    const notificationTitle = payload.notification?.title || payload.data?.title || 'إشعار جديد من إمبراطور 👑';
+    const notificationTitle = payload.notification?.title || payload.data?.title || 'إشعار جديد من سند ومهره كارد ✨';
     const notificationOptions = {
         body: payload.notification?.body || payload.data?.body || 'لديك تحديث جديد في حسابك',
         icon: '/favicon.ico',

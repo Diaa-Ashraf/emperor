@@ -12,7 +12,7 @@
 
         <div class="d-none d-md-flex align-items-center gap-2 text-muted fs-6">
             <span class="badge badge-gold">V 1.0.0</span>
-            <span class="text-white fw-semibold">منصة إمبراطور</span>
+            <span class="text-white fw-semibold">سند ومهره كارد</span>
         </div>
     </div>
 

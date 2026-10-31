@@ -121,7 +121,11 @@ export default function FlashDealsSection() {
         return () => clearInterval(timer);
     }, []);
 
-    const activeDeals = deals.length > 0 ? deals : defaultFlashDeals;
+    if (deals.length === 0) {
+        return null;
+    }
+
+    const activeDeals = deals;
     const formatNumber = (num) => String(num).padStart(2, '0');
 
     return (

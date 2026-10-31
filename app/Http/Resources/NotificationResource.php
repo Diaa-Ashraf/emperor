@@ -32,7 +32,7 @@ class NotificationResource extends JsonResource
                 'referral_commission', 'referral_registered' => 'مكافأة إحالة جديدة',
                 'target_order_submitted', 'target_order_approved', 'target_order_rejected' => 'تحديث تارجت الرومات',
                 'admin_deposit_alert', 'admin_new_order_alert' => 'تنبيه إداري جديد',
-                default => 'إشعار من منصة إمبراطور',
+                default => 'إشعار من منصة سند ومهره كارد',
             };
         }
 

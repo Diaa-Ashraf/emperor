@@ -2,7 +2,7 @@
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
         <div>
             <span>&copy; {{ date('Y') }} </span>
-            <strong class="text-gold">منصة إمبراطور (Emperor)</strong>
+            <strong class="text-gold">سند ومهره كارد</strong>
             <span> - جميع الحقوق محفوظة.</span>
         </div>
         <div class="d-flex align-items-center gap-3">

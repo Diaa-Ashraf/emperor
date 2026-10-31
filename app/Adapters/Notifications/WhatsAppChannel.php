@@ -100,10 +100,10 @@ class WhatsAppChannel
      */
     public function formatMessage(NotificationPayloadDTO $payload, ?string $recipientName = null): string
     {
-        $greeting = $recipientName ? "مرحباً يا {$recipientName} 👑" : "مرحباً بك في إمبراطور 👑";
+        $greeting = $recipientName ? "مرحباً يا {$recipientName} ✨" : "مرحباً بك في منصة سند ومهره كارد ✨";
 
         $lines = [
-            "👑 *منصة إمبراطور | Emperor Platform*",
+            "✨ *منصة سند ومهره كارد | Mohra & Sand Card*",
             "━━━━━━━━━━━━━━━━━━",
             $greeting,
             "",
