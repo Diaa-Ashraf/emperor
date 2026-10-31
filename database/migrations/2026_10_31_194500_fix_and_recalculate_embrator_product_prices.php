@@ -11,7 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 1. Update Yoho / Voice Coin tiers with accurate Embrator unit cost and 4% margin
+        // 1. Update USD/EGP exchange rate to 59.0 for accurate live cost conversion
+        DB::table('exchange_rates')->updateOrInsert(
+            ['from_currency' => 'USD', 'to_currency' => 'EGP'],
+            ['rate' => 59.000000, 'is_active' => true, 'updated_at' => now()]
+        );
+        DB::table('exchange_rates')->updateOrInsert(
+            ['from_currency' => 'EGP', 'to_currency' => 'USD'],
+            ['rate' => round(1 / 59.0, 6), 'is_active' => true, 'updated_at' => now()]
+        );
+
+        // 2. Update Yoho / Voice Coin tiers with accurate Embrator unit cost and 4% margin
         $yohoProducts = DB::table('products')
             ->where('name', 'like', '%يوهو%')
             ->orWhere('name', 'like', '%yoho%')
@@ -56,3 +66,4 @@ return new class extends Migration
         // No reverse needed
     }
 };
+

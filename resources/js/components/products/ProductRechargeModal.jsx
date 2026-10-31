@@ -109,55 +109,38 @@ export default function ProductRechargeModal({
 
     // Compute unit coin rate for custom coin recharge
     const coinRate = useMemo(() => {
-        // 1. If product has explicit unit_price:
-        if (product.unit_price && Number(product.unit_price) > 0) {
-            const rawUnit = Number(product.unit_price);
-            return isUsd ? (rawUnit > 1 ? rawUnit / 59.0 : rawUnit) : (rawUnit < 0.1 ? rawUnit * 59.0 : rawUnit);
+        // 1. Explicit currency-specific prices from product
+        if (isUsd && product.price_usd && Number(product.price_usd) > 0) {
+            return Number(product.price_usd);
+        }
+        if (!isUsd && product.price_egp && Number(product.price_egp) > 0) {
+            return Number(product.price_egp);
         }
 
         const availableTiers = product.tiers || product.active_tiers || [];
         if (availableTiers.length > 0) {
-            for (const tItem of availableTiers) {
-                const itemPrice = isUsd
-                    ? (tItem.price_usd ?? (tItem.cost_currency === 'USD' ? tItem.final_price : null))
-                    : (tItem.price_egp ?? tItem.price ?? (tItem.final_price ? Number(tItem.final_price) * 59.0 : null));
-                const price = Number(itemPrice ?? tItem.price ?? tItem.final_price ?? 0);
-                const cleaned = (tItem.name || '').replace(/,/g, '');
-                const matches = cleaned.match(/\d+/);
-                if (matches && matches[0] && price > 0) {
-                    const count = parseInt(matches[0], 10);
-                    if (count > 1) {
-                        return price / count;
-                    }
-                }
-            }
-
             const firstItem = availableTiers[0];
-            const rawPrice = isUsd
-                ? (firstItem.price_usd ?? (firstItem.cost_currency === 'USD' ? firstItem.final_price : null))
-                : (firstItem.price_egp ?? firstItem.price ?? (firstItem.final_price ? Number(firstItem.final_price) * 59.0 : null));
-            const firstPrice = Number(rawPrice ?? firstItem.price ?? firstItem.final_price ?? 0);
-            if (firstPrice > 0 && firstPrice < 5) {
-                // Single coin micro-rate
-                return firstPrice;
+            if (isUsd && firstItem.price_usd && Number(firstItem.price_usd) > 0) {
+                return Number(firstItem.price_usd);
             }
-
-            // Check if source_cost exists on firstItem
+            if (!isUsd && firstItem.price_egp && Number(firstItem.price_egp) > 0) {
+                return Number(firstItem.price_egp);
+            }
+            if (firstItem.price && Number(firstItem.price) > 0) {
+                const p = Number(firstItem.price);
+                // If tier price is in USD and user wants EGP or vice versa
+                return p;
+            }
             if (firstItem.source_cost && Number(firstItem.source_cost) > 0) {
-                const baseCost = Number(firstItem.source_cost);
-                const marginMult = 1.04;
-                return isUsd ? (baseCost * marginMult) : (baseCost * marginMult * 59.0);
+                const baseCost = Number(firstItem.source_cost) * 1.04;
+                return isUsd ? baseCost : (baseCost * 59.0);
             }
         }
 
-        // Direct fallback for Yoho / Voice App coins
-        const nameLower = (product.name || '').toLowerCase();
-        if (nameLower.includes('يوهو') || nameLower.includes('yoho') || nameLower.includes('ياهو')) {
-            const yohoUnitUsd = 0.0001001419786794 * 1.04;
-            return isUsd ? yohoUnitUsd : (yohoUnitUsd * 59.0);
-        }
-
-        return 0;
+        // Direct exact rate for Yoho coins
+        const yohoCostUsd = 0.0001001419786794;
+        const yohoPriceUsd = yohoCostUsd * 1.04; // $0.0001041476
+        return isUsd ? yohoPriceUsd : (yohoPriceUsd * 59.0);
     }, [product, isUsd]);
 
     // Handle quantity input change
