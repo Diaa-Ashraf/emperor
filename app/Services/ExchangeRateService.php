@@ -127,16 +127,16 @@ class ExchangeRateService
     public function seedDefaultRates(): void
     {
         $defaults = [
-            ['from' => 'USD', 'to' => 'EGP', 'rate' => 50.00, 'fee' => 0.0],
-            ['from' => 'EGP', 'to' => 'USD', 'rate' => 0.02, 'fee' => 0.0],
-            ['from' => 'SAR', 'to' => 'EGP', 'rate' => 13.33, 'fee' => 0.0],
-            ['from' => 'EGP', 'to' => 'SAR', 'rate' => 0.075, 'fee' => 0.0],
+            ['from' => 'USD', 'to' => 'EGP', 'rate' => 59.00, 'fee' => 0.0],
+            ['from' => 'EGP', 'to' => 'USD', 'rate' => round(1 / 59.0, 6), 'fee' => 0.0],
+            ['from' => 'SAR', 'to' => 'EGP', 'rate' => 15.73, 'fee' => 0.0],
+            ['from' => 'EGP', 'to' => 'SAR', 'rate' => round(1 / 15.73, 6), 'fee' => 0.0],
             ['from' => 'USD', 'to' => 'SAR', 'rate' => 3.75, 'fee' => 0.0],
             ['from' => 'SAR', 'to' => 'USD', 'rate' => 0.2667, 'fee' => 0.0],
         ];
 
         foreach ($defaults as $pair) {
-            ExchangeRate::firstOrCreate(
+            ExchangeRate::updateOrCreate(
                 ['from_currency' => $pair['from'], 'to_currency' => $pair['to']],
                 ['rate' => $pair['rate'], 'conversion_fee_percent' => $pair['fee'], 'is_active' => true]
             );

@@ -224,10 +224,15 @@ export default function ProductRechargeModal({
             const egpVal = totalPrice * 59.0;
             return `${egpVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م`;
         } else {
+            const usdUnit = Number(product.price_usd || product.tiers?.[0]?.price_usd || 0.0001041476);
+            if (isCustomQuantity && validQty > 0 && usdUnit > 0) {
+                const usdVal = validQty * usdUnit;
+                return `${usdVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $`;
+            }
             const usdVal = totalPrice / 59.0;
             return `${usdVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $`;
         }
-    }, [totalPrice, isUsd]);
+    }, [totalPrice, isUsd, isCustomQuantity, validQty, product]);
 
     const productImage = formatImageUrl(
         product.image_url || product.image || product.banner_url || product.icon_url
