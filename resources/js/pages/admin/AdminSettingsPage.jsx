@@ -124,49 +124,66 @@ export default function AdminSettingsPage() {
             setSaving(true);
             const formData = new FormData();
 
-            Object.entries(settings).forEach(([key, val]) => {
-                if (key === 'site_logo' || key === 'site_favicon') return;
+            // Append all key-values
+            Object.keys(settings).forEach((key) => {
+                let val = settings[key];
                 if (typeof val === 'boolean') {
                     formData.append(key, val ? '1' : '0');
                 } else if (val !== null && val !== undefined) {
-                    formData.append(key, val);
+                    formData.append(key, String(val));
                 }
             });
 
+            // Append images if changed
             if (logoFile) {
-                formData.append('site_logo', logoFile);
+                formData.append('site_logo_file', logoFile);
             }
             if (favFile) {
-                formData.append('site_favicon', favFile);
+                formData.append('site_favicon_file', favFile);
             }
 
-            await adminApi.updateSettings(formData);
-            success('تم حفظ إعدادات المنصة بنجاح وتحديث كافة الأقسام');
-            fetchSettings();
+            const res = await adminApi.updateSettings(formData);
+            if (res.data?.data) {
+                const updated = res.data.data;
+                setSettings(prev => ({
+                    ...prev,
+                    ...updated,
+                    announcement_enabled: Boolean(updated.announcement_enabled),
+                    referral_is_active: Boolean(updated.referral_is_active),
+                }));
+                if (updated.site_logo) setLogoPreview(updated.site_logo);
+                if (updated.site_favicon) setFavPreview(updated.site_favicon);
+            }
+
+            // Dispatch global event for instant header/footer branding update
+            window.dispatchEvent(new CustomEvent('emperor:settings-updated', { detail: settings }));
+
+            success('تم حفظ وتحديث إعدادات المنصة بنجاح');
         } catch (err) {
+            console.error('Update settings error:', err);
             toastError(err.response?.data?.message || 'فشل حفظ الإعدادات، يرجى مراجعة البيانات');
         } finally {
             setSaving(false);
         }
     };
 
+    // Luxury Theme Colors
+    const cardBg = isLight ? '#FFFFFF' : '#0B0F19';
+    const subCardBg = isLight ? '#F8FAFC' : '#070A12';
+    const borderCol = isLight ? '#E2E8F0' : 'rgba(255, 255, 255, 0.08)';
+    const textMain = isLight ? '#0F172A' : '#F8FAFC';
+    const textSub = isLight ? '#64748B' : '#94A3B8';
+    const inputBg = isLight ? '#F1F5F9' : '#040711';
+    const inputBorder = isLight ? '#CBD5E1' : 'rgba(255, 255, 255, 0.12)';
+
     const tabs = [
         { id: 'general', label: 'البيانات الأساسية والهوية', icon: Globe },
         { id: 'contacts', label: 'الدعم الفني وقنوات التواصل', icon: PhoneCall },
-        { id: 'announcements', label: 'شريط التنبيهات والإعلانات', icon: Megaphone },
+        { id: 'announcement', label: 'شريط التنبيهات والإعلانات', icon: Megaphone },
         { id: 'referrals', label: 'برنامج الإحالة والعمولات', icon: Share2 },
         { id: 'finance', label: 'المالية واستلام التارجت', icon: DollarSign },
-        { id: 'legal', label: 'الشروط وسياسة الخصوصية', icon: FileText },
+        { id: 'legal', label: 'الشروط والسياسات', icon: FileText },
     ];
-
-    // Shared style constants
-    const cardBg = isLight ? '#FFFFFF' : '#0B0F19';
-    const subCardBg = isLight ? '#F8FAFC' : '#050A14';
-    const inputBg = isLight ? '#F1F5F9' : '#040711';
-    const borderCol = isLight ? '#E2E8F0' : 'rgba(255, 255, 255, 0.08)';
-    const inputBorder = isLight ? '#CBD5E1' : 'rgba(255, 255, 255, 0.12)';
-    const textMain = isLight ? '#0F172A' : '#FFFFFF';
-    const textSub = isLight ? '#64748B' : '#94A3B8';
 
     if (loading) {
         return (
@@ -200,78 +217,197 @@ export default function AdminSettingsPage() {
             backgroundColor: isLight ? '#F8FAFC' : '#040711',
             color: textMain,
             fontFamily: 'Cairo, sans-serif',
-            paddingBottom: '100px',
+            direction: 'rtl',
+            overflowX: 'hidden',
+            width: '100%',
+            paddingBottom: '80px',
         }}>
-            <AdminHeader />
+            <style>{`
+                .settings-container {
+                    width: 100%;
+                    max-width: 960px;
+                    margin: 0 auto;
+                    padding: 0 16px;
+                    box-sizing: border-box;
+                }
+                .settings-header-box {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                    gap: 16px;
+                    margin-bottom: 20px;
+                    background-color: ${cardBg};
+                    padding: 18px 22px;
+                    border-radius: 20px;
+                    border: 1px solid ${borderCol};
+                    box-shadow: ${isLight ? '0 4px 15px rgba(0,0,0,0.03)' : '0 10px 30px rgba(0,0,0,0.4)'};
+                    box-sizing: border-box;
+                    width: 100%;
+                }
+                .settings-card {
+                    background-color: ${cardBg};
+                    border-radius: 22px;
+                    border: 1px solid ${borderCol};
+                    padding: 24px;
+                    box-shadow: ${isLight ? '0 4px 15px rgba(0,0,0,0.03)' : '0 10px 30px rgba(0,0,0,0.4)'};
+                    margin-bottom: 24px;
+                    box-sizing: border-box;
+                    width: 100%;
+                }
+                .settings-tabs-wrapper {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    overflow-x: auto;
+                    width: 100%;
+                    max-width: 100%;
+                    box-sizing: border-box;
+                    padding-bottom: 8px;
+                    margin-bottom: 20px;
+                    -webkit-overflow-scrolling: touch;
+                    scrollbar-width: thin;
+                    scrollbar-color: rgba(245, 208, 97, 0.3) transparent;
+                }
+                .settings-tabs-wrapper::-webkit-scrollbar {
+                    height: 4px;
+                }
+                .settings-tabs-wrapper::-webkit-scrollbar-thumb {
+                    background: rgba(245, 208, 97, 0.3);
+                    border-radius: 4px;
+                }
+                .settings-grid-2 {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 16px;
+                    width: 100%;
+                    box-sizing: border-box;
+                }
+                .settings-grid-3 {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 16px;
+                    width: 100%;
+                    box-sizing: border-box;
+                }
+                .settings-save-bar {
+                    position: sticky;
+                    bottom: 16px;
+                    background-color: ${isLight ? 'rgba(255, 255, 255, 0.96)' : 'rgba(11, 15, 25, 0.96)'};
+                    backdrop-filter: blur(12px);
+                    -webkit-backdrop-filter: blur(12px);
+                    padding: 14px 20px;
+                    border-radius: 18px;
+                    border: 1px solid ${isLight ? '#CBD5E1' : 'rgba(245, 208, 97, 0.25)'};
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 14px;
+                    z-index: 40;
+                    width: 100%;
+                    box-sizing: border-box;
+                }
 
-            <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px 16px' }}>
-                {/* ═══ Header Title Bar ═══ */}
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                    gap: '16px',
-                    marginBottom: '24px',
-                    backgroundColor: cardBg,
-                    padding: '20px 24px',
-                    borderRadius: '24px',
-                    border: `1px solid ${borderCol}`,
-                    boxShadow: isLight ? '0 4px 15px rgba(0,0,0,0.03)' : '0 10px 30px rgba(0,0,0,0.4)',
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                @media (max-width: 768px) {
+                    .settings-container {
+                        padding: 0 10px;
+                    }
+                    .settings-header-box {
+                        padding: 14px;
+                        border-radius: 16px;
+                        flex-direction: column;
+                        align-items: stretch;
+                        gap: 12px;
+                    }
+                    .settings-card {
+                        padding: 16px 14px;
+                        border-radius: 16px;
+                    }
+                    .settings-grid-2,
+                    .settings-grid-3 {
+                        grid-template-columns: 1fr !important;
+                        gap: 14px;
+                    }
+                    .settings-save-bar {
+                        padding: 12px 14px !important;
+                        border-radius: 14px !important;
+                        flex-direction: column;
+                        align-items: stretch !important;
+                        gap: 10px;
+                    }
+                    .settings-save-bar button {
+                        width: 100% !important;
+                        justify-content: center !important;
+                    }
+                }
+            `}</style>
+
+            {/* Standard Unified Admin Header */}
+            <AdminHeader
+                title="الإعدادات العامة للمنصة"
+                badge="إعدادات النظام"
+                onRefresh={fetchSettings}
+                refreshing={loading}
+            />
+
+            <div className="settings-container">
+                {/* ═══ Top Title & Refresh Card ═══ */}
+                <div className="settings-header-box">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '16px',
+                            width: '44px',
+                            height: '44px',
+                            borderRadius: '14px',
                             backgroundColor: 'rgba(245, 208, 97, 0.15)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: '#F5D061',
+                            flexShrink: 0,
                         }}>
-                            <Globe size={26} />
+                            <Globe size={24} />
                         </div>
                         <div>
-                            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '900', color: textMain }}>
-                                الإعدادات العامة للمنصة
+                            <h1 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: textMain }}>
+                                إعدادات منصة {settings.site_name}
                             </h1>
-                            <p style={{ margin: '4px 0 0', fontSize: '13px', color: textSub }}>
+                            <p style={{ margin: '3px 0 0', fontSize: '12px', color: textSub }}>
                                 التحكم في هوية الموقع، الشعار، أرقام الدعم، الإعلانات، ونسب برنامج الإحالة
                             </p>
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <button
                             type="button"
                             onClick={fetchSettings}
                             disabled={loading}
                             style={{
-                                padding: '10px 16px',
-                                borderRadius: '14px',
+                                padding: '8px 14px',
+                                borderRadius: '12px',
                                 backgroundColor: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.05)',
                                 border: `1px solid ${borderCol}`,
                                 color: textMain,
-                                fontSize: '13px',
+                                fontSize: '12px',
                                 fontWeight: '700',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px',
+                                gap: '6px',
                             }}
                         >
-                            <RefreshCw size={16} />
-                            <span>تحديث</span>
+                            <RefreshCw size={14} />
+                            <span>تحديث البيانات</span>
                         </button>
                     </div>
                 </div>
 
                 {/* ═══ Notice Banner: Payment Methods & Cash Numbers ═══ */}
                 <div style={{
-                    marginBottom: '24px',
-                    padding: '16px 20px',
-                    borderRadius: '20px',
+                    marginBottom: '20px',
+                    padding: '14px 18px',
+                    borderRadius: '18px',
                     background: isLight
                         ? 'linear-gradient(135deg, rgba(245, 208, 97, 0.12) 0%, rgba(212, 175, 55, 0.04) 100%)'
                         : 'linear-gradient(135deg, rgba(245, 208, 97, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%)',
@@ -280,13 +416,15 @@ export default function AdminSettingsPage() {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     flexWrap: 'wrap',
-                    gap: '16px',
+                    gap: '12px',
+                    width: '100%',
+                    boxSizing: 'border-box',
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <div style={{
-                            width: '42px',
-                            height: '42px',
-                            borderRadius: '12px',
+                            width: '38px',
+                            height: '38px',
+                            borderRadius: '10px',
                             backgroundColor: 'rgba(245, 208, 97, 0.18)',
                             color: '#F5D061',
                             display: 'flex',
@@ -294,14 +432,14 @@ export default function AdminSettingsPage() {
                             justifyContent: 'center',
                             flexShrink: 0,
                         }}>
-                            <CreditCard size={22} />
+                            <CreditCard size={20} />
                         </div>
                         <div>
-                            <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '900', color: textMain }}>
-                                هل تريد تعديل أرقام فودافون كاش، إنستاباي، والتحويلات البنكية؟
+                            <h4 style={{ margin: 0, fontSize: '13px', fontWeight: '900', color: textMain }}>
+                                تعديل أرقام فودافون كاش وإنستاباي والحسابات البنكية؟
                             </h4>
-                            <p style={{ margin: '2px 0 0', fontSize: '12px', color: textSub }}>
-                                يمكنك إضافة وتعديل وإلغاء أرقام محافظ الشحن اليدوي والعمولات مباشرة من قسم طرق الدفع المستقل.
+                            <p style={{ margin: '2px 0 0', fontSize: '11px', color: textSub }}>
+                                يمكنك إضافة أو تعديل أرقام محافظ الشحن اليدوي والعمولات مباشرة من قسم طرق الدفع.
                             </p>
                         </div>
                     </div>
@@ -309,35 +447,27 @@ export default function AdminSettingsPage() {
                     <Link
                         to="/admin/payment-methods"
                         style={{
-                            padding: '9px 18px',
-                            borderRadius: '12px',
+                            padding: '8px 14px',
+                            borderRadius: '10px',
                             backgroundColor: '#F5D061',
                             color: '#040711',
-                            textDecoration: 'none',
-                            fontSize: '13px',
+                            fontSize: '12px',
                             fontWeight: '900',
-                            display: 'flex',
+                            textDecoration: 'none',
+                            display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '8px',
-                            boxShadow: '0 4px 14px rgba(245, 208, 97, 0.3)',
+                            gap: '6px',
+                            whiteSpace: 'nowrap',
                         }}
                     >
                         <span>إدارة طرق الدفع وأرقام الكاش</span>
-                        <ExternalLink size={15} />
+                        <ExternalLink size={13} />
                     </Link>
                 </div>
 
-                <form onSubmit={handleSubmit}>
-                    {/* ═══ Modern Navigation Tabs (Responsive Pills) ═══ */}
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        overflowX: 'auto',
-                        paddingBottom: '12px',
-                        marginBottom: '24px',
-                        WebkitOverflowScrolling: 'touch',
-                    }}>
+                <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+                    {/* ═══ Clean Modern Tabs Bar ═══ */}
+                    <div className="settings-tabs-wrapper">
                         {tabs.map((tab) => {
                             const Icon = tab.icon;
                             const isActive = activeTab === tab.id;
@@ -347,8 +477,8 @@ export default function AdminSettingsPage() {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     style={{
-                                        padding: '10px 18px',
-                                        borderRadius: '14px',
+                                        padding: '9px 16px',
+                                        borderRadius: '12px',
                                         backgroundColor: isActive
                                             ? 'rgba(245, 208, 97, 0.15)'
                                             : isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.04)',
@@ -356,17 +486,18 @@ export default function AdminSettingsPage() {
                                             ? '1.5px solid #F5D061'
                                             : `1px solid ${borderCol}`,
                                         color: isActive ? '#F5D061' : textSub,
-                                        fontSize: '13px',
+                                        fontSize: '12px',
                                         fontWeight: '800',
                                         cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '8px',
+                                        gap: '6px',
                                         whiteSpace: 'nowrap',
+                                        flexShrink: 0,
                                         transition: 'all 0.2s ease',
                                     }}
                                 >
-                                    <Icon size={16} />
+                                    <Icon size={15} />
                                     <span>{tab.label}</span>
                                 </button>
                             );
@@ -374,20 +505,13 @@ export default function AdminSettingsPage() {
                     </div>
 
                     {/* ═══ Main Tab Content Container ═══ */}
-                    <div style={{
-                        backgroundColor: cardBg,
-                        borderRadius: '24px',
-                        border: `1px solid ${borderCol}`,
-                        padding: '28px 24px',
-                        boxShadow: isLight ? '0 4px 15px rgba(0,0,0,0.03)' : '0 10px 30px rgba(0,0,0,0.4)',
-                        marginBottom: '28px',
-                    }}>
+                    <div className="settings-card">
                         {/* ═══ TAB 1: GENERAL & IDENTITY ═══ */}
                         {activeTab === 'general' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                <div style={{ borderBottom: `1px solid ${borderCol}`, paddingBottom: '14px' }}>
-                                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: textMain, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <Globe size={18} color="#F5D061" />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                <div style={{ borderBottom: `1px solid ${borderCol}`, paddingBottom: '12px' }}>
+                                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: textMain, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <Globe size={17} color="#F5D061" />
                                         <span>هوية المنصة والبيانات الأساسية</span>
                                     </h3>
                                     <p style={{ margin: '4px 0 0', fontSize: '12px', color: textSub }}>
@@ -396,23 +520,19 @@ export default function AdminSettingsPage() {
                                 </div>
 
                                 {/* Logo & Favicon Upload Cards */}
-                                <div style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                                    gap: '16px',
-                                }}>
+                                <div className="settings-grid-2">
                                     {/* Logo Card */}
                                     <div style={{
                                         backgroundColor: subCardBg,
                                         border: `1px solid ${borderCol}`,
-                                        borderRadius: '18px',
-                                        padding: '18px',
+                                        borderRadius: '16px',
+                                        padding: '16px',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        gap: '12px',
+                                        gap: '10px',
                                     }}>
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <span style={{ fontSize: '13px', fontWeight: '800', color: textMain }}>شعار الموقع (Logo)</span>
+                                            <span style={{ fontSize: '12px', fontWeight: '800', color: textMain }}>شعار الموقع (Logo)</span>
                                             <span style={{ fontSize: '11px', color: textSub }}>PNG / WEBP</span>
                                         </div>
 
@@ -420,26 +540,26 @@ export default function AdminSettingsPage() {
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            padding: '16px',
+                                            padding: '12px',
                                             backgroundColor: inputBg,
-                                            borderRadius: '14px',
+                                            borderRadius: '12px',
                                             border: `1px dashed ${inputBorder}`,
-                                            minHeight: '90px',
+                                            minHeight: '80px',
                                         }}>
                                             {logoPreview ? (
-                                                <img src={logoPreview} alt="Logo Preview" style={{ maxHeight: '60px', maxWidth: '100%', objectFit: 'contain' }} />
+                                                <img src={logoPreview} alt="Logo Preview" style={{ maxHeight: '55px', maxWidth: '100%', objectFit: 'contain' }} />
                                             ) : (
-                                                <ImageIcon size={32} color={textSub} />
+                                                <ImageIcon size={28} color={textSub} />
                                             )}
                                         </div>
 
                                         <label style={{
-                                            padding: '9px',
-                                            borderRadius: '12px',
+                                            padding: '8px',
+                                            borderRadius: '10px',
                                             backgroundColor: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.06)',
                                             border: `1px solid ${borderCol}`,
                                             color: textMain,
-                                            fontSize: '12px',
+                                            fontSize: '11px',
                                             fontWeight: '800',
                                             textAlign: 'center',
                                             cursor: 'pointer',
@@ -448,7 +568,7 @@ export default function AdminSettingsPage() {
                                             justifyContent: 'center',
                                             gap: '6px',
                                         }}>
-                                            <Upload size={14} />
+                                            <Upload size={13} />
                                             <span>اختر شعار جديد للرفع</span>
                                             <input type="file" accept="image/*" onChange={handleLogoChange} style={{ display: 'none' }} />
                                         </label>
@@ -458,14 +578,14 @@ export default function AdminSettingsPage() {
                                     <div style={{
                                         backgroundColor: subCardBg,
                                         border: `1px solid ${borderCol}`,
-                                        borderRadius: '18px',
-                                        padding: '18px',
+                                        borderRadius: '16px',
+                                        padding: '16px',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        gap: '12px',
+                                        gap: '10px',
                                     }}>
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <span style={{ fontSize: '13px', fontWeight: '800', color: textMain }}>أيقونة المتصفح (Favicon)</span>
+                                            <span style={{ fontSize: '12px', fontWeight: '800', color: textMain }}>أيقونة المتصفح (Favicon)</span>
                                             <span style={{ fontSize: '11px', color: textSub }}>PNG / ICO</span>
                                         </div>
 
@@ -473,26 +593,26 @@ export default function AdminSettingsPage() {
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            padding: '16px',
+                                            padding: '12px',
                                             backgroundColor: inputBg,
-                                            borderRadius: '14px',
+                                            borderRadius: '12px',
                                             border: `1px dashed ${inputBorder}`,
-                                            minHeight: '90px',
+                                            minHeight: '80px',
                                         }}>
                                             {favPreview ? (
-                                                <img src={favPreview} alt="Favicon Preview" style={{ width: '42px', height: '42px', objectFit: 'contain' }} />
+                                                <img src={favPreview} alt="Favicon Preview" style={{ width: '38px', height: '38px', objectFit: 'contain' }} />
                                             ) : (
-                                                <ImageIcon size={32} color={textSub} />
+                                                <ImageIcon size={28} color={textSub} />
                                             )}
                                         </div>
 
                                         <label style={{
-                                            padding: '9px',
-                                            borderRadius: '12px',
+                                            padding: '8px',
+                                            borderRadius: '10px',
                                             backgroundColor: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.06)',
                                             border: `1px solid ${borderCol}`,
                                             color: textMain,
-                                            fontSize: '12px',
+                                            fontSize: '11px',
                                             fontWeight: '800',
                                             textAlign: 'center',
                                             cursor: 'pointer',
@@ -501,29 +621,28 @@ export default function AdminSettingsPage() {
                                             justifyContent: 'center',
                                             gap: '6px',
                                         }}>
-                                            <Upload size={14} />
-                                            <span>اختر أيقونة متصفح جديدة</span>
+                                            <Upload size={13} />
+                                            <span>اختر أيقونة متصفح للرفع</span>
                                             <input type="file" accept="image/*" onChange={handleFavChange} style={{ display: 'none' }} />
                                         </label>
                                     </div>
                                 </div>
 
-                                {/* Text Fields Grid */}
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+                                {/* Text Fields */}
+                                <div className="settings-grid-2">
                                     <div>
                                         <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', marginBottom: '6px', color: textMain }}>
                                             اسم المنصة الرسمي <span style={{ color: '#EF4444' }}>*</span>
                                         </label>
                                         <input
                                             type="text"
-                                            required
                                             value={settings.site_name}
                                             onChange={(e) => handleChange('site_name', e.target.value)}
                                             placeholder="سند ومهره كارد"
                                             style={{
                                                 width: '100%',
-                                                padding: '11px 14px',
-                                                borderRadius: '12px',
+                                                padding: '10px 14px',
+                                                borderRadius: '10px',
                                                 backgroundColor: inputBg,
                                                 border: `1px solid ${inputBorder}`,
                                                 color: textMain,
@@ -533,14 +652,11 @@ export default function AdminSettingsPage() {
                                                 boxSizing: 'border-box',
                                             }}
                                         />
-                                        <span style={{ fontSize: '11px', color: textSub, marginTop: '4px', display: 'block' }}>
-                                            يظهر في الهيدر، عنوان المتصفح، ورسائل الإشعارات.
-                                        </span>
                                     </div>
 
                                     <div>
                                         <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', marginBottom: '6px', color: textMain }}>
-                                            الوصف التعريفي المختصر (Slogan)
+                                            الوصف المختصر للمنصة (Slogan)
                                         </label>
                                         <input
                                             type="text"
@@ -549,8 +665,8 @@ export default function AdminSettingsPage() {
                                             placeholder="خدماتك الرقمية والمالية في مكان واحد"
                                             style={{
                                                 width: '100%',
-                                                padding: '11px 14px',
-                                                borderRadius: '12px',
+                                                padding: '10px 14px',
+                                                borderRadius: '10px',
                                                 backgroundColor: inputBg,
                                                 border: `1px solid ${inputBorder}`,
                                                 color: textMain,
@@ -574,8 +690,8 @@ export default function AdminSettingsPage() {
                                         placeholder="سند ومهره كارد — المنصة الرائدة والأولى لشحن الألعاب والبطاقات الرقمية وبيع التارجت بأفضل الأسعار."
                                         style={{
                                             width: '100%',
-                                            padding: '11px 14px',
-                                            borderRadius: '12px',
+                                            padding: '10px 14px',
+                                            borderRadius: '10px',
                                             backgroundColor: inputBg,
                                             border: `1px solid ${inputBorder}`,
                                             color: textMain,
@@ -598,8 +714,8 @@ export default function AdminSettingsPage() {
                                         placeholder="اكتب نبذة تعريفية شاملة عن منصة سند ومهره كارد وتاريخها ومميزاتها..."
                                         style={{
                                             width: '100%',
-                                            padding: '11px 14px',
-                                            borderRadius: '12px',
+                                            padding: '10px 14px',
+                                            borderRadius: '10px',
                                             backgroundColor: inputBg,
                                             border: `1px solid ${inputBorder}`,
                                             color: textMain,
@@ -615,10 +731,10 @@ export default function AdminSettingsPage() {
 
                         {/* ═══ TAB 2: SUPPORT & CONTACTS ═══ */}
                         {activeTab === 'contacts' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                <div style={{ borderBottom: `1px solid ${borderCol}`, paddingBottom: '14px' }}>
-                                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: textMain, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <PhoneCall size={18} color="#22C55E" />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                <div style={{ borderBottom: `1px solid ${borderCol}`, paddingBottom: '12px' }}>
+                                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: textMain, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <PhoneCall size={17} color="#22C55E" />
                                         <span>أرقام وقنوات الدعم الفني المباشر</span>
                                     </h3>
                                     <p style={{ margin: '4px 0 0', fontSize: '12px', color: textSub }}>
@@ -626,7 +742,7 @@ export default function AdminSettingsPage() {
                                     </p>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+                                <div className="settings-grid-2">
                                     <div>
                                         <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', marginBottom: '6px', color: textMain }}>
                                             رقم الواتساب الأساسي للدعم <span style={{ color: '#EF4444' }}>*</span>
@@ -638,8 +754,8 @@ export default function AdminSettingsPage() {
                                             placeholder="+201000000000"
                                             style={{
                                                 width: '100%',
-                                                padding: '11px 14px',
-                                                borderRadius: '12px',
+                                                padding: '10px 14px',
+                                                borderRadius: '10px',
                                                 backgroundColor: inputBg,
                                                 border: `1px solid ${inputBorder}`,
                                                 color: textMain,
@@ -665,8 +781,8 @@ export default function AdminSettingsPage() {
                                             placeholder="https://whatsapp.com/channel/..."
                                             style={{
                                                 width: '100%',
-                                                padding: '11px 14px',
-                                                borderRadius: '12px',
+                                                padding: '10px 14px',
+                                                borderRadius: '10px',
                                                 backgroundColor: inputBg,
                                                 border: `1px solid ${inputBorder}`,
                                                 color: textMain,
@@ -692,8 +808,8 @@ export default function AdminSettingsPage() {
                                             placeholder="https://t.me/sm_support"
                                             style={{
                                                 width: '100%',
-                                                padding: '11px 14px',
-                                                borderRadius: '12px',
+                                                padding: '10px 14px',
+                                                borderRadius: '10px',
                                                 backgroundColor: inputBg,
                                                 border: `1px solid ${inputBorder}`,
                                                 color: textMain,
@@ -716,8 +832,8 @@ export default function AdminSettingsPage() {
                                             placeholder="support@sm-cards.online"
                                             style={{
                                                 width: '100%',
-                                                padding: '11px 14px',
-                                                borderRadius: '12px',
+                                                padding: '10px 14px',
+                                                borderRadius: '10px',
                                                 backgroundColor: inputBg,
                                                 border: `1px solid ${inputBorder}`,
                                                 color: textMain,
@@ -740,8 +856,8 @@ export default function AdminSettingsPage() {
                                             placeholder="010xxxxxxxx"
                                             style={{
                                                 width: '100%',
-                                                padding: '11px 14px',
-                                                borderRadius: '12px',
+                                                padding: '10px 14px',
+                                                borderRadius: '10px',
                                                 backgroundColor: inputBg,
                                                 border: `1px solid ${inputBorder}`,
                                                 color: textMain,
@@ -754,7 +870,7 @@ export default function AdminSettingsPage() {
 
                                     <div>
                                         <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', marginBottom: '6px', color: textMain }}>
-                                            مواعيد وساعات العمل
+                                            ساعات العمل ومواعيد الدعم
                                         </label>
                                         <input
                                             type="text"
@@ -763,13 +879,12 @@ export default function AdminSettingsPage() {
                                             placeholder="على مدار 24 ساعة طوال أيام الأسبوع"
                                             style={{
                                                 width: '100%',
-                                                padding: '11px 14px',
-                                                borderRadius: '12px',
+                                                padding: '10px 14px',
+                                                borderRadius: '10px',
                                                 backgroundColor: inputBg,
                                                 border: `1px solid ${inputBorder}`,
                                                 color: textMain,
                                                 fontSize: '13px',
-                                                fontWeight: '700',
                                                 outline: 'none',
                                                 boxSizing: 'border-box',
                                             }}
@@ -779,35 +894,36 @@ export default function AdminSettingsPage() {
                             </div>
                         )}
 
-                        {/* ═══ TAB 3: ANNOUNCEMENT BAR ═══ */}
-                        {activeTab === 'announcements' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                <div style={{ borderBottom: `1px solid ${borderCol}`, paddingBottom: '14px' }}>
-                                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: textMain, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <Megaphone size={18} color="#F59E0B" />
+                        {/* ═══ TAB 3: ANNOUNCEMENT BANNER ═══ */}
+                        {activeTab === 'announcement' && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                <div style={{ borderBottom: `1px solid ${borderCol}`, paddingBottom: '12px' }}>
+                                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: textMain, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <Megaphone size={17} color="#F5D061" />
                                         <span>شريط التنبيهات والإعلانات العاجلة</span>
                                     </h3>
                                     <p style={{ margin: '4px 0 0', fontSize: '12px', color: textSub }}>
-                                        إظهار شريط إعلاني ملفت في أعلى كافة صفحات الموقع لتنبيه العملاء بالعروض أو التحديثات
+                                        نشر تنبيه أو إعلان هام يظهر في قمة جميع صفحات الموقع للزوار والعملاء
                                     </p>
                                 </div>
 
-                                {/* Toggle Card */}
+                                {/* Toggle Enabled */}
                                 <div style={{
                                     backgroundColor: subCardBg,
                                     border: `1px solid ${borderCol}`,
-                                    borderRadius: '18px',
-                                    padding: '18px 20px',
+                                    borderRadius: '16px',
+                                    padding: '16px',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
-                                    gap: '16px',
+                                    gap: '12px',
+                                    flexWrap: 'wrap',
                                 }}>
                                     <div>
-                                        <span style={{ fontSize: '14px', fontWeight: '900', color: textMain, display: 'block' }}>
+                                        <span style={{ fontSize: '13px', fontWeight: '900', color: textMain, display: 'block' }}>
                                             تفعيل الشريط الإعلاني في أعلى الموقع
                                         </span>
-                                        <span style={{ fontSize: '12px', color: textSub }}>
+                                        <span style={{ fontSize: '11px', color: textSub }}>
                                             عند تفعيله يظهر شريط عريض متناسق في قمة الصفحات لجميع الزوار.
                                         </span>
                                     </div>
@@ -816,12 +932,12 @@ export default function AdminSettingsPage() {
                                         type="button"
                                         onClick={() => handleChange('announcement_enabled', !settings.announcement_enabled)}
                                         style={{
-                                            padding: '8px 20px',
-                                            borderRadius: '12px',
+                                            padding: '8px 18px',
+                                            borderRadius: '10px',
                                             backgroundColor: settings.announcement_enabled ? '#10B981' : isLight ? '#E2E8F0' : '#1E293B',
                                             color: settings.announcement_enabled ? '#FFFFFF' : textSub,
                                             border: 'none',
-                                            fontSize: '13px',
+                                            fontSize: '12px',
                                             fontWeight: '900',
                                             cursor: 'pointer',
                                             transition: 'all 0.2s ease',
@@ -843,8 +959,8 @@ export default function AdminSettingsPage() {
                                         placeholder="مثال: مرحباً بكم في منصة سند ومهره كارد! خصم خاص 5% بمناسبة الافتتاح على جميع بطاقات الألعاب..."
                                         style={{
                                             width: '100%',
-                                            padding: '12px 14px',
-                                            borderRadius: '12px',
+                                            padding: '10px 14px',
+                                            borderRadius: '10px',
                                             backgroundColor: inputBg,
                                             border: `1px solid ${inputBorder}`,
                                             color: textMain,
@@ -859,23 +975,25 @@ export default function AdminSettingsPage() {
 
                                 {/* Live Preview Box */}
                                 <div>
-                                    <span style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: textSub, marginBottom: '8px' }}>
+                                    <span style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: textSub, marginBottom: '6px' }}>
                                         معاينة مباشرة لما سيظهر للزوار:
                                     </span>
                                     <div style={{
-                                        padding: '12px 20px',
-                                        borderRadius: '14px',
+                                        padding: '12px 16px',
+                                        borderRadius: '12px',
                                         background: 'linear-gradient(90deg, #F5D061 0%, #D4AF37 100%)',
                                         color: '#040711',
                                         fontWeight: '800',
-                                        fontSize: '13px',
+                                        fontSize: '12px',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         gap: '8px',
                                         boxShadow: '0 4px 15px rgba(245, 208, 97, 0.25)',
+                                        textAlign: 'center',
+                                        wordBreak: 'break-word',
                                     }}>
-                                        <Megaphone size={16} />
+                                        <Megaphone size={15} style={{ flexShrink: 0 }} />
                                         <span>{settings.announcement_text.trim() || 'لا يوجد نص إعلاني مكتوب حالياً'}</span>
                                     </div>
                                 </div>
@@ -884,10 +1002,10 @@ export default function AdminSettingsPage() {
 
                         {/* ═══ TAB 4: REFERRALS ═══ */}
                         {activeTab === 'referrals' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                <div style={{ borderBottom: `1px solid ${borderCol}`, paddingBottom: '14px' }}>
-                                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: textMain, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <Share2 size={18} color="#38BDF8" />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                <div style={{ borderBottom: `1px solid ${borderCol}`, paddingBottom: '12px' }}>
+                                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: textMain, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <Share2 size={17} color="#38BDF8" />
                                         <span>نظام الإحالة وعمولات الأصدقاء</span>
                                     </h3>
                                     <p style={{ margin: '4px 0 0', fontSize: '12px', color: textSub }}>
@@ -898,18 +1016,19 @@ export default function AdminSettingsPage() {
                                 <div style={{
                                     backgroundColor: subCardBg,
                                     border: `1px solid ${borderCol}`,
-                                    borderRadius: '18px',
-                                    padding: '18px 20px',
+                                    borderRadius: '16px',
+                                    padding: '16px',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
-                                    gap: '16px',
+                                    gap: '12px',
+                                    flexWrap: 'wrap',
                                 }}>
                                     <div>
-                                        <span style={{ fontSize: '14px', fontWeight: '900', color: textMain, display: 'block' }}>
+                                        <span style={{ fontSize: '13px', fontWeight: '900', color: textMain, display: 'block' }}>
                                             تفعيل برنامج الإحالة والمكافآت
                                         </span>
-                                        <span style={{ fontSize: '12px', color: textSub }}>
+                                        <span style={{ fontSize: '11px', color: textSub }}>
                                             عند التعطيل لن يتم احتساب أي عمولات جديدة للمستخدمين.
                                         </span>
                                     </div>
@@ -918,12 +1037,12 @@ export default function AdminSettingsPage() {
                                         type="button"
                                         onClick={() => handleChange('referral_is_active', !settings.referral_is_active)}
                                         style={{
-                                            padding: '8px 20px',
-                                            borderRadius: '12px',
+                                            padding: '8px 18px',
+                                            borderRadius: '10px',
                                             backgroundColor: settings.referral_is_active ? '#38BDF8' : isLight ? '#E2E8F0' : '#1E293B',
                                             color: settings.referral_is_active ? '#040711' : textSub,
                                             border: 'none',
-                                            fontSize: '13px',
+                                            fontSize: '12px',
                                             fontWeight: '900',
                                             cursor: 'pointer',
                                             transition: 'all 0.2s ease',
@@ -933,7 +1052,7 @@ export default function AdminSettingsPage() {
                                     </button>
                                 </div>
 
-                                <div style={{ maxWidth: '400px' }}>
+                                <div style={{ maxWidth: '360px' }}>
                                     <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', marginBottom: '6px', color: textMain }}>
                                         نسبة عمولة المحيل % من قيمة كل عملية شحن
                                     </label>
@@ -947,8 +1066,8 @@ export default function AdminSettingsPage() {
                                             onChange={(e) => handleChange('referral_percentage', e.target.value)}
                                             style={{
                                                 width: '100%',
-                                                padding: '11px 14px',
-                                                borderRadius: '12px',
+                                                padding: '10px 14px',
+                                                borderRadius: '10px',
                                                 backgroundColor: inputBg,
                                                 border: `1px solid ${inputBorder}`,
                                                 color: textMain,
@@ -973,8 +1092,8 @@ export default function AdminSettingsPage() {
                                         placeholder="تظهر للعميل في صفحة الإحالة لمعرفة كيفية احتساب الأرباح..."
                                         style={{
                                             width: '100%',
-                                            padding: '11px 14px',
-                                            borderRadius: '12px',
+                                            padding: '10px 14px',
+                                            borderRadius: '10px',
                                             backgroundColor: inputBg,
                                             border: `1px solid ${inputBorder}`,
                                             color: textMain,
@@ -990,10 +1109,10 @@ export default function AdminSettingsPage() {
 
                         {/* ═══ TAB 5: FINANCE & TARGET AGENCY ═══ */}
                         {activeTab === 'finance' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                <div style={{ borderBottom: `1px solid ${borderCol}`, paddingBottom: '14px' }}>
-                                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: textMain, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <DollarSign size={18} color="#F5D061" />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                <div style={{ borderBottom: `1px solid ${borderCol}`, paddingBottom: '12px' }}>
+                                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: textMain, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <DollarSign size={17} color="#F5D061" />
                                         <span>المالية ووكالة استلام التارجت</span>
                                     </h3>
                                     <p style={{ margin: '4px 0 0', fontSize: '12px', color: textSub }}>
@@ -1001,10 +1120,10 @@ export default function AdminSettingsPage() {
                                     </p>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+                                <div className="settings-grid-3">
                                     <div>
                                         <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', marginBottom: '6px', color: textMain }}>
-                                            الحد الأدنى لشحن المحفظة (جنيه مصري)
+                                            الحد الأدنى لشحن المحفظة (ج.م)
                                         </label>
                                         <input
                                             type="number"
@@ -1014,8 +1133,8 @@ export default function AdminSettingsPage() {
                                             placeholder="50"
                                             style={{
                                                 width: '100%',
-                                                padding: '11px 14px',
-                                                borderRadius: '12px',
+                                                padding: '10px 14px',
+                                                borderRadius: '10px',
                                                 backgroundColor: inputBg,
                                                 border: `1px solid ${inputBorder}`,
                                                 color: textMain,
@@ -1032,7 +1151,7 @@ export default function AdminSettingsPage() {
 
                                     <div>
                                         <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', marginBottom: '6px', color: textMain }}>
-                                            كود وكالة التارجت الرسمية (Agency ID)
+                                            كود وكالة التارجت (Agency ID)
                                         </label>
                                         <input
                                             type="text"
@@ -1041,8 +1160,8 @@ export default function AdminSettingsPage() {
                                             placeholder="EMP-TARGET-001"
                                             style={{
                                                 width: '100%',
-                                                padding: '11px 14px',
-                                                borderRadius: '12px',
+                                                padding: '10px 14px',
+                                                borderRadius: '10px',
                                                 backgroundColor: inputBg,
                                                 border: `1px solid ${inputBorder}`,
                                                 color: textMain,
@@ -1065,8 +1184,8 @@ export default function AdminSettingsPage() {
                                             placeholder="وكالة سند ومهره الرسمية"
                                             style={{
                                                 width: '100%',
-                                                padding: '11px 14px',
-                                                borderRadius: '12px',
+                                                padding: '10px 14px',
+                                                borderRadius: '10px',
                                                 backgroundColor: inputBg,
                                                 border: `1px solid ${inputBorder}`,
                                                 color: textMain,
@@ -1083,10 +1202,10 @@ export default function AdminSettingsPage() {
 
                         {/* ═══ TAB 6: LEGAL & POLICIES ═══ */}
                         {activeTab === 'legal' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                <div style={{ borderBottom: `1px solid ${borderCol}`, paddingBottom: '14px' }}>
-                                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: textMain, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <FileText size={18} color="#A855F7" />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                <div style={{ borderBottom: `1px solid ${borderCol}`, paddingBottom: '12px' }}>
+                                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: textMain, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <FileText size={17} color="#A855F7" />
                                         <span>الشروط والأحكام وسياسة الخصوصية</span>
                                     </h3>
                                     <p style={{ margin: '4px 0 0', fontSize: '12px', color: textSub }}>
@@ -1105,8 +1224,8 @@ export default function AdminSettingsPage() {
                                         placeholder="اكتب بنود الشروط والأحكام الخاصة بالاستخدام وشحن الرصيد والطلبات..."
                                         style={{
                                             width: '100%',
-                                            padding: '12px 14px',
-                                            borderRadius: '12px',
+                                            padding: '10px 14px',
+                                            borderRadius: '10px',
                                             backgroundColor: inputBg,
                                             border: `1px solid ${inputBorder}`,
                                             color: textMain,
@@ -1130,8 +1249,8 @@ export default function AdminSettingsPage() {
                                         placeholder="اكتب بنود سياسة الخصوصية وحماية بيانات المستخدمين..."
                                         style={{
                                             width: '100%',
-                                            padding: '12px 14px',
-                                            borderRadius: '12px',
+                                            padding: '10px 14px',
+                                            borderRadius: '10px',
                                             backgroundColor: inputBg,
                                             border: `1px solid ${inputBorder}`,
                                             color: textMain,
@@ -1148,25 +1267,10 @@ export default function AdminSettingsPage() {
                     </div>
 
                     {/* ═══ Floating / Sticky Save Action Bar ═══ */}
-                    <div style={{
-                        position: 'sticky',
-                        bottom: '20px',
-                        backgroundColor: isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(11, 15, 25, 0.95)',
-                        backdropFilter: 'blur(10px)',
-                        padding: '14px 20px',
-                        borderRadius: '20px',
-                        border: `1px solid ${isLight ? '#CBD5E1' : 'rgba(245, 208, 97, 0.25)'}`,
-                        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: '16px',
-                        flexWrap: 'wrap',
-                        zIndex: 40,
-                    }}>
+                    <div className="settings-save-bar">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <CheckCircle2 size={16} color="#10B981" />
-                            <span style={{ fontSize: '13px', fontWeight: '700', color: textSub }}>
+                            <CheckCircle2 size={16} color="#10B981" style={{ flexShrink: 0 }} />
+                            <span style={{ fontSize: '12px', fontWeight: '700', color: textSub }}>
                                 يتم تطبيق كافة التغييرات فوراً في الموقع بمجرد الحفظ.
                             </span>
                         </div>
@@ -1175,22 +1279,24 @@ export default function AdminSettingsPage() {
                             type="submit"
                             disabled={saving}
                             style={{
-                                padding: '12px 28px',
-                                borderRadius: '14px',
+                                padding: '11px 24px',
+                                borderRadius: '12px',
                                 background: 'linear-gradient(135deg, #F5D061 0%, #D4AF37 100%)',
                                 color: '#040711',
                                 border: 'none',
-                                fontSize: '14px',
+                                fontSize: '13px',
                                 fontWeight: '900',
                                 cursor: saving ? 'not-allowed' : 'pointer',
-                                display: 'flex',
+                                display: 'inline-flex',
                                 alignItems: 'center',
+                                justifyContent: 'center',
                                 gap: '8px',
                                 boxShadow: '0 4px 18px rgba(245, 208, 97, 0.4)',
                                 transition: 'all 0.2s ease',
+                                whiteSpace: 'nowrap',
                             }}
                         >
-                            <Save size={18} />
+                            <Save size={16} />
                             <span>{saving ? 'جاري حفظ التغييرات...' : 'حفظ إعدادات المنصة'}</span>
                         </button>
                     </div>

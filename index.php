@@ -21,3 +21,4 @@ if (file_exists(__DIR__.'/bootstrap/app.php')) {
     $app = require_once __DIR__.'/bootstrap/app.php';
     $app->handleRequest(Request::capture());
 }
+
