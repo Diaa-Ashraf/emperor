@@ -208,6 +208,7 @@ export const adminApi = {
     getProduct: (id) => api.get(`/admin/products/${id}`),
     toggleProductActive: (id) => api.post(`/admin/products/${id}/toggle-active`),
     saveProduct: (data, id = null) => api.post(`/admin/products/save${id ? `/${id}` : ''}`, data),
+    syncEmbratorProducts: () => api.post('/admin/products/sync-embrator'),
     deleteProduct: (id) => api.delete(`/admin/products/${id}`),
     getProviders: () => api.get('/admin/providers'),
     createProvider: (data) => api.post('/admin/providers', data),

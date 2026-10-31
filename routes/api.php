@@ -220,6 +220,7 @@ Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
             Route::get('/products/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminProductController::class, 'show']);
             Route::post('/products/{id}/toggle-active', [\App\Http\Controllers\Api\V1\Admin\AdminProductController::class, 'toggleActive']);
             Route::post('/products/save/{id?}', [\App\Http\Controllers\Api\V1\Admin\AdminProductController::class, 'save']);
+            Route::post('/products/sync-embrator', [\App\Http\Controllers\Api\V1\Admin\AdminProductController::class, 'syncEmbrator']);
             Route::delete('/products/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminProductController::class, 'destroy']);
 
             // Staff & Supervisor Activity Logs (Matching Screenshot 5)

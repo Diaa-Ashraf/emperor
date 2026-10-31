@@ -155,26 +155,32 @@ export default function ProductRechargeModal({
         return 0;
     }, [product, isUsd]);
 
-    // Handle quantity input change
+    // Handle quantity input change with comma formatting (e.g. 2,000)
     const handleQuantityInputChange = (e) => {
         const raw = e.target.value.replace(/[^0-9]/g, '');
-        setQuantityInput(raw);
+        if (!raw) {
+            setQuantityInput('');
+            setQuantity(0);
+            return;
+        }
         const parsed = parseInt(raw, 10);
-        if (!isNaN(parsed) && parsed > 0) {
+        if (!isNaN(parsed)) {
             setQuantity(parsed);
+            setQuantityInput(parsed.toLocaleString('en-US'));
         } else {
             setQuantity(0);
+            setQuantityInput('0');
         }
     };
 
     const handleQuantityFocus = () => {
-        if (quantityInput === '0') {
+        if (quantityInput === '0' || quantity === 0) {
             setQuantityInput('');
         }
     };
 
     const handleQuantityInputBlur = () => {
-        if (quantityInput === '' || parseInt(quantityInput, 10) <= 0) {
+        if (quantityInput === '' || parseInt(quantityInput.replace(/[^0-9]/g, ''), 10) <= 0) {
             if (isCustomQuantity) {
                 setQuantity(0);
                 setQuantityInput('0');
@@ -183,10 +189,10 @@ export default function ProductRechargeModal({
                 setQuantityInput('1');
             }
         } else {
-            const parsed = parseInt(quantityInput, 10);
+            const parsed = parseInt(quantityInput.replace(/[^0-9]/g, ''), 10);
             const clamped = isCustomQuantity ? Math.min(maxAllowed, parsed) : Math.min(9999, parsed);
             setQuantity(clamped);
-            setQuantityInput(String(clamped));
+            setQuantityInput(clamped.toLocaleString('en-US'));
         }
     };
 
@@ -208,7 +214,8 @@ export default function ProductRechargeModal({
     }, [selectedTier, product, isUsd]);
 
     const validQty = useMemo(() => {
-        const parsed = parseInt(quantityInput, 10);
+        const cleanStr = String(quantityInput || '').replace(/[^0-9]/g, '');
+        const parsed = parseInt(cleanStr, 10);
         return (!isNaN(parsed) && parsed > 0) ? parsed : 0;
     }, [quantityInput]);
 

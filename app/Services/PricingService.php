@@ -152,9 +152,17 @@ class PricingService
             }
         }
 
+        // If no specific group assigned to user (or guest user), automatically assign highest active tier margin
+        if ($groupMargin === null) {
+            $highestTierMargin = CustomerGroup::where('is_active', true)
+                ->where('discount_percentage', '>', 0)
+                ->max('discount_percentage');
+            $groupMargin = $highestTierMargin !== null ? (float) $highestTierMargin : 4.0;
+        }
+
         if ($cost > 0) {
-            // If user has a specific group margin (e.g. 2%), use it; otherwise default is 4%
-            $appliedMargin = $groupMargin !== null ? $groupMargin : 4.0;
+            // Apply assigned or default highest tier margin
+            $appliedMargin = $groupMargin;
             $priceInCostCurrency = $cost * (1 + ($appliedMargin / 100));
         } elseif ($tier->final_price > 0) {
             $priceInCostCurrency = (float) $tier->final_price;
