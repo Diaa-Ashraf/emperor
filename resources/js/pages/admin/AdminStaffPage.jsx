@@ -177,6 +177,17 @@ export default function AdminStaffPage() {
     const [staffPermissions, setStaffPermissions] = useState([]);
     const [addSubmitting, setAddSubmitting] = useState(false);
 
+    // Edit Supervisor Modal
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingStaff, setEditingStaff] = useState(null);
+    const [editName, setEditName] = useState('');
+    const [editEmail, setEditEmail] = useState('');
+    const [editPhone, setEditPhone] = useState('');
+    const [editPassword, setEditPassword] = useState('');
+    const [editRole, setEditRole] = useState('operations_manager');
+    const [editPermissions, setEditPermissions] = useState([]);
+    const [editSubmitting, setEditSubmitting] = useState(false);
+
     // Role default permissions presets
     const getRolePresetPermissions = (roleKey) => {
         switch (roleKey) {
@@ -371,9 +382,57 @@ export default function AdminStaffPage() {
             setStaffPassword('');
             fetchStaff();
         } catch (err) {
-            toastError(err.response?.data?.message || 'فشل إضافة المشرف');
+            const errors = err.response?.data?.errors;
+            const errorMsg = errors ? Object.values(errors).flat().join(' - ') : (err.response?.data?.message || 'فشل إضافة المشرف');
+            toastError(errorMsg);
         } finally {
             setAddSubmitting(false);
+        }
+    };
+
+    // Open Edit Modal
+    const handleOpenEditModal = (staff) => {
+        setEditingStaff(staff);
+        setEditName(staff.name || '');
+        setEditEmail(staff.email || '');
+        setEditPhone(staff.phone || '');
+        setEditPassword('');
+        setEditRole(staff.role || 'operations_manager');
+        setEditPermissions(staff.permissions || []);
+        setIsEditModalOpen(true);
+    };
+
+    // Edit Supervisor Submit
+    const handleEditStaffSubmit = async (e) => {
+        e.preventDefault();
+        if (!editName.trim() || !editEmail.trim()) {
+            toastError('يرجى إدخال اسم المشرف والبريد الإلكتروني');
+            return;
+        }
+
+        try {
+            setEditSubmitting(true);
+            const payload = {
+                name: editName.trim(),
+                email: editEmail.trim(),
+                phone: editPhone.trim() || undefined,
+                role: editRole,
+                permissions: editPermissions,
+            };
+            if (editPassword.trim()) {
+                payload.password = editPassword.trim();
+            }
+
+            await adminApi.updateStaff(editingStaff.id, payload);
+            success('تم تحديث بيانات المشرف وصلاحياته بنجاح');
+            setIsEditModalOpen(false);
+            fetchStaff();
+        } catch (err) {
+            const errors = err.response?.data?.errors;
+            const errorMsg = errors ? Object.values(errors).flat().join(' - ') : (err.response?.data?.message || 'فشل تحديث بيانات المشرف');
+            toastError(errorMsg);
+        } finally {
+            setEditSubmitting(false);
         }
     };
 
@@ -738,7 +797,28 @@ export default function AdminStaffPage() {
                                         </span>
                                     </div>
 
-                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleOpenEditModal(staff)}
+                                            style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                padding: '7px 14px',
+                                                borderRadius: '10px',
+                                                backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                                                border: '1px solid rgba(56, 189, 248, 0.3)',
+                                                color: '#38BDF8',
+                                                fontSize: '12.5px',
+                                                fontWeight: '800',
+                                                cursor: 'pointer',
+                                            }}
+                                        >
+                                            <Edit3 size={14} />
+                                            <span>تعديل بيانات المشرف</span>
+                                        </button>
+
                                         <button
                                             type="button"
                                             onClick={() => openPermissionsModal(staff)}
@@ -757,7 +837,7 @@ export default function AdminStaffPage() {
                                             }}
                                         >
                                             <Sliders size={14} />
-                                            <span>تعديل الصلاحيات والدور</span>
+                                            <span>تخصيص الصلاحيات</span>
                                         </button>
 
                                         <button
@@ -1557,6 +1637,228 @@ export default function AdminStaffPage() {
                                 <button
                                     type="button"
                                     onClick={() => setIsAddModalOpen(false)}
+                                    style={{
+                                        padding: '12px 20px',
+                                        borderRadius: '14px',
+                                        backgroundColor: isLight ? '#F1F5F9' : '#1E293B',
+                                        color: isLight ? '#475569' : '#94A3B8',
+                                        fontWeight: '700',
+                                        fontSize: '14px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    إلغاء
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* =================================================================
+                MODAL: EDIT SUPERVISOR DETAILS & PERMISSIONS
+               ================================================================= */}
+            {isEditModalOpen && editingStaff && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        zIndex: 9999,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        backdropFilter: 'blur(8px)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '16px',
+                        direction: 'rtl',
+                    }}
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) setIsEditModalOpen(false);
+                    }}
+                >
+                    <div
+                        style={{
+                            backgroundColor: isLight ? '#FFFFFF' : '#080E1C',
+                            border: isLight ? '1px solid #CBD5E1' : '1.5px solid rgba(56, 189, 248, 0.3)',
+                            borderRadius: '24px',
+                            width: '100%',
+                            maxWidth: '520px',
+                            maxHeight: '90vh',
+                            overflowY: 'auto',
+                            padding: '24px 20px',
+                            boxShadow: '0 25px 60px rgba(0, 0, 0, 0.8)',
+                        }}
+                    >
+                        <div
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                marginBottom: '20px',
+                                paddingBottom: '12px',
+                                borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.08)',
+                            }}
+                        >
+                            <h3 style={{ fontSize: '18px', fontWeight: '900', margin: 0, color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                                تعديل بيانات المشرف والصلاحيات
+                            </h3>
+                            <button
+                                type="button"
+                                onClick={() => setIsEditModalOpen(false)}
+                                style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer' }}
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleEditStaffSubmit}>
+                            <div style={{ marginBottom: '14px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', marginBottom: '6px', color: isLight ? '#334155' : '#CBD5E1' }}>
+                                    اسم المشرف <span style={{ color: '#EF4444' }}>*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: '11px 16px',
+                                        borderRadius: '12px',
+                                        backgroundColor: isLight ? '#F8FAFC' : '#040711',
+                                        border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
+                                        color: isLight ? '#0F172A' : '#FFFFFF',
+                                        fontSize: '14px',
+                                        outline: 'none',
+                                        boxSizing: 'border-box',
+                                    }}
+                                />
+                            </div>
+
+                            <div style={{ marginBottom: '14px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', marginBottom: '6px', color: isLight ? '#334155' : '#CBD5E1' }}>
+                                    البريد الإلكتروني <span style={{ color: '#EF4444' }}>*</span>
+                                </label>
+                                <input
+                                    type="email"
+                                    value={editEmail}
+                                    onChange={(e) => setEditEmail(e.target.value)}
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: '11px 16px',
+                                        borderRadius: '12px',
+                                        backgroundColor: isLight ? '#F8FAFC' : '#040711',
+                                        border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
+                                        color: isLight ? '#0F172A' : '#FFFFFF',
+                                        fontSize: '14px',
+                                        outline: 'none',
+                                        boxSizing: 'border-box',
+                                    }}
+                                />
+                            </div>
+
+                            <div style={{ marginBottom: '14px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', marginBottom: '6px', color: isLight ? '#334155' : '#CBD5E1' }}>
+                                    رقم الهاتف (اختياري)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editPhone}
+                                    onChange={(e) => setEditPhone(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '11px 16px',
+                                        borderRadius: '12px',
+                                        backgroundColor: isLight ? '#F8FAFC' : '#040711',
+                                        border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
+                                        color: isLight ? '#0F172A' : '#FFFFFF',
+                                        fontSize: '14px',
+                                        outline: 'none',
+                                        boxSizing: 'border-box',
+                                    }}
+                                />
+                            </div>
+
+                            <div style={{ marginBottom: '16px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', marginBottom: '6px', color: isLight ? '#334155' : '#CBD5E1' }}>
+                                    تغيير كلمة المرور (اتركها فارغة للإبقاء على الحالية)
+                                </label>
+                                <input
+                                    type="password"
+                                    placeholder="••••••••"
+                                    value={editPassword}
+                                    onChange={(e) => setEditPassword(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '11px 16px',
+                                        borderRadius: '12px',
+                                        backgroundColor: isLight ? '#F8FAFC' : '#040711',
+                                        border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
+                                        color: isLight ? '#0F172A' : '#FFFFFF',
+                                        fontSize: '14px',
+                                        outline: 'none',
+                                        boxSizing: 'border-box',
+                                    }}
+                                />
+                            </div>
+
+                            <div style={{ marginBottom: '20px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', marginBottom: '6px', color: '#F59E0B' }}>
+                                    الدور الإداري (Spatie Role) <span style={{ color: '#EF4444' }}>*</span>
+                                </label>
+                                <select
+                                    value={editRole}
+                                    onChange={(e) => {
+                                        setEditRole(e.target.value);
+                                        setEditPermissions(getRolePresetPermissions(e.target.value));
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 14px',
+                                        borderRadius: '12px',
+                                        backgroundColor: isLight ? '#F8FAFC' : '#040711',
+                                        border: '1.5px solid #F59E0B',
+                                        color: isLight ? '#0F172A' : '#FFFFFF',
+                                        fontSize: '14px',
+                                        fontWeight: '800',
+                                        outline: 'none',
+                                        cursor: 'pointer',
+                                        boxSizing: 'border-box',
+                                        marginBottom: '6px',
+                                    }}
+                                >
+                                    {availableRoles.map((role) => (
+                                        <option key={role.key} value={role.key}>
+                                            {role.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '10px', marginTop: '24px' }}>
+                                <button
+                                    type="submit"
+                                    disabled={editSubmitting}
+                                    style={{
+                                        flex: 1,
+                                        padding: '12px 20px',
+                                        borderRadius: '14px',
+                                        background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)',
+                                        color: '#FFFFFF',
+                                        fontWeight: '800',
+                                        fontSize: '14px',
+                                        border: 'none',
+                                        cursor: editSubmitting ? 'not-allowed' : 'pointer',
+                                        boxShadow: '0 4px 15px rgba(2, 132, 199, 0.4)',
+                                    }}
+                                >
+                                    {editSubmitting ? 'جاري الحفظ...' : 'حفظ التعديلات'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditModalOpen(false)}
                                     style={{
                                         padding: '12px 20px',
                                         borderRadius: '14px',

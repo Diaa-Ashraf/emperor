@@ -206,14 +206,14 @@ class AdminStaffController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
             'role' => UserRole::ADMIN,
             'status' => UserStatus::ACTIVE,
             'currency' => 'EGP',
             'email_verified_at' => now(),
             'phone_verified_at' => now(),
             'preferences' => [
-                'staff_title' => $validated['staff_title'] ?: $this->getRoleArabicLabel($roleName),
+                'staff_title' => !empty($validated['staff_title']) ? $validated['staff_title'] : $this->getRoleArabicLabel($roleName),
                 'permissions' => $selectedPermissions,
             ],
         ]);
@@ -231,6 +231,64 @@ class AdminStaffController extends Controller
             'role' => $roleName,
             'permissions' => $selectedPermissions,
         ], 'تمت إضافة المشرف بنجاح وتعيين دوره وصلاحياته');
+    }
+
+    /**
+     * Update supervisor profile, role, password, and permissions.
+     */
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'email' => ['required', 'email', 'max:150', 'unique:users,email,' . $id],
+            'password' => ['nullable', 'string', 'min:6'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'role' => ['required', 'string'],
+            'staff_title' => ['nullable', 'string', 'max:100'],
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['string'],
+        ], [
+            'name.required' => 'اسم المشرف مطلوب.',
+            'email.required' => 'البريد الإلكتروني مطلوب.',
+            'email.unique' => 'البريد الإلكتروني مسجل بالفعل لمستخدم آخر.',
+            'password.min' => 'يجب ألا تقل كلمة المرور عن 6 أحرف.',
+            'role.required' => 'يرجى اختيار دور المشرف.',
+        ]);
+
+        $roleName = $validated['role'];
+        Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
+
+        $selectedPermissions = $validated['permissions'] ?? [];
+        $this->ensurePermissionsExist($selectedPermissions);
+
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        if (isset($validated['phone'])) {
+            $user->phone = $validated['phone'];
+        }
+        if (!empty($validated['password'])) {
+            $user->password = $validated['password'];
+        }
+
+        $preferences = $user->preferences ?? [];
+        $preferences['staff_title'] = !empty($validated['staff_title']) ? $validated['staff_title'] : $this->getRoleArabicLabel($roleName);
+        $preferences['permissions'] = $selectedPermissions;
+        $user->preferences = $preferences;
+        $user->save();
+
+        // Assign Spatie Role and Permissions
+        $user->syncRoles([$roleName]);
+        $user->syncPermissions($selectedPermissions);
+
+        return $this->successResponse([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $roleName,
+            'permissions' => $selectedPermissions,
+        ], 'تم تحديث بيانات المشرف وصلاحياته بنجاح');
     }
 
     /**

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     CreditCard,
     Plus,
@@ -43,6 +43,9 @@ export default function AdminPaymentMethodsPage() {
         image: '1000299968.png',
         is_active: true,
     });
+    const [groupImageFile, setGroupImageFile] = useState(null);
+    const [groupImagePreview, setGroupImagePreview] = useState(null);
+    const groupImageRef = useRef(null);
     const [submittingGroup, setSubmittingGroup] = useState(false);
 
     // Modal: إضافة طريقة دفع (Screenshot 5 & Uploaded Image)
@@ -59,10 +62,43 @@ export default function AdminPaymentMethodsPage() {
         account_holder_name: '',
         instruction: '',
         logo: '1000299996.png',
-        qr_code: '1000299993.jpg',
+        qr_code: '',
         is_active: true,
     });
+    const [methodLogoFile, setMethodLogoFile] = useState(null);
+    const [methodLogoPreview, setMethodLogoPreview] = useState(null);
+    const [methodQrFile, setMethodQrFile] = useState(null);
+    const [methodQrPreview, setMethodQrPreview] = useState(null);
+    const methodLogoRef = useRef(null);
+    const methodQrRef = useRef(null);
     const [submittingMethod, setSubmittingMethod] = useState(false);
+
+    // Modal: تعديل طريقة دفع
+    const [isEditMethodModalOpen, setIsEditMethodModalOpen] = useState(false);
+    const [editingMethod, setEditingMethod] = useState(null);
+    const [editMethodForm, setEditMethodForm] = useState({
+        payment_group_id: '',
+        name: '',
+        type: 'محفظة إلكترونية',
+        percent_fee: '0',
+        account_number: '',
+        bank_name: '',
+        account_holder_name: '',
+        instruction: '',
+        logo: '',
+        qr_code: '',
+        is_active: true,
+    });
+    const [editMethodLogoFile, setEditMethodLogoFile] = useState(null);
+    const [editMethodLogoPreview, setEditMethodLogoPreview] = useState(null);
+    const [editMethodQrFile, setEditMethodQrFile] = useState(null);
+    const [editMethodQrPreview, setEditMethodQrPreview] = useState(null);
+    const editMethodLogoRef = useRef(null);
+    const editMethodQrRef = useRef(null);
+    const [submittingEditMethod, setSubmittingEditMethod] = useState(false);
+
+    // Cleaning demo methods
+    const [cleaningDemo, setCleaningDemo] = useState(false);
 
     // Modal: Preview Image
     const [previewImage, setPreviewImage] = useState(null);
@@ -99,7 +135,18 @@ export default function AdminPaymentMethodsPage() {
 
         setSubmittingGroup(true);
         try {
-            await adminApi.createPaymentGroup(groupForm);
+            const formData = new FormData();
+            formData.append('name', groupForm.name.trim());
+            formData.append('currency', groupForm.currency.trim());
+            if (groupForm.description) formData.append('description', groupForm.description);
+            if (groupImageFile) {
+                formData.append('image', groupImageFile);
+            } else if (groupForm.image) {
+                formData.append('image', groupForm.image);
+            }
+            formData.append('is_active', groupForm.is_active ? '1' : '0');
+
+            await adminApi.createPaymentGroup(formData);
             success('تمت إضافة مجموعة الدفع بنجاح');
             setIsAddGroupModalOpen(false);
             setGroupForm({
@@ -109,6 +156,8 @@ export default function AdminPaymentMethodsPage() {
                 image: '1000299968.png',
                 is_active: true,
             });
+            setGroupImageFile(null);
+            setGroupImagePreview(null);
             fetchData();
         } catch (err) {
             console.error(err);
@@ -128,10 +177,28 @@ export default function AdminPaymentMethodsPage() {
 
         setSubmittingMethod(true);
         try {
-            await adminApi.createPaymentMethod({
-                ...methodForm,
-                payment_group_id: selectedGroupId || methodForm.payment_group_id || null,
-            });
+            const formData = new FormData();
+            const targetGroupId = selectedGroupId || methodForm.payment_group_id;
+            if (targetGroupId) formData.append('payment_group_id', targetGroupId);
+            formData.append('name', methodForm.name.trim());
+            if (methodForm.description) formData.append('description', methodForm.description);
+            formData.append('type', methodForm.type || 'محفظة إلكترونية');
+            formData.append('percent_fee', methodForm.percent_fee || '0');
+            if (methodForm.account_number) formData.append('account_number', methodForm.account_number.trim());
+            if (methodForm.bank_name) formData.append('bank_name', methodForm.bank_name.trim());
+            if (methodForm.account_holder_name) formData.append('account_holder_name', methodForm.account_holder_name.trim());
+            if (methodForm.instruction) formData.append('instruction', methodForm.instruction.trim());
+            if (methodLogoFile) {
+                formData.append('logo', methodLogoFile);
+            } else if (methodForm.logo) {
+                formData.append('logo', methodForm.logo);
+            }
+            if (methodQrFile) {
+                formData.append('qr_code', methodQrFile);
+            }
+            formData.append('is_active', methodForm.is_active ? '1' : '0');
+
+            await adminApi.createPaymentMethod(formData);
             success('تمت إضافة طريقة الدفع بنجاح');
             setIsAddMethodModalOpen(false);
             setMethodForm({
@@ -145,15 +212,102 @@ export default function AdminPaymentMethodsPage() {
                 account_holder_name: '',
                 instruction: '',
                 logo: '1000299996.png',
-                qr_code: '1000299993.jpg',
+                qr_code: '',
                 is_active: true,
             });
+            setMethodLogoFile(null);
+            setMethodLogoPreview(null);
+            setMethodQrFile(null);
+            setMethodQrPreview(null);
             fetchData();
         } catch (err) {
             console.error(err);
             toastError(err.response?.data?.message || 'فشل إضافة طريقة الدفع');
         } finally {
             setSubmittingMethod(false);
+        }
+    };
+
+    // Open Edit Method Modal
+    const openEditMethodModal = (method) => {
+        setEditingMethod(method);
+        setEditMethodForm({
+            payment_group_id: method.payment_group_id ? String(method.payment_group_id) : '',
+            name: method.name || '',
+            type: method.type || 'محفظة إلكترونية',
+            percent_fee: method.percent_fee || '0',
+            account_number: method.account_number || '',
+            bank_name: method.bank_name || '',
+            account_holder_name: method.account_holder_name || '',
+            instruction: method.instruction || method.instructions || '',
+            logo: method.logo || '',
+            qr_code: method.qr_code || '',
+            is_active: Boolean(method.is_active),
+        });
+        setEditMethodLogoFile(null);
+        setEditMethodLogoPreview(method.logo || null);
+        setEditMethodQrFile(null);
+        setEditMethodQrPreview(method.qr_code || null);
+        setIsEditMethodModalOpen(true);
+    };
+
+    // Handle Update Method
+    const handleUpdateMethod = async (e) => {
+        e.preventDefault();
+        if (!editMethodForm.name.trim()) {
+            toastError('يرجى إدخال اسم طريقة الدفع');
+            return;
+        }
+
+        setSubmittingEditMethod(true);
+        try {
+            const formData = new FormData();
+            if (editMethodForm.payment_group_id) {
+                formData.append('payment_group_id', editMethodForm.payment_group_id);
+            }
+            formData.append('name', editMethodForm.name.trim());
+            formData.append('type', editMethodForm.type || 'محفظة إلكترونية');
+            formData.append('percent_fee', editMethodForm.percent_fee || '0');
+            if (editMethodForm.account_number) formData.append('account_number', editMethodForm.account_number.trim());
+            if (editMethodForm.bank_name) formData.append('bank_name', editMethodForm.bank_name.trim());
+            if (editMethodForm.account_holder_name) formData.append('account_holder_name', editMethodForm.account_holder_name.trim());
+            if (editMethodForm.instruction) formData.append('instruction', editMethodForm.instruction.trim());
+            if (editMethodLogoFile) {
+                formData.append('logo', editMethodLogoFile);
+            } else if (editMethodForm.logo) {
+                formData.append('logo', editMethodForm.logo);
+            }
+            if (editMethodQrFile) {
+                formData.append('qr_code', editMethodQrFile);
+            } else if (editMethodForm.qr_code) {
+                formData.append('qr_code', editMethodForm.qr_code);
+            }
+            formData.append('is_active', editMethodForm.is_active ? '1' : '0');
+
+            await adminApi.updatePaymentMethod(editingMethod.id, formData);
+            success('تم تحديث طريقة الدفع بنجاح');
+            setIsEditMethodModalOpen(false);
+            fetchData();
+        } catch (err) {
+            console.error(err);
+            toastError(err.response?.data?.message || 'فشل تحديث طريقة الدفع');
+        } finally {
+            setSubmittingEditMethod(false);
+        }
+    };
+
+    // Handle Delete Demo Payment Methods (the 12 unassigned methods)
+    const handleDeleteDemoMethods = async () => {
+        if (!window.confirm('هل أنت متأكد من حذف طرق الدفع التجريبية غير المرتبطة بمجموعة؟')) return;
+        try {
+            setCleaningDemo(true);
+            await adminApi.deleteDemoPaymentMethods();
+            success('تم حذف كافة طرق الدفع التجريبية بنجاح');
+            fetchData();
+        } catch (err) {
+            toastError('فشل حذف الطرق التجريبية');
+        } finally {
+            setCleaningDemo(false);
         }
     };
 
@@ -488,11 +642,11 @@ export default function AdminPaymentMethodsPage() {
                                                                 </div>
                                                             </div>
 
-                                                            {/* Method Actions (Delete / Toggle) */}
+                                                            {/* Method Actions (Edit / Toggle / Delete) */}
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                 <button
                                                                     type="button"
-                                                                    onClick={() => handleToggleMethod(method.id)}
+                                                                    onClick={() => openEditMethodModal(method)}
                                                                     style={{
                                                                         width: '32px',
                                                                         height: '32px',
@@ -505,9 +659,28 @@ export default function AdminPaymentMethodsPage() {
                                                                         justifyContent: 'center',
                                                                         cursor: 'pointer',
                                                                     }}
-                                                                    title="تبديل الحالة"
+                                                                    title="تعديل طريقة الدفع"
                                                                 >
                                                                     <Edit3 size={14} />
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleToggleMethod(method.id)}
+                                                                    style={{
+                                                                        width: '32px',
+                                                                        height: '32px',
+                                                                        borderRadius: '8px',
+                                                                        backgroundColor: method.is_active ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                                                                        border: `1px solid ${method.is_active ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.35)'}`,
+                                                                        color: method.is_active ? '#10B981' : '#EF4444',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        cursor: 'pointer',
+                                                                    }}
+                                                                    title={method.is_active ? 'تعطيل الطريقة' : 'تفعيل الطريقة'}
+                                                                >
+                                                                    <Check size={14} />
                                                                 </button>
                                                                 <button
                                                                     type="button"
@@ -590,6 +763,235 @@ export default function AdminPaymentMethodsPage() {
                                 </div>
                             );
                         })}
+
+                        {/* Standalone Payment Methods (Unassigned to any group) */}
+                        {standaloneMethods.length > 0 && (
+                            <div
+                                style={{
+                                    backgroundColor: isLight ? '#FFFFFF' : '#0B0F19',
+                                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(245, 158, 11, 0.35)',
+                                    borderRadius: '24px',
+                                    padding: '20px',
+                                    boxShadow: isLight ? '0 4px 15px rgba(0,0,0,0.04)' : '0 10px 30px rgba(0,0,0,0.45)',
+                                }}
+                            >
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    flexWrap: 'wrap',
+                                    gap: '12px',
+                                    marginBottom: '18px',
+                                    paddingBottom: '14px',
+                                    borderBottom: isLight ? '1px solid #F1F5F9' : '1px solid rgba(255, 255, 255, 0.06)',
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div style={{
+                                            width: '44px',
+                                            height: '44px',
+                                            borderRadius: '14px',
+                                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                            border: '1px solid rgba(245, 158, 11, 0.25)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            color: '#F59E0B',
+                                        }}>
+                                            <CreditCard size={22} />
+                                        </div>
+                                        <div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <h3 style={{ fontSize: '18px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', margin: 0 }}>
+                                                    طرق دفع عامة (بدون مجموعة)
+                                                </h3>
+                                                <span style={{
+                                                    padding: '2px 8px',
+                                                    borderRadius: '100px',
+                                                    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                                                    color: '#F5D061',
+                                                    fontSize: '11px',
+                                                    fontWeight: '800',
+                                                }}>
+                                                    {standaloneMethods.length} طريقة مسجلة
+                                                </span>
+                                            </div>
+                                            <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '3px' }}>
+                                                طرق دفع موجودة في النظام يمكنك تعديلها أو ربطها بمجموعة أو حذف الطرق التجريبية.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleDeleteDemoMethods}
+                                        disabled={cleaningDemo}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            padding: '8px 14px',
+                                            borderRadius: '12px',
+                                            backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                                            border: '1px solid rgba(239, 68, 68, 0.35)',
+                                            color: '#EF4444',
+                                            fontSize: '12.5px',
+                                            fontWeight: '800',
+                                            cursor: cleaningDemo ? 'not-allowed' : 'pointer',
+                                        }}
+                                    >
+                                        <Trash2 size={14} />
+                                        <span>{cleaningDemo ? 'جاري الحذف...' : `حذف الطرق التجريبية (${standaloneMethods.length})`}</span>
+                                    </button>
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                    {standaloneMethods.map((method) => {
+                                        const hasQr = Boolean(method.qr_code);
+                                        return (
+                                            <div
+                                                key={method.id}
+                                                style={{
+                                                    backgroundColor: isLight ? '#F8FAFC' : '#060B18',
+                                                    border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(245, 158, 11, 0.2)',
+                                                    borderRadius: '20px',
+                                                    padding: '18px 20px',
+                                                }}
+                                            >
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                        <div style={{
+                                                            width: '42px',
+                                                            height: '42px',
+                                                            borderRadius: '50%',
+                                                            background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            color: '#FFFFFF',
+                                                        }}>
+                                                            <CreditCard size={20} />
+                                                        </div>
+
+                                                        <div>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                                                <h4 style={{ fontSize: '16px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', margin: 0 }}>
+                                                                    {method.name}
+                                                                </h4>
+                                                                <span style={{
+                                                                    padding: '2px 10px',
+                                                                    borderRadius: '100px',
+                                                                    backgroundColor: method.is_active ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                                                                    border: `1px solid ${method.is_active ? '#10B981' : '#EF4444'}`,
+                                                                    color: method.is_active ? '#10B981' : '#EF4444',
+                                                                    fontSize: '11px',
+                                                                    fontWeight: '800',
+                                                                }}>
+                                                                    {method.is_active ? 'نشطة' : 'معطلة'}
+                                                                </span>
+                                                            </div>
+                                                            <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
+                                                                <span style={{ padding: '2px 8px', borderRadius: '6px', backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B', fontSize: '11px', fontWeight: '700' }}>
+                                                                    {method.type || 'محفظة إلكترونية'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => openEditMethodModal(method)}
+                                                            style={{
+                                                                width: '32px',
+                                                                height: '32px',
+                                                                borderRadius: '8px',
+                                                                backgroundColor: isLight ? '#EFF6FF' : '#0B1528',
+                                                                border: '1px solid #1E3A8A',
+                                                                color: '#38BDF8',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                cursor: 'pointer',
+                                                            }}
+                                                            title="تعديل طريقة الدفع"
+                                                        >
+                                                            <Edit3 size={14} />
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleToggleMethod(method.id)}
+                                                            style={{
+                                                                width: '32px',
+                                                                height: '32px',
+                                                                borderRadius: '8px',
+                                                                backgroundColor: method.is_active ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                                                                border: `1px solid ${method.is_active ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.35)'}`,
+                                                                color: method.is_active ? '#10B981' : '#EF4444',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                cursor: 'pointer',
+                                                            }}
+                                                            title={method.is_active ? 'تعطيل الطريقة' : 'تفعيل الطريقة'}
+                                                        >
+                                                            <Check size={14} />
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDeleteMethod(method.id)}
+                                                            style={{
+                                                                width: '32px',
+                                                                height: '32px',
+                                                                borderRadius: '8px',
+                                                                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                                                                border: '1px solid rgba(239, 68, 68, 0.35)',
+                                                                color: '#EF4444',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                cursor: 'pointer',
+                                                            }}
+                                                            title="حذف الطريقة"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div style={{
+                                                    fontSize: '12.5px',
+                                                    lineHeight: '1.8',
+                                                    color: isLight ? '#334155' : '#CBD5E1',
+                                                    borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.05)',
+                                                    paddingTop: '10px',
+                                                }}>
+                                                    {method.account_number && (
+                                                        <div>
+                                                            <strong style={{ color: '#94A3B8' }}>رقم الحساب / المحفظة: </strong>
+                                                            <span style={{ color: '#38BDF8', fontWeight: '900', direction: 'ltr', display: 'inline-block' }}>
+                                                                {method.account_number}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    {method.account_holder_name && (
+                                                        <div>
+                                                            <strong style={{ color: '#94A3B8' }}>اسم صاحب الحساب: </strong>
+                                                            <span>{method.account_holder_name}</span>
+                                                        </div>
+                                                    )}
+                                                    {(method.instruction || method.instructions) && (
+                                                        <div>
+                                                            <strong style={{ color: '#94A3B8' }}>تعليمات: </strong>
+                                                            <span>{method.instruction || method.instructions}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -712,6 +1114,23 @@ export default function AdminPaymentMethodsPage() {
                                 />
                             </div>
 
+                            {/* Hidden File Input for Group Image */}
+                            <input
+                                type="file"
+                                ref={groupImageRef}
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        setGroupImageFile(file);
+                                        const reader = new FileReader();
+                                        reader.onloadend = () => setGroupImagePreview(reader.result);
+                                        reader.readAsDataURL(file);
+                                    }
+                                }}
+                            />
+
                             {/* صورة المجموعة Box (Screenshot 4) */}
                             <div style={{
                                 backgroundColor: '#060B18',
@@ -726,16 +1145,32 @@ export default function AdminPaymentMethodsPage() {
                                 <div style={{ fontSize: '12px', color: '#94A3B8', marginBottom: '12px' }}>
                                     ارفع صورة أو شعار يظهر للعملاء مع مجموعة الدفع
                                 </div>
-                                <div style={{
-                                    border: '2px dashed rgba(56, 189, 248, 0.3)',
-                                    borderRadius: '14px',
-                                    padding: '18px',
-                                    textAlign: 'center',
-                                    cursor: 'pointer',
-                                }}>
-                                    <Upload size={24} color="#38BDF8" style={{ margin: '0 auto 8px' }} />
-                                    <div style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF' }}>رفع صورة جديدة</div>
-                                    <div style={{ fontSize: '11px', color: '#94A3B8' }}>GIF أو PNG, JPG, WEBP</div>
+                                <div
+                                    onClick={() => groupImageRef.current?.click()}
+                                    style={{
+                                        border: '2px dashed rgba(56, 189, 248, 0.3)',
+                                        borderRadius: '14px',
+                                        padding: '18px',
+                                        textAlign: 'center',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    {groupImagePreview ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <img
+                                                src={groupImagePreview}
+                                                alt="Group Preview"
+                                                style={{ maxHeight: '80px', maxWidth: '100%', objectFit: 'contain', borderRadius: '10px', marginBottom: '8px' }}
+                                            />
+                                            <div style={{ fontSize: '12px', fontWeight: '800', color: '#38BDF8' }}>اضغط لتغيير الصورة</div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <Upload size={24} color="#38BDF8" style={{ margin: '0 auto 8px' }} />
+                                            <div style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF' }}>رفع صورة جديدة</div>
+                                            <div style={{ fontSize: '11px', color: '#94A3B8' }}>GIF أو PNG, JPG, WEBP</div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
 
@@ -1034,6 +1469,23 @@ export default function AdminPaymentMethodsPage() {
                                 />
                             </div>
 
+                            {/* Hidden File Input for Method Logo */}
+                            <input
+                                type="file"
+                                ref={methodLogoRef}
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        setMethodLogoFile(file);
+                                        const reader = new FileReader();
+                                        reader.onloadend = () => setMethodLogoPreview(reader.result);
+                                        reader.readAsDataURL(file);
+                                    }
+                                }}
+                            />
+
                             {/* صورة طريقة الدفع Box (Matching Uploaded Screenshot) */}
                             <div style={{
                                 backgroundColor: '#060B18',
@@ -1048,28 +1500,44 @@ export default function AdminPaymentMethodsPage() {
                                 <div style={{ fontSize: '12px', color: '#94A3B8', marginBottom: '12px' }}>
                                     ارفع شعارًا أو صورة تعريفية واضحة للطريقة. الحد الأقصى 2MB.
                                 </div>
-                                <div style={{
-                                    border: '2px dashed rgba(56, 189, 248, 0.3)',
-                                    borderRadius: '14px',
-                                    padding: '18px',
-                                    textAlign: 'center',
-                                    cursor: 'pointer',
-                                }}>
-                                    <div style={{
-                                        width: '44px',
-                                        height: '44px',
-                                        borderRadius: '50%',
-                                        backgroundColor: '#38BDF8',
-                                        color: '#0A0F1D',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        margin: '0 auto 8px',
-                                    }}>
-                                        <ImageIcon size={22} />
-                                    </div>
-                                    <div style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF' }}>رفع صورة جديدة</div>
-                                    <div style={{ fontSize: '11px', color: '#94A3B8' }}>GIF أو PNG, JPG, WEBP</div>
+                                <div
+                                    onClick={() => methodLogoRef.current?.click()}
+                                    style={{
+                                        border: '2px dashed rgba(56, 189, 248, 0.3)',
+                                        borderRadius: '14px',
+                                        padding: '18px',
+                                        textAlign: 'center',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    {methodLogoPreview ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <img
+                                                src={methodLogoPreview}
+                                                alt="Method Preview"
+                                                style={{ maxHeight: '80px', maxWidth: '100%', objectFit: 'contain', borderRadius: '10px', marginBottom: '8px' }}
+                                            />
+                                            <div style={{ fontSize: '12px', fontWeight: '800', color: '#38BDF8' }}>اضغط لتغيير الصورة</div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div style={{
+                                                width: '44px',
+                                                height: '44px',
+                                                borderRadius: '50%',
+                                                backgroundColor: '#38BDF8',
+                                                color: '#0A0F1D',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                margin: '0 auto 8px',
+                                            }}>
+                                                <ImageIcon size={22} />
+                                            </div>
+                                            <div style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF' }}>رفع صورة جديدة</div>
+                                            <div style={{ fontSize: '11px', color: '#94A3B8' }}>GIF أو PNG, JPG, WEBP</div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
 
@@ -1099,6 +1567,330 @@ export default function AdminPaymentMethodsPage() {
                                     style={{
                                         width: '100%',
                                         padding: '12px',
+                                        borderRadius: '16px',
+                                        backgroundColor: 'transparent',
+                                        color: '#94A3B8',
+                                        border: 'none',
+                                        fontSize: '14px',
+                                        fontWeight: '800',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    إلغاء
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* ================= MODAL: تعديل طريقة دفع ================= */}
+            {isEditMethodModalOpen && editingMethod && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 9999,
+                    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '16px',
+                }}>
+                    <div style={{
+                        backgroundColor: '#0A0F1D',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '24px',
+                        width: '100%',
+                        maxWidth: '480px',
+                        padding: '24px',
+                        maxHeight: '92vh',
+                        overflowY: 'auto',
+                        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
+                        direction: 'rtl',
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                            <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#FFFFFF', margin: 0 }}>
+                                تعديل طريقة الدفع: {editingMethod.name}
+                            </h2>
+                            <button
+                                type="button"
+                                onClick={() => setIsEditMethodModalOpen(false)}
+                                style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer' }}
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleUpdateMethod}>
+                            {/* المجموعة */}
+                            <div style={{ marginBottom: '14px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
+                                    المجموعة
+                                </label>
+                                <select
+                                    value={editMethodForm.payment_group_id}
+                                    onChange={(e) => setEditMethodForm({ ...editMethodForm, payment_group_id: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 14px',
+                                        borderRadius: '14px',
+                                        backgroundColor: '#060B18',
+                                        border: '1px solid rgba(56, 189, 248, 0.35)',
+                                        color: '#FFFFFF',
+                                        fontSize: '13.5px',
+                                        outline: 'none',
+                                        cursor: 'pointer',
+                                        boxSizing: 'border-box',
+                                    }}
+                                >
+                                    <option value="">بدون مجموعة (طريقة عامة)</option>
+                                    {groups.map((g) => (
+                                        <option key={g.id} value={g.id}>{g.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* اسم طريقة الدفع */}
+                            <div style={{ marginBottom: '14px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
+                                    اسم طريقة الدفع
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={editMethodForm.name}
+                                    onChange={(e) => setEditMethodForm({ ...editMethodForm, name: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 14px',
+                                        borderRadius: '14px',
+                                        backgroundColor: '#060B18',
+                                        border: '1px solid rgba(56, 189, 248, 0.35)',
+                                        color: '#FFFFFF',
+                                        fontSize: '13.5px',
+                                        outline: 'none',
+                                        boxSizing: 'border-box',
+                                    }}
+                                />
+                            </div>
+
+                            {/* نوع الطريقة */}
+                            <div style={{ marginBottom: '14px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
+                                    نوع الطريقة
+                                </label>
+                                <select
+                                    value={editMethodForm.type}
+                                    onChange={(e) => setEditMethodForm({ ...editMethodForm, type: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 14px',
+                                        borderRadius: '14px',
+                                        backgroundColor: '#060B18',
+                                        border: '1px solid rgba(56, 189, 248, 0.35)',
+                                        color: '#FFFFFF',
+                                        fontSize: '13.5px',
+                                        outline: 'none',
+                                        cursor: 'pointer',
+                                        boxSizing: 'border-box',
+                                    }}
+                                >
+                                    <option value="محفظة إلكترونية">محفظة إلكترونية (فودافون كاش / إنستاباي)</option>
+                                    <option value="تحويل بنكي">تحويل بنكي</option>
+                                    <option value="عملات رقمية">عملات رقمية (USDT / باينانس)</option>
+                                    <option value="دفع إلكتروني">بطاقة بنكية / فيزا</option>
+                                </select>
+                            </div>
+
+                            {/* نسبة الرسوم */}
+                            <div style={{ marginBottom: '14px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
+                                    نسبة الرسوم الإضافية (%)
+                                </label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={editMethodForm.percent_fee}
+                                    onChange={(e) => setEditMethodForm({ ...editMethodForm, percent_fee: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 14px',
+                                        borderRadius: '14px',
+                                        backgroundColor: '#060B18',
+                                        border: '1px solid rgba(56, 189, 248, 0.35)',
+                                        color: '#FFFFFF',
+                                        fontSize: '13.5px',
+                                        outline: 'none',
+                                        boxSizing: 'border-box',
+                                    }}
+                                />
+                            </div>
+
+                            {/* رقم الحساب / المحفظة */}
+                            <div style={{ marginBottom: '14px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
+                                    رقم الحساب أو المحفظة (فودافون كاش / عنوان المحفظة)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editMethodForm.account_number}
+                                    onChange={(e) => setEditMethodForm({ ...editMethodForm, account_number: e.target.value })}
+                                    placeholder="مثال: 01012345678"
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 14px',
+                                        borderRadius: '14px',
+                                        backgroundColor: '#060B18',
+                                        border: '1.5px solid #F59E0B',
+                                        color: '#F5D061',
+                                        fontSize: '14px',
+                                        fontWeight: '800',
+                                        outline: 'none',
+                                        boxSizing: 'border-box',
+                                    }}
+                                />
+                            </div>
+
+                            {/* اسم صاحب الحساب */}
+                            <div style={{ marginBottom: '14px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
+                                    اسم صاحب الحساب (اختياري)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editMethodForm.account_holder_name}
+                                    onChange={(e) => setEditMethodForm({ ...editMethodForm, account_holder_name: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 14px',
+                                        borderRadius: '14px',
+                                        backgroundColor: '#060B18',
+                                        border: '1px solid rgba(56, 189, 248, 0.35)',
+                                        color: '#FFFFFF',
+                                        fontSize: '13.5px',
+                                        outline: 'none',
+                                        boxSizing: 'border-box',
+                                    }}
+                                />
+                            </div>
+
+                            {/* تعليمات العميل */}
+                            <div style={{ marginBottom: '14px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
+                                    تعليمات العميل
+                                </label>
+                                <textarea
+                                    rows={3}
+                                    value={editMethodForm.instruction}
+                                    onChange={(e) => setEditMethodForm({ ...editMethodForm, instruction: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 14px',
+                                        borderRadius: '14px',
+                                        backgroundColor: '#060B18',
+                                        border: '1px solid rgba(56, 189, 248, 0.35)',
+                                        color: '#FFFFFF',
+                                        fontSize: '13.5px',
+                                        outline: 'none',
+                                        boxSizing: 'border-box',
+                                    }}
+                                />
+                            </div>
+
+                            {/* Hidden File Input for Edit Method Logo */}
+                            <input
+                                type="file"
+                                ref={editMethodLogoRef}
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        setEditMethodLogoFile(file);
+                                        const reader = new FileReader();
+                                        reader.onloadend = () => setEditMethodLogoPreview(reader.result);
+                                        reader.readAsDataURL(file);
+                                    }
+                                }}
+                            />
+
+                            <div style={{
+                                backgroundColor: '#060B18',
+                                border: '1px solid rgba(56, 189, 248, 0.25)',
+                                borderRadius: '18px',
+                                padding: '16px',
+                                marginBottom: '20px',
+                            }}>
+                                <div style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF', marginBottom: '4px' }}>
+                                    صورة طريقة الدفع
+                                </div>
+                                <div
+                                    onClick={() => editMethodLogoRef.current?.click()}
+                                    style={{
+                                        border: '2px dashed rgba(56, 189, 248, 0.3)',
+                                        borderRadius: '14px',
+                                        padding: '18px',
+                                        textAlign: 'center',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    {editMethodLogoPreview ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <img
+                                                src={editMethodLogoPreview}
+                                                alt="Method Preview"
+                                                style={{ maxHeight: '80px', maxWidth: '100%', objectFit: 'contain', borderRadius: '10px', marginBottom: '8px' }}
+                                            />
+                                            <div style={{ fontSize: '12px', fontWeight: '800', color: '#38BDF8' }}>اضغط لتغيير الصورة</div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div style={{
+                                                width: '44px',
+                                                height: '44px',
+                                                borderRadius: '50%',
+                                                backgroundColor: '#38BDF8',
+                                                color: '#0A0F1D',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                margin: '0 auto 8px',
+                                            }}>
+                                                <ImageIcon size={22} />
+                                            </div>
+                                            <div style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF' }}>تغيير صورة الطريقة</div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Buttons */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <button
+                                    type="submit"
+                                    disabled={submittingEditMethod}
+                                    style={{
+                                        width: '100%',
+                                        padding: '14px',
+                                        borderRadius: '16px',
+                                        background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)',
+                                        color: '#FFFFFF',
+                                        fontSize: '15px',
+                                        fontWeight: '900',
+                                        border: 'none',
+                                        cursor: submittingEditMethod ? 'not-allowed' : 'pointer',
+                                        boxShadow: '0 4px 15px rgba(2, 132, 199, 0.4)',
+                                    }}
+                                >
+                                    {submittingEditMethod ? 'جاري الحفظ...' : 'حفظ التعديلات'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditMethodModalOpen(false)}
+                                    style={{
+                                        padding: '13px 20px',
                                         borderRadius: '16px',
                                         backgroundColor: 'transparent',
                                         color: '#94A3B8',

@@ -170,6 +170,7 @@ Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
             // Staff & Supervisors Management (Matching Screenshots 3 & 4)
             Route::get('/staff', [\App\Http\Controllers\Api\V1\Admin\AdminStaffController::class, 'index']);
             Route::post('/staff', [\App\Http\Controllers\Api\V1\Admin\AdminStaffController::class, 'store']);
+            Route::post('/staff/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminStaffController::class, 'update']);
             Route::post('/staff/{id}/permissions', [\App\Http\Controllers\Api\V1\Admin\AdminStaffController::class, 'updatePermissions']);
             Route::post('/staff/{id}/toggle-status', [\App\Http\Controllers\Api\V1\Admin\AdminStaffController::class, 'toggleStatus']);
             Route::delete('/staff/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminStaffController::class, 'destroy']);
@@ -233,7 +234,9 @@ Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
             // Payment Methods & Groups Management (Matching Screenshots 3, 4, 5)
             Route::get('/payment-methods', [\App\Http\Controllers\Api\V1\Admin\AdminPaymentMethodController::class, 'index']);
             Route::post('/payment-methods', [\App\Http\Controllers\Api\V1\Admin\AdminPaymentMethodController::class, 'storeMethod']);
+            Route::post('/payment-methods/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminPaymentMethodController::class, 'updateMethod']);
             Route::post('/payment-methods/{id}/toggle', [\App\Http\Controllers\Api\V1\Admin\AdminPaymentMethodController::class, 'toggleMethod']);
+            Route::delete('/payment-methods/demo-cleanup', [\App\Http\Controllers\Api\V1\Admin\AdminPaymentMethodController::class, 'deleteDemoMethods']);
             Route::delete('/payment-methods/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminPaymentMethodController::class, 'destroyMethod']);
 
             Route::post('/payment-groups', [\App\Http\Controllers\Api\V1\Admin\AdminPaymentMethodController::class, 'storeGroup']);

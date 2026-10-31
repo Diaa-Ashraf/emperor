@@ -142,3 +142,4 @@ class AdminSettingController extends Controller
         return $this->successResponse(null, 'تم حفظ إعدادات المنصة بنجاح');
     }
 }
+

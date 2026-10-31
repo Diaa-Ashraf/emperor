@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Target,
     CheckCircle,
@@ -57,6 +57,9 @@ export default function AdminTargetsPage() {
     const [appRate, setAppRate] = useState('50');
     const [appReceivingId, setAppReceivingId] = useState('123456789');
     const [appImage, setAppImage] = useState('/images/artwork/hero_card_banner.png');
+    const [appImageFile, setAppImageFile] = useState(null);
+    const [appImagePreview, setAppImagePreview] = useState(null);
+    const appFileInputRef = useRef(null);
     const [appPaymentMethods, setAppPaymentMethods] = useState(['اتصالات كاش', 'أورانج كاش', 'محفظة الموقع']);
     const [appSubmitting, setAppSubmitting] = useState(false);
 
@@ -133,6 +136,8 @@ export default function AdminTargetsPage() {
         setAppRate('50');
         setAppReceivingId('123456789');
         setAppImage('/images/artwork/hero_card_banner.png');
+        setAppImageFile(null);
+        setAppImagePreview(null);
         setAppPaymentMethods(['اتصالات كاش', 'أورانج كاش', 'محفظة الموقع']);
         setIsAppModalOpen(true);
     };
@@ -143,8 +148,20 @@ export default function AdminTargetsPage() {
         setAppRate((app.rate || 50).toString());
         setAppReceivingId(app.receiving_id || '123456789');
         setAppImage(app.image || '/images/artwork/hero_card_banner.png');
+        setAppImageFile(null);
+        setAppImagePreview(app.image || null);
         setAppPaymentMethods(app.payment_methods || ['اتصالات كاش', 'أورانج كاش', 'محفظة الموقع']);
         setIsAppModalOpen(true);
+    };
+
+    const handleAppImageChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setAppImageFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => setAppImagePreview(reader.result);
+            reader.readAsDataURL(file);
+        }
     };
 
     const togglePaymentMethod = (method) => {
@@ -164,14 +181,19 @@ export default function AdminTargetsPage() {
 
         try {
             setAppSubmitting(true);
-            await adminApi.saveTargetApp({
-                name: appName.trim(),
-                rate: parseFloat(appRate) || 50,
-                receiving_id: appReceivingId.trim() || '123456789',
-                payment_methods: appPaymentMethods,
-                image: appImage,
-                is_active: editingApp ? editingApp.is_active : false,
-            }, editingApp?.id);
+            const formData = new FormData();
+            formData.append('name', appName.trim());
+            formData.append('rate', parseFloat(appRate) || 50);
+            formData.append('receiving_id', appReceivingId.trim() || '123456789');
+            appPaymentMethods.forEach((pm) => formData.append('payment_methods[]', pm));
+            if (appImageFile) {
+                formData.append('image', appImageFile);
+            } else if (appImage) {
+                formData.append('image', appImage);
+            }
+            formData.append('is_active', editingApp ? (editingApp.is_active ? '1' : '0') : '0');
+
+            await adminApi.saveTargetApp(formData, editingApp?.id);
 
             success(editingApp ? 'تم تحديث بيانات التطبيق بنجاح' : 'تمت إضافة تطبيق التارجت بنجاح');
             setIsAppModalOpen(false);
@@ -749,35 +771,73 @@ export default function AdminTargetsPage() {
                         </div>
 
                         <form onSubmit={handleSaveApp}>
-                            {/* Upload Image Box (Screenshot 4 top) */}
-                            <div style={{
-                                backgroundColor: isLight ? '#F0F9FF' : '#0B1528',
-                                border: '1px dashed #0284C7',
-                                borderRadius: '18px',
-                                padding: '24px 16px',
-                                textAlign: 'center',
-                                marginBottom: '16px',
-                                cursor: 'pointer',
-                            }}>
-                                <div style={{
-                                    width: '48px',
-                                    height: '48px',
-                                    borderRadius: '50%',
-                                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: '#38BDF8',
-                                    margin: '0 auto 10px',
-                                }}>
-                                    <UploadCloud size={24} />
-                                </div>
-                                <div style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF', marginBottom: '4px' }}>
-                                    اضغط لرفع صورة التحويل
-                                </div>
-                                <div style={{ fontSize: '11px', color: '#94A3B8' }}>
-                                    PNG أو JPG أو WEBP
-                                </div>
+                            {/* Hidden file input */}
+                            <input
+                                type="file"
+                                ref={appFileInputRef}
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={handleAppImageChange}
+                            />
+
+                            {/* Upload Image Box */}
+                            <div
+                                onClick={() => appFileInputRef.current?.click()}
+                                style={{
+                                    backgroundColor: isLight ? '#F0F9FF' : '#0B1528',
+                                    border: '1.5px dashed #0284C7',
+                                    borderRadius: '18px',
+                                    padding: '20px 16px',
+                                    textAlign: 'center',
+                                    marginBottom: '16px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease',
+                                }}
+                            >
+                                {appImagePreview ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                        <img
+                                            src={appImagePreview}
+                                            alt="App Icon Preview"
+                                            style={{
+                                                maxHeight: '90px',
+                                                maxWidth: '100%',
+                                                objectFit: 'contain',
+                                                borderRadius: '12px',
+                                                marginBottom: '10px',
+                                                boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+                                            }}
+                                        />
+                                        <div style={{ fontSize: '13px', fontWeight: '800', color: '#38BDF8', marginBottom: '2px' }}>
+                                            اضغط لتغيير الصورة
+                                        </div>
+                                        <div style={{ fontSize: '11px', color: '#94A3B8' }}>
+                                            تم اختيار الصورة بنجاح
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div style={{
+                                            width: '48px',
+                                            height: '48px',
+                                            borderRadius: '50%',
+                                            backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            color: '#38BDF8',
+                                            margin: '0 auto 10px',
+                                        }}>
+                                            <UploadCloud size={24} />
+                                        </div>
+                                        <div style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF', marginBottom: '4px' }}>
+                                            اضغط لرفع صورة التحويل
+                                        </div>
+                                        <div style={{ fontSize: '11px', color: '#94A3B8' }}>
+                                            PNG أو JPG أو WEBP
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
                             {/* App Name */}

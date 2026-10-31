@@ -207,16 +207,21 @@ class AdminTargetController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'rate' => ['required', 'numeric', 'min:0.0001'],
             'receiving_id' => ['nullable', 'string', 'max:255'],
-            'payment_methods' => ['nullable', 'array'],
-            'image' => ['nullable', 'string'],
-            'is_active' => ['nullable', 'boolean'],
+            'payment_methods' => ['nullable'],
+            'image' => ['nullable'],
+            'is_active' => ['nullable'],
         ]);
+
+        $paymentMethods = $request->input('payment_methods', ['اتصالات كاش', 'أورانج كاش', 'محفظة الموقع']);
+        if (!is_array($paymentMethods)) {
+            $paymentMethods = [$paymentMethods];
+        }
 
         $meta = [
             'exchange_rate' => (float) $validated['rate'],
             'rate_currency' => 'EGP',
             'receiving_id' => $validated['receiving_id'] ?? '123456789',
-            'payment_methods' => $validated['payment_methods'] ?? ['اتصالات كاش', 'أورانج كاش', 'محفظة الموقع'],
+            'payment_methods' => $paymentMethods,
         ];
 
         $app = $id ? Product::findOrFail($id) : new Product();
@@ -224,13 +229,18 @@ class AdminTargetController extends Controller
         $app->type = \App\Enums\ProductType::TARGET;
         $app->description = json_encode($meta, JSON_UNESCAPED_UNICODE);
         $app->player_id_label = $meta['receiving_id'];
-        if (!empty($validated['image'])) {
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('targets', 'public');
+            $app->image = '/storage/' . $path;
+        } elseif (!empty($validated['image']) && is_string($validated['image'])) {
             $app->image = $validated['image'];
         } elseif (!$app->image) {
             $app->image = '/images/artwork/hero_card_banner.png';
         }
-        if (isset($validated['is_active'])) {
-            $app->is_active = (bool) $validated['is_active'];
+
+        if ($request->has('is_active')) {
+            $app->is_active = $request->boolean('is_active');
         }
         $app->save();
 

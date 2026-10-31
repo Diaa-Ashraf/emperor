@@ -161,6 +161,7 @@ export const adminApi = {
     toggleUserApi: (id) => api.post(`/admin/users/${id}/toggle-api`),
     getStaff: (params = {}) => api.get('/admin/staff', { params }),
     createStaff: (data) => api.post('/admin/staff', data),
+    updateStaff: (id, data) => api.post(`/admin/staff/${id}`, data),
     updateStaffPermissions: (id, data) => api.post(`/admin/staff/${id}/permissions`, data),
     toggleStaffStatus: (id) => api.post(`/admin/staff/${id}/toggle-status`),
     deleteStaff: (id) => api.delete(`/admin/staff/${id}`),
@@ -175,7 +176,12 @@ export const adminApi = {
     approveTarget: (id, data = {}) => api.post(`/admin/targets/${id}/approve`, data),
     rejectTarget: (id, data) => api.post(`/admin/targets/${id}/reject`, data),
     getTargetApps: () => api.get('/admin/targets/apps'),
-    saveTargetApp: (data, id = null) => api.post(id ? `/admin/targets/apps/save/${id}` : '/admin/targets/apps/save', data),
+    saveTargetApp: (data, id = null) => {
+        const isForm = data instanceof FormData;
+        return api.post(id ? `/admin/targets/apps/save/${id}` : '/admin/targets/apps/save', data, {
+            headers: isForm ? { 'Content-Type': 'multipart/form-data' } : undefined
+        });
+    },
     toggleTargetApp: (id) => api.post(`/admin/targets/apps/${id}/toggle`),
     deleteTargetApp: (id) => api.delete(`/admin/targets/apps/${id}`),
     getOrders: (params = {}) => api.get('/admin/orders', { params }),
@@ -209,10 +215,27 @@ export const adminApi = {
     checkProviderBalance: (id) => api.post(`/admin/providers/${id}/check-balance`),
     toggleProvider: (id) => api.post(`/admin/providers/${id}/toggle`),
     getPaymentMethods: () => api.get('/admin/payment-methods'),
-    createPaymentMethod: (data) => api.post('/admin/payment-methods', data),
+    createPaymentMethod: (data) => {
+        const isForm = data instanceof FormData;
+        return api.post('/admin/payment-methods', data, {
+            headers: isForm ? { 'Content-Type': 'multipart/form-data' } : undefined
+        });
+    },
+    updatePaymentMethod: (id, data) => {
+        const isForm = data instanceof FormData;
+        return api.post(`/admin/payment-methods/${id}`, data, {
+            headers: isForm ? { 'Content-Type': 'multipart/form-data' } : undefined
+        });
+    },
     togglePaymentMethod: (id) => api.post(`/admin/payment-methods/${id}/toggle`),
     deletePaymentMethod: (id) => api.delete(`/admin/payment-methods/${id}`),
-    createPaymentGroup: (data) => api.post('/admin/payment-groups', data),
+    deleteDemoPaymentMethods: () => api.delete('/payment-methods/demo-cleanup'),
+    createPaymentGroup: (data) => {
+        const isForm = data instanceof FormData;
+        return api.post('/admin/payment-groups', data, {
+            headers: isForm ? { 'Content-Type': 'multipart/form-data' } : undefined
+        });
+    },
     deletePaymentGroup: (id) => api.delete(`/admin/payment-groups/${id}`),
 };
 
