@@ -23,12 +23,12 @@ class PricingService
             return (float) $tier->final_price;
         }
 
-        $margin = (float) ($tier->margin_percent > 0 ? $tier->margin_percent : 5.0);
+        $margin = (float) ($tier->margin_percent > 0 ? $tier->margin_percent : 4.0);
 
         return match ($tier->price_strategy) {
             PriceStrategy::PERCENTAGE => $cost * (1 + ($margin / 100)),
             PriceStrategy::FIXED_ADDITION => $cost + (float) $tier->fixed_margin,
-            PriceStrategy::MANUAL => (float) $tier->final_price > 0 ? (float) $tier->final_price : $cost * 1.05,
+            PriceStrategy::MANUAL => (float) $tier->final_price > 0 ? (float) $tier->final_price : $cost * 1.04,
             default => (float) $tier->final_price > 0 ? (float) $tier->final_price : $cost * (1 + ($margin / 100)),
         };
     }
@@ -101,12 +101,13 @@ class PricingService
             }
         }
 
-        if ($cost > 0 && $groupMargin !== null) {
-            // Apply customer group margin directly over source cost (e.g. cost + 2%)
-            $priceInCostCurrency = $cost * (1 + ($groupMargin / 100));
+        if ($cost > 0) {
+            // If user has a specific group margin (e.g. 2%), use it; otherwise default is 4%
+            $appliedMargin = $groupMargin !== null ? $groupMargin : 4.0;
+            $priceInCostCurrency = $cost * (1 + ($appliedMargin / 100));
         } elseif ($tier->final_price > 0) {
             $priceInCostCurrency = (float) $tier->final_price;
-            if ($groupMargin !== null && $cost <= 0) {
+            if ($groupMargin !== null) {
                 // Apply group discount off final price if no cost recorded
                 $priceInCostCurrency = $priceInCostCurrency * (1 - ($groupMargin / 100));
             }

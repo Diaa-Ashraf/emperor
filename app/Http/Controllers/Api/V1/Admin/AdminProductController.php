@@ -230,9 +230,9 @@ class AdminProductController extends Controller
             $basePrice = (float) ($validated['base_price'] ?? 0);
             $finalPrice = (float) ($validated['final_price'] ?? 0);
 
-            // If final_price not set or 0, default to basePrice + 5% markup
+            // If final_price not set or 0, default to basePrice + 4% markup
             if ($finalPrice <= 0 && $basePrice > 0) {
-                $finalPrice = $basePrice * 1.05;
+                $finalPrice = $basePrice * 1.04;
             }
 
             $tier = $product->tiers()->first() ?? new ProductTier();
@@ -241,7 +241,7 @@ class AdminProductController extends Controller
             $tier->sku = Str::upper(Str::slug($product->name, '_')) . '_TIER_1';
             $tier->source_cost = $basePrice;
             $tier->cost_currency = 'USD';
-            $tier->margin_percent = 5.00;
+            $tier->margin_percent = 4.00;
             $tier->final_price = $finalPrice;
             $tier->sale_price = $finalPrice;
             $tier->min_qty = $minQty;

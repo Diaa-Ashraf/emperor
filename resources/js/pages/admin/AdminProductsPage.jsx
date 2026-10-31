@@ -344,8 +344,8 @@ export default function AdminProductsPage() {
         if (syncPricingEnabled) {
             const rawCost = item.price ? parseFloat(item.price) : 0;
             setBasePrice(rawCost.toString());
-            // Suggest selling price with default 5% profit margin
-            const suggestedSelling = rawCost > 0 ? (rawCost * 1.05) : 0;
+            // Suggest selling price with default 4% profit margin
+            const suggestedSelling = rawCost > 0 ? (rawCost * 1.04) : 0;
             setFinalPrice(suggestedSelling.toString());
             setMinQty(item.min_qty ? item.min_qty.toString() : '1');
             setMaxQty(item.max_qty ? item.max_qty.toString() : '10000000');
