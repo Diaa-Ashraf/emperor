@@ -245,6 +245,18 @@ Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
             // System Settings Management
             Route::get('/settings', [\App\Http\Controllers\Api\V1\Admin\AdminSettingController::class, 'index']);
             Route::post('/settings', [\App\Http\Controllers\Api\V1\Admin\AdminSettingController::class, 'update']);
+
+            // Currencies & Exchange Rates Management
+            Route::get('/currencies', [\App\Http\Controllers\Api\V1\Admin\AdminCurrencyController::class, 'index']);
+            Route::post('/currencies', [\App\Http\Controllers\Api\V1\Admin\AdminCurrencyController::class, 'store']);
+            Route::post('/currencies/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminCurrencyController::class, 'update']);
+            Route::post('/currencies/{id}/toggle', [\App\Http\Controllers\Api\V1\Admin\AdminCurrencyController::class, 'toggle']);
+            Route::delete('/currencies/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminCurrencyController::class, 'destroy']);
+
+            // WhatsApp Integration & Notifications Management
+            Route::get('/whatsapp/settings', [\App\Http\Controllers\Api\V1\Admin\AdminWhatsAppController::class, 'getSettings']);
+            Route::post('/whatsapp/settings', [\App\Http\Controllers\Api\V1\Admin\AdminWhatsAppController::class, 'saveSettings']);
+            Route::post('/whatsapp/test', [\App\Http\Controllers\Api\V1\Admin\AdminWhatsAppController::class, 'sendTest']);
         });
     });
 });

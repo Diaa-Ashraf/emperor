@@ -64,6 +64,8 @@ const AdminStaffPage = lazyRetry(() => import('./pages/admin/AdminStaffPage'));
 const AdminReferralsPage = lazyRetry(() => import('./pages/admin/AdminReferralsPage'));
 const AdminUserLedgerPage = lazyRetry(() => import('./pages/admin/AdminUserLedgerPage'));
 const AdminSettingsPage = lazyRetry(() => import('./pages/admin/AdminSettingsPage'));
+const AdminCurrenciesPage = lazyRetry(() => import('./pages/admin/AdminCurrenciesPage'));
+const AdminWhatsAppPage = lazyRetry(() => import('./pages/admin/AdminWhatsAppPage'));
 
 // Protected Route Guard
 export function ProtectedRoute({ children }) {
@@ -263,8 +265,8 @@ export function AppRoutes() {
                 <Route path="/admin/referrals" element={<AdminProtectedRoute><AdminReferralsPage /></AdminProtectedRoute>} />
                 <Route path="/admin/rewards" element={<AdminProtectedRoute><AdminReferralsPage /></AdminProtectedRoute>} />
                 <Route path="/admin/appearance" element={<AdminProtectedRoute><AdminDashboardPage /></AdminProtectedRoute>} />
-                <Route path="/admin/whatsapp" element={<AdminProtectedRoute><AdminProvidersPage /></AdminProtectedRoute>} />
-                <Route path="/admin/currencies" element={<AdminProtectedRoute><AdminWalletPage /></AdminProtectedRoute>} />
+                <Route path="/admin/whatsapp" element={<AdminProtectedRoute><AdminWhatsAppPage /></AdminProtectedRoute>} />
+                <Route path="/admin/currencies" element={<AdminProtectedRoute><AdminCurrenciesPage /></AdminProtectedRoute>} />
                 <Route path="/admin/settings" element={<AdminProtectedRoute><AdminSettingsPage /></AdminProtectedRoute>} />
                 <Route path="/admin/setting" element={<AdminProtectedRoute><AdminSettingsPage /></AdminProtectedRoute>} />
 

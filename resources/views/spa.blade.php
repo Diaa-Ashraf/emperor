@@ -42,6 +42,7 @@
             site_favicon: {!! json_encode($siteFavicon) !!},
             footer_slogan: {!! json_encode(\App\Models\Setting::get('footer_slogan', 'المنصة الرائدة والأولى لشحن الألعاب والبطاقات الرقمية وبيع التارجت بأفضل الأسعار.')) !!},
             whatsapp_support: {!! json_encode(\App\Models\Setting::get('whatsapp_support', '+201000000000')) !!},
+            whatsapp_channel: {!! json_encode(\App\Models\Setting::get('whatsapp_channel', 'https://whatsapp.com/channel/')) !!},
             telegram_support: {!! json_encode(\App\Models\Setting::get('telegram_support', 'EmperorSupport')) !!},
             support_email: {!! json_encode(\App\Models\Setting::get('support_email', 'support@emperorcard.com')) !!},
             support_phone: {!! json_encode(\App\Models\Setting::get('support_phone', '')) !!},

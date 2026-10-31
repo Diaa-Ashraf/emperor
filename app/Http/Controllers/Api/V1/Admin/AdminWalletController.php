@@ -212,37 +212,70 @@ class AdminWalletController extends Controller
     public function adjustBalance(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'amount' => ['required', 'numeric', 'min:0.01'],
-            'action' => ['nullable', 'in:credit,debit'],
+            'amount' => ['required', 'numeric', 'min:0'],
+            'action' => ['nullable', 'in:credit,debit,set'],
             'currency' => ['nullable', 'string', 'max:5'],
             'description' => ['nullable', 'string', 'max:255'],
         ], [
             'amount.required' => 'المبلغ مطلوب.',
-            'amount.min' => 'يجب أن يكون المبلغ أكبر من صفر.',
+            'amount.min' => 'يجب أن يكون المبلغ 0 أو أكبر.',
         ]);
 
         $adminUser = $request->user() ?: (User::where('role', 'admin')->first() ?: User::first());
         $amount = (float) $validated['amount'];
         $currency = strtoupper($validated['currency'] ?? ($adminUser?->currency ?: 'EGP'));
         $action = $validated['action'] ?? 'credit';
-        $description = $validated['description'] ?? 'إضافة رصيد مباشر لحساب الأدمن';
+        $description = $validated['description'] ?? 'تعديل رصيد حساب الأدمن';
 
         try {
-            if ($action === 'credit') {
-                $tx = $this->walletService->credit(
+            if ($action === 'set') {
+                $wallet = $this->walletService->getOrCreateWallet($adminUser, $currency);
+                $currentBalance = (float) $wallet->balance;
+                $diff = $amount - $currentBalance;
+
+                if (abs($diff) < 0.0001) {
+                    return $this->successResponse([
+                        'transaction_id' => null,
+                        'new_balance' => $currentBalance,
+                    ], 'الرصيد الحالي مطابق تماماً للمبلغ المدخل');
+                }
+
+                if ($diff > 0) {
+                    $tx = $this->walletService->credit(
+                        user: $adminUser,
+                        amount: $diff,
+                        type: WalletTxType::MANUAL_CREDIT,
+                        description: $description ?: "تعديل رصيد الأدمن إلى {$amount} {$currency}",
+                        currency: $currency,
+                        referenceType: 'admin_manual_adjustment',
+                        referenceId: $adminUser->id
+                    );
+                } else {
+                    $tx = $this->walletService->debit(
+                        user: $adminUser,
+                        amount: abs($diff),
+                        type: WalletTxType::MANUAL_DEBIT,
+                        description: $description ?: "تعديل رصيد الأدمن إلى {$amount} {$currency}",
+                        currency: $currency,
+                        referenceType: 'admin_manual_adjustment',
+                        referenceId: $adminUser->id
+                    );
+                }
+            } elseif ($action === 'debit') {
+                $tx = $this->walletService->debit(
                     user: $adminUser,
                     amount: $amount,
-                    type: WalletTxType::MANUAL_CREDIT,
+                    type: WalletTxType::MANUAL_DEBIT,
                     description: $description,
                     currency: $currency,
                     referenceType: 'admin_manual_adjustment',
                     referenceId: $adminUser->id
                 );
             } else {
-                $tx = $this->walletService->debit(
+                $tx = $this->walletService->credit(
                     user: $adminUser,
                     amount: $amount,
-                    type: WalletTxType::MANUAL_DEBIT,
+                    type: WalletTxType::MANUAL_CREDIT,
                     description: $description,
                     currency: $currency,
                     referenceType: 'admin_manual_adjustment',
@@ -253,7 +286,7 @@ class AdminWalletController extends Controller
             return $this->successResponse([
                 'transaction_id' => $tx->id,
                 'new_balance' => $tx->balance_after,
-            ], 'تمت إضافة الرصيد لحساب الأدمن بنجاح');
+            ], 'تم تعديل رصيد حساب الأدمن بنجاح');
         } catch (\Throwable $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
         }

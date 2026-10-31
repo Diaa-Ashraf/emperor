@@ -63,8 +63,10 @@ export default function AdminWalletPage() {
     // Transaction Details Modal
     const [selectedTx, setSelectedTx] = useState(null);
 
-    // Quick Add Balance Form State (Admin)
+    // Quick Add / Adjust Balance Form State (Admin)
     const [quickAmount, setQuickAmount] = useState('');
+    const [quickAction, setQuickAction] = useState('credit'); // credit, debit, set
+    const [quickDesc, setQuickDesc] = useState('');
     const [addingBalance, setAddingBalance] = useState(false);
 
     // Admin Settings Form State
@@ -199,11 +201,11 @@ export default function AdminWalletPage() {
         }
     };
 
-    // Quick add balance handler (Admin Mode)
+    // Quick add / adjust balance handler (Admin Mode)
     const handleQuickAddBalance = async (e) => {
         e.preventDefault();
         const amt = parseFloat(quickAmount);
-        if (!amt || amt <= 0) {
+        if (amt === undefined || isNaN(amt) || (quickAction !== 'set' && amt <= 0)) {
             toastError('يرجى إدخال مبلغ صحيح أكبر من صفر');
             return;
         }
@@ -212,17 +214,19 @@ export default function AdminWalletPage() {
         try {
             await adminApi.adjustWalletBalance({
                 amount: amt,
-                action: 'credit',
+                action: quickAction,
                 currency: selectedCurrency,
-                description: 'إضافة رصيد لحساب الأدمن من لوحة التحكم',
+                description: quickDesc.trim() || undefined,
             });
-            success(`تمت إضافة ${amt} ${selectedCurrency} إلى رصيد الأدمن بنجاح`);
+            const actionText = quickAction === 'credit' ? 'إضافة' : quickAction === 'debit' ? 'خصم' : 'تعديل';
+            success(`تمت عملية ${actionText} رصيد الأدمن بنجاح`);
             setQuickAmount('');
+            setQuickDesc('');
             fetchData();
             if (refreshUser) refreshUser();
         } catch (err) {
-            console.error('Add balance error:', err);
-            toastError(err.response?.data?.message || 'فشل إضافة الرصيد');
+            console.error('Adjust balance error:', err);
+            toastError(err.response?.data?.message || 'فشل تعديل الرصيد');
         } finally {
             setAddingBalance(false);
         }
@@ -806,25 +810,56 @@ export default function AdminWalletPage() {
                                 color: isLight ? '#0F172A' : '#FFFFFF',
                                 margin: '0 0 6px',
                             }}>
-                                إضافة رصيد لحساب الأدمن
+                                إدارة وتعديل رصيد محفظة الأدمن
                             </h2>
                             <p style={{
                                 fontSize: '12.5px',
                                 color: isLight ? '#64748B' : '#94A3B8',
                                 margin: '0 0 16px',
                             }}>
-                                سيتم إضافة الرصيد مباشرة إلى حسابك الحالي بعملة {selectedCurrency}.
+                                يمكنك إضافة رصيد، خصم رصيد، أو تعيين رصيدك مباشرة بعملة {selectedCurrency}.
                             </p>
 
                             <form onSubmit={handleQuickAddBalance}>
+                                {/* Action Selector Tabs */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginBottom: '12px' }}>
+                                    {[
+                                        { id: 'credit', label: '+ إضافة رصيد', color: '#10B981' },
+                                        { id: 'debit', label: '- خصم رصيد', color: '#EF4444' },
+                                        { id: 'set', label: '= تعيين الرصيد', color: '#38BDF8' },
+                                    ].map(tab => {
+                                        const sel = quickAction === tab.id;
+                                        return (
+                                            <button
+                                                type="button"
+                                                key={tab.id}
+                                                onClick={() => setQuickAction(tab.id)}
+                                                style={{
+                                                    padding: '8px 4px',
+                                                    borderRadius: '10px',
+                                                    backgroundColor: sel ? `${tab.color}25` : isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.05)',
+                                                    border: sel ? `2px solid ${tab.color}` : isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.1)',
+                                                    color: sel ? tab.color : isLight ? '#64748B' : '#94A3B8',
+                                                    fontSize: '11px',
+                                                    fontWeight: '800',
+                                                    cursor: 'pointer',
+                                                    fontFamily: 'Cairo, sans-serif',
+                                                }}
+                                            >
+                                                {tab.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
                                 <div style={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     backgroundColor: isLight ? '#F1F5F9' : '#0F172A',
                                     border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.3)',
-                                    borderRadius: '16px',
+                                    borderRadius: '14px',
                                     padding: '6px 14px',
-                                    marginBottom: '14px',
+                                    marginBottom: '10px',
                                 }}>
                                     <span style={{
                                         fontSize: '13px',
@@ -837,9 +872,10 @@ export default function AdminWalletPage() {
                                     <input
                                         type="number"
                                         step="any"
+                                        required
                                         value={quickAmount}
                                         onChange={(e) => setQuickAmount(e.target.value)}
-                                        placeholder="أدخل مبلغ الإضافة"
+                                        placeholder={quickAction === 'set' ? 'أدخل الرصيد الجديد مباشرة' : 'أدخل المبلغ'}
                                         style={{
                                             flex: 1,
                                             background: 'transparent',
@@ -853,29 +889,60 @@ export default function AdminWalletPage() {
                                     />
                                 </div>
 
+                                <input
+                                    type="text"
+                                    value={quickDesc}
+                                    onChange={(e) => setQuickDesc(e.target.value)}
+                                    placeholder="ملاحظات / سبب العملية (اختياري)..."
+                                    style={{
+                                        width: '100%',
+                                        backgroundColor: isLight ? '#F1F5F9' : '#0F172A',
+                                        border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.1)',
+                                        borderRadius: '12px',
+                                        padding: '10px 14px',
+                                        color: isLight ? '#0F172A' : '#FFFFFF',
+                                        fontSize: '12px',
+                                        outline: 'none',
+                                        marginBottom: '14px',
+                                        fontFamily: 'Cairo, sans-serif',
+                                    }}
+                                />
+
                                 <button
                                     type="submit"
                                     disabled={addingBalance}
                                     style={{
                                         width: '100%',
-                                        padding: '14px',
-                                        borderRadius: '16px',
-                                        background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                                        padding: '12px',
+                                        borderRadius: '14px',
+                                        background: quickAction === 'credit'
+                                            ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+                                            : quickAction === 'debit'
+                                            ? 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)'
+                                            : 'linear-gradient(135deg, #38BDF8 0%, #0284C7 100%)',
                                         color: '#FFFFFF',
                                         border: 'none',
-                                        fontSize: '15px',
+                                        fontSize: '14px',
                                         fontWeight: '900',
                                         cursor: addingBalance ? 'not-allowed' : 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         gap: '8px',
-                                        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.4)',
+                                        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.25)',
                                         fontFamily: 'Cairo, sans-serif',
                                     }}
                                 >
-                                    <PlusCircle size={18} />
-                                    <span>{addingBalance ? 'جاري الإضافة...' : 'إضافة رصيد لحسابي'}</span>
+                                    <PlusCircle size={16} />
+                                    <span>
+                                        {addingBalance
+                                            ? 'جاري التنفيذ...'
+                                            : quickAction === 'credit'
+                                            ? 'إضافة الرصيد إلى المحفظة'
+                                            : quickAction === 'debit'
+                                            ? 'خصم الرصيد من المحفظة'
+                                            : 'تأكيد تعيين الرصيد'}
+                                    </span>
                                 </button>
                             </form>
                         </div>

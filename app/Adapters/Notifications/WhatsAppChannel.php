@@ -19,9 +19,30 @@ class WhatsAppChannel
         }
 
         $messageText = $this->formatMessage($payload, $recipientName);
-        $provider = config('services.whatsapp.provider', 'meta');
-        $apiToken = config('services.whatsapp.api_token');
-        $phoneId = config('services.whatsapp.phone_number_id');
+
+        // Fetch dynamic settings from database first, fallback to config
+        $dbSettings = [];
+        try {
+            $dbSettings = \App\Models\Setting::whereIn('key', [
+                'whatsapp_enabled',
+                'whatsapp_provider',
+                'whatsapp_api_token',
+                'whatsapp_phone_number_id',
+                'whatsapp_instance_id',
+                'whatsapp_custom_endpoint',
+            ])->pluck('value', 'key')->toArray();
+        } catch (\Throwable $e) {}
+
+        if (isset($dbSettings['whatsapp_enabled']) && !filter_var($dbSettings['whatsapp_enabled'], FILTER_VALIDATE_BOOLEAN)) {
+            Log::info("WhatsApp notifications currently disabled in settings.");
+            return false;
+        }
+
+        $provider = !empty($dbSettings['whatsapp_provider']) ? $dbSettings['whatsapp_provider'] : config('services.whatsapp.provider', 'meta');
+        $apiToken = !empty($dbSettings['whatsapp_api_token']) ? $dbSettings['whatsapp_api_token'] : config('services.whatsapp.api_token');
+        $phoneId = !empty($dbSettings['whatsapp_phone_number_id']) ? $dbSettings['whatsapp_phone_number_id'] : config('services.whatsapp.phone_number_id');
+        $instanceId = !empty($dbSettings['whatsapp_instance_id']) ? $dbSettings['whatsapp_instance_id'] : config('services.whatsapp.instance_id');
+        $customEndpoint = !empty($dbSettings['whatsapp_custom_endpoint']) ? $dbSettings['whatsapp_custom_endpoint'] : config('services.whatsapp.custom_endpoint');
 
         // Meta WhatsApp Business Cloud API
         if ($provider === 'meta' && !empty($apiToken) && !empty($phoneId)) {
