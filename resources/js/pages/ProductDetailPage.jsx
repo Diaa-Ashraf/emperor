@@ -174,10 +174,14 @@ export default function ProductDetailPage() {
         }
     };
 
-    const unitPrice = Number(selectedTier?.price_egp || selectedTier?.price || 0);
+    const activeCurrency = user?.currency || 'EGP';
+    const isUsd = activeCurrency === 'USD';
+    const unitPrice = Number(isUsd ? (selectedTier?.price_usd || selectedTier?.price || 0) : (selectedTier?.price_egp || selectedTier?.price || 0));
     const totalPrice = unitPrice * quantity;
     const formattedTotal = totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const approxUsd = (totalPrice / 50.5).toFixed(2);
+    const secondaryPreview = isUsd
+        ? `~ ${(totalPrice * 59.0).toFixed(2)} EGP`
+        : `~ $${(totalPrice / 59.0).toFixed(2)} USD`;
 
     const productImage = formatImageUrl(product.image_url || product.image);
 
@@ -256,7 +260,7 @@ export default function ProductDetailPage() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 {selectedTier && (
                                     <span className="ka-package-price">
-                                        {Number(selectedTier.price_egp || selectedTier.price || 0).toFixed(2)} EGP
+                                        {Number(isUsd ? (selectedTier.price_usd || selectedTier.price || 0) : (selectedTier.price_egp || selectedTier.price || 0)).toFixed(2)} {isUsd ? 'USD' : 'EGP'}
                                     </span>
                                 )}
                                 <ChevronDown
@@ -298,7 +302,7 @@ export default function ProductDetailPage() {
                                             </div>
 
                                             <div className="ka-tier-pill-price">
-                                                {price} <small style={{ fontSize: '10px' }}>EGP</small>
+                                                {price} <small style={{ fontSize: '10px' }}>{isUsd ? 'USD' : 'EGP'}</small>
                                             </div>
                                         </div>
                                     );
@@ -319,9 +323,9 @@ export default function ProductDetailPage() {
                                 <span className="ka-metric-label">الإجمالي المطلوب</span>
                                 <div style={{ display: 'flex', alignItems: 'baseline' }}>
                                     <span className="ka-total-val">{formattedTotal}</span>
-                                    <span className="ka-total-currency">EGP</span>
+                                    <span className="ka-total-currency">{isUsd ? 'USD' : 'EGP'}</span>
                                 </div>
-                                <span className="ka-total-usd">~ ${approxUsd} USD</span>
+                                <span className="ka-total-usd">{secondaryPreview}</span>
                             </div>
 
                             {/* Box 2: Quantity */}

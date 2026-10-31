@@ -318,22 +318,22 @@ export default function AdminProductsPage() {
         setFormProdSortOrder((prod.sort_order || 1).toString());
         setFormProdImage(prod.image || '');
         setFulfillmentMode(prod.fulfillment_mode || 'auto');
-        setSelectedProvider(prod.provider_name || 'Brand one Card');
+        setSelectedProvider(prod.provider_name || 'منصة إمبراطور (Embrator Store)');
         setSelectedProviderProduct(prod.provider_product_id ? {
             id: prod.provider_product_id,
             name: prod.provider_product_name || prod.name,
-            price: prod.base_price || 0.00174232,
+            price: prod.base_price || 0,
             currency_label: 'دولار',
-            min_qty: prod.min_qty || 1000,
-            max_qty: prod.max_qty || 5000000,
+            min_qty: prod.min_qty || 1,
+            max_qty: prod.max_qty || 10000000,
         } : null);
         setAutoFulfillmentEnabled(true);
         setSyncPricingEnabled(true);
         setManualPriceEnabled(false);
-        setMinQty((prod.min_qty || 1000).toString());
-        setMaxQty((prod.max_qty || 5000000).toString());
-        setFinalPrice((prod.final_price || 0.00174232).toString());
-        setBasePrice((prod.base_price || 0.00174232).toString());
+        setMinQty((prod.min_qty || 1).toString());
+        setMaxQty((prod.max_qty || 10000000).toString());
+        setFinalPrice((prod.final_price || 0).toString());
+        setBasePrice((prod.base_price || 0).toString());
         setPlayerIdLabel(prod.player_id_label || 'آيدي الحساب (User ID)');
         setIsProductModalOpen(true);
     };
@@ -342,10 +342,13 @@ export default function AdminProductsPage() {
     const handleSelectProviderProduct = (item) => {
         setSelectedProviderProduct(item);
         if (syncPricingEnabled) {
-            setBasePrice(item.price ? item.price.toString() : '0.00174232');
-            setFinalPrice(item.price ? item.price.toString() : '0.00174232');
-            setMinQty(item.min_qty ? item.min_qty.toString() : '1000');
-            setMaxQty(item.max_qty ? item.max_qty.toString() : '5000000');
+            const rawCost = item.price ? parseFloat(item.price) : 0;
+            setBasePrice(rawCost.toString());
+            // Suggest selling price with default 5% profit margin
+            const suggestedSelling = rawCost > 0 ? (rawCost * 1.05) : 0;
+            setFinalPrice(suggestedSelling.toString());
+            setMinQty(item.min_qty ? item.min_qty.toString() : '1');
+            setMaxQty(item.max_qty ? item.max_qty.toString() : '10000000');
         }
         if (!formProdImage && item.image) {
             setFormProdImage(item.image);
@@ -1768,7 +1771,7 @@ export default function AdminProductsPage() {
                                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                             <Package size={14} color="#38BDF8" />
                                                                             <span style={{ fontSize: '11px', color: '#94A3B8' }}>
-                                                                                {item.price} {item.currency_label || 'دولار'}
+                                                                                {item.price} دولار {item.price_egp ? `(~${item.price_egp} ج.م)` : ''}
                                                                             </span>
                                                                         </div>
                                                                         <span style={{
@@ -1799,24 +1802,26 @@ export default function AdminProductsPage() {
                                                     </div>
 
                                                     {/* Load More Button */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setProviderPageSize(prev => prev + 40)}
-                                                        style={{
-                                                            width: '100%',
-                                                            padding: '8px',
-                                                            borderRadius: '10px',
-                                                            backgroundColor: '#040711',
-                                                            border: '1px solid rgba(56, 189, 248, 0.25)',
-                                                            color: '#38BDF8',
-                                                            fontSize: '12px',
-                                                            fontWeight: '800',
-                                                            cursor: 'pointer',
-                                                            marginTop: '8px',
-                                                        }}
-                                                    >
-                                                        عرض المزيد ({filteredProviderItems.length}/1271)
-                                                    </button>
+                                                    {filteredProviderItems.length >= providerPageSize && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setProviderPageSize(prev => prev + 40)}
+                                                            style={{
+                                                                width: '100%',
+                                                                padding: '8px',
+                                                                borderRadius: '10px',
+                                                                backgroundColor: '#040711',
+                                                                border: '1px solid rgba(56, 189, 248, 0.25)',
+                                                                color: '#38BDF8',
+                                                                fontSize: '12px',
+                                                                fontWeight: '800',
+                                                                cursor: 'pointer',
+                                                                marginTop: '8px',
+                                                            }}
+                                                        >
+                                                            عرض المزيد ({filteredProviderItems.length} منتج)
+                                                        </button>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>

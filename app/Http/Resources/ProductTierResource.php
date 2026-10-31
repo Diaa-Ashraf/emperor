@@ -13,13 +13,16 @@ class ProductTierResource extends JsonResource
         $user = $request->user();
         $pricingService = app(PricingService::class);
         $userPrice = $pricingService->getPriceForUser($this->resource, $user);
+        $targetCurrency = $user?->currency ?: 'EGP';
 
         return [
             'id' => $this->id,
             'name' => $this->name,
             'sku' => $this->sku,
             'price' => (float) $userPrice,
-            'currency' => $user?->currency ?? 'EGP',
+            'price_usd' => (float) $pricingService->getPriceInCurrency($this->resource, 'USD', $user),
+            'price_egp' => (float) $pricingService->getPriceInCurrency($this->resource, 'EGP', $user),
+            'currency' => $targetCurrency,
             'sale_price' => $this->sale_price ? (float) $this->sale_price : null,
             'min_qty' => (int) ($this->min_qty ?: 1),
             'max_qty' => (int) ($this->max_qty ?: 100),

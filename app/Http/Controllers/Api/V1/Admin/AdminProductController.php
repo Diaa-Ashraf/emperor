@@ -83,26 +83,36 @@ class AdminProductController extends Controller
         // Transform for Product Card matching Screenshot 2
         $products->getCollection()->transform(function ($p) {
             $firstTier = $p->tiers->first();
-            $providerName = $firstTier->metadata['provider_name'] ?? 'Brand one Card';
-            $basePrice = $firstTier ? (float) ($firstTier->source_cost ?: $firstTier->final_price) : 0.00174232;
-            $finalPrice = $firstTier ? (float) $firstTier->final_price : 0.00009964;
+            $meta = $firstTier?->metadata ?? [];
+            $providerName = $meta['provider_name'] ?? 'منصة إمبراطور (Embrator Store)';
+            $providerProductId = $meta['provider_product_id'] ?? $p->external_product_id ?? null;
+            $providerProductName = $meta['provider_product_name'] ?? $p->name;
+            $fulfillmentMode = $meta['fulfillment_mode'] ?? 'auto';
+
+            $basePrice = $firstTier ? (float) ($firstTier->source_cost ?: $firstTier->final_price) : 0;
+            $finalPrice = $firstTier ? (float) $firstTier->final_price : 0;
 
             return [
                 'id' => $p->id,
                 'name' => $p->name,
                 'slug' => $p->slug,
+                'description' => $p->description,
                 'image' => $p->image_url ?: $p->image,
                 'type' => $p->type?->value ?? 'player_id',
                 'category_id' => $p->category_id,
                 'category_name' => $p->category ? $p->category->name : 'قسم شحن التطبيقات',
+                'provider_id' => $meta['provider_id'] ?? null,
                 'provider_name' => $providerName,
+                'provider_product_id' => $providerProductId,
+                'provider_product_name' => $providerProductName,
+                'fulfillment_mode' => $fulfillmentMode,
                 'sort_order' => $p->sort_order ?: 1,
                 'base_price' => $basePrice,
                 'base_price_formatted' => number_format($basePrice, 8) . ' دولار',
                 'final_price' => $finalPrice,
                 'final_price_formatted' => number_format($finalPrice, 8) . ' دولار',
-                'min_qty' => $firstTier ? $firstTier->min_qty : 10000,
-                'max_qty' => $firstTier ? $firstTier->max_qty : 5000000,
+                'min_qty' => $firstTier ? $firstTier->min_qty : 1,
+                'max_qty' => $firstTier ? $firstTier->max_qty : 10000000,
                 'is_active' => (bool) $p->is_active,
                 'is_visible' => true,
                 'is_available' => true,
@@ -215,10 +225,15 @@ class AdminProductController extends Controller
             $providerName = $validated['provider_name'] ?? 'منصة إمبراطور (Embrator Store)';
             $providerProductId = $validated['provider_product_id'] ?? null;
             $providerProductName = $validated['provider_product_name'] ?? $product->name;
-            $minQty = (int) ($validated['min_qty'] ?? 10000);
-            $maxQty = (int) ($validated['max_qty'] ?? 5000000);
-            $finalPrice = (float) ($validated['final_price'] ?? 0.00009964);
-            $basePrice = (float) ($validated['base_price'] ?? 0.00174232);
+            $minQty = (int) ($validated['min_qty'] ?? 1);
+            $maxQty = (int) ($validated['max_qty'] ?? 10000000);
+            $basePrice = (float) ($validated['base_price'] ?? 0);
+            $finalPrice = (float) ($validated['final_price'] ?? 0);
+
+            // If final_price not set or 0, default to basePrice + 5% markup
+            if ($finalPrice <= 0 && $basePrice > 0) {
+                $finalPrice = $basePrice * 1.05;
+            }
 
             $tier = $product->tiers()->first() ?? new ProductTier();
             $tier->product_id = $product->id;
@@ -226,6 +241,7 @@ class AdminProductController extends Controller
             $tier->sku = Str::upper(Str::slug($product->name, '_')) . '_TIER_1';
             $tier->source_cost = $basePrice;
             $tier->cost_currency = 'USD';
+            $tier->margin_percent = 5.00;
             $tier->final_price = $finalPrice;
             $tier->sale_price = $finalPrice;
             $tier->min_qty = $minQty;
@@ -307,11 +323,14 @@ class AdminProductController extends Controller
             $liveCatalog = $embratorService->getProducts();
             if ($liveCatalog['success'] && !empty($liveCatalog['products'])) {
                 foreach ($liveCatalog['products'] as $p) {
+                    $rawPrice = (float) ($p['priceUsd'] ?? $p['price'] ?? 0);
                     $allItems[] = [
                         'id' => (string) $p['id'],
                         'name' => $p['name'],
                         'provider_sku' => (string) $p['id'],
-                        'price' => (float) ($p['priceUsd'] ?? $p['price'] ?? 0),
+                        'price' => $rawPrice,
+                        'price_usd' => $rawPrice,
+                        'price_egp' => round($rawPrice * 59.0, 6),
                         'currency' => $p['currency'] ?? 'USD',
                         'currency_label' => 'دولار',
                         'min_qty' => (int) ($p['minQty'] ?? 1),
@@ -327,248 +346,6 @@ class AdminProductController extends Controller
             \Illuminate\Support\Facades\Log::warning('Embrator live catalog fetch error: ' . $e->getMessage());
         }
 
-        // 2. Comprehensive catalog fallback & extended items matching Screenshot 4 & 5
-        $extraItems = [
-            [
-                'id' => '254237288135593220338983051',
-                'name' => 'ياهو - شحن كوينز فوري (Yoho / Yahoo Coins)',
-                'provider_sku' => 'YOHO_COINS_AUTO',
-                'price' => 0.00174232,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1000,
-                'max_qty' => 10000000,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983052',
-                'name' => 'ياهو - ماسات وكريستالات VIP (Yahoo VIP Gems)',
-                'provider_sku' => 'YOHO_VIP_GEMS',
-                'price' => 0.00350000,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 500,
-                'max_qty' => 500000,
-                'type' => 'gems',
-            ],
-            [
-                'id' => '254237288135593220338983053',
-                'name' => 'Fast Typhon Tool (New User)',
-                'provider_sku' => 'TYPHON_TOOL_FAST',
-                'price' => 0.00009964,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 5,
-                'max_qty' => 5000,
-                'type' => 'tool',
-            ],
-            [
-                'id' => '313559322033898305084745763',
-                'name' => '10 يوم بريميوم روبوتات البث المباشر',
-                'provider_sku' => 'PREMIUM_BOTS_10D',
-                'price' => 2.50,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1,
-                'max_qty' => 1,
-                'type' => 'subscription',
-            ],
-            [
-                'id' => '254237288135593220338983055',
-                'name' => 'ذهب اهلين شات شحن فوري سريع (Ahlan Chat Gold)',
-                'provider_sku' => 'AHLAN_CHAT_GOLD',
-                'price' => 0.00174232,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 10000,
-                'max_qty' => 5000000,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983056',
-                'name' => 'نقاط زفا ليف لجميع الدول (Zaffa Live Points)',
-                'provider_sku' => 'ZAFFA_LIVE_POINTS',
-                'price' => 1.50,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 100,
-                'max_qty' => 100000,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983057',
-                'name' => 'ببجي موبايل 60 شدة UC مباشر بالآيدي',
-                'provider_sku' => 'PUBG_UC_60',
-                'price' => 0.85,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1,
-                'max_qty' => 100,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983058',
-                'name' => 'ببجي موبايل 325 شدة UC عالمي',
-                'provider_sku' => 'PUBG_UC_325',
-                'price' => 4.25,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1,
-                'max_qty' => 50,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983059',
-                'name' => 'ببجي موبايل 660 شدة UC مع هدايا إضافية',
-                'provider_sku' => 'PUBG_UC_660',
-                'price' => 8.50,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1,
-                'max_qty' => 50,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983060',
-                'name' => 'جواهر فري فاير 110 جوهرة فوري بالمعرف',
-                'provider_sku' => 'FF_DIAMONDS_110',
-                'price' => 0.95,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1,
-                'max_qty' => 100,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983061',
-                'name' => 'جواهر فري فاير 583 جوهرة (Free Fire Direct)',
-                'provider_sku' => 'FF_DIAMONDS_583',
-                'price' => 4.75,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1,
-                'max_qty' => 50,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983062',
-                'name' => 'عملات تيك توك 70 عملة TikTok Coins',
-                'provider_sku' => 'TIKTOK_70',
-                'price' => 0.98,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1,
-                'max_qty' => 100,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983063',
-                'name' => 'عملات تيك توك 350 عملة TikTok Coins',
-                'provider_sku' => 'TIKTOK_350',
-                'price' => 4.90,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1,
-                'max_qty' => 50,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983064',
-                'name' => 'ماسات بيجو لايف 42 ماسة Bigo Live',
-                'provider_sku' => 'BIGO_DIAMONDS_42',
-                'price' => 0.95,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1,
-                'max_qty' => 100,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983065',
-                'name' => 'ماسات بيجو لايف 210 ماسة Bigo Live VIP',
-                'provider_sku' => 'BIGO_DIAMONDS_210',
-                'price' => 4.75,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1,
-                'max_qty' => 50,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983066',
-                'name' => 'ماسات لايكي 48 ماسة Likee Diamonds',
-                'provider_sku' => 'LIKEE_DIAMONDS_48',
-                'price' => 0.95,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1,
-                'max_qty' => 100,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983067',
-                'name' => 'كوينز سول شات شحن فوري سريع (Soul Chat)',
-                'provider_sku' => 'SOUL_CHAT_COINS',
-                'price' => 1.20,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 100,
-                'max_qty' => 10000,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983068',
-                'name' => 'ذهب يلا لودو وشات Yalla Ludo / Chat',
-                'provider_sku' => 'YALLA_CHAT_GOLD',
-                'price' => 0.90,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1,
-                'max_qty' => 100,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983069',
-                'name' => 'كوينز تامي لايف المباشر Tami Live',
-                'provider_sku' => 'TAMI_LIVE_COINS',
-                'price' => 1.40,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 500,
-                'max_qty' => 50000,
-                'type' => 'coins',
-            ],
-            [
-                'id' => '254237288135593220338983070',
-                'name' => 'توكنز جواكر فوري Jawaker Tokens',
-                'provider_sku' => 'JAWAKER_TOKENS',
-                'price' => 1.10,
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 1000,
-                'max_qty' => 50000,
-                'type' => 'coins',
-            ],
-        ];
-
-        // Merge extra items with live items
-        $allItems = array_merge($allItems, $extraItems);
-
-        // Generate additional catalog items up to 80 items so the count reflects 80/1271 properly
-        for ($i = 21; $i <= 80; $i++) {
-            $allItems[] = [
-                'id' => '254237288135593220338983' . str_pad($i, 3, '0', STR_PAD_LEFT),
-                'name' => 'حزمة شحن رقمية للمورد - مستوى ' . $i,
-                'provider_sku' => 'PROVIDER_BUNDLE_' . $i,
-                'price' => round(0.50 + ($i * 0.15), 4),
-                'currency' => 'USD',
-                'currency_label' => 'دولار',
-                'min_qty' => 10,
-                'max_qty' => 50000,
-                'type' => 'bundle',
-            ];
-        }
-
         $filtered = $allItems;
         if ($search !== '') {
             $filtered = array_values(array_filter($allItems, function ($it) use ($search) {
@@ -578,7 +355,7 @@ class AdminProductController extends Controller
             }));
         }
 
-        $totalAvailable = 1271;
+        $totalAvailable = count($filtered);
         $displayedItems = array_slice($filtered, 0, $perPage);
 
         return $this->successResponse([

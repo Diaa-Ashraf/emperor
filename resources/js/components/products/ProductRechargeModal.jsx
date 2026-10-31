@@ -112,7 +112,7 @@ export default function ProductRechargeModal({
         const availableTiers = product.tiers || product.active_tiers || [];
         if (availableTiers.length > 0) {
             for (const tItem of availableTiers) {
-                const price = Number(tItem.price_egp || tItem.price || tItem.final_price || 0);
+                const price = Number(tItem.price ?? tItem.price_egp ?? tItem.final_price ?? 0);
                 const cleaned = (tItem.name || '').replace(/,/g, '');
                 const matches = cleaned.match(/\d+/);
                 if (matches && matches[0] && price > 0) {
@@ -122,12 +122,12 @@ export default function ProductRechargeModal({
                     }
                 }
             }
-            const firstPrice = Number(availableTiers[0].price_egp || availableTiers[0].price || availableTiers[0].final_price || 0);
-            if (firstPrice > 0 && firstPrice < 1) {
+            const firstPrice = Number(availableTiers[0].price ?? availableTiers[0].price_egp ?? availableTiers[0].final_price ?? 0);
+            if (firstPrice > 0) {
                 return firstPrice;
             }
         }
-        return 0.007142857; // Default fallback for voice apps (~50 EGP per 7000 coins)
+        return 0;
     }, [product]);
 
     // Handle quantity input change
@@ -201,13 +201,20 @@ export default function ProductRechargeModal({
         });
     }, [totalPrice]);
 
-    const approxUsd = useMemo(() => {
+    const activeCurrency = user?.currency || 'EGP';
+    const isUsd = activeCurrency === 'USD';
+
+    // Secondary currency preview
+    const secondaryPreview = useMemo(() => {
         if (totalPrice <= 0) return '0';
-        return (totalPrice / 50.5).toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-    }, [totalPrice]);
+        if (isUsd) {
+            const egpVal = totalPrice * 59.0;
+            return `${egpVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م`;
+        } else {
+            const usdVal = totalPrice / 59.0;
+            return `${usdVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $`;
+        }
+    }, [totalPrice, isUsd]);
 
     const productImage = formatImageUrl(
         product.image_url || product.image || product.banner_url || product.icon_url
@@ -712,7 +719,7 @@ export default function ProductRechargeModal({
                                 }}>
                                     <span>{formattedTotal}</span>
                                     <span style={{ fontSize: '13px', color: isLight ? '#B45309' : '#D4A537', fontWeight: '800' }}>
-                                        {language === 'en' ? 'EGP' : 'Egy'}
+                                        {isUsd ? '$' : (language === 'en' ? 'EGP' : 'ج.م')}
                                     </span>
                                 </div>
 
@@ -727,7 +734,7 @@ export default function ProductRechargeModal({
                                     color: isLight ? '#15803D' : '#4ADE80',
                                     direction: 'ltr'
                                 }}>
-                                    {approxUsd} $
+                                    {secondaryPreview}
                                 </div>
                             </div>
                         </div>
