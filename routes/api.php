@@ -178,6 +178,8 @@ Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
             // Rewards & Referral System (Matching Screenshot 5)
             Route::get('/referrals', [\App\Http\Controllers\Api\V1\Admin\AdminReferralController::class, 'index']);
             Route::post('/referrals/rate', [\App\Http\Controllers\Api\V1\Admin\AdminReferralController::class, 'updateRate']);
+            Route::post('/referrals/methods', [\App\Http\Controllers\Api\V1\Admin\AdminReferralController::class, 'updateMethods']);
+            Route::post('/referrals/withdrawals/{id}/review', [\App\Http\Controllers\Api\V1\Admin\AdminReferralController::class, 'reviewWithdrawal']);
 
             // Deposits management
             Route::get('/deposits', [\App\Http\Controllers\Api\V1\Admin\AdminDepositController::class, 'index']);

@@ -167,6 +167,8 @@ export const adminApi = {
     deleteStaff: (id) => api.delete(`/admin/staff/${id}`),
     getReferralsOverview: (params = {}) => api.get('/admin/referrals', { params }),
     updateReferralRate: (data) => api.post('/admin/referrals/rate', data),
+    updateReferralMethods: (data) => api.post('/admin/referrals/methods', data),
+    reviewReferralWithdrawal: (id, data) => api.post(`/admin/referrals/withdrawals/${id}/review`, data),
     getDeposits: (params = {}) => api.get('/admin/deposits', { params }),
     getDeposit: (id) => api.get(`/admin/deposits/${id}`),
     approveDeposit: (id, data = {}) => api.post(`/admin/deposits/${id}/approve`, data),

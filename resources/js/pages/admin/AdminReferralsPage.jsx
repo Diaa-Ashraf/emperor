@@ -14,7 +14,13 @@ import {
     Wallet,
     Copy,
     ExternalLink,
-    Share2
+    Share2,
+    Trash2,
+    Plus,
+    UploadCloud,
+    CheckCircle,
+    XCircle,
+    Clock
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../../api/endpoints';
@@ -43,6 +49,18 @@ export default function AdminReferralsPage() {
     const [rateInput, setRateInput] = useState('1');
     const [savingRate, setSavingRate] = useState(false);
 
+    // Methods & Withdrawal Requests State (Matching Screenshot 2)
+    const [methods, setMethods] = useState([
+        { id: 'wallet', name: 'محفظة البرنامج', fee_percent: 0, is_active: true },
+        { id: 'vodafone_cash', name: 'فودافون كاش', fee_percent: 0, is_active: true },
+        { id: 'instapay', name: 'إنستا باي', fee_percent: 0, is_active: true },
+    ]);
+    const [newMethodName, setNewMethodName] = useState('');
+    const [savingMethods, setSavingMethods] = useState(false);
+
+    const [withdrawalRequests, setWithdrawalRequests] = useState([]);
+    const [processingId, setProcessingId] = useState(null);
+
     const [stats, setStats] = useState({
         referral_code_owners: 2,
         total_invited: 5,
@@ -68,6 +86,12 @@ export default function AdminReferralsPage() {
                 setRateInput(rate.toString());
                 setStats(data.stats || stats);
                 setUsers(data.users || []);
+                if (data.withdrawal_methods && Array.isArray(data.withdrawal_methods)) {
+                    setMethods(data.withdrawal_methods);
+                }
+                if (data.withdrawal_requests && Array.isArray(data.withdrawal_requests)) {
+                    setWithdrawalRequests(data.withdrawal_requests);
+                }
                 if (data.admin_referral) {
                     setAdminReferral(data.admin_referral);
                 } else if (user?.referral_code) {
@@ -127,9 +151,77 @@ export default function AdminReferralsPage() {
         }
     };
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        fetchData();
+    // Toggle method active status
+    const handleToggleMethod = async (id) => {
+        const updated = methods.map(m => m.id === id ? { ...m, is_active: !m.is_active } : m);
+        setMethods(updated);
+        try {
+            await adminApi.updateReferralMethods({ methods: updated });
+            success('تم تحديث حالة طريقة السحب');
+        } catch (err) {
+            toastError('فشل تحديث طريقة السحب');
+        }
+    };
+
+    // Update method fee percent
+    const handleFeeChange = async (id, feeVal) => {
+        const val = parseFloat(feeVal) || 0;
+        const updated = methods.map(m => m.id === id ? { ...m, fee_percent: val } : m);
+        setMethods(updated);
+        try {
+            await adminApi.updateReferralMethods({ methods: updated });
+        } catch (err) {
+            // silent save
+        }
+    };
+
+    // Delete method
+    const handleDeleteMethod = async (id) => {
+        const updated = methods.filter(m => m.id !== id);
+        setMethods(updated);
+        try {
+            await adminApi.updateReferralMethods({ methods: updated });
+            success('تم حذف طريقة السحب');
+        } catch (err) {
+            toastError('فشل الحذف');
+        }
+    };
+
+    // Add new method
+    const handleAddMethod = async () => {
+        if (!newMethodName.trim()) {
+            toastError('يرجى كتابة اسم طريقة السحب أولاً');
+            return;
+        }
+        const newObj = {
+            id: 'm_' + Date.now(),
+            name: newMethodName.trim(),
+            fee_percent: 0,
+            is_active: true,
+        };
+        const updated = [...methods, newObj];
+        setMethods(updated);
+        setNewMethodName('');
+        try {
+            await adminApi.updateReferralMethods({ methods: updated });
+            success('تمت إضافة طريقة السحب بنجاح');
+        } catch (err) {
+            toastError('فشل إضافة طريقة السحب');
+        }
+    };
+
+    // Review withdrawal request (Approve/Reject)
+    const handleReviewWithdrawal = async (id, action) => {
+        try {
+            setProcessingId(id);
+            await adminApi.reviewReferralWithdrawal(id, { action });
+            success(action === 'approve' ? 'تمت الموافقة وتأكيد التحويل' : 'تم رفض الطلب');
+            setWithdrawalRequests(prev => prev.map(r => r.id === id ? { ...r, status: action === 'approve' ? 'completed' : 'rejected', status_label: action === 'approve' ? 'مكتمل ومحول' : 'مرفوض' } : r));
+        } catch (err) {
+            toastError('حدث خطأ أثناء معالجة الطلب');
+        } finally {
+            setProcessingId(null);
+        }
     };
 
     return (
@@ -828,6 +920,325 @@ export default function AdminReferralsPage() {
                                     ))}
                                 </div>
                             )}
+                        </div>
+
+                        {/* ═══ Bottom Two Columns: طرق سحب أرباح الإحالة & طلبات سحب العملاء (Matching Screenshot 2) ═══ */}
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+                            gap: '16px',
+                            marginTop: '20px',
+                        }}>
+                            {/* Column 1: طرق سحب أرباح الإحالة */}
+                            <div style={{
+                                backgroundColor: isLight ? '#FFFFFF' : '#0B1222',
+                                border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
+                                borderRadius: '24px',
+                                padding: '22px 20px',
+                                boxShadow: isLight ? '0 4px 20px rgba(0,0,0,0.03)' : '0 10px 30px rgba(0,0,0,0.4)',
+                            }}>
+                                <div style={{ marginBottom: '16px' }}>
+                                    <h3 style={{ fontSize: '17px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', margin: '0 0 4px 0' }}>
+                                        طرق سحب أرباح الإحالة
+                                    </h3>
+                                    <p style={{ fontSize: '12px', color: isLight ? '#64748B' : '#94A3B8', margin: 0 }}>
+                                        الطرق المفعلة فقط ستظهر للمستخدم عند طلب سحب عمولاته.
+                                    </p>
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
+                                    {methods.map((m) => (
+                                        <div
+                                            key={m.id}
+                                            style={{
+                                                backgroundColor: isLight ? '#F8FAFC' : '#040711',
+                                                border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
+                                                borderRadius: '16px',
+                                                padding: '12px 14px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                gap: '10px',
+                                            }}
+                                        >
+                                            {/* Action & Toggle */}
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteMethod(m.id)}
+                                                    style={{
+                                                        background: 'transparent',
+                                                        border: 'none',
+                                                        color: '#EF4444',
+                                                        cursor: 'pointer',
+                                                        padding: '4px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                    }}
+                                                    title="حذف"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+
+                                                {/* Toggle switch */}
+                                                <div
+                                                    onClick={() => handleToggleMethod(m.id)}
+                                                    style={{
+                                                        width: '42px',
+                                                        height: '22px',
+                                                        borderRadius: '9999px',
+                                                        backgroundColor: m.is_active ? '#10B981' : (isLight ? '#CBD5E1' : '#334155'),
+                                                        position: 'relative',
+                                                        cursor: 'pointer',
+                                                        transition: 'background-color 0.2s',
+                                                    }}
+                                                >
+                                                    <div style={{
+                                                        width: '18px',
+                                                        height: '18px',
+                                                        borderRadius: '50%',
+                                                        backgroundColor: '#FFFFFF',
+                                                        position: 'absolute',
+                                                        top: '2px',
+                                                        left: m.is_active ? '22px' : '2px',
+                                                        transition: 'left 0.2s',
+                                                    }} />
+                                                </div>
+
+                                                {/* Fee percent input */}
+                                                <div style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    backgroundColor: isLight ? '#FFFFFF' : '#0B1222',
+                                                    border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
+                                                    borderRadius: '8px',
+                                                    padding: '2px 8px',
+                                                    gap: '4px',
+                                                }}>
+                                                    <span style={{ fontSize: '11px', color: '#94A3B8' }}>نسبة الخصم</span>
+                                                    <input
+                                                        type="number"
+                                                        value={m.fee_percent ?? 0}
+                                                        onChange={(e) => handleFeeChange(m.id, e.target.value)}
+                                                        style={{
+                                                            width: '32px',
+                                                            background: 'transparent',
+                                                            border: 'none',
+                                                            color: isLight ? '#0F172A' : '#FFFFFF',
+                                                            fontSize: '12px',
+                                                            fontWeight: '800',
+                                                            textAlign: 'center',
+                                                            outline: 'none',
+                                                        }}
+                                                    />
+                                                    <span style={{ fontSize: '11px', color: '#94A3B8' }}>%</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Method Name */}
+                                            <div style={{ fontSize: '14px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                                                {m.name}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Add New Method Input */}
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button
+                                        type="button"
+                                        onClick={handleAddMethod}
+                                        style={{
+                                            padding: '10px 16px',
+                                            borderRadius: '12px',
+                                            backgroundColor: isLight ? '#F1F5F9' : '#1E293B',
+                                            border: isLight ? '1px solid #CBD5E1' : '1px solid #334155',
+                                            color: isLight ? '#0F172A' : '#FFFFFF',
+                                            fontSize: '13px',
+                                            fontWeight: '800',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            cursor: 'pointer',
+                                            flexShrink: 0,
+                                        }}
+                                    >
+                                        <Plus size={15} />
+                                        <span>إضافة</span>
+                                    </button>
+                                    <input
+                                        type="text"
+                                        placeholder="اكتب اسم طريقة جديدة..."
+                                        value={newMethodName}
+                                        onChange={(e) => setNewMethodName(e.target.value)}
+                                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddMethod(); } }}
+                                        style={{
+                                            flex: 1,
+                                            backgroundColor: isLight ? '#F8FAFC' : '#040711',
+                                            border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
+                                            borderRadius: '12px',
+                                            padding: '10px 14px',
+                                            color: isLight ? '#0F172A' : '#FFFFFF',
+                                            fontSize: '13px',
+                                            outline: 'none',
+                                            fontFamily: 'Cairo, sans-serif',
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Column 2: طلبات سحب العملاء */}
+                            <div style={{
+                                backgroundColor: isLight ? '#FFFFFF' : '#0B1222',
+                                border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
+                                borderRadius: '24px',
+                                padding: '22px 20px',
+                                boxShadow: isLight ? '0 4px 20px rgba(0,0,0,0.03)' : '0 10px 30px rgba(0,0,0,0.4)',
+                            }}>
+                                <div style={{ marginBottom: '16px' }}>
+                                    <h3 style={{ fontSize: '17px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', margin: '0 0 4px 0' }}>
+                                        طلبات سحب العملاء
+                                    </h3>
+                                    <p style={{ fontSize: '12px', color: isLight ? '#64748B' : '#94A3B8', margin: 0 }}>
+                                        أرفق صورة التحويل ثم وافق على الطلب بعد إرسال الأرباح.
+                                    </p>
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    {withdrawalRequests.length === 0 ? (
+                                        <div style={{ textAlign: 'center', padding: '30px', color: '#94A3B8', fontSize: '13px' }}>
+                                            لا توجد طلبات سحب أرباح معلقة حالياً
+                                        </div>
+                                    ) : (
+                                        withdrawalRequests.map((req) => (
+                                            <div
+                                                key={req.id}
+                                                style={{
+                                                    backgroundColor: isLight ? '#F8FAFC' : '#040711',
+                                                    border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
+                                                    borderRadius: '18px',
+                                                    padding: '16px',
+                                                }}
+                                            >
+                                                {/* Top: User info & Amount */}
+                                                <div style={{
+                                                    display: 'flex',
+                                                    alignItems: 'flex-start',
+                                                    justifyContent: 'space-between',
+                                                    marginBottom: '12px',
+                                                }}>
+                                                    {/* Amount & Status Badge */}
+                                                    <div style={{ textAlign: 'right' }}>
+                                                        <div style={{ fontSize: '17px', fontWeight: '900', color: '#10B981' }}>
+                                                            {req.amount_formatted || `${req.amount} EGP`}
+                                                        </div>
+                                                        <span style={{
+                                                            display: 'inline-block',
+                                                            marginTop: '4px',
+                                                            fontSize: '11px',
+                                                            fontWeight: '800',
+                                                            padding: '2px 8px',
+                                                            borderRadius: '6px',
+                                                            backgroundColor: req.status === 'completed' ? 'rgba(16, 185, 129, 0.15)' : (req.status === 'rejected' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)'),
+                                                            color: req.status === 'completed' ? '#10B981' : (req.status === 'rejected' ? '#EF4444' : '#F59E0B'),
+                                                        }}>
+                                                            {req.status_label || 'قيد المراجعة'}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* User avatar & name */}
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                        <div style={{ textAlign: 'left' }}>
+                                                            <div style={{ fontSize: '14px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                                                                {req.user_name}
+                                                            </div>
+                                                            <div style={{ fontSize: '11.5px', color: '#94A3B8', direction: 'ltr' }}>
+                                                                {req.method_name} - {req.recipient_account}
+                                                            </div>
+                                                        </div>
+                                                        <div style={{
+                                                            width: '38px',
+                                                            height: '38px',
+                                                            borderRadius: '50%',
+                                                            backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                                                            color: '#F59E0B',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontWeight: '900',
+                                                            fontSize: '14px',
+                                                        }}>
+                                                            {req.user_name?.charAt(0) || 'U'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Action Bar matching screenshot */}
+                                                {req.status === 'pending' && (
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', paddingTop: '10px', borderTop: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B' }}>
+                                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                                            <button
+                                                                type="button"
+                                                                disabled={processingId === req.id}
+                                                                onClick={() => handleReviewWithdrawal(req.id, 'reject')}
+                                                                style={{
+                                                                    padding: '7px 14px',
+                                                                    borderRadius: '10px',
+                                                                    backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                                                                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                                                                    color: '#EF4444',
+                                                                    fontSize: '12px',
+                                                                    fontWeight: '800',
+                                                                    cursor: 'pointer',
+                                                                }}
+                                                            >
+                                                                رفض
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                disabled={processingId === req.id}
+                                                                onClick={() => handleReviewWithdrawal(req.id, 'approve')}
+                                                                style={{
+                                                                    padding: '7px 14px',
+                                                                    borderRadius: '10px',
+                                                                    backgroundColor: isLight ? '#0F172A' : '#1E293B',
+                                                                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                                                                    color: '#FFFFFF',
+                                                                    fontSize: '12px',
+                                                                    fontWeight: '800',
+                                                                    cursor: 'pointer',
+                                                                }}
+                                                            >
+                                                                موافقة وتحويل
+                                                            </button>
+                                                        </div>
+
+                                                        <button
+                                                            type="button"
+                                                            style={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '6px',
+                                                                padding: '7px 12px',
+                                                                borderRadius: '10px',
+                                                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                                                border: '1px solid rgba(245, 158, 11, 0.3)',
+                                                                color: '#F59E0B',
+                                                                fontSize: '11px',
+                                                                fontWeight: '800',
+                                                                cursor: 'pointer',
+                                                            }}
+                                                        >
+                                                            <UploadCloud size={14} />
+                                                            <span>أرفق الصورة أولاً</span>
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </>
                 )}
