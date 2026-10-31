@@ -2,16 +2,20 @@
     RewriteEngine On
     DirectoryIndex index.php public/index.php
 
-    # Prevent direct loop if already in /public
-    RewriteCond %{REQUEST_URI} !^/public/
-    RewriteRule ^$ public/index.php [L]
-
-    RewriteCond %{REQUEST_URI} !^/public/
+    # Redirect assets to public folder if requested from root
+    RewriteCond %{REQUEST_URI} ^/(build|storage|assets|images)/ [NC,OR]
+    RewriteCond %{REQUEST_URI} ^/(favicon\.ico|robots\.txt)$ [NC]
+    RewriteCond %{DOCUMENT_ROOT}/public/$1 -f [OR]
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ public/$1 [L]
 
-    # Forward direct existing files in public
+    # If public file exists, serve it
     RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{DOCUMENT_ROOT}/public/$1 -f
     RewriteRule ^(.*)$ public/$1 [L]
+
+    # If not existing file or folder, route to index.php
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
 </IfModule>
