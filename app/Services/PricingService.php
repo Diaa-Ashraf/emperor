@@ -80,6 +80,15 @@ class PricingService
         $costCurrency = strtoupper($tier->cost_currency ?: 'USD');
         $targetCurrency = strtoupper($targetCurrency ?: 'EGP');
 
+        // Check for Voice Coin apps (like Yoho) where cost might have been truncated to 0 or outdated
+        $nameCheck = strtolower(($tier->product?->name ?? '') . ' ' . ($tier->name ?? '') . ' ' . ($tier->metadata['provider_product_name'] ?? ''));
+        if (str_contains($nameCheck, 'يوهو') || str_contains($nameCheck, 'yoho') || str_contains($nameCheck, 'ياهو')) {
+            if ($cost <= 0 || $cost >= 0.001) {
+                $cost = 0.0001001419786794;
+                $costCurrency = 'USD';
+            }
+        }
+
         // 1. Determine margin/price in cost currency
         $priceInCostCurrency = 0.0;
 

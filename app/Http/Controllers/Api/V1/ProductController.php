@@ -118,15 +118,19 @@ class ProductController extends Controller
             });
         }
 
-        // Cache default requests without search for 5 minutes
+        // Cache default requests without search for 2 minutes
         if ($search === '') {
-            $cacheKey = "api_products_list_v3_c{$catId}_cs{$catSlug}_p{$parentId}_t{$type}_pg{$page}_l{$perPage}";
-            $products = Cache::remember($cacheKey, 300, function () use ($query, $perPage) {
+            $cacheKey = "api_products_list_v4_c{$catId}_cs{$catSlug}_p{$parentId}_t{$type}_pg{$page}_l{$perPage}";
+            $products = Cache::remember($cacheKey, 120, function () use ($query, $perPage) {
                 return $query->orderBy('sort_order', 'asc')->paginate($perPage);
             });
         } else {
             $products = $query->orderBy('sort_order', 'asc')->paginate($perPage);
         }
+
+        $products->through(function ($p) use ($request) {
+            return (new ProductResource($p))->resolve($request);
+        });
 
         return $this->paginatedResponse(
             $products,
