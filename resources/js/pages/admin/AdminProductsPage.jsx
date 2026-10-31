@@ -29,6 +29,8 @@ export default function AdminProductsPage() {
     const [categoriesLoading, setCategoriesLoading] = useState(true);
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
+    const [deletingCategory, setDeletingCategory] = useState(null);
+    const [deleteCatSubmitting, setDeleteCatSubmitting] = useState(false);
     const [catNameEn, setCatNameEn] = useState('');
     const [catNameAr, setCatNameAr] = useState('');
     const [catSortOrder, setCatSortOrder] = useState('0');
@@ -230,17 +232,19 @@ export default function AdminProductsPage() {
         setIsCategoryModalOpen(true);
     };
 
-    const handleDeleteCategory = async (cat) => {
-        if (!window.confirm(`هل أنت متأكد من حذف قسم "${cat.name}"؟`)) {
-            return;
-        }
+    const handleConfirmDeleteCategory = async () => {
+        if (!deletingCategory) return;
         try {
-            await adminApi.deleteCategory(cat.id);
-            success(`تم حذف قسم "${cat.name}" بنجاح`);
+            setDeleteCatSubmitting(true);
+            await adminApi.deleteCategory(deletingCategory.id);
+            success(`تم حذف قسم "${deletingCategory.name}" بنجاح`);
+            setDeletingCategory(null);
             fetchCategories();
         } catch (err) {
             console.error('Delete category error:', err);
             toastError(err.message || err.response?.data?.message || 'فشل حذف القسم');
+        } finally {
+            setDeleteCatSubmitting(false);
         }
     };
 
@@ -542,13 +546,13 @@ export default function AdminProductsPage() {
                                                 <Package size={20} color="#38BDF8" />
                                             )}
                                         </div>
-                                        <span style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF', wordBreak: 'break-word' }}>
+                                        <span style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                             {cat.name}
                                         </span>
                                     </div>
 
                                     {/* Left: Circle Numbered Badge + Edit & Delete Buttons */}
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                                         <div style={{
                                             width: '32px',
                                             height: '32px',
@@ -588,7 +592,7 @@ export default function AdminProductsPage() {
 
                                         <button
                                             type="button"
-                                            onClick={() => handleDeleteCategory(cat)}
+                                            onClick={() => setDeletingCategory(cat)}
                                             title="حذف القسم"
                                             style={{
                                                 width: '32px',
@@ -2140,6 +2144,93 @@ export default function AdminProductsPage() {
                             <button
                                 type="button"
                                 onClick={() => setDeletingProduct(null)}
+                                style={{
+                                    padding: '11px 20px',
+                                    borderRadius: '12px',
+                                    backgroundColor: '#060B18',
+                                    border: '1px solid rgba(56, 189, 248, 0.25)',
+                                    color: '#94A3B8',
+                                    fontWeight: '700',
+                                    fontSize: '13px',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                إلغاء
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* =========================================================================
+                MODAL 4: تأكيد حذف قسم
+               ========================================================================= */}
+            {deletingCategory && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 9999,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '16px',
+                    direction: 'rtl',
+                    textAlign: 'center',
+                }}>
+                    <div style={{
+                        backgroundColor: '#0A1224',
+                        border: '1.5px solid rgba(239, 68, 68, 0.35)',
+                        borderRadius: '24px',
+                        width: '100%',
+                        maxWidth: '400px',
+                        padding: '24px',
+                        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.8)',
+                    }}>
+                        <div style={{
+                            width: '50px',
+                            height: '50px',
+                            borderRadius: '50%',
+                            backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                            color: '#EF4444',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            margin: '0 auto 14px',
+                        }}>
+                            <Trash2 size={24} />
+                        </div>
+
+                        <h3 style={{ fontSize: '17px', fontWeight: '900', margin: '0 0 6px', color: '#FFFFFF' }}>
+                            تأكيد حذف القسم
+                        </h3>
+                        <p style={{ fontSize: '12.5px', color: '#94A3B8', marginBottom: '20px' }}>
+                            هل أنت متأكد من حذف قسم "{deletingCategory.name}" نهائيًا؟
+                        </p>
+
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button
+                                type="button"
+                                onClick={handleConfirmDeleteCategory}
+                                disabled={deleteCatSubmitting}
+                                style={{
+                                    flex: 1,
+                                    padding: '11px',
+                                    borderRadius: '12px',
+                                    backgroundColor: '#DC2626',
+                                    color: '#FFFFFF',
+                                    fontWeight: '800',
+                                    fontSize: '13px',
+                                    border: 'none',
+                                    cursor: deleteCatSubmitting ? 'not-allowed' : 'pointer',
+                                }}
+                            >
+                                {deleteCatSubmitting ? 'جاري الحذف...' : 'نعم، احذف'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setDeletingCategory(null)}
                                 style={{
                                     padding: '11px 20px',
                                     borderRadius: '12px',
