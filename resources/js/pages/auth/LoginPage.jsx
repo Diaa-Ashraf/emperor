@@ -101,8 +101,14 @@ export default function LoginPage() {
             }
 
             if (data?.token) {
-                success('تم تسجيل الدخول بنجاح، مرحباً بك في المنصة');
-                navigate(from || '/', { replace: true });
+                // If user hasn't set country or phone, redirect to complete-profile (step 2)
+                if (!data.user?.country || !data.user?.phone) {
+                    success('يرجى تحديد الدولة والعملة لاستكمال إعداد حسابك');
+                    navigate('/complete-profile', { replace: true });
+                } else {
+                    success('تم تسجيل الدخول بنجاح، مرحباً بك في المنصة');
+                    navigate(from || '/', { replace: true });
+                }
             }
         } catch (err) {
             if (err.errors) {
@@ -185,8 +191,13 @@ export default function LoginPage() {
 
             const data = await login2FA(payload);
             if (data?.token) {
-                success('تم التحقق وتسجيل الدخول بنجاح، مرحباً بك');
-                navigate(from || '/', { replace: true });
+                if (!data.user?.country || !data.user?.phone) {
+                    success('يرجى تحديد الدولة والعملة لاستكمال إعداد حسابك');
+                    navigate('/complete-profile', { replace: true });
+                } else {
+                    success('تم التحقق وتسجيل الدخول بنجاح، مرحباً بك');
+                    navigate(from || '/', { replace: true });
+                }
             }
         } catch (err) {
             console.error('2FA login error:', err);

@@ -469,9 +469,6 @@ export default function AdminUserLedgerPage() {
                 {/* Quick Balance Adjustment Cards (Matching Screenshot 2) */}
                 {userData && (
                     <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                        gap: '16px',
                         marginBottom: '24px',
                     }}>
                         {/* 1. Increase / Decrease (زيادة / خصم) */}
@@ -562,70 +559,6 @@ export default function AdminUserLedgerPage() {
                                     خصم
                                 </button>
                             </div>
-                        </div>
-
-                        {/* 2. Set Exact Balance (تعيين رصيد محدد) */}
-                        <div style={{
-                            backgroundColor: isLight ? '#FFFFFF' : '#0B1222',
-                            border: isLight ? '1px solid #E2E8F0' : '1px solid #1E293B',
-                            borderRadius: '24px',
-                            padding: '20px',
-                            boxShadow: isLight ? '0 4px 20px rgba(0,0,0,0.03)' : '0 10px 30px rgba(0,0,0,0.4)',
-                        }}>
-                            <div style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF', marginBottom: '12px' }}>
-                                تعيين رصيد محدد
-                            </div>
-
-                            <form onSubmit={handleSetBalance}>
-                                <div style={{ marginBottom: '14px' }}>
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        backgroundColor: isLight ? '#F8FAFC' : '#040711',
-                                        border: isLight ? '1px solid #CBD5E1' : '1px solid #1E293B',
-                                        borderRadius: '14px',
-                                        padding: '10px 14px',
-                                    }}>
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            placeholder="مثال: 500"
-                                            value={setAmount}
-                                            onChange={(e) => setSetAmount(e.target.value)}
-                                            style={{
-                                                border: 'none',
-                                                outline: 'none',
-                                                backgroundColor: 'transparent',
-                                                color: isLight ? '#0F172A' : '#FFFFFF',
-                                                fontSize: '14px',
-                                                width: '100%',
-                                            }}
-                                        />
-                                        <span style={{ fontSize: '12px', fontWeight: '800', color: '#94A3B8' }}>
-                                            {stats.currency}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    disabled={setSubmitting}
-                                    style={{
-                                        width: '100%',
-                                        padding: '11px',
-                                        borderRadius: '14px',
-                                        backgroundColor: '#1E3A8A',
-                                        border: '1px solid #3B82F6',
-                                        color: '#FFFFFF',
-                                        fontWeight: '800',
-                                        fontSize: '14px',
-                                        cursor: setSubmitting ? 'not-allowed' : 'pointer',
-                                    }}
-                                >
-                                    {setSubmitting ? 'جاري تعيين الرصيد...' : 'تعيين الرصيد'}
-                                </button>
-                            </form>
                         </div>
                     </div>
                 )}

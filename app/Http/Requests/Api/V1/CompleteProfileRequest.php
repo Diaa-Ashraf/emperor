@@ -18,7 +18,7 @@ class CompleteProfileRequest extends FormRequest
         return [
             'phone' => ['required', 'string', 'max:20', "unique:users,phone,{$userId}"],
             'country' => ['required', 'string', 'max:10'],
-            'currency' => ['required', 'string', 'in:EGP,USD,SAR,SYP'],
+            'currency' => ['required', 'string', 'in:EGP,USD,SAR,AED,KWD,SYP,YER,JOD,EUR'],
             'invite_code' => ['nullable', 'string', 'max:20'],
         ];
     }
