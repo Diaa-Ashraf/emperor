@@ -477,53 +477,61 @@ export default function AdminPaymentMethodsPage() {
                                         paddingBottom: '14px',
                                         borderBottom: isLight ? '1px solid #F1F5F9' : '1px solid rgba(255, 255, 255, 0.06)',
                                     }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                            {/* Flag or Icon */}
                                             <div style={{
-                                                width: '44px',
-                                                height: '44px',
-                                                borderRadius: '14px',
-                                                backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                                                border: '1px solid rgba(56, 189, 248, 0.25)',
+                                                width: '46px',
+                                                height: '46px',
+                                                borderRadius: '50%',
+                                                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                                                border: '1.5px solid rgba(245, 208, 97, 0.4)',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                color: '#38BDF8',
+                                                fontSize: '22px',
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                                             }}>
-                                                <Layers size={22} />
+                                                {grp.currency === 'EGP' ? '🇪🇬' : (grp.currency === 'SAR' ? '🇸🇦' : (grp.currency === 'AED' ? '🇦🇪' : '🌐'))}
                                             </div>
+
                                             <div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                     <h3 style={{ fontSize: '18px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', margin: 0 }}>
                                                         {grp.name}
                                                     </h3>
                                                     <span style={{
-                                                        padding: '2px 8px',
+                                                        padding: '2px 10px',
                                                         borderRadius: '100px',
-                                                        backgroundColor: 'rgba(56, 189, 248, 0.15)',
-                                                        color: '#38BDF8',
+                                                        backgroundColor: grp.is_active ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                                                        border: `1px solid ${grp.is_active ? '#10B981' : '#EF4444'}`,
+                                                        color: grp.is_active ? '#10B981' : '#EF4444',
                                                         fontSize: '11px',
                                                         fontWeight: '800',
                                                     }}>
-                                                        {grp.currency}
+                                                        {grp.is_active ? 'نشطة' : 'معطلة'}
                                                     </span>
                                                 </div>
-                                                <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '3px' }}>
-                                                    {methodsCount} طرق دفع | الصورة: {grp.image || '1000299968.png'}
+
+                                                <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '4px', lineHeight: '1.6' }}>
+                                                    {grp.description && <div>{grp.description}</div>}
+                                                    <div>العملة: <strong style={{ color: '#38BDF8' }}>{grp.currency}</strong></div>
+                                                    <div>الصورة: <span style={{ fontFamily: 'monospace' }}>{grp.image || '1000299968.png'}</span></div>
+                                                    <div style={{ color: '#F5D061', fontWeight: '800', marginTop: '2px' }}>{methodsCount} طرق دفع</div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Action Bar for Group (Screenshot 3 icons: Delete, Edit, View, + Add Method) */}
+                                        {/* Action Bar for Group (Matching Embrator Screenshot: Delete, Edit, Eye, + إضافة طريقة) */}
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                             <button
                                                 type="button"
                                                 onClick={() => handleDeleteGroup(grp.id)}
                                                 style={{
-                                                    width: '36px',
-                                                    height: '36px',
+                                                    width: '34px',
+                                                    height: '34px',
                                                     borderRadius: '10px',
-                                                    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                                                    border: '1px solid rgba(239, 68, 68, 0.35)',
+                                                    backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                                                    border: '1px solid rgba(239, 68, 68, 0.3)',
                                                     color: '#EF4444',
                                                     display: 'flex',
                                                     alignItems: 'center',
@@ -532,7 +540,45 @@ export default function AdminPaymentMethodsPage() {
                                                 }}
                                                 title="حذف المجموعة"
                                             >
-                                                <Trash2 size={16} />
+                                                <Trash2 size={15} />
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                style={{
+                                                    width: '34px',
+                                                    height: '34px',
+                                                    borderRadius: '10px',
+                                                    backgroundColor: isLight ? '#EFF6FF' : '#0B1528',
+                                                    border: isLight ? '1px solid #CBD5E1' : '1px solid #1E2E4A',
+                                                    color: '#94A3B8',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                }}
+                                                title="تعديل المجموعة"
+                                            >
+                                                <Edit3 size={15} />
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                style={{
+                                                    width: '34px',
+                                                    height: '34px',
+                                                    borderRadius: '10px',
+                                                    backgroundColor: isLight ? '#EFF6FF' : '#0B1528',
+                                                    border: isLight ? '1px solid #CBD5E1' : '1px solid #1E2E4A',
+                                                    color: '#94A3B8',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                }}
+                                                title="معاينة"
+                                            >
+                                                <Eye size={15} />
                                             </button>
 
                                             <button
@@ -542,12 +588,12 @@ export default function AdminPaymentMethodsPage() {
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     gap: '6px',
-                                                    padding: '8px 14px',
+                                                    padding: '8px 16px',
                                                     borderRadius: '12px',
-                                                    backgroundColor: '#070D1A',
-                                                    border: '1px solid #F59E0B',
-                                                    color: '#F5D061',
-                                                    fontSize: '12.5px',
+                                                    backgroundColor: isLight ? '#0F172A' : '#070D1A',
+                                                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                                                    color: '#FFFFFF',
+                                                    fontSize: '13px',
                                                     fontWeight: '800',
                                                     cursor: 'pointer',
                                                 }}
@@ -558,202 +604,215 @@ export default function AdminPaymentMethodsPage() {
                                         </div>
                                     </div>
 
-                                    {/* Payment Methods Cards inside this Group (Matching Screenshot 3) */}
+                                    {/* Payment Methods Cards inside this Group (Matching Embrator Screenshot: 2-column Grid) */}
                                     {methodsCount === 0 ? (
                                         <div style={{ textAlign: 'center', padding: '24px', color: '#94A3B8', fontSize: '13px' }}>
                                             لا توجد طرق دفع مسجلة داخل هذه المجموعة بعد.
                                         </div>
                                     ) : (
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                        <div style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+                                            gap: '16px',
+                                        }}>
                                             {grp.payment_methods.map((method) => {
                                                 const hasQr = Boolean(method.qr_code);
                                                 return (
                                                     <div
                                                         key={method.id}
                                                         style={{
-                                                            backgroundColor: isLight ? '#F8FAFC' : '#060B18',
-                                                            border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.2)',
+                                                            backgroundColor: isLight ? '#F8FAFC' : '#0B1528',
+                                                            border: isLight ? '1px solid #E2E8F0' : '1px solid #1E2E4A',
                                                             borderRadius: '20px',
-                                                            padding: '18px 20px',
+                                                            padding: '20px',
                                                             boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.03)' : '0 4px 15px rgba(0,0,0,0.3)',
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            justifyContent: 'space-between',
                                                         }}
                                                     >
-                                                        {/* Top Row: Method Title & Action Icons (Screenshot 3) */}
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                                <div style={{
-                                                                    width: '42px',
-                                                                    height: '42px',
-                                                                    borderRadius: '50%',
-                                                                    background: 'linear-gradient(135deg, #7C3AED 0%, #D97706 100%)',
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    justifyContent: 'center',
-                                                                    color: '#FFFFFF',
-                                                                    boxShadow: '0 4px 12px rgba(124, 58, 237, 0.3)',
-                                                                }}>
-                                                                    <CreditCard size={20} />
-                                                                </div>
+                                                        <div>
+                                                            {/* Top Row: Method Title & Action Icons (Screenshot) */}
+                                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                                    <div style={{
+                                                                        width: '42px',
+                                                                        height: '42px',
+                                                                        borderRadius: '50%',
+                                                                        background: method.name?.includes('فودافون') || method.name?.includes('فدفون')
+                                                                            ? '#EF4444'
+                                                                            : 'linear-gradient(135deg, #7C3AED 0%, #D97706 100%)',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        color: '#FFFFFF',
+                                                                        fontWeight: '900',
+                                                                        fontSize: '12px',
+                                                                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                                                                        flexShrink: 0,
+                                                                    }}>
+                                                                        {method.name?.includes('فودافون') || method.name?.includes('فدفون') ? 'VF' : 'IP'}
+                                                                    </div>
 
-                                                                <div>
-                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                                                                        <h4 style={{ fontSize: '16px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', margin: 0 }}>
-                                                                            {method.name}
-                                                                        </h4>
-                                                                        <span style={{
-                                                                            padding: '2px 10px',
-                                                                            borderRadius: '100px',
-                                                                            backgroundColor: method.is_active ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                                                                            border: `1px solid ${method.is_active ? '#10B981' : '#EF4444'}`,
-                                                                            color: method.is_active ? '#10B981' : '#EF4444',
-                                                                            fontSize: '11px',
-                                                                            fontWeight: '800',
-                                                                        }}>
-                                                                            {method.is_active ? 'نشطة' : 'معطلة'}
-                                                                        </span>
-                                                                        {hasQr && (
+                                                                    <div>
+                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                                                            <h4 style={{ fontSize: '15px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', margin: 0 }}>
+                                                                                {method.name}
+                                                                            </h4>
                                                                             <span style={{
-                                                                                display: 'flex',
-                                                                                alignItems: 'center',
-                                                                                gap: '4px',
                                                                                 padding: '2px 8px',
                                                                                 borderRadius: '100px',
-                                                                                backgroundColor: '#0F172A',
-                                                                                border: '1px solid #334155',
-                                                                                color: '#38BDF8',
+                                                                                backgroundColor: method.is_active ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                                                                                border: `1px solid ${method.is_active ? '#10B981' : '#EF4444'}`,
+                                                                                color: method.is_active ? '#10B981' : '#EF4444',
                                                                                 fontSize: '11px',
                                                                                 fontWeight: '800',
                                                                             }}>
-                                                                                <QrCode size={12} />
-                                                                                <span>QR متاح</span>
+                                                                                {method.is_active ? 'نشطة' : 'معطلة'}
                                                                             </span>
-                                                                        )}
+                                                                            {hasQr && (
+                                                                                <span style={{
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    gap: '4px',
+                                                                                    padding: '2px 6px',
+                                                                                    borderRadius: '100px',
+                                                                                    backgroundColor: 'rgba(245, 208, 97, 0.15)',
+                                                                                    border: '1px solid rgba(245, 208, 97, 0.4)',
+                                                                                    color: '#F5D061',
+                                                                                    fontSize: '10.5px',
+                                                                                    fontWeight: '800',
+                                                                                }}>
+                                                                                    <QrCode size={11} />
+                                                                                    <span>QR متاح</span>
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+
+                                                                        {/* Sub description / Type */}
+                                                                        <div style={{ display: 'flex', gap: '8px', marginTop: '4px', alignItems: 'center' }}>
+                                                                            {method.sub_name && (
+                                                                                <span style={{ fontSize: '12px', color: isLight ? '#475569' : '#CBD5E1', fontWeight: '700' }}>
+                                                                                    {method.sub_name}
+                                                                                </span>
+                                                                            )}
+                                                                            <span style={{ fontSize: '11px', color: '#38BDF8', fontWeight: '700' }}>
+                                                                                {method.type || 'محفظة إلكترونية'}
+                                                                            </span>
+                                                                        </div>
                                                                     </div>
+                                                                </div>
 
-                                                                    {/* Sub badges */}
-                                                                    <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
-                                                                        <span style={{ padding: '2px 8px', borderRadius: '6px', backgroundColor: 'rgba(56, 189, 248, 0.1)', color: '#38BDF8', fontSize: '11px', fontWeight: '700' }}>
-                                                                            سريع وآمن
-                                                                        </span>
-                                                                        <span style={{ padding: '2px 8px', borderRadius: '6px', backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B', fontSize: '11px', fontWeight: '700' }}>
-                                                                            {method.type || 'محفظة إلكترونية'}
+                                                                {/* Method Actions: Delete, Edit, Toggle (Matching Screenshot order) */}
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleDeleteMethod(method.id)}
+                                                                        style={{
+                                                                            width: '30px',
+                                                                            height: '30px',
+                                                                            borderRadius: '8px',
+                                                                            backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                                                                            border: '1px solid rgba(239, 68, 68, 0.3)',
+                                                                            color: '#EF4444',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            cursor: 'pointer',
+                                                                        }}
+                                                                        title="حذف الطريقة"
+                                                                    >
+                                                                        <Trash2 size={13} />
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => openEditMethodModal(method)}
+                                                                        style={{
+                                                                            width: '30px',
+                                                                            height: '30px',
+                                                                            borderRadius: '8px',
+                                                                            backgroundColor: isLight ? '#EFF6FF' : '#040711',
+                                                                            border: isLight ? '1px solid #CBD5E1' : '1px solid #1E2E4A',
+                                                                            color: '#94A3B8',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            cursor: 'pointer',
+                                                                        }}
+                                                                        title="تعديل طريقة الدفع"
+                                                                    >
+                                                                        <Edit3 size={13} />
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleToggleMethod(method.id)}
+                                                                        style={{
+                                                                            width: '30px',
+                                                                            height: '30px',
+                                                                            borderRadius: '8px',
+                                                                            backgroundColor: isLight ? '#EFF6FF' : '#040711',
+                                                                            border: isLight ? '1px solid #CBD5E1' : '1px solid #1E2E4A',
+                                                                            color: method.is_active ? '#38BDF8' : '#94A3B8',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            cursor: 'pointer',
+                                                                        }}
+                                                                        title={method.is_active ? 'تعطيل الطريقة' : 'تفعيل الطريقة'}
+                                                                    >
+                                                                        <Eye size={13} />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Details Text lines (Matching Screenshot 1) */}
+                                                            <div style={{
+                                                                fontSize: '12.5px',
+                                                                lineHeight: '1.9',
+                                                                color: isLight ? '#334155' : '#CBD5E1',
+                                                                borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.06)',
+                                                                paddingTop: '10px',
+                                                                textAlign: 'right',
+                                                            }}>
+                                                                {method.account_number && (
+                                                                    <div>
+                                                                        <strong style={{ color: '#94A3B8' }}>رقم الحساب: </strong>
+                                                                        <span style={{ color: '#FFFFFF', fontWeight: '800', direction: 'ltr', display: 'inline-block' }}>
+                                                                            {method.account_number}
                                                                         </span>
                                                                     </div>
+                                                                )}
+                                                                <div>
+                                                                    <strong style={{ color: '#94A3B8' }}>رسوم الطريقة: </strong>
+                                                                    <span style={{ color: '#FFFFFF', fontWeight: '800' }}>{method.percent_fee || 0}%</span>
                                                                 </div>
+                                                                {method.bank_name && (
+                                                                    <div>
+                                                                        <strong style={{ color: '#94A3B8' }}>اسم البنك: </strong>
+                                                                        <span style={{ color: '#FFFFFF', fontWeight: '700' }}>{method.bank_name}</span>
+                                                                    </div>
+                                                                )}
+                                                                {method.account_holder_name && (
+                                                                    <div>
+                                                                        <strong style={{ color: '#94A3B8' }}>اسم صاحب الحساب: </strong>
+                                                                        <span style={{ color: '#FFFFFF', fontWeight: '700' }}>{method.account_holder_name}</span>
+                                                                    </div>
+                                                                )}
+                                                                {(method.instruction || method.instructions) && (
+                                                                    <div style={{ marginTop: '2px' }}>
+                                                                        <strong style={{ color: '#94A3B8' }}>تعليمات: </strong>
+                                                                        <span style={{ color: '#94A3B8', fontSize: '11.5px', lineHeight: '1.6' }}>
+                                                                            {typeof method.instruction === 'string' ? method.instruction : (method.instructions?.ar || '')}
+                                                                        </span>
+                                                                    </div>
+                                                                )}
+                                                                {method.logo && (
+                                                                    <div style={{ marginTop: '4px' }}>
+                                                                        <strong style={{ color: '#94A3B8' }}>اسم الصورة: </strong>
+                                                                        <span style={{ color: '#64748B', fontFamily: 'monospace', fontSize: '11px' }}>{method.logo}</span>
+                                                                    </div>
+                                                                )}
                                                             </div>
-
-                                                            {/* Method Actions (Edit / Toggle / Delete) */}
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => openEditMethodModal(method)}
-                                                                    style={{
-                                                                        width: '32px',
-                                                                        height: '32px',
-                                                                        borderRadius: '8px',
-                                                                        backgroundColor: isLight ? '#EFF6FF' : '#0B1528',
-                                                                        border: '1px solid #1E3A8A',
-                                                                        color: '#38BDF8',
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'center',
-                                                                        cursor: 'pointer',
-                                                                    }}
-                                                                    title="تعديل طريقة الدفع"
-                                                                >
-                                                                    <Edit3 size={14} />
-                                                                </button>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => handleToggleMethod(method.id)}
-                                                                    style={{
-                                                                        width: '32px',
-                                                                        height: '32px',
-                                                                        borderRadius: '8px',
-                                                                        backgroundColor: method.is_active ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                                                                        border: `1px solid ${method.is_active ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.35)'}`,
-                                                                        color: method.is_active ? '#10B981' : '#EF4444',
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'center',
-                                                                        cursor: 'pointer',
-                                                                    }}
-                                                                    title={method.is_active ? 'تعطيل الطريقة' : 'تفعيل الطريقة'}
-                                                                >
-                                                                    <Check size={14} />
-                                                                </button>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => handleDeleteMethod(method.id)}
-                                                                    style={{
-                                                                        width: '32px',
-                                                                        height: '32px',
-                                                                        borderRadius: '8px',
-                                                                        backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                                                                        border: '1px solid rgba(239, 68, 68, 0.35)',
-                                                                        color: '#EF4444',
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'center',
-                                                                        cursor: 'pointer',
-                                                                    }}
-                                                                    title="حذف الطريقة"
-                                                                >
-                                                                    <Trash2 size={14} />
-                                                                </button>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Details Text lines (Matching Screenshot 3) */}
-                                                        <div style={{
-                                                            fontSize: '12.5px',
-                                                            lineHeight: '1.8',
-                                                            color: isLight ? '#334155' : '#CBD5E1',
-                                                            borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.05)',
-                                                            paddingTop: '10px',
-                                                        }}>
-                                                            {method.account_number && (
-                                                                <div>
-                                                                    <strong style={{ color: '#94A3B8' }}>رقم الحساب: </strong>
-                                                                    <span style={{ color: '#38BDF8', fontWeight: '900', direction: 'ltr', display: 'inline-block' }}>
-                                                                        {method.account_number}
-                                                                    </span>
-                                                                </div>
-                                                            )}
-                                                            <div>
-                                                                <strong style={{ color: '#94A3B8' }}>رسوم الطريقة: </strong>
-                                                                <span>{method.percent_fee || 0}%</span>
-                                                            </div>
-                                                            {method.bank_name && (
-                                                                <div>
-                                                                    <strong style={{ color: '#94A3B8' }}>اسم البنك: </strong>
-                                                                    <span>{method.bank_name}</span>
-                                                                </div>
-                                                            )}
-                                                            {method.account_holder_name && (
-                                                                <div>
-                                                                    <strong style={{ color: '#94A3B8' }}>اسم صاحب الحساب: </strong>
-                                                                    <span>{method.account_holder_name}</span>
-                                                                </div>
-                                                            )}
-                                                            {(method.instruction || method.instructions) && (
-                                                                <div>
-                                                                    <strong style={{ color: '#94A3B8' }}>تعليمات: </strong>
-                                                                    <span>{method.instruction || method.instructions}</span>
-                                                                </div>
-                                                            )}
-                                                            {method.logo && (
-                                                                <div>
-                                                                    <strong style={{ color: '#94A3B8' }}>اسم الصورة: </strong>
-                                                                    <span style={{ color: '#94A3B8', fontFamily: 'monospace' }}>{method.logo}</span>
-                                                                </div>
-                                                            )}
-                                                            {method.qr_code && (
-                                                                <div>
-                                                                    <strong style={{ color: '#94A3B8' }}>ملف QR: </strong>
-                                                                    <span style={{ color: '#94A3B8', fontFamily: 'monospace' }}>{method.qr_code}</span>
-                                                                </div>
-                                                            )}
                                                         </div>
                                                     </div>
                                                 );
