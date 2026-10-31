@@ -237,7 +237,7 @@ export default function AdminWalletPage() {
             window.dispatchEvent(new CustomEvent('emperor:refresh-profile'));
         } catch (err) {
             console.error('Adjust balance error:', err);
-            toastError(err.response?.data?.message || 'فشل تعديل الرصيد');
+            toastError(err.message || err.response?.data?.message || 'فشل تعديل الرصيد');
         } finally {
             setAddingBalance(false);
         }

@@ -219,6 +219,31 @@ export default function AdminProductsPage() {
         setIsCategoryModalOpen(true);
     };
 
+    const openEditCategoryModal = (cat) => {
+        setEditingCategory(cat);
+        setCatNameAr(cat.name || '');
+        setCatNameEn(cat.name_en || '');
+        setCatSortOrder(cat.sort_order !== undefined ? String(cat.sort_order) : '0');
+        setCatParentId(cat.parent_id ? String(cat.parent_id) : '');
+        setCatImageFile(null);
+        setCatImagePreview(cat.icon || null);
+        setIsCategoryModalOpen(true);
+    };
+
+    const handleDeleteCategory = async (cat) => {
+        if (!window.confirm(`هل أنت متأكد من حذف قسم "${cat.name}"؟`)) {
+            return;
+        }
+        try {
+            await adminApi.deleteCategory(cat.id);
+            success(`تم حذف قسم "${cat.name}" بنجاح`);
+            fetchCategories();
+        } catch (err) {
+            console.error('Delete category error:', err);
+            toastError(err.message || err.response?.data?.message || 'فشل حذف القسم');
+        }
+    };
+
     const handleSaveCategory = async (e) => {
         e.preventDefault();
         try {
@@ -468,7 +493,10 @@ export default function AdminProductsPage() {
                             fontWeight: '800',
                         }}>
                             <span>الاسم</span>
-                            <span>الترتيب</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                <span>الترتيب</span>
+                                <span>الإجراءات</span>
+                            </div>
                         </div>
 
                         {/* Category Rows */}
@@ -491,10 +519,11 @@ export default function AdminProductsPage() {
                                         justifyContent: 'space-between',
                                         padding: '12px 18px',
                                         borderBottom: idx < categories.length - 1 ? (isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.05)') : 'none',
+                                        gap: '12px',
                                     }}
                                 >
                                     {/* Right: Circular Icon + Name */}
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
                                         <div style={{
                                             width: '42px',
                                             height: '42px',
@@ -507,33 +536,76 @@ export default function AdminProductsPage() {
                                             overflow: 'hidden',
                                             flexShrink: 0,
                                         }}>
-                                            {cat.icon && cat.icon.startsWith('/') ? (
+                                            {cat.icon && (cat.icon.startsWith('/') || cat.icon.startsWith('http')) ? (
                                                 <img src={cat.icon} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                             ) : (
                                                 <Package size={20} color="#38BDF8" />
                                             )}
                                         </div>
-                                        <span style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                                        <span style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF', wordBreak: 'break-word' }}>
                                             {cat.name}
                                         </span>
                                     </div>
 
-                                    {/* Left: Circle Numbered Badge */}
-                                    <div style={{
-                                        width: '32px',
-                                        height: '32px',
-                                        borderRadius: '50%',
-                                        backgroundColor: isLight ? '#FFFFFF' : '#0B172E',
-                                        border: '1.5px solid rgba(56, 189, 248, 0.5)',
-                                        color: '#FFFFFF',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: '13px',
-                                        fontWeight: '800',
-                                        flexShrink: 0,
-                                    }}>
-                                        {cat.sort_order || (idx + 1)}
+                                    {/* Left: Circle Numbered Badge + Edit & Delete Buttons */}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+                                        <div style={{
+                                            width: '32px',
+                                            height: '32px',
+                                            borderRadius: '50%',
+                                            backgroundColor: isLight ? '#FFFFFF' : '#0B172E',
+                                            border: '1.5px solid rgba(56, 189, 248, 0.5)',
+                                            color: '#FFFFFF',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '13px',
+                                            fontWeight: '800',
+                                        }}>
+                                            {cat.sort_order || (idx + 1)}
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => openEditCategoryModal(cat)}
+                                            title="تعديل القسم"
+                                            style={{
+                                                width: '32px',
+                                                height: '32px',
+                                                borderRadius: '8px',
+                                                backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                                                border: '1px solid rgba(56, 189, 248, 0.35)',
+                                                color: '#38BDF8',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease',
+                                            }}
+                                        >
+                                            <Edit3 size={15} />
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDeleteCategory(cat)}
+                                            title="حذف القسم"
+                                            style={{
+                                                width: '32px',
+                                                height: '32px',
+                                                borderRadius: '8px',
+                                                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                                                border: '1px solid rgba(239, 68, 68, 0.35)',
+                                                color: '#EF4444',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease',
+                                            }}
+                                        >
+                                            <Trash2 size={15} />
+                                        </button>
                                     </div>
                                 </div>
                             ))
@@ -961,7 +1033,7 @@ export default function AdminProductsPage() {
                         {/* Header */}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
                             <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#FFFFFF', margin: 0 }}>
-                                إضافة قسم
+                                {editingCategory ? 'تعديل بيانات القسم' : 'إضافة قسم'}
                             </h3>
                             <button
                                 type="button"
@@ -1128,7 +1200,7 @@ export default function AdminProductsPage() {
                                         cursor: catSubmitting ? 'not-allowed' : 'pointer',
                                     }}
                                 >
-                                    {catSubmitting ? 'جاري الإضافة...' : 'إضافة'}
+                                    {catSubmitting ? 'جاري الحفظ...' : (editingCategory ? 'حفظ التعديلات' : 'إضافة القسم')}
                                 </button>
 
                                 <button

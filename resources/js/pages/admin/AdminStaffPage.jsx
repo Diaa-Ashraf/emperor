@@ -235,19 +235,20 @@ export default function AdminStaffPage() {
         return keys;
     };
 
-    const fetchStaff = async (searchQueryOverride = null) => {
+    const fetchStaff = async (searchQueryOverride = null, statusOverride = null) => {
         try {
             setRefreshing(true);
             const querySearch = searchQueryOverride !== null ? searchQueryOverride : search;
+            const queryStatus = statusOverride !== null ? statusOverride : selectedStatus;
             const res = await adminApi.getStaff({
                 search: querySearch.trim() || undefined,
-                status: selectedStatus || undefined,
+                status: queryStatus || undefined,
             });
 
             if (res && res.data) {
                 const data = res.data.data || res.data;
                 setSupervisors(data.supervisors || []);
-                setTotalStaff(data.total_staff || 0);
+                setTotalStaff(data.total_staff || (data.supervisors ? data.supervisors.length : 0));
                 if (data.available_roles) setAvailableRoles(data.available_roles);
                 if (data.permission_groups) setPermissionGroups(data.permission_groups);
             }
@@ -382,7 +383,8 @@ export default function AdminStaffPage() {
             setStaffPhone('');
             setStaffPassword('');
             setSearch('');
-            fetchStaff('');
+            setSelectedStatus('');
+            await fetchStaff('', '');
         } catch (err) {
             const errors = err.response?.data?.errors;
             const errorMsg = errors ? Object.values(errors).flat().join(' - ') : (err.response?.data?.message || 'فشل إضافة المشرف');

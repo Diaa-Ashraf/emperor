@@ -262,15 +262,25 @@ class AdminWalletController extends Controller
                     );
                 }
             } elseif ($action === 'debit') {
-                $tx = $this->walletService->debit(
-                    user: $adminUser,
-                    amount: $amount,
-                    type: WalletTxType::MANUAL_DEBIT,
-                    description: $description,
-                    currency: $currency,
-                    referenceType: 'admin_manual_adjustment',
-                    referenceId: $adminUser->id
-                );
+                $wallet = $this->walletService->getOrCreateWallet($adminUser, $currency);
+                $balanceBefore = (float) $wallet->balance;
+                $balanceAfter = $balanceBefore - $amount;
+
+                $wallet->update(['balance' => $balanceAfter]);
+
+                $tx = WalletTransaction::create([
+                    'wallet_id' => $wallet->id,
+                    'user_id' => $adminUser->id,
+                    'type' => WalletTxType::MANUAL_DEBIT,
+                    'amount' => -$amount,
+                    'balance_before' => $balanceBefore,
+                    'balance_after' => $balanceAfter,
+                    'fee' => 0.0000,
+                    'reference_type' => 'admin_manual_adjustment',
+                    'reference_id' => $adminUser->id,
+                    'description' => $description,
+                    'created_at' => now(),
+                ]);
             } else {
                 $tx = $this->walletService->credit(
                     user: $adminUser,
