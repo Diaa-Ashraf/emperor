@@ -80,11 +80,53 @@ class PricingService
         $costCurrency = strtoupper($tier->cost_currency ?: 'USD');
         $targetCurrency = strtoupper($targetCurrency ?: 'EGP');
 
-        // Check for Voice Coin apps (like Yoho) where cost might have been truncated to 0 or outdated
-        $nameCheck = strtolower(($tier->product?->name ?? '') . ' ' . ($tier->name ?? '') . ' ' . ($tier->metadata['provider_product_name'] ?? ''));
-        if (str_contains($nameCheck, 'يوهو') || str_contains($nameCheck, 'yoho') || str_contains($nameCheck, 'ياهو')) {
-            if ($cost <= 0 || $cost >= 0.001) {
+        // Resolve cost dynamically from Embrator provider API map if cost is missing, zero, or linked to Embrator
+        $provProdId = $tier->metadata['provider_product_id'] ?? $tier->product?->external_product_id ?? null;
+        
+        $embratorMap = \Illuminate\Support\Facades\Cache::remember('embrator_products_id_map_v3', 300, function () {
+            try {
+                $service = app(\App\Services\EmbratorService::class);
+                $res = $service->getProducts();
+                $map = [];
+                if (!empty($res['products'])) {
+                    foreach ($res['products'] as $p) {
+                        $rawP = (float) ($p['priceUsd'] ?? $p['price'] ?? 0);
+                        $map[$p['id']] = $rawP;
+                        $cleanName = mb_strtolower(trim(preg_replace('/\s+/', ' ', $p['name'])));
+                        $map['name_' . $cleanName] = $rawP;
+                    }
+                }
+                return $map;
+            } catch (\Throwable $e) {
+                return [];
+            }
+        });
+
+        if ($provProdId && isset($embratorMap[$provProdId]) && $embratorMap[$provProdId] > 0) {
+            $cost = $embratorMap[$provProdId];
+            $costCurrency = 'USD';
+        } elseif ($cost <= 0) {
+            $tierName = mb_strtolower(trim(preg_replace('/\s+/', ' ', ($tier->product?->name ?? '') . ' ' . ($tier->name ?? ''))));
+            if (isset($embratorMap['name_' . $tierName]) && $embratorMap['name_' . $tierName] > 0) {
+                $cost = $embratorMap['name_' . $tierName];
+                $costCurrency = 'USD';
+            } elseif (str_contains($tierName, 'يوهو') || str_contains($tierName, 'yoho') || str_contains($tierName, 'ياهو')) {
                 $cost = 0.0001001419786794;
+                $costCurrency = 'USD';
+            } elseif (str_contains($tierName, 'زافا') || str_contains($tierName, 'زفا')) {
+                $cost = 0.0000148679018644;
+                $costCurrency = 'USD';
+            } elseif (str_contains($tierName, 'بولالا')) {
+                $cost = 0.00000804;
+                $costCurrency = 'USD';
+            } elseif (str_contains($tierName, 'سلام شات')) {
+                $cost = 0.000009410123;
+                $costCurrency = 'USD';
+            } elseif (str_contains($tierName, 'اهلين') || str_contains($tierName, 'أهلين')) {
+                $cost = 0.0017510358;
+                $costCurrency = 'USD';
+            } elseif (str_contains($tierName, 'جانكو') || str_contains($tierName, 'jawaker')) {
+                $cost = 0.00012589445;
                 $costCurrency = 'USD';
             }
         }

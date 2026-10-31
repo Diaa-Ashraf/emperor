@@ -40,6 +40,10 @@ export default function ProductRechargeModal({
 
     // Detect if this is a custom-quantity coin/voice app (matching KA-CARD mode)
     const isCustomQuantity = useMemo(() => {
+        const firstTier = (product.tiers || product.active_tiers || [])[0];
+        if (product.is_package || (firstTier && firstTier.is_package) || (firstTier && Number(firstTier.max_qty) === 1 && Number(firstTier.min_qty) === 1)) {
+            return false;
+        }
         const catType = product.category?.type;
         const catSlug = product.category?.slug;
         if (catType === 'voice_apps' || catSlug === 'apps' || catSlug === 'voice_apps') return true;
@@ -49,12 +53,25 @@ export default function ProductRechargeModal({
         const voiceKeywords = [
             'فان اب', 'هلين', 'أهلاً', 'يوهو', 'يويو', 'بولا', 'مجلس',
             'زينا', 'هايو', 'زفا', 'شات', 'كوينز', 'funup', 'haahlan',
-            'yoho', 'yoyo', 'pola', 'majlis', 'zina', 'yabi', 'zafa', 'soulchill'
+            'yoho', 'yoyo', 'pola', 'majlis', 'zina', 'yabi', 'zafa', 'soulchill', 'جانكو', 'jawaker'
         ];
         return voiceKeywords.some(kw => nameLower.includes(kw));
     }, [product]);
 
     const [selectedTier, setSelectedTier] = useState(tiers.length > 0 ? tiers[0] : null);
+
+    const minAllowed = useMemo(() => {
+        const firstTier = (product.tiers || product.active_tiers || [])[0];
+        const val = selectedTier?.min_qty || firstTier?.min_qty || product.min_qty;
+        return val ? Number(val) : (isCustomQuantity ? 1000 : 1);
+    }, [selectedTier, product, isCustomQuantity]);
+
+    const maxAllowed = useMemo(() => {
+        const firstTier = (product.tiers || product.active_tiers || [])[0];
+        const val = selectedTier?.max_qty || firstTier?.max_qty || product.max_qty;
+        return val ? Number(val) : (isCustomQuantity ? 50000000 : 9999);
+    }, [selectedTier, product, isCustomQuantity]);
+
     const [quantity, setQuantity] = useState(isCustomQuantity ? 0 : 1);
     const [quantityInput, setQuantityInput] = useState(isCustomQuantity ? '0' : '1');
     const [playerId, setPlayerId] = useState('');
@@ -127,9 +144,7 @@ export default function ProductRechargeModal({
                 return Number(firstItem.price_egp);
             }
             if (firstItem.price && Number(firstItem.price) > 0) {
-                const p = Number(firstItem.price);
-                // If tier price is in USD and user wants EGP or vice versa
-                return p;
+                return Number(firstItem.price);
             }
             if (firstItem.source_cost && Number(firstItem.source_cost) > 0) {
                 const baseCost = Number(firstItem.source_cost) * 1.04;
@@ -137,10 +152,7 @@ export default function ProductRechargeModal({
             }
         }
 
-        // Direct exact rate for Yoho coins
-        const yohoCostUsd = 0.0001001419786794;
-        const yohoPriceUsd = yohoCostUsd * 1.04; // $0.0001041476
-        return isUsd ? yohoPriceUsd : (yohoPriceUsd * 59.0);
+        return 0;
     }, [product, isUsd]);
 
     // Handle quantity input change
@@ -172,7 +184,7 @@ export default function ProductRechargeModal({
             }
         } else {
             const parsed = parseInt(quantityInput, 10);
-            const clamped = isCustomQuantity ? Math.min(5000000, parsed) : Math.min(9999, parsed);
+            const clamped = isCustomQuantity ? Math.min(maxAllowed, parsed) : Math.min(9999, parsed);
             setQuantity(clamped);
             setQuantityInput(String(clamped));
         }
@@ -255,15 +267,15 @@ export default function ProductRechargeModal({
         const newErrors = {};
 
         if (isCustomQuantity) {
-            if (validQty < 1000) {
-                newErrors.quantity = 'أقل كمية شحن مسموح بها هي 1,000 كوينز';
-                toastError('أقل كمية شحن مسموح بها هي 1,000 كوينز');
+            if (validQty < minAllowed) {
+                newErrors.quantity = `أقل كمية شحن مسموح بها هي ${minAllowed.toLocaleString()} كوينز`;
+                toastError(`أقل كمية شحن مسموح بها هي ${minAllowed.toLocaleString()} كوينز`);
                 setErrors(newErrors);
                 return;
             }
-            if (validQty > 5000000) {
-                newErrors.quantity = 'أقصى كمية شحن مسموح بها هي 5,000,000 كوينز';
-                toastError('أقصى كمية شحن مسموح بها هي 5,000,000 كوينز');
+            if (validQty > maxAllowed) {
+                newErrors.quantity = `أقصى كمية شحن مسموح بها هي ${maxAllowed.toLocaleString()} كوينز`;
+                toastError(`أقصى كمية شحن مسموح بها هي ${maxAllowed.toLocaleString()} كوينز`);
                 setErrors(newErrors);
                 return;
             }
@@ -699,7 +711,9 @@ export default function ProductRechargeModal({
                                     fontFamily: 'monospace',
                                     fontWeight: '700'
                                 }}>
-                                    {isCustomQuantity ? '1,000 — 5,000,000' : '1 — 9,999'}
+                                    {isCustomQuantity 
+                                        ? `${minAllowed.toLocaleString()} — ${maxAllowed.toLocaleString()}` 
+                                        : '1 — 9,999'}
                                 </span>
                             </div>
 

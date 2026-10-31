@@ -15,6 +15,9 @@ class ProductTierResource extends JsonResource
         $userPrice = $pricingService->getPriceForUser($this->resource, $user);
         $targetCurrency = $user?->currency ?: 'EGP';
 
+        $minQty = (int) ($this->min_qty ?: 1);
+        $maxQty = (int) ($this->max_qty ?: 100);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -24,8 +27,10 @@ class ProductTierResource extends JsonResource
             'price_egp' => (float) $pricingService->getPriceInCurrency($this->resource, 'EGP', $user),
             'currency' => $targetCurrency,
             'sale_price' => $this->sale_price ? (float) $this->sale_price : null,
-            'min_qty' => (int) ($this->min_qty ?: 1),
-            'max_qty' => (int) ($this->max_qty ?: 100),
+            'min_qty' => $minQty,
+            'max_qty' => $maxQty,
+            'is_package' => ($maxQty === 1 && $minQty === 1),
+            'metadata' => $this->metadata,
             'in_stock' => (bool) $this->in_stock,
             'stock_qty' => (int) $this->stock_qty,
             'is_active' => (bool) $this->is_active,
