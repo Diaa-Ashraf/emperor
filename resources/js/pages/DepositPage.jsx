@@ -542,10 +542,10 @@ export default function DepositPage() {
                     </div>
                 )}
 
-                {/* ═══ VIEW 2: DEPOSIT SUBMIT FORM (Matching AD CARD Layout & Screenshot) ═══ */}
+                {/* ═══ VIEW 2: DEPOSIT SUBMIT FORM (Matching SM-Cards Luxury Royal Navy & Gold Theme) ═══ */}
                 {selectedMethod && (
                     <div style={{ maxWidth: '780px', margin: '0 auto', direction: 'rtl' }}>
-                        {/* Header Box matching AD CARD: "تفاصيل الدفع - أدخل بيانات التحويل كما تظهر في الإيصال" */}
+                        {/* Header Box: "تفاصيل الدفع - أدخل بيانات التحويل كما تظهر في الإيصال" */}
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -558,18 +558,18 @@ export default function DepositPage() {
                                 width: '42px',
                                 height: '42px',
                                 borderRadius: '12px',
-                                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%)',
-                                border: '1px solid rgba(236, 72, 153, 0.4)',
+                                background: 'linear-gradient(135deg, rgba(245, 208, 97, 0.2) 0%, rgba(56, 189, 248, 0.2) 100%)',
+                                border: '1px solid rgba(245, 208, 97, 0.4)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: '#EC4899',
+                                color: '#F5D061',
                                 flexShrink: 0
                             }}>
                                 <FileText size={22} />
                             </div>
                             <div style={{ textAlign: 'right' }}>
-                                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '900', color: isLight ? '#0F172A' : '#F5D061' }}>
                                     تفاصيل الدفع
                                 </h2>
                                 <p style={{ margin: '3px 0 0', fontSize: '13px', color: isLight ? '#64748B' : '#94A3B8' }}>
@@ -580,8 +580,8 @@ export default function DepositPage() {
 
                         {/* Account Number Banner */}
                         <div style={{
-                            background: isLight ? '#F8FAFC' : 'linear-gradient(145deg, #180d26 0%, #0d0816 100%)',
-                            border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(236, 72, 153, 0.3)',
+                            background: isLight ? '#F8FAFC' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                            border: isLight ? '1px solid #E2E8F0' : '1.5px solid rgba(56, 189, 248, 0.35)',
                             borderRadius: '18px',
                             padding: '14px 20px',
                             marginBottom: '24px',
@@ -589,13 +589,13 @@ export default function DepositPage() {
                             alignItems: 'center',
                             justifyContent: 'space-between',
                             gap: '14px',
-                            boxShadow: '0 8px 25px rgba(0,0,0,0.4)'
+                            boxShadow: '0 8px 25px rgba(0,0,0,0.4), 0 0 15px rgba(56, 189, 248, 0.1)'
                         }}>
                             <div>
-                                <span style={{ display: 'block', fontSize: '11.5px', fontWeight: '800', color: '#EC4899', marginBottom: '4px' }}>
+                                <span style={{ display: 'block', fontSize: '11.5px', fontWeight: '800', color: '#F5D061', marginBottom: '4px' }}>
                                     {selectedMethod.name} — رقم الحساب / المحفظة المحول إليها:
                                 </span>
-                                <span style={{ fontSize: '17px', fontWeight: '900', color: '#FFFFFF', fontFamily: 'monospace', letterSpacing: '1px' }}>
+                                <span style={{ fontSize: '17px', fontWeight: '900', color: '#38BDF8', fontFamily: 'monospace', letterSpacing: '1px' }}>
                                     {selectedMethod.account_number}
                                 </span>
                             </div>
@@ -608,13 +608,14 @@ export default function DepositPage() {
                                     gap: '6px',
                                     padding: '8px 16px',
                                     borderRadius: '10px',
-                                    background: copied ? '#22C55E' : 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)',
+                                    background: copied ? '#22C55E' : 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
                                     border: 'none',
-                                    color: '#FFFFFF',
+                                    color: '#08080A',
                                     fontSize: '13px',
-                                    fontWeight: '800',
+                                    fontWeight: '900',
                                     cursor: 'pointer',
                                     flexShrink: 0,
+                                    boxShadow: '0 4px 15px rgba(245, 208, 97, 0.35)',
                                 }}
                             >
                                 {copied ? <Check size={14} strokeWidth={3} /> : <Copy size={14} />}
@@ -647,11 +648,11 @@ export default function DepositPage() {
                                 <div style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #240d34 0%, #150820 100%)',
-                                    border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(236, 72, 153, 0.45)',
+                                    background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                                    border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(56, 189, 248, 0.45)',
                                     borderRadius: '24px',
                                     padding: '6px 8px 6px 20px',
-                                    boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                                    boxShadow: '0 8px 24px rgba(0,0,0,0.4), 0 0 15px rgba(56, 189, 248, 0.1)',
                                     transition: 'all 0.2s',
                                 }}>
                                     <input
@@ -677,25 +678,26 @@ export default function DepositPage() {
                                         }}
                                     />
 
-                                    {/* Currency Pill Tag (Matching AD CARD "Egy" or "SAR" Pill) */}
+                                    {/* Currency Pill Tag (Matching SM-Cards Gold Pill) */}
                                     <div style={{
                                         background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
-                                        color: '#0D0C09',
+                                        color: '#08080A',
                                         fontSize: '16px',
                                         fontWeight: '900',
                                         padding: '10px 22px',
                                         borderRadius: '18px',
                                         letterSpacing: '0.5px',
-                                        boxShadow: '0 4px 15px rgba(245, 208, 97, 0.3)',
+                                        boxShadow: '0 4px 15px rgba(245, 208, 97, 0.35)',
                                         flexShrink: 0
                                     }}>
                                         {selectedMethod.currency || 'EGP'}
                                     </div>
                                 </div>
 
-                                {/* Live USD Equivalence Badge (Directly below amount input on the left like AD CARD) */}
+                                {/* Live USD Equivalence Badge (Directly below amount input on the left) */}
                                 {(() => {
-                                    const cur = (selectedMethod.currency || 'EGP').toUpperCase();
+                                    let cur = (selectedMethod.currency || 'EGP').toUpperCase();
+                                    if (cur === 'EGY') cur = 'EGP';
                                     const val = parseFloat(amount);
                                     if (!val || val <= 0) return null;
 
@@ -703,13 +705,18 @@ export default function DepositPage() {
                                     if (cur === 'USD' || cur === 'USDT') {
                                         usdEquivalent = val;
                                     } else {
-                                        const directRate = ratesList.find(r => r.from_currency === cur && r.to_currency === 'USD' && r.is_active);
+                                        const directRate = ratesList.find(r => (r.from_currency === cur || (cur === 'EGP' && r.from_currency === 'EGY')) && r.to_currency === 'USD' && r.is_active);
                                         if (directRate && Number(directRate.rate) > 0) {
                                             usdEquivalent = val * Number(directRate.rate);
                                         } else {
-                                            const inverseRate = ratesList.find(r => r.from_currency === 'USD' && r.to_currency === cur && r.is_active);
+                                            const inverseRate = ratesList.find(r => r.from_currency === 'USD' && (r.to_currency === cur || (cur === 'EGP' && r.to_currency === 'EGY')) && r.is_active);
                                             if (inverseRate && Number(inverseRate.rate) > 0) {
                                                 usdEquivalent = val / Number(inverseRate.rate);
+                                            } else if (cur === 'EGP' || cur === 'EGY') {
+                                                // Intelligent fallback for EGP if rate is 59
+                                                usdEquivalent = val / 59.0;
+                                            } else if (cur === 'SAR') {
+                                                usdEquivalent = val / 3.75;
                                             }
                                         }
                                     }
@@ -725,13 +732,14 @@ export default function DepositPage() {
                                         }}>
                                             <span style={{
                                                 fontSize: '13px',
-                                                fontWeight: '800',
-                                                color: '#EC4899',
-                                                background: 'rgba(236, 72, 153, 0.12)',
-                                                border: '1px solid rgba(236, 72, 153, 0.35)',
-                                                padding: '3px 10px',
+                                                fontWeight: '900',
+                                                color: '#38BDF8',
+                                                background: 'rgba(56, 189, 248, 0.12)',
+                                                border: '1px solid rgba(56, 189, 248, 0.35)',
+                                                padding: '4px 12px',
                                                 borderRadius: '8px',
-                                                fontFamily: 'monospace'
+                                                fontFamily: 'monospace',
+                                                boxShadow: '0 0 10px rgba(56, 189, 248, 0.15)'
                                             }}>
                                                 ≈ {usdEquivalent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
                                             </span>
@@ -740,7 +748,7 @@ export default function DepositPage() {
                                 })()}
                             </div>
 
-                            {/* ══ 2. Two-Column Row: [ رقم العملية ] & [ رقم المحفظة المحول منها ] (Matching Screenshot) ══ */}
+                            {/* ══ 2. Two-Column Row: [ رقم العملية ] & [ رقم المحفظة المحول منها ] ══ */}
                             <div style={{
                                 display: 'grid',
                                 gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
@@ -755,8 +763,9 @@ export default function DepositPage() {
                                         <span style={{
                                             fontSize: '10.5px',
                                             fontWeight: '800',
-                                            color: '#EC4899',
-                                            background: 'rgba(236, 72, 153, 0.15)',
+                                            color: '#F5D061',
+                                            background: 'rgba(245, 208, 97, 0.15)',
+                                            border: '1px solid rgba(245, 208, 97, 0.3)',
                                             padding: '2px 8px',
                                             borderRadius: '6px',
                                         }}>
@@ -767,8 +776,8 @@ export default function DepositPage() {
                                     <div style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #240d34 0%, #150820 100%)',
-                                        border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(236, 72, 153, 0.45)',
+                                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                                        border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(56, 189, 248, 0.4)',
                                         borderRadius: '20px',
                                         padding: '6px 8px 6px 14px',
                                     }}>
@@ -794,11 +803,12 @@ export default function DepositPage() {
                                             width: '38px',
                                             height: '38px',
                                             borderRadius: '12px',
-                                            background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)',
+                                            background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(14, 165, 233, 0.2) 100%)',
+                                            border: '1px solid rgba(56, 189, 248, 0.4)',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            color: '#FFFFFF',
+                                            color: '#38BDF8',
                                             flexShrink: 0
                                         }}>
                                             <Smartphone size={18} />
@@ -815,8 +825,9 @@ export default function DepositPage() {
                                         <span style={{
                                             fontSize: '10.5px',
                                             fontWeight: '800',
-                                            color: '#EC4899',
-                                            background: 'rgba(236, 72, 153, 0.15)',
+                                            color: '#F5D061',
+                                            background: 'rgba(245, 208, 97, 0.15)',
+                                            border: '1px solid rgba(245, 208, 97, 0.3)',
                                             padding: '2px 8px',
                                             borderRadius: '6px',
                                         }}>
@@ -827,8 +838,8 @@ export default function DepositPage() {
                                     <div style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #240d34 0%, #150820 100%)',
-                                        border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(236, 72, 153, 0.45)',
+                                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                                        border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(56, 189, 248, 0.4)',
                                         borderRadius: '20px',
                                         padding: '6px 8px 6px 14px',
                                     }}>
@@ -854,11 +865,12 @@ export default function DepositPage() {
                                             width: '38px',
                                             height: '38px',
                                             borderRadius: '12px',
-                                            background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)',
+                                            background: 'linear-gradient(135deg, rgba(245, 208, 97, 0.2) 0%, rgba(212, 165, 55, 0.2) 100%)',
+                                            border: '1px solid rgba(245, 208, 97, 0.4)',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            color: '#FFFFFF',
+                                            color: '#F5D061',
                                             fontWeight: '900',
                                             fontSize: '18px',
                                             flexShrink: 0
@@ -877,9 +889,9 @@ export default function DepositPage() {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     padding: '16px',
-                                    border: isLight ? '2px dashed #CBD5E1' : '2px dashed rgba(236, 72, 153, 0.4)',
+                                    border: isLight ? '2px dashed #CBD5E1' : '2px dashed rgba(56, 189, 248, 0.4)',
                                     borderRadius: '18px',
-                                    background: isLight ? '#F8FAFC' : 'rgba(236, 72, 153, 0.04)',
+                                    background: isLight ? '#F8FAFC' : 'rgba(56, 189, 248, 0.04)',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s',
                                 }}>
@@ -902,7 +914,7 @@ export default function DepositPage() {
                                         </div>
                                     ) : (
                                         <div style={{ textAlign: 'center', color: isLight ? '#64748B' : '#9CA3AF' }}>
-                                            <Upload size={22} color="#EC4899" style={{ marginBottom: '4px' }} />
+                                            <Upload size={22} color="#38BDF8" style={{ marginBottom: '4px' }} />
                                             <div style={{ fontSize: '13px', fontWeight: '800', color: isLight ? '#0F172A' : '#E2E8F0' }}>
                                                 اضغط لرفع لقطة شاشة الإيصال (اختياري / لتسريع التأكيد)
                                             </div>
@@ -913,13 +925,14 @@ export default function DepositPage() {
 
                             {/* ══ 4. Summary Box: [المبلغ الأساسي] & [الإجمالي المطلوب تحويله] ══ */}
                             <div style={{
-                                background: isLight ? '#F8FAFC' : 'linear-gradient(145deg, #1b0c2a 0%, #10061a 100%)',
-                                border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(236, 72, 153, 0.3)',
+                                background: isLight ? '#F8FAFC' : 'linear-gradient(145deg, #09172e 0%, #060e1d 100%)',
+                                border: isLight ? '1px solid #E2E8F0' : '1.5px solid rgba(56, 189, 248, 0.3)',
                                 borderRadius: '20px',
                                 padding: '18px 24px',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '14px',
+                                boxShadow: '0 8px 25px rgba(0,0,0,0.4)'
                             }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#64748B' : '#A0A0B0' }}>
@@ -939,13 +952,13 @@ export default function DepositPage() {
                                     <span style={{ fontSize: '15px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                         الإجمالي المطلوب تحويله
                                     </span>
-                                    <span style={{ fontSize: '19px', fontWeight: '900', color: '#EC4899', fontFamily: 'monospace' }}>
+                                    <span style={{ fontSize: '20px', fontWeight: '900', color: '#F5D061', fontFamily: 'monospace' }}>
                                         {numAmount > 0 ? numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'} {selectedMethod.currency}
                                     </span>
                                 </div>
                             </div>
 
-                            {/* ══ 5. Submit Button: [تأكيد الدفع ✔] (Full-width Glowing Gradient) ══ */}
+                            {/* ══ 5. Submit Button: [تأكيد الدفع ✔] (SM-Cards Golden Glow Gradient) ══ */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <button
                                     type="submit"
@@ -954,9 +967,9 @@ export default function DepositPage() {
                                         width: '100%',
                                         padding: '16px',
                                         borderRadius: '24px',
-                                        background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)',
+                                        background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
                                         border: 'none',
-                                        color: '#FFFFFF',
+                                        color: '#08080A',
                                         fontSize: '16px',
                                         fontWeight: '900',
                                         cursor: submitting ? 'not-allowed' : 'pointer',
@@ -964,7 +977,7 @@ export default function DepositPage() {
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         gap: '10px',
-                                        boxShadow: '0 8px 30px rgba(236, 72, 153, 0.45)',
+                                        boxShadow: '0 8px 30px rgba(245, 208, 97, 0.4)',
                                         fontFamily: 'Cairo, sans-serif',
                                         opacity: submitting ? 0.7 : 1,
                                     }}
