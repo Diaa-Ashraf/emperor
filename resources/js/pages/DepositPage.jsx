@@ -63,6 +63,7 @@ export default function DepositPage() {
     const [submittedDeposit, setSubmittedDeposit] = useState(null);
     const [dbMethods, setDbMethods] = useState([]);
     const [loadingMethods, setLoadingMethods] = useState(true);
+    const [ratesList, setRatesList] = useState([]);
 
     // Initial fallback if database is empty or loading
     const fallbackPaymentMethods = [
@@ -137,6 +138,16 @@ export default function DepositPage() {
             .finally(() => {
                 setLoadingMethods(false);
             });
+
+        // Fetch currency exchange rates to show USD equivalence
+        fetch('/api/v1/currencies/rates')
+            .then(res => res.json())
+            .then(json => {
+                if (json?.data && Array.isArray(json.data)) {
+                    setRatesList(json.data);
+                }
+            })
+            .catch(() => {});
     }, []);
 
     // Current active payment methods source (DB first, fallback second)
@@ -676,6 +687,51 @@ export default function DepositPage() {
                                             }}
                                         />
                                     </div>
+
+                                    {/* Real-time USD Equivalence Badge (Matching AD CARD / screenshot) */}
+                                    {(() => {
+                                        const cur = (selectedMethod.currency || 'EGP').toUpperCase();
+                                        const val = parseFloat(amount);
+                                        if (!val || val <= 0) return null;
+
+                                        let usdEquivalent = null;
+                                        if (cur === 'USD' || cur === 'USDT') {
+                                            usdEquivalent = val;
+                                        } else {
+                                            const directRate = ratesList.find(r => r.from_currency === cur && r.to_currency === 'USD' && r.is_active);
+                                            if (directRate && Number(directRate.rate) > 0) {
+                                                usdEquivalent = val * Number(directRate.rate);
+                                            } else {
+                                                const inverseRate = ratesList.find(r => r.from_currency === 'USD' && r.to_currency === cur && r.is_active);
+                                                if (inverseRate && Number(inverseRate.rate) > 0) {
+                                                    usdEquivalent = val / Number(inverseRate.rate);
+                                                }
+                                            }
+                                        }
+
+                                        if (usdEquivalent === null) return null;
+
+                                        return (
+                                            <div style={{
+                                                marginTop: '8px',
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                padding: '6px 14px',
+                                                borderRadius: '10px',
+                                                background: 'rgba(34, 197, 94, 0.12)',
+                                                border: '1px solid rgba(34, 197, 94, 0.35)',
+                                                color: '#22c55e',
+                                                fontSize: '13px',
+                                                fontWeight: '800',
+                                                fontFamily: 'Cairo, sans-serif'
+                                            }}>
+                                                <span>≈</span>
+                                                <span>{usdEquivalent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                                <span style={{ fontSize: '11px', fontWeight: '900' }}>USD</span>
+                                            </div>
+                                        );
+                                    })()}
 
                                     {/* Quick Amount Preset Chips */}
                                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>

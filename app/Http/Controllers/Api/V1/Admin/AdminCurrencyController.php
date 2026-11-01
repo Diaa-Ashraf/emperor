@@ -74,6 +74,27 @@ class AdminCurrencyController extends Controller
             admin: $request->user()
         );
 
+        // If setting USD -> X or X -> USD, maintain bidirectional sync automatically
+        if ($from === 'USD' && $rateVal > 0) {
+            $this->exchangeRateService->setRate(
+                fromCurrency: $to,
+                toCurrency: 'USD',
+                rate: round(1 / $rateVal, 6),
+                feePercent: $fee,
+                isActive: $isActive,
+                admin: $request->user()
+            );
+        } elseif ($to === 'USD' && $rateVal > 0) {
+            $this->exchangeRateService->setRate(
+                fromCurrency: 'USD',
+                toCurrency: $from,
+                rate: round(1 / $rateVal, 6),
+                feePercent: $fee,
+                isActive: $isActive,
+                admin: $request->user()
+            );
+        }
+
         return $this->successResponse(
             $rateRecord->load('updatedBy:id,name'),
             "تم حفظ سعر الصرف ({$from} ➔ {$to}) بنجاح",
@@ -99,12 +120,37 @@ class AdminCurrencyController extends Controller
             'conversion_fee_percent.numeric' => 'نسبة الرسوم يجب أن تكون رقماً',
         ]);
 
+        $newRate = (float) $validated['rate'];
+        $fee = isset($validated['conversion_fee_percent']) ? (float) $validated['conversion_fee_percent'] : $rateRecord->conversion_fee_percent;
+        $isActive = isset($validated['is_active']) ? (bool) $validated['is_active'] : $rateRecord->is_active;
+
         $rateRecord->update([
-            'rate' => (float) $validated['rate'],
-            'conversion_fee_percent' => isset($validated['conversion_fee_percent']) ? (float) $validated['conversion_fee_percent'] : $rateRecord->conversion_fee_percent,
-            'is_active' => isset($validated['is_active']) ? (bool) $validated['is_active'] : $rateRecord->is_active,
+            'rate' => $newRate,
+            'conversion_fee_percent' => $fee,
+            'is_active' => $isActive,
             'updated_by' => $request->user()?->id,
         ]);
+
+        // Automatically sync reverse rate if paired with USD
+        if ($rateRecord->from_currency === 'USD' && $newRate > 0) {
+            $this->exchangeRateService->setRate(
+                fromCurrency: $rateRecord->to_currency,
+                toCurrency: 'USD',
+                rate: round(1 / $newRate, 6),
+                feePercent: $fee,
+                isActive: $isActive,
+                admin: $request->user()
+            );
+        } elseif ($rateRecord->to_currency === 'USD' && $newRate > 0) {
+            $this->exchangeRateService->setRate(
+                fromCurrency: 'USD',
+                toCurrency: $rateRecord->from_currency,
+                rate: round(1 / $newRate, 6),
+                feePercent: $fee,
+                isActive: $isActive,
+                admin: $request->user()
+            );
+        }
 
         return $this->successResponse(
             $rateRecord->load('updatedBy:id,name'),

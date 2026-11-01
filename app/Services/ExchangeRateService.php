@@ -29,10 +29,53 @@ class ExchangeRateService
             return null;
         }
 
-        return ExchangeRate::where('from_currency', $from)
+        $direct = ExchangeRate::where('from_currency', $from)
             ->where('to_currency', $to)
             ->where('is_active', true)
             ->first();
+
+        if ($direct) {
+            return $direct;
+        }
+
+        // Check if we can derive via USD base currency
+        // 1. If to === 'USD', check USD -> from and inverse
+        if ($to === 'USD') {
+            $usdToFrom = ExchangeRate::where('from_currency', 'USD')
+                ->where('to_currency', $from)
+                ->where('is_active', true)
+                ->first();
+            if ($usdToFrom && (float) $usdToFrom->rate > 0) {
+                $synthetic = new ExchangeRate([
+                    'from_currency' => $from,
+                    'to_currency' => 'USD',
+                    'rate' => round(1 / (float) $usdToFrom->rate, 6),
+                    'conversion_fee_percent' => (float) $usdToFrom->conversion_fee_percent,
+                    'is_active' => true,
+                ]);
+                return $synthetic;
+            }
+        }
+
+        // 2. If from === 'USD', check to -> USD and inverse
+        if ($from === 'USD') {
+            $toToUsd = ExchangeRate::where('from_currency', $to)
+                ->where('to_currency', 'USD')
+                ->where('is_active', true)
+                ->first();
+            if ($toToUsd && (float) $toToUsd->rate > 0) {
+                $synthetic = new ExchangeRate([
+                    'from_currency' => 'USD',
+                    'to_currency' => $to,
+                    'rate' => round(1 / (float) $toToUsd->rate, 6),
+                    'conversion_fee_percent' => (float) $toToUsd->conversion_fee_percent,
+                    'is_active' => true,
+                ]);
+                return $synthetic;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -69,7 +112,26 @@ class ExchangeRateService
                 $rate = round(1 / (float) $reverseRate->rate, 6);
                 $feePercent = (float) $reverseRate->conversion_fee_percent;
             } else {
-                throw new \RuntimeException("سعر التحويل بين {$from} و {$to} غير متاح حالياً.");
+        // If no direct or inverse rate, try triangle via USD (e.g. SAR -> USD -> JOD)
+        if ($from !== 'USD' && $to !== 'USD') {
+            $fromToUsd = $this->getRate($from, 'USD');
+            $usdToTo = $this->getRate('USD', $to);
+            if ($fromToUsd && $usdToTo) {
+                $crossRate = round((float) $fromToUsd->rate * (float) $usdToTo->rate, 6);
+                return [
+                    'from_currency' => $from,
+                    'to_currency' => $to,
+                    'source_amount' => $amount,
+                    'rate' => $crossRate,
+                    'fee_percent' => 0.0,
+                    'fee_amount' => 0.0,
+                    'converted_amount' => round($amount * $crossRate, 4),
+                    'final_amount' => round($amount * $crossRate, 4),
+                ];
+            }
+        }
+
+        throw new \RuntimeException("سعر التحويل بين {$from} و {$to} غير متاح حالياً.");
             }
         } else {
             $rate = (float) $exchangeRate->rate;

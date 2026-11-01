@@ -16,9 +16,9 @@ class CompleteProfileRequest extends FormRequest
         $userId = $this->user()->id;
 
         return [
-            'phone' => ['required', 'string', 'max:20', "unique:users,phone,{$userId}"],
+            'phone' => ['nullable', 'string', 'max:20', "unique:users,phone,{$userId}"],
             'country' => ['required', 'string', 'max:10'],
-            'currency' => ['required', 'string', 'in:EGP,USD,SAR,AED,KWD,SYP,YER,JOD,EUR'],
+            'currency' => ['required', 'string', 'in:EGP,USD,SAR,AED,KWD,SYP,YER,JOD,EUR,TRY,QAR,OMR,BHD,MAD,DZD,LYD,IQD'],
             'invite_code' => ['nullable', 'string', 'max:20'],
         ];
     }

@@ -653,16 +653,6 @@ export default function AdminCurrenciesPage() {
                                     >
                                         {supportedCurrencies.map(c => <option key={c} value={c} style={{ backgroundColor: isLight ? '#FFFFFF' : '#0B1322', color: isLight ? '#0F172A' : '#FFFFFF' }}>{c}</option>)}
                                     </select>
-                                            backgroundColor: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.05)',
-                                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.12)',
-                                            color: isLight ? '#0F172A' : '#FFFFFF',
-                                            fontWeight: '800',
-                                            fontSize: '13px',
-                                            outline: 'none',
-                                        }}
-                                    >
-                                        {supportedCurrencies.map(c => <option key={c} value={c}>{c}</option>)}
-                                    </select>
                                 </div>
                             </div>
 

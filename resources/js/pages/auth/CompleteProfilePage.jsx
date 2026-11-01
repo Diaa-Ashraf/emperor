@@ -8,33 +8,37 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { getSiteName } from '../../utils/settingsHelper';
 
 const COUNTRIES = [
+    { value: 'US', label: 'United States (أمريكا)', flag: '🇺🇸', defaultCurrency: 'USD', phoneCode: '+1' },
     { value: 'EG', label: 'مصر (Egypt)', flag: '🇪🇬', defaultCurrency: 'EGP', phoneCode: '+20' },
     { value: 'SA', label: 'المملكة العربية السعودية (Saudi Arabia)', flag: '🇸🇦', defaultCurrency: 'SAR', phoneCode: '+966' },
     { value: 'AE', label: 'الإمارات العربية المتحدة (UAE)', flag: '🇦🇪', defaultCurrency: 'AED', phoneCode: '+971' },
-    { value: 'US', label: 'United States (أمريكا)', flag: '🇺🇸', defaultCurrency: 'USD', phoneCode: '+1' },
-    { value: 'KW', label: 'الكويت (Kuwait)', flag: '🇰🇼', defaultCurrency: 'KWD', phoneCode: '+965' },
-    { value: 'QA', label: 'قطر (Qatar)', flag: '🇶🇦', defaultCurrency: 'USD', phoneCode: '+974' },
-    { value: 'OM', label: 'سلطنة عمان (Oman)', flag: '🇴🇲', defaultCurrency: 'USD', phoneCode: '+968' },
-    { value: 'BH', label: 'البحرين (Bahrain)', flag: '🇧🇭', defaultCurrency: 'USD', phoneCode: '+973' },
-    { value: 'IQ', label: 'العراق (Iraq)', flag: '🇮🇶', defaultCurrency: 'USD', phoneCode: '+964' },
     { value: 'JO', label: 'الأردن (Jordan)', flag: '🇯🇴', defaultCurrency: 'JOD', phoneCode: '+962' },
-    { value: 'SY', label: 'سوريا (Syria)', flag: '🇸🇾', defaultCurrency: 'USD', phoneCode: '+963' },
     { value: 'YE', label: 'اليمن (Yemen)', flag: '🇾🇪', defaultCurrency: 'YER', phoneCode: '+967' },
-    { value: 'LY', label: 'ليبيا (Libya)', flag: '🇱🇾', defaultCurrency: 'USD', phoneCode: '+218' },
-    { value: 'DZ', label: 'الجزائر (Algeria)', flag: '🇩🇿', defaultCurrency: 'USD', phoneCode: '+213' },
-    { value: 'MA', label: 'المغرب (Morocco)', flag: '🇲🇦', defaultCurrency: 'USD', phoneCode: '+212' },
+    { value: 'TR', label: 'تركيا (Turkey)', flag: '🇹🇷', defaultCurrency: 'TRY', phoneCode: '+90' },
+    { value: 'MA', label: 'المغرب (Morocco)', flag: '🇲🇦', defaultCurrency: 'MAD', phoneCode: '+212' },
+    { value: 'DZ', label: 'الجزائر (Algeria)', flag: '🇩🇿', defaultCurrency: 'DZD', phoneCode: '+213' },
+    { value: 'KW', label: 'الكويت (Kuwait)', flag: '🇰🇼', defaultCurrency: 'KWD', phoneCode: '+965' },
+    { value: 'QA', label: 'قطر (Qatar)', flag: '🇶🇦', defaultCurrency: 'QAR', phoneCode: '+974' },
+    { value: 'OM', label: 'سلطنة عمان (Oman)', flag: '🇴🇲', defaultCurrency: 'OMR', phoneCode: '+968' },
+    { value: 'BH', label: 'البحرين (Bahrain)', flag: '🇧🇭', defaultCurrency: 'BHD', phoneCode: '+973' },
+    { value: 'IQ', label: 'العراق (Iraq)', flag: '🇮🇶', defaultCurrency: 'IQD', phoneCode: '+964' },
+    { value: 'SY', label: 'سوريا (Syria)', flag: '🇸🇾', defaultCurrency: 'SYP', phoneCode: '+963' },
+    { value: 'LY', label: 'ليبيا (Libya)', flag: '🇱🇾', defaultCurrency: 'LYD', phoneCode: '+218' },
     { value: 'OTHER', label: 'دولة أخرى (Other Country)', flag: '🌐', defaultCurrency: 'USD', phoneCode: '' },
 ];
 
 const CURRENCIES = [
-    { value: 'EGP', label: '(£) EGP - الجنيه المصري', symbol: '£', name: 'الجنيه المصري' },
-    { value: 'USD', label: '($) USD - الدولار الأمريكي', symbol: '$', name: 'الدولار الأمريكي' },
-    { value: 'SAR', label: '(ر.س) SAR - الريال السعودي', symbol: 'ر.س', name: 'الريال السعودي' },
-    { value: 'AED', label: '(د.إ) AED - الدرهم الإماراتي', symbol: 'د.إ', name: 'الدرهم الإماراتي' },
-    { value: 'KWD', label: '(د.ك) KWD - الدينار الكويتي', symbol: 'د.ك', name: 'الدينار الكويتي' },
-    { value: 'JOD', label: '(د.أ) JOD - الدينار الأردني', symbol: 'د.أ', name: 'الدينار الأردني' },
-    { value: 'YER', label: '(ر.ي) YER - الريال اليمني', symbol: 'ر.ي', name: 'الريال اليمني' },
-    { value: 'EUR', label: '(€) EUR - اليورو', symbol: '€', name: 'اليورو الأوروبي' },
+    { value: 'USD', label: '($) USD' },
+    { value: 'AED', label: 'AED (AED)' },
+    { value: 'EGP', label: 'EGY (Egy)' },
+    { value: 'JOD', label: 'JOD (1.20)' },
+    { value: 'MAD', label: 'MAD (MAD)' },
+    { value: 'SAR', label: 'SAR (Sar)' },
+    { value: 'TRY', label: '(₺) TRY' },
+    { value: 'YER', label: '(ريال) YER' },
+    { value: 'KWD', label: 'KWD (Kuwait)' },
+    { value: 'QAR', label: 'QAR (Qatar)' },
+    { value: 'EUR', label: '(€) EUR' },
 ];
 
 export default function CompleteProfilePage() {
@@ -80,9 +84,6 @@ export default function CompleteProfilePage() {
         setErrors({});
 
         const newErrors = {};
-        if (!formData.phone.trim()) {
-            newErrors.phone = 'يرجى إدخال رقم الهاتف / الواتساب';
-        }
         if (!formData.country) {
             newErrors.country = 'يرجى اختيار الدولة';
         }
@@ -98,10 +99,13 @@ export default function CompleteProfilePage() {
         setLoading(true);
         try {
             const payload = {
-                phone: formData.phone.trim(),
                 country: formData.country,
                 currency: formData.currency,
             };
+
+            if (formData.phone && formData.phone.trim()) {
+                payload.phone = formData.phone.trim();
+            }
 
             if (formData.invite_code.trim()) {
                 payload.invite_code = formData.invite_code.trim().toUpperCase();
@@ -330,58 +334,7 @@ export default function CompleteProfilePage() {
                     )}
                 </div>
 
-                {/* 3. Phone Number Field */}
-                <div style={{ marginBottom: '18px' }}>
-                    <label style={{
-                        fontSize: '13px',
-                        fontWeight: '800',
-                        color: isLight ? '#334155' : '#CBD5E1',
-                        display: 'block',
-                        marginBottom: '8px',
-                        textAlign: 'right',
-                    }}>
-                        رقم الهاتف
-                    </label>
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        backgroundColor: isLight ? '#F8FAFC' : 'rgba(15, 23, 42, 0.7)',
-                        border: errors.phone
-                            ? '1.5px solid #EF4444'
-                            : isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.15)',
-                        borderRadius: '14px',
-                        padding: '12px 14px',
-                        transition: 'border-color 0.2s',
-                    }}>
-                        <input
-                            type="tel"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            placeholder="+201012345678"
-                            dir="ltr"
-                            style={{
-                                width: '100%',
-                                background: 'transparent',
-                                border: 'none',
-                                outline: 'none',
-                                color: isLight ? '#0F172A' : '#FFFFFF',
-                                fontSize: '14px',
-                                fontWeight: '700',
-                                fontFamily: 'Cairo, sans-serif',
-                                textAlign: 'right',
-                            }}
-                        />
-                        <Phone size={18} color={isLight ? '#64748B' : '#94A3B8'} style={{ marginRight: '8px' }} />
-                    </div>
-                    {errors.phone && (
-                        <span style={{ fontSize: '11.5px', color: '#EF4444', marginTop: '4px', display: 'block', textAlign: 'right' }}>
-                            {errors.phone}
-                        </span>
-                    )}
-                </div>
-
-                {/* 4. Optional Invite / Referral Code */}
+                {/* 3. Optional Invite / Referral Code */}
                 <div style={{ marginBottom: '26px' }}>
                     <label style={{
                         fontSize: '13px',

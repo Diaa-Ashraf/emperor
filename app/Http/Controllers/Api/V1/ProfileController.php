@@ -45,10 +45,13 @@ class ProfileController extends Controller
         $validated = $request->validated();
 
         $updateData = [
-            'phone' => $validated['phone'],
             'currency' => $validated['currency'],
             'country' => $validated['country'] ?? $user->country,
         ];
+
+        if (!empty($validated['phone'])) {
+            $updateData['phone'] = $validated['phone'];
+        }
 
         // Link referral code if provided and user doesn't already have a referrer
         if (!empty($validated['invite_code']) && empty($user->referrer_id)) {

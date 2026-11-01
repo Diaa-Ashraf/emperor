@@ -55,6 +55,7 @@ Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
     // Public Payment Methods & Supported Countries for Deposit & Financial Services
     Route::get('/deposits/methods', [DepositController::class, 'methods']);
     Route::get('/supported-countries', [DepositController::class, 'supportedCountries']);
+    Route::get('/currencies/rates', [WalletController::class, 'rates']);
 
     // Public Auth Routes (Guarded with Anti-Brute-Force Rate Limiting)
     Route::prefix('auth')->middleware(['throttle:auth'])->group(function () {
