@@ -34,6 +34,23 @@ export default function AdminDepositsPage() {
     // Receipt preview modal
     const [previewImage, setPreviewImage] = useState(null);
 
+    const formatDateArabic = (dateStr) => {
+        if (!dateStr) return 'غير محدد';
+        try {
+            const date = new Date(dateStr);
+            return new Intl.DateTimeFormat('ar-EG', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true,
+            }).format(date);
+        } catch (e) {
+            return dateStr;
+        }
+    };
+
     // Reject reason modal
     const [rejectingDeposit, setRejectingDeposit] = useState(null);
     const [rejectReason, setRejectReason] = useState('');
