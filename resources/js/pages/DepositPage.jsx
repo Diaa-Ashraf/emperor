@@ -542,354 +542,455 @@ export default function DepositPage() {
                     </div>
                 )}
 
-                {/* ═══ VIEW 2: DEPOSIT SUBMIT FORM (When Method is Selected) ═══ */}
+                {/* ═══ VIEW 2: DEPOSIT SUBMIT FORM (Matching AD CARD Layout & Screenshot) ═══ */}
                 {selectedMethod && (
-                    <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-                        <div className="deposit-form-card">
-                            {/* Selected Header */}
+                    <div style={{ maxWidth: '780px', margin: '0 auto', direction: 'rtl' }}>
+                        {/* Header Box matching AD CARD: "تفاصيل الدفع - أدخل بيانات التحويل كما تظهر في الإيصال" */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '12px',
+                            marginBottom: '26px',
+                            textAlign: 'center',
+                        }}>
                             <div style={{
+                                width: '42px',
+                                height: '42px',
+                                borderRadius: '12px',
+                                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%)',
+                                border: '1px solid rgba(236, 72, 153, 0.4)',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '16px',
-                                marginBottom: '24px',
-                                paddingBottom: '18px',
-                                borderBottom: isLight ? '1px solid rgba(212, 165, 55, 0.3)' : '1px solid rgba(212, 165, 55, 0.25)',
+                                justifyContent: 'center',
+                                color: '#EC4899',
+                                flexShrink: 0
                             }}>
-                                <div style={{
-                                    width: '64px',
-                                    height: '64px',
-                                    borderRadius: '20px',
-                                    background: isLight ? '#F8FAFC' : 'radial-gradient(circle, #0e1e38 0%, #060e1d 100%)',
-                                    border: isLight ? '1px solid #E2E8F0' : '1.5px solid rgba(56, 189, 248, 0.35)',
+                                <FileText size={22} />
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                                    تفاصيل الدفع
+                                </h2>
+                                <p style={{ margin: '3px 0 0', fontSize: '13px', color: isLight ? '#64748B' : '#94A3B8' }}>
+                                    أدخل بيانات التحويل كما تظهر في الإيصال
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Account Number Banner */}
+                        <div style={{
+                            background: isLight ? '#F8FAFC' : 'linear-gradient(145deg, #180d26 0%, #0d0816 100%)',
+                            border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(236, 72, 153, 0.3)',
+                            borderRadius: '18px',
+                            padding: '14px 20px',
+                            marginBottom: '24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '14px',
+                            boxShadow: '0 8px 25px rgba(0,0,0,0.4)'
+                        }}>
+                            <div>
+                                <span style={{ display: 'block', fontSize: '11.5px', fontWeight: '800', color: '#EC4899', marginBottom: '4px' }}>
+                                    {selectedMethod.name} — رقم الحساب / المحفظة المحول إليها:
+                                </span>
+                                <span style={{ fontSize: '17px', fontWeight: '900', color: '#FFFFFF', fontFamily: 'monospace', letterSpacing: '1px' }}>
+                                    {selectedMethod.account_number}
+                                </span>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => copyText(selectedMethod.account_number)}
+                                style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
-                                    boxShadow: isLight ? '0 4px 15px rgba(15, 23, 42, 0.08)' : '0 6px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.2)',
+                                    gap: '6px',
+                                    padding: '8px 16px',
+                                    borderRadius: '10px',
+                                    background: copied ? '#22C55E' : 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)',
+                                    border: 'none',
+                                    color: '#FFFFFF',
+                                    fontSize: '13px',
+                                    fontWeight: '800',
+                                    cursor: 'pointer',
                                     flexShrink: 0,
-                                    overflow: 'hidden',
-                                }}>
-                                    {selectedMethod.logo ? (
-                                        <img
-                                            src={selectedMethod.logo}
-                                            alt={selectedMethod.name}
-                                            onError={(e) => {
-                                                e.currentTarget.style.display = 'none';
-                                                const fallback = e.currentTarget.parentElement?.querySelector('.selected-brand-fallback');
-                                                if (fallback) fallback.style.display = 'flex';
-                                            }}
-                                            style={{ maxWidth: '48px', maxHeight: '48px', objectFit: 'contain', borderRadius: '6px' }}
-                                        />
-                                    ) : null}
-                                    <div className="selected-brand-fallback" style={{ display: selectedMethod.logo ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <PaymentBrandLogo methodId={selectedMethod.code || selectedMethod.id} size={54} />
-                                    </div>
-                                </div>
+                                }}
+                            >
+                                {copied ? <Check size={14} strokeWidth={3} /> : <Copy size={14} />}
+                                <span>{copied ? 'تم النسخ!' : 'نسخ'}</span>
+                            </button>
+                        </div>
 
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <h2 style={{ margin: 0, fontSize: '22px', fontWeight: '900', color: isLight ? '#0f172a' : '#FFFFFF' }}>
-                                            {selectedMethod.name}
-                                        </h2>
-                                        <span className="ka-card-cur-badge">
-                                            {selectedMethod.currency}
+                        <form onSubmit={handleSubmitDeposit} style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+                            {/* ══ 1. Amount Input with Integrated Currency Pill & Live USD Equivalency ══ */}
+                            <div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                    <span style={{ fontSize: '13.5px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                                        المبلغ
+                                    </span>
+                                    {amount && parseFloat(amount) >= (selectedMethod.min_amount || 1) && (
+                                        <span style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '4px',
+                                            fontSize: '12px',
+                                            fontWeight: '800',
+                                            color: '#22c55e',
+                                        }}>
+                                            <Check size={14} strokeWidth={3} />
+                                            <span>تم</span>
                                         </span>
-                                    </div>
-                                    <p style={{ margin: '4px 0 0', fontSize: '13px', color: isLight ? '#475569' : '#A0A0B0' }}>
-                                        {selectedMethod.instruction || selectedMethod.note}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Account Details & Copy Box */}
-                            <div className="deposit-account-box">
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                    <span style={{ fontSize: '12px', fontWeight: '800', color: isLight ? '#b45309' : '#F5D061' }}>
-                                        {String(selectedMethod.code || selectedMethod.id || '').toLowerCase().includes('usdt') ? (language === 'en' ? 'TRC-20 Wallet Address:' : 'عنوان المحفظة (TRC-20 Address):') : (String(selectedMethod.code || selectedMethod.id || '').toLowerCase().includes('binance') ? 'Binance Pay ID:' : (language === 'en' ? 'Account / Receiving Wallet Number:' : 'رقم الحساب / المحفظة للتحويل:'))}
-                                    </span>
-                                    <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: '700' }}>
-                                        ✓ {language === 'en' ? 'Verified & Active Now' : 'معتمد ونشط الآن'}
-                                    </span>
+                                    )}
                                 </div>
 
                                 <div style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    background: isLight ? '#ffffff' : '#0D0C09',
-                                    border: isLight ? '1.5px solid rgba(212, 165, 55, 0.4)' : '1px solid rgba(212, 165, 55, 0.3)',
-                                    borderRadius: '12px',
-                                    padding: '10px 14px',
-                                    gap: '10px',
+                                    background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #240d34 0%, #150820 100%)',
+                                    border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(236, 72, 153, 0.45)',
+                                    borderRadius: '24px',
+                                    padding: '6px 8px 6px 20px',
+                                    boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                                    transition: 'all 0.2s',
                                 }}>
-                                    <span style={{
-                                        fontSize: '17px',
-                                        fontWeight: '900',
-                                        color: isLight ? '#0f172a' : '#FFFFFF',
-                                        fontFamily: 'monospace',
-                                        letterSpacing: '1px',
-                                        wordBreak: 'break-all',
-                                    }}>
-                                        {selectedMethod.account_number}
-                                    </span>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => copyText(selectedMethod.account_number)}
+                                    <input
+                                        type="number"
+                                        required
+                                        min={selectedMethod.min_amount || 1}
+                                        step="any"
+                                        value={amount}
+                                        onChange={(e) => setAmount(e.target.value)}
+                                        placeholder={`أدخل المبلغ (الحد الأدنى ${selectedMethod.min_amount || 1})`}
                                         style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '6px',
-                                            padding: '8px 16px',
-                                            borderRadius: '8px',
-                                            background: copied ? '#22C55E' : 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                            flex: 1,
+                                            background: 'transparent',
                                             border: 'none',
-                                            color: '#000000',
-                                            fontSize: '13px',
-                                            fontWeight: '800',
-                                            cursor: 'pointer',
-                                            flexShrink: 0,
-                                            transition: 'all 0.2s',
+                                            outline: 'none',
+                                            color: '#FFFFFF',
+                                            fontSize: '22px',
+                                            fontWeight: '900',
+                                            fontFamily: 'Cairo, sans-serif',
+                                            textAlign: 'left',
+                                            direction: 'ltr',
+                                            padding: '8px 10px',
                                         }}
-                                    >
-                                        {copied ? <Check size={14} strokeWidth={3} /> : <Copy size={14} />}
-                                        <span>{copied ? t('copied', 'تم النسخ!') : t('copyCode', 'نسخ')}</span>
-                                    </button>
-                                </div>
-                            </div>
+                                    />
 
-                            {/* Form */}
-                            <form onSubmit={handleSubmitDeposit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                                {/* Amount Input */}
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: isLight ? '#0f172a' : '#F3F4F6', marginBottom: '8px' }}>
-                                        {t('depositAmountRequired', 'المبلغ المحول')} ({selectedMethod.currency}): <span style={{ color: '#EF4444' }}>*</span>
-                                    </label>
-                                    <div style={{ position: 'relative' }}>
-                                        <input
-                                            type="number"
-                                            required
-                                            min={selectedMethod.min_amount || 1}
-                                            step="any"
-                                            value={amount}
-                                            onChange={(e) => setAmount(e.target.value)}
-                                            placeholder={language === 'en' ? `Enter amount (min ${selectedMethod.min_amount} ${selectedMethod.currency})` : `أدخل المبلغ (الحد الأدنى ${selectedMethod.min_amount} ${selectedMethod.currency})`}
-                                            style={{
-                                                width: '100%',
-                                                boxSizing: 'border-box',
-                                                background: isLight ? '#ffffff' : '#0D0C09',
-                                                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1.5px solid rgba(255, 255, 255, 0.15)',
-                                                borderRadius: '12px',
-                                                padding: '12px 16px',
-                                                color: isLight ? '#0f172a' : '#FFFFFF',
-                                                fontSize: '16px',
-                                                fontWeight: '800',
-                                                outline: 'none',
-                                            }}
-                                        />
+                                    {/* Currency Pill Tag (Matching AD CARD "Egy" or "SAR" Pill) */}
+                                    <div style={{
+                                        background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
+                                        color: '#0D0C09',
+                                        fontSize: '16px',
+                                        fontWeight: '900',
+                                        padding: '10px 22px',
+                                        borderRadius: '18px',
+                                        letterSpacing: '0.5px',
+                                        boxShadow: '0 4px 15px rgba(245, 208, 97, 0.3)',
+                                        flexShrink: 0
+                                    }}>
+                                        {selectedMethod.currency || 'EGP'}
                                     </div>
+                                </div>
 
-                                    {/* Real-time USD Equivalence Badge (Matching AD CARD / screenshot) */}
-                                    {(() => {
-                                        const cur = (selectedMethod.currency || 'EGP').toUpperCase();
-                                        const val = parseFloat(amount);
-                                        if (!val || val <= 0) return null;
+                                {/* Live USD Equivalence Badge (Directly below amount input on the left like AD CARD) */}
+                                {(() => {
+                                    const cur = (selectedMethod.currency || 'EGP').toUpperCase();
+                                    const val = parseFloat(amount);
+                                    if (!val || val <= 0) return null;
 
-                                        let usdEquivalent = null;
-                                        if (cur === 'USD' || cur === 'USDT') {
-                                            usdEquivalent = val;
+                                    let usdEquivalent = null;
+                                    if (cur === 'USD' || cur === 'USDT') {
+                                        usdEquivalent = val;
+                                    } else {
+                                        const directRate = ratesList.find(r => r.from_currency === cur && r.to_currency === 'USD' && r.is_active);
+                                        if (directRate && Number(directRate.rate) > 0) {
+                                            usdEquivalent = val * Number(directRate.rate);
                                         } else {
-                                            const directRate = ratesList.find(r => r.from_currency === cur && r.to_currency === 'USD' && r.is_active);
-                                            if (directRate && Number(directRate.rate) > 0) {
-                                                usdEquivalent = val * Number(directRate.rate);
-                                            } else {
-                                                const inverseRate = ratesList.find(r => r.from_currency === 'USD' && r.to_currency === cur && r.is_active);
-                                                if (inverseRate && Number(inverseRate.rate) > 0) {
-                                                    usdEquivalent = val / Number(inverseRate.rate);
-                                                }
+                                            const inverseRate = ratesList.find(r => r.from_currency === 'USD' && r.to_currency === cur && r.is_active);
+                                            if (inverseRate && Number(inverseRate.rate) > 0) {
+                                                usdEquivalent = val / Number(inverseRate.rate);
                                             }
                                         }
+                                    }
 
-                                        if (usdEquivalent === null) return null;
+                                    if (usdEquivalent === null) return null;
 
-                                        return (
-                                            <div style={{
-                                                marginTop: '8px',
-                                                display: 'inline-flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
-                                                padding: '6px 14px',
-                                                borderRadius: '10px',
-                                                background: 'rgba(34, 197, 94, 0.12)',
-                                                border: '1px solid rgba(34, 197, 94, 0.35)',
-                                                color: '#22c55e',
+                                    return (
+                                        <div style={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-start',
+                                            marginTop: '8px',
+                                            direction: 'ltr',
+                                        }}>
+                                            <span style={{
                                                 fontSize: '13px',
                                                 fontWeight: '800',
-                                                fontFamily: 'Cairo, sans-serif'
+                                                color: '#EC4899',
+                                                background: 'rgba(236, 72, 153, 0.12)',
+                                                border: '1px solid rgba(236, 72, 153, 0.35)',
+                                                padding: '3px 10px',
+                                                borderRadius: '8px',
+                                                fontFamily: 'monospace'
                                             }}>
-                                                <span>≈</span>
-                                                <span>{usdEquivalent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                                                <span style={{ fontSize: '11px', fontWeight: '900' }}>USD</span>
-                                            </div>
-                                        );
-                                    })()}
+                                                ≈ {usdEquivalent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                                            </span>
+                                        </div>
+                                    );
+                                })()}
+                            </div>
 
-                                    {/* Quick Amount Preset Chips */}
-                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
-                                        {[100, 250, 500, 1000, 2000].map((val) => (
-                                            <button
-                                                key={val}
-                                                type="button"
-                                                className="deposit-amount-preset-btn"
-                                                onClick={() => setAmount(String(val))}
-                                            >
-                                                +{val} {selectedMethod.currency}
-                                            </button>
-                                        ))}
+                            {/* ══ 2. Two-Column Row: [ رقم العملية ] & [ رقم المحفظة المحول منها ] (Matching Screenshot) ══ */}
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                                gap: '16px',
+                            }}>
+                                {/* Right Box: رقم المحفظة المحول منها */}
+                                <div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                        <span style={{ fontSize: '13.5px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                                            رقم المحفظة المحول منها
+                                        </span>
+                                        <span style={{
+                                            fontSize: '10.5px',
+                                            fontWeight: '800',
+                                            color: '#EC4899',
+                                            background: 'rgba(236, 72, 153, 0.15)',
+                                            padding: '2px 8px',
+                                            borderRadius: '6px',
+                                        }}>
+                                            مطلوب
+                                        </span>
                                     </div>
-                                </div>
 
-                                {/* Sender Phone / Account Number */}
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: isLight ? '#0f172a' : '#F3F4F6', marginBottom: '8px' }}>
-                                        {t('senderWalletLabel', 'رقم المحفظة أو الحساب المحول منه')}: <span style={{ color: '#EF4444' }}>*</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={senderWallet}
-                                        onChange={(e) => setSenderWallet(e.target.value)}
-                                        placeholder={language === 'en' ? 'e.g. 01012345678 or sender account name' : 'مثال: 01012345678 أو اسم المحول'}
-                                        style={{
-                                            width: '100%',
-                                            boxSizing: 'border-box',
-                                            background: isLight ? '#ffffff' : '#0D0C09',
-                                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1.5px solid rgba(255, 255, 255, 0.15)',
-                                            borderRadius: '12px',
-                                            padding: '12px 16px',
-                                            color: isLight ? '#0f172a' : '#FFFFFF',
-                                            fontSize: '14px',
-                                            outline: 'none',
-                                        }}
-                                    />
-                                </div>
-
-                                {/* Transaction Reference / ID */}
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: isLight ? '#0f172a' : '#F3F4F6', marginBottom: '8px' }}>
-                                        {t('transactionRefLabel', 'رقم العملية أو المرجع (إن وجد)')}:
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={transactionRef}
-                                        onChange={(e) => setTransactionRef(e.target.value)}
-                                        placeholder={language === 'en' ? 'e.g. Transfer Ref # or TXID' : 'مثال: رقم الحوالة أو الـ TXID من الرسالة'}
-                                        style={{
-                                            width: '100%',
-                                            boxSizing: 'border-box',
-                                            background: isLight ? '#ffffff' : '#0D0C09',
-                                            border: isLight ? '1.5px solid rgba(212, 165, 55, 0.45)' : '1.5px solid rgba(255, 255, 255, 0.15)',
-                                            borderRadius: '12px',
-                                            padding: '12px 16px',
-                                            color: isLight ? '#0f172a' : '#FFFFFF',
-                                            fontSize: '14px',
-                                            outline: 'none',
-                                        }}
-                                    />
-                                </div>
-
-                                {/* Receipt Proof Image Upload */}
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: isLight ? '#0f172a' : '#F3F4F6', marginBottom: '8px' }}>
-                                        {t('attachProofReceipt', 'صورة إيصال التحويل (Screenshot)')}:
-                                    </label>
-                                    <label style={{
+                                    <div style={{
                                         display: 'flex',
-                                        flexDirection: 'column',
                                         alignItems: 'center',
-                                        justifyContent: 'center',
-                                        padding: '20px',
-                                        border: isLight ? '2px dashed rgba(212, 165, 55, 0.6)' : '2px dashed rgba(212, 165, 55, 0.4)',
-                                        borderRadius: '14px',
-                                        background: isLight ? '#ffffff' : 'rgba(0, 0, 0, 0.4)',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s',
+                                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #240d34 0%, #150820 100%)',
+                                        border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(236, 72, 153, 0.45)',
+                                        borderRadius: '20px',
+                                        padding: '6px 8px 6px 14px',
                                     }}>
                                         <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleFileChange}
-                                            style={{ display: 'none' }}
+                                            type="text"
+                                            required
+                                            value={senderWallet}
+                                            onChange={(e) => setSenderWallet(e.target.value)}
+                                            placeholder="أدخل رقم المحفظة التي تم التحويل منها"
+                                            style={{
+                                                flex: 1,
+                                                background: 'transparent',
+                                                border: 'none',
+                                                outline: 'none',
+                                                color: '#FFFFFF',
+                                                fontSize: '13.5px',
+                                                fontWeight: '700',
+                                                fontFamily: 'Cairo, sans-serif',
+                                                padding: '8px 6px',
+                                            }}
                                         />
-                                        {proofPreview ? (
-                                            <div style={{ textAlign: 'center' }}>
-                                                <img
-                                                    src={proofPreview}
-                                                    alt="إيصال التحويل"
-                                                    style={{ maxHeight: '120px', borderRadius: '8px', marginBottom: '8px' }}
-                                                />
-                                                <div style={{ color: '#16a34a', fontSize: '12px', fontWeight: '800' }}>
-                                                    ✓ {language === 'en' ? 'Image selected (click to change)' : 'تم اختيار الصورة (انقر للتغيير)'}
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div style={{ textAlign: 'center', color: isLight ? '#64748b' : '#9CA3AF' }}>
-                                                <Upload size={24} color="#D4A537" style={{ marginBottom: '6px' }} />
-                                                <div style={{ fontSize: '13px', fontWeight: '700', color: isLight ? '#0f172a' : '#E2E8F0' }}>
-                                                    {language === 'en' ? 'Click to upload receipt screenshot' : 'اضغط لرفع لقطة شاشة الإيصال'}
-                                                </div>
-                                                <div style={{ fontSize: '11px', marginTop: '3px' }}>
-                                                    {language === 'en' ? 'PNG, JPG up to 5MB' : 'PNG, JPG حتى 5 ميجابايت'}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </label>
-                                </div>
-
-                                {/* Submit & Cancel Buttons */}
-                                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px', marginTop: '10px' }}>
-                                    <button
-                                        type="submit"
-                                        disabled={submitting}
-                                        style={{
-                                            padding: '14px 20px',
-                                            borderRadius: '14px',
-                                            background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
-                                            border: 'none',
-                                            color: '#08080a',
-                                            fontSize: '15px',
-                                            fontWeight: '900',
-                                            cursor: 'pointer',
+                                        <div style={{
+                                            width: '38px',
+                                            height: '38px',
+                                            borderRadius: '12px',
+                                            background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            gap: '8px',
-                                            boxShadow: '0 8px 24px rgba(212, 165, 55, 0.4)',
-                                            opacity: submitting ? 0.7 : 1,
-                                        }}
-                                    >
-                                        <Zap size={18} />
-                                        <span>{submitting ? (language === 'en' ? 'Submitting request...' : 'جاري إرسال الطلب...') : (language === 'en' ? `Confirm Deposit (${numAmount || 0} ${selectedMethod.currency})` : `تأكيد إيداع (${numAmount || 0} ${selectedMethod.currency})`)}</span>
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setSelectedMethod(null)}
-                                        style={{
-                                            padding: '14px',
-                                            borderRadius: '14px',
-                                            background: isLight ? '#ffffff' : 'rgba(255, 255, 255, 0.05)',
-                                            border: isLight ? '1px solid #cbd5e1' : '1px solid rgba(255, 255, 255, 0.15)',
-                                            color: isLight ? '#475569' : '#CBD5E1',
-                                            fontSize: '14px',
-                                            fontWeight: '800',
-                                            cursor: 'pointer',
-                                        }}
-                                    >
-                                        {t('cancel', 'إلغاء')}
-                                    </button>
+                                            color: '#FFFFFF',
+                                            flexShrink: 0
+                                        }}>
+                                            <Smartphone size={18} />
+                                        </div>
+                                    </div>
                                 </div>
-                            </form>
-                        </div>
+
+                                {/* Left Box: رقم العملية */}
+                                <div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                        <span style={{ fontSize: '13.5px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                                            رقم العملية
+                                        </span>
+                                        <span style={{
+                                            fontSize: '10.5px',
+                                            fontWeight: '800',
+                                            color: '#EC4899',
+                                            background: 'rgba(236, 72, 153, 0.15)',
+                                            padding: '2px 8px',
+                                            borderRadius: '6px',
+                                        }}>
+                                            مطلوب
+                                        </span>
+                                    </div>
+
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        background: isLight ? '#FFFFFF' : 'linear-gradient(145deg, #240d34 0%, #150820 100%)',
+                                        border: isLight ? '1.5px solid #CBD5E1' : '1.5px solid rgba(236, 72, 153, 0.45)',
+                                        borderRadius: '20px',
+                                        padding: '6px 8px 6px 14px',
+                                    }}>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={transactionRef}
+                                            onChange={(e) => setTransactionRef(e.target.value)}
+                                            placeholder="أدخل رقم العملية"
+                                            style={{
+                                                flex: 1,
+                                                background: 'transparent',
+                                                border: 'none',
+                                                outline: 'none',
+                                                color: '#FFFFFF',
+                                                fontSize: '13.5px',
+                                                fontWeight: '700',
+                                                fontFamily: 'Cairo, sans-serif',
+                                                padding: '8px 6px',
+                                            }}
+                                        />
+                                        <div style={{
+                                            width: '38px',
+                                            height: '38px',
+                                            borderRadius: '12px',
+                                            background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            color: '#FFFFFF',
+                                            fontWeight: '900',
+                                            fontSize: '18px',
+                                            flexShrink: 0
+                                        }}>
+                                            #
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* ══ 3. Receipt Upload Area ══ */}
+                            <div>
+                                <label style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    padding: '16px',
+                                    border: isLight ? '2px dashed #CBD5E1' : '2px dashed rgba(236, 72, 153, 0.4)',
+                                    borderRadius: '18px',
+                                    background: isLight ? '#F8FAFC' : 'rgba(236, 72, 153, 0.04)',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                }}>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        style={{ display: 'none' }}
+                                    />
+                                    {proofPreview ? (
+                                        <div style={{ textAlign: 'center' }}>
+                                            <img
+                                                src={proofPreview}
+                                                alt="إيصال التحويل"
+                                                style={{ maxHeight: '100px', borderRadius: '10px', marginBottom: '6px' }}
+                                            />
+                                            <div style={{ color: '#22c55e', fontSize: '12px', fontWeight: '800' }}>
+                                                ✓ تم إرفاق صورة الإيصال (اضغط للتغيير)
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div style={{ textAlign: 'center', color: isLight ? '#64748B' : '#9CA3AF' }}>
+                                            <Upload size={22} color="#EC4899" style={{ marginBottom: '4px' }} />
+                                            <div style={{ fontSize: '13px', fontWeight: '800', color: isLight ? '#0F172A' : '#E2E8F0' }}>
+                                                اضغط لرفع لقطة شاشة الإيصال (اختياري / لتسريع التأكيد)
+                                            </div>
+                                        </div>
+                                    )}
+                                </label>
+                            </div>
+
+                            {/* ══ 4. Summary Box: [المبلغ الأساسي] & [الإجمالي المطلوب تحويله] ══ */}
+                            <div style={{
+                                background: isLight ? '#F8FAFC' : 'linear-gradient(145deg, #1b0c2a 0%, #10061a 100%)',
+                                border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(236, 72, 153, 0.3)',
+                                borderRadius: '20px',
+                                padding: '18px 24px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '14px',
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#64748B' : '#A0A0B0' }}>
+                                        المبلغ الأساسي
+                                    </span>
+                                    <span style={{ fontSize: '15px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', fontFamily: 'monospace' }}>
+                                        {numAmount > 0 ? numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'} {selectedMethod.currency}
+                                    </span>
+                                </div>
+
+                                <div style={{
+                                    height: '1px',
+                                    background: isLight ? '#E2E8F0' : 'rgba(255, 255, 255, 0.08)'
+                                }} />
+
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '15px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
+                                        الإجمالي المطلوب تحويله
+                                    </span>
+                                    <span style={{ fontSize: '19px', fontWeight: '900', color: '#EC4899', fontFamily: 'monospace' }}>
+                                        {numAmount > 0 ? numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'} {selectedMethod.currency}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* ══ 5. Submit Button: [تأكيد الدفع ✔] (Full-width Glowing Gradient) ══ */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    style={{
+                                        width: '100%',
+                                        padding: '16px',
+                                        borderRadius: '24px',
+                                        background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)',
+                                        border: 'none',
+                                        color: '#FFFFFF',
+                                        fontSize: '16px',
+                                        fontWeight: '900',
+                                        cursor: submitting ? 'not-allowed' : 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '10px',
+                                        boxShadow: '0 8px 30px rgba(236, 72, 153, 0.45)',
+                                        fontFamily: 'Cairo, sans-serif',
+                                        opacity: submitting ? 0.7 : 1,
+                                    }}
+                                >
+                                    <CheckCircle2 size={20} />
+                                    <span>{submitting ? 'جاري إرسال الطلب...' : 'تأكيد الدفع'}</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedMethod(null)}
+                                    style={{
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: isLight ? '#64748B' : '#9CA3AF',
+                                        fontSize: '13.5px',
+                                        fontWeight: '800',
+                                        cursor: 'pointer',
+                                        padding: '8px',
+                                        textAlign: 'center',
+                                    }}
+                                >
+                                    الرجوع لاختيار طريقة دفع أخرى
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 )}
             </div>
