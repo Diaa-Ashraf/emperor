@@ -135,12 +135,18 @@ export function AdminProtectedRoute({ children, requiredPermission }) {
     return children;
 }
 
-// Public Route (redirects to home if already authenticated)
+// Public Route (redirects to home if already authenticated, unless OAuth callback params exist)
 export function PublicRoute({ children }) {
     const { isAuthenticated, loading } = useAuth();
 
     if (loading) {
         return null;
+    }
+
+    // If URL contains oauth_token, let the child (LoginPage / RegisterPage) handle setting the session & redirecting to /complete-profile
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has('oauth_token')) {
+        return children;
     }
 
     if (isAuthenticated) {

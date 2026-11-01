@@ -499,7 +499,9 @@ class AuthController extends Controller
             $token = $user->createToken('Google Web Session', ['*'], now()->addHours(24))->plainTextToken;
 
             // Redirect back to SPA with token query param
-            return redirect("/login?oauth_token={$token}" . ($isNewUser ? '&is_new=1' : ''));
+            // If the user is new OR their country/phone is not completed yet, flag as profile completion needed
+            $needsProfileCompletion = $isNewUser || empty($user->country) || empty($user->phone);
+            return redirect("/login?oauth_token={$token}" . ($needsProfileCompletion ? '&is_new=1' : ''));
         } catch (\Throwable $e) {
             return redirect('/login?error=' . urlencode('فشل تسجيل الدخول عبر Google: ' . $e->getMessage()));
         }
