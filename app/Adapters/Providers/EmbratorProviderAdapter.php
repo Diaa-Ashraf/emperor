@@ -20,6 +20,12 @@ class EmbratorProviderAdapter implements ProviderAdapter
     public function __construct(
         protected array $config = []
     ) {
+        if (!empty($this->config['base_url'])) {
+            config(['services.embrator.base_url' => $this->config['base_url']]);
+        }
+        if (!empty($this->config['api_key'])) {
+            config(['services.embrator.api_key' => $this->config['api_key']]);
+        }
         $this->service = new EmbratorService($this->config);
     }
 
@@ -29,17 +35,19 @@ class EmbratorProviderAdapter implements ProviderAdapter
     public function executeOrder(OrderRequestDTO $orderDto): ProviderOrderResultDTO
     {
         // 1. Resolve external product ID (e.g. 6ad81ae0b1bf9e7679dc76a8 for Yoho Coins)
-        $externalProductId = null;
+        $externalProductId = $orderDto->providerSku;
 
         if ($orderDto->productTierId) {
             $pp = ProductProvider::where('product_tier_id', $orderDto->productTierId)
+                ->where('provider_id', $this->config['_provider_id'] ?? 0)
                 ->where('is_active', true)
                 ->first();
-            $externalProductId = $pp?->provider_sku;
+            $externalProductId = $pp?->provider_sku ?: $externalProductId;
         }
 
         if (!$externalProductId && $orderDto->productId) {
             $pp = ProductProvider::where('product_id', $orderDto->productId)
+                ->where('provider_id', $this->config['_provider_id'] ?? 0)
                 ->where('is_active', true)
                 ->first();
             $externalProductId = $pp?->provider_sku;

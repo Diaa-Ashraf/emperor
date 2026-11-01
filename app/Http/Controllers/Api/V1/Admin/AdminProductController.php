@@ -240,7 +240,7 @@ class AdminProductController extends Controller
             $tier->name = $product->name;
             $tier->sku = Str::upper(Str::slug($product->name, '_')) . '_TIER_1';
             $tier->source_cost = $basePrice;
-            $tier->cost_currency = 'USD';
+            $tier->cost_currency = (string) $request->input('provider_product_currency', 'USD');
             $tier->margin_percent = 4.00;
             $tier->final_price = $finalPrice;
             $tier->sale_price = $finalPrice;
@@ -254,6 +254,8 @@ class AdminProductController extends Controller
                 'provider_name' => $providerName,
                 'provider_product_id' => $providerProductId,
                 'provider_product_name' => $providerProductName,
+                'provider_product_fields' => $request->input('provider_product_fields', []),
+                'provider_product_currency' => $request->input('provider_product_currency', 'USD'),
                 'auto_fulfill' => $validated['auto_fulfill'] ?? true,
                 'sync_pricing' => $validated['sync_pricing'] ?? true,
                 'fulfillment_mode' => $validated['fulfillment_mode'] ?? 'auto',
@@ -275,7 +277,7 @@ class AdminProductController extends Controller
                             'product_id' => $product->id,
                             'provider_sku' => (string) $providerProductId,
                             'cost_price' => $basePrice,
-                            'cost_currency' => 'USD',
+                            'cost_currency' => (string) $request->input('provider_product_currency', 'USD'),
                             'priority' => 1,
                             'is_active' => true,
                             'updated_at' => now(),
@@ -317,33 +319,51 @@ class AdminProductController extends Controller
 
         $allItems = [];
 
-        // 1. Fetch live from Embrator Store API (B2B Reseller)
+        $provider = Provider::find($request->integer('provider_id'));
+        if (!$provider && $request->filled('provider_id')) {
+            $provider = Provider::where('name', $request->input('provider_id'))->first();
+        }
+        // Fetch live products from the selected supplier.
         try {
-            $embratorService = app(\App\Services\EmbratorService::class);
-            $liveCatalog = $embratorService->getProducts();
-            if ($liveCatalog['success'] && !empty($liveCatalog['products'])) {
-                foreach ($liveCatalog['products'] as $p) {
+            if ($provider && in_array($provider->driver, ['ad_card', 'ad-card', 'adcard'], true)) {
+                $adapter = app(\App\Services\ProviderManagerService::class)->resolveAdapter($provider->driver, array_merge($provider->config ?? [], ['base_url' => $provider->base_url]));
+                $liveProducts = $adapter->getProducts();
+            } elseif ($provider && $provider->driver !== 'embrator_reseller_api') {
+                $liveProducts = [];
+            } else {
+                $service = app(\App\Services\EmbratorService::class);
+                $liveCatalog = $service->getProducts();
+                $liveProducts = $liveCatalog['products'] ?? [];
+            }
+            if (!empty($liveProducts)) {
+                foreach ($liveProducts as $p) {
                     $rawPrice = (float) ($p['priceUsd'] ?? $p['price'] ?? 0);
+                    $currency = $p['currency'] ?? 'USD';
                     $allItems[] = [
                         'id' => (string) $p['id'],
-                        'name' => $p['name'],
+                        'name' => $p['name'] ?? ('Product ' . $p['id']),
                         'provider_sku' => (string) $p['id'],
+                        'parent_id' => $p['parent_id'] ?? null,
+                        'available' => $p['available'] ?? true,
+                        'qty_values' => $p['qty_values'] ?? null,
+                        'params' => $p['params'] ?? [],
                         'price' => $rawPrice,
-                        'price_usd' => $rawPrice,
-                        'price_egp' => round($rawPrice * 59.0, 6),
-                        'currency' => $p['currency'] ?? 'USD',
+                        'price_usd' => $currency === 'USD' ? $rawPrice : null,
+                        'price_egp' => $currency === 'USD' ? round($rawPrice * 59.0, 6) : null,
+                        'currency' => $currency,
                         'currency_label' => 'دولار',
-                        'min_qty' => (int) ($p['minQty'] ?? 1),
-                        'max_qty' => (int) ($p['maxQty'] ?? 10000000),
-                        'type' => 'coins',
-                        'image' => $p['image'] ?? null,
+                        'min_qty' => (int) ($p['min_qty'] ?? $p['minQty'] ?? 1),
+                        'max_qty' => (int) ($p['max_qty'] ?? $p['maxQty'] ?? 10000000),
+                        'type' => $p['product_type'] ?? 'coins',
+                        'image' => $p['image'] ?? $p['category_img'] ?? null,
                         'description' => $p['description'] ?? '',
                         'fields' => $p['fields'] ?? [],
+                        'category_name' => $p['category_name'] ?? null,
                     ];
                 }
             }
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('Embrator live catalog fetch error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('Provider live catalog fetch error: ' . $e->getMessage());
         }
 
         $filtered = $allItems;

@@ -10,6 +10,7 @@ import Button from '../components/ui/Button';
 import { targetApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { getCurrencyLabel } from '../utils/currencyHelper';
 import VideoBackground from '../components/home/VideoBackground';
 
 export default function TargetOrdersPage() {
@@ -234,7 +235,7 @@ export default function TargetOrdersPage() {
                                                 {t('netPayout', 'الصافي المستحق')}
                                             </div>
                                             <div style={{ fontSize: '16px', fontWeight: '900', color: '#22C55E', direction: 'ltr', fontFamily: 'Outfit, Cairo, sans-serif' }}>
-                                                {netPayout} {language === 'en' ? 'EGP' : 'ج.م'}
+                                                {netPayout} {getCurrencyLabel(order.currency || 'EGP', language)}
                                             </div>
                                         </div>
 

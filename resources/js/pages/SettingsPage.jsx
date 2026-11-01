@@ -406,7 +406,7 @@ export default function SettingsPage() {
 
                     {/* 1. Change Password Link Card */}
                     <Link
-                        to="/profile?tab=security"
+                        to="/account-security"
                         style={{
                             background: 'var(--bg-elevated, rgba(13, 13, 16, 0.6))',
                             border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.06))',
@@ -452,7 +452,7 @@ export default function SettingsPage() {
 
                     {/* 2. Two-Factor Authentication Link Card */}
                     <Link
-                        to="/profile?tab=security"
+                        to="/account-security"
                         style={{
                             background: 'var(--bg-elevated, rgba(13, 13, 16, 0.6))',
                             border: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.06))',

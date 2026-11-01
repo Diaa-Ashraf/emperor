@@ -11,6 +11,7 @@ use App\Services\TargetSellService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TargetAppController extends Controller
 {
@@ -47,7 +48,8 @@ class TargetAppController extends Controller
         $validated = $request->validated();
         $product = Product::findOrFail($validated['product_id']);
 
-        $quote = $this->targetSellService->calculateQuote($product, (int) $validated['points']);
+        $user = $request->user() ?: Auth::guard('sanctum')->user();
+        $quote = $this->targetSellService->calculateQuote($product, (int) $validated['points'], $user);
 
         return $this->successResponse([
             'product_id' => $quote->productId,

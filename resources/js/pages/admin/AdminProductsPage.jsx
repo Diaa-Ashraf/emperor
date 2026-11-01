@@ -129,8 +129,9 @@ export default function AdminProductsPage() {
                 const arr = Array.isArray(list) ? list : [];
                 setProviders(arr);
                 if (arr.length > 0) {
+                    const current = arr.find(p => p.id == selectedProvider || p.name === selectedProvider);
                     const embrator = arr.find(p => p.driver === 'embrator_reseller_api' || p.name?.includes('إمبراطور'));
-                    setSelectedProvider(embrator ? embrator.name : arr[0].name);
+                    setSelectedProvider(current ? current.id : embrator?.id || arr[0].id);
                 }
             }
         } catch (err) {
@@ -140,14 +141,18 @@ export default function AdminProductsPage() {
 
     const fetchProviderCatalog = async (providerId, searchStr = '') => {
         try {
-            const res = await adminApi.getProviderCatalog({
-                provider_id: providerId,
+            const provider = providers.find(p => p.id == providerId || p.name === providerId);
+            const isAdCard = ['ad_card', 'ad-card', 'adcard'].includes(provider?.driver);
+            const res = isAdCard
+                ? await adminApi.getProviderProducts(provider.id)
+                : await adminApi.getProviderCatalog({
+                provider_id: provider?.id,
                 search: searchStr.trim() || undefined,
                 per_page: providerPageSize,
             });
             if (res && res.data) {
                 const data = res.data.data || res.data;
-                setProviderCatalogItems(Array.isArray(data.items) ? data.items : []);
+                setProviderCatalogItems(Array.isArray(data) ? data : Array.isArray(data.items) ? data.items : []);
             }
         } catch (err) {
             console.error('Failed fetching provider catalog:', err);
@@ -381,6 +386,8 @@ export default function AdminProductsPage() {
                 provider_name: provObj ? provObj.name : (selectedProvider || 'منصة إمبراطور (Embrator Store)'),
                 provider_product_id: selectedProviderProduct ? selectedProviderProduct.id : null,
                 provider_product_name: selectedProviderProduct ? selectedProviderProduct.name : formProdName.trim(),
+                provider_product_fields: selectedProviderProduct?.fields || [],
+                provider_product_currency: selectedProviderProduct?.currency || 'USD',
                 auto_fulfill: autoFulfillmentEnabled,
                 sync_pricing: syncPricingEnabled,
                 manual_price: manualPriceEnabled,
@@ -1624,7 +1631,7 @@ export default function AdminProductsPage() {
                                             >
                                                 {providers.length === 0 && <option value="منصة إمبراطور (Embrator Store)">منصة إمبراطور (Embrator Store)</option>}
                                                 {providers.map(p => (
-                                                    <option key={p.id} value={p.name}>{p.name}</option>
+                                                    <option key={p.id} value={p.id}>{p.name}</option>
                                                 ))}
                                             </select>
                                         </div>

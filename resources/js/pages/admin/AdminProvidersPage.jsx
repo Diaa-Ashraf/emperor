@@ -50,6 +50,7 @@ export default function AdminProvidersPage() {
         api_type: 'API (واجهة برمجة)',
         integration_type: 'التكامل الافتراضي',
         auth_type: 'بدون توثيق',
+        api_token: '',
         is_active: true,
         auto_fulfill: true,
     });
@@ -99,10 +100,13 @@ export default function AdminProvidersPage() {
     const handleViewProducts = async (provider) => {
         try {
             setSelectedProviderProducts(provider);
-            const res = await adminApi.getProviderCatalog({ provider_id: provider.id });
+            const isAdCard = ['ad_card', 'ad-card', 'adcard'].includes(provider.driver);
+            const res = isAdCard
+                ? await adminApi.getProviderProducts(provider.id)
+                : await adminApi.getProviderCatalog({ provider_id: provider.id });
             if (res && res.data) {
                 const data = res.data.data || res.data;
-                setProductsList(data.items || []);
+                setProductsList(Array.isArray(data) ? data : data.items || []);
             }
         } catch (err) {
             toastError('فشل جلب منتجات المزود');
@@ -130,7 +134,12 @@ export default function AdminProvidersPage() {
 
         setSubmittingAdd(true);
         try {
-            await adminApi.createProvider(providerForm);
+            const payload = {
+                ...providerForm,
+                driver: providerForm.api_type === 'AD Card API' ? 'ad_card' : providerForm.driver,
+                base_url: providerForm.base_url || (providerForm.api_type === 'AD Card API' ? 'https://ad-card.com/client/api' : ''),
+            };
+            await adminApi.createProvider(payload);
             success('تم حفظ المورد بنجاح');
             setIsAddModalOpen(false);
             setProviderForm({
@@ -140,6 +149,7 @@ export default function AdminProvidersPage() {
                 api_type: 'API (واجهة برمجة)',
                 integration_type: 'التكامل الافتراضي',
                 auth_type: 'بدون توثيق',
+                api_token: '',
                 is_active: true,
                 auto_fulfill: true,
             });
@@ -149,6 +159,26 @@ export default function AdminProvidersPage() {
             toastError(err.response?.data?.message || 'فشل حفظ المورد');
         } finally {
             setSubmittingAdd(false);
+        }
+    };
+
+    const handleSaveProviderSettings = async (e) => {
+        e.preventDefault();
+        if (!editingProvider) return;
+        setSubmittingEdit(true);
+        try {
+            await adminApi.updateProvider(editingProvider.id, {
+                name: editingProvider.name,
+                base_url: editingProvider.base_url || undefined,
+                api_token: editingProvider.api_token || undefined,
+            });
+            success('تم تحديث إعدادات المورد');
+            setEditingProvider(null);
+            fetchProviders();
+        } catch (err) {
+            toastError(err.response?.data?.message || 'تعذر تحديث إعدادات المورد');
+        } finally {
+            setSubmittingEdit(false);
         }
     };
 
@@ -448,7 +478,7 @@ export default function AdminProvidersPage() {
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                setEditingProvider(prov);
+                                                setEditingProvider({ ...prov, base_url: prov.base_url || (prov.driver === 'ad_card' ? 'https://ad-card.com/client/api' : ''), api_token: '', has_api_token: prov.has_api_token || prov.driver === 'ad_card' });
                                                 setEditBalance(prov.balance?.toString() || '0');
                                             }}
                                             style={{
@@ -590,6 +620,25 @@ export default function AdminProvidersPage() {
                             </div>
                         )}
                     </div>
+                </div>
+            )}
+
+            {editingProvider && (
+                <div style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(0,0,0,.82)', display: 'grid', placeItems: 'center', padding: 16 }}>
+                    <form onSubmit={handleSaveProviderSettings} style={{ width: '100%', maxWidth: 460, background: '#0A0F1D', border: '1px solid rgba(56,189,248,.35)', borderRadius: 20, padding: 24 }}>
+                        <h3 style={{ color: '#F5D061', marginTop: 0 }}>إعدادات {editingProvider.name}</h3>
+                        <p style={{ color: '#94A3B8', fontSize: 12 }}>حالة التوكن: {editingProvider.has_api_token ? 'مُسجل' : 'غير مُسجل'}. لا نعرض قيمته لأسباب أمنية.</p>
+                        <label style={{ display: 'block', color: '#CBD5E1', marginBottom: 12 }}>رابط API
+                            <input value={editingProvider.base_url || ''} onChange={e => setEditingProvider({ ...editingProvider, base_url: e.target.value })} style={{ display: 'block', width: '100%', marginTop: 6, padding: 10 }} />
+                        </label>
+                        <label style={{ display: 'block', color: '#CBD5E1', marginBottom: 16 }}>API Token (اتركه فارغًا للإبقاء على الحالي)
+                            <input type="password" autoComplete="new-password" value={editingProvider.api_token || ''} onChange={e => setEditingProvider({ ...editingProvider, api_token: e.target.value })} style={{ display: 'block', width: '100%', marginTop: 6, padding: 10 }} />
+                        </label>
+                        <div style={{ display: 'flex', gap: 10 }}>
+                            <button disabled={submittingEdit} style={{ flex: 1, padding: 11 }}>حفظ</button>
+                            <button type="button" onClick={() => setEditingProvider(null)} style={{ flex: 1, padding: 11 }}>إلغاء</button>
+                        </div>
+                    </form>
                 </div>
             )}
 
@@ -766,9 +815,17 @@ export default function AdminProvidersPage() {
                                     }}
                                 >
                                     <option value="Embrator Reseller API">Embrator Reseller API (منصة إمبراطور)</option>
+                                    <option value="AD Card API">AD Card API (منصة AD Card)</option>
                                     <option value="API (واجهة برمجة)">API (واجهة برمجة)</option>
                                     <option value="Custom Webhook">Custom Webhook</option>
                                 </select>
+                            </div>
+
+                            <div style={{ marginBottom: '14px' }}>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>API Token للمورد</label>
+                                <input type="password" autoComplete="new-password" value={providerForm.api_token}
+                                    onChange={(e) => setProviderForm({ ...providerForm, api_token: e.target.value })}
+                                    placeholder="أدخل التوكن الخاص بالمورد" style={{ width: '100%', padding: '12px 14px', borderRadius: '14px', backgroundColor: '#060B18', border: '1px solid rgba(56, 189, 248, 0.35)', color: '#FFFFFF', boxSizing: 'border-box' }} />
                             </div>
 
                             {/* نوع التكامل */}

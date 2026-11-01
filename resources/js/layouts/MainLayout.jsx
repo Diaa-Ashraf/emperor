@@ -31,7 +31,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useToast } from '../contexts/ToastContext';
-import { notificationsApi } from '../api/endpoints';
+import { notificationsApi, walletApi } from '../api/endpoints';
 import { onForegroundMessage } from '../services/firebaseMessaging';
 import UserSidebarDrawer from '../components/navigation/UserSidebarDrawer';
 import AppFooter from '../components/navigation/AppFooter';
@@ -42,6 +42,7 @@ import HomeBannerSlider from '../components/home/HomeBannerSlider';
 import PromotionalPopup from '../components/ui/PromotionalPopup';
 import { playNotificationSound } from '../utils/soundHelper';
 import { getSiteLogo, getSiteName, getSiteDescription, getWhatsAppChannel } from '../utils/settingsHelper';
+import { getCurrencyLabel } from '../utils/currencyHelper';
 
 export default function MainLayout({ children, showBanner = false }) {
     const { user, isAuthenticated } = useAuth();
@@ -55,6 +56,17 @@ export default function MainLayout({ children, showBanner = false }) {
     const [supportModalOpen, setSupportModalOpen] = useState(false);
     const [unreadNotifications, setUnreadNotifications] = useState(0);
     const [headerScrolled, setHeaderScrolled] = useState(false);
+    const [walletBalance, setWalletBalance] = useState(null);
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            setWalletBalance(null);
+            return;
+        }
+        walletApi.getBalance()
+            .then((res) => setWalletBalance(res?.data?.data || res?.data || res || null))
+            .catch(() => {});
+    }, [isAuthenticated, user?.currency]);
 
     // Global listener for opening support modal from anywhere
     useEffect(() => {
@@ -176,14 +188,16 @@ export default function MainLayout({ children, showBanner = false }) {
         return false;
     };
 
-    const rawBalanceNum = Number(user?.wallet?.balance || 0);
-    const formattedBalance = user?.wallet?.balance !== undefined
+    const displayedBalance = walletBalance?.preferred_balance ?? user?.wallet?.balance ?? user?.wallet_balance ?? 0;
+    const rawBalanceNum = Number(displayedBalance || 0);
+    const formattedBalance = displayedBalance !== undefined
         ? (rawBalanceNum % 1 === 0
             ? rawBalanceNum.toLocaleString('en-US', { maximumFractionDigits: 0 })
             : rawBalanceNum.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 }))
         : '0';
 
-    const currency = language === 'en' ? 'EGP' : 'ج.م';
+    const userCurrencyCode = user?.currency || walletBalance?.preferred_currency || user?.wallet?.currency || 'EGP';
+    const currency = getCurrencyLabel(userCurrencyCode, language);
 
     const desktopNavLinks = [
         { to: '/', label: t('home', 'الرئيسية'), icon: Home },
@@ -451,6 +465,7 @@ export default function MainLayout({ children, showBanner = false }) {
             <UserSidebarDrawer
                 isOpen={drawerOpen}
                 onClose={() => setDrawerOpen(false)}
+                walletBalance={walletBalance}
             />
 
             {/* Support Contact Modal (WhatsApp & Live Help) */}

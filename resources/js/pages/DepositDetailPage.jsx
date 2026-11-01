@@ -22,6 +22,7 @@ import EmptyState from '../components/ui/EmptyState';
 import Modal from '../components/ui/Modal';
 import { depositsApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
+import { getCurrencyLabel } from '../utils/currencyHelper';
 
 export default function DepositDetailPage() {
     const { id } = useParams();
@@ -101,7 +102,7 @@ export default function DepositDetailPage() {
     const statusInfo = getStatusInfo(deposit.status);
     const StatusIcon = statusInfo.icon;
 
-    const currencySymbol = language === 'en' ? 'EGP' : 'ج.م';
+    const currencySymbol = getCurrencyLabel(deposit.currency || 'EGP', language);
     const amount = Number(deposit.amount || 0).toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const fee = Number(deposit.fee || 0).toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const finalAmount = Number(deposit.final_amount || deposit.amount || 0).toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

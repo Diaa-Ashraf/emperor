@@ -5,6 +5,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import UserSidebarDrawer from '../navigation/UserSidebarDrawer';
 import { getSiteLogo, getSiteName } from '../../utils/settingsHelper';
+import { getCurrencyLabel } from '../../utils/currencyHelper';
 
 export default function AdminHeader({ title, subtitle, onRefresh, refreshing = false, badge = 'لوحة القيادة الإدارية' }) {
     const navigate = useNavigate();
@@ -29,6 +30,7 @@ export default function AdminHeader({ title, subtitle, onRefresh, refreshing = f
     const userBalance = rawBal % 1 === 0
         ? rawBal.toLocaleString('en-US', { maximumFractionDigits: 0 })
         : rawBal.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+    const userCurrencyLabel = getCurrencyLabel(user?.currency || user?.wallet?.currency || 'EGP');
 
     return (
         <>
@@ -271,7 +273,7 @@ export default function AdminHeader({ title, subtitle, onRefresh, refreshing = f
                         >
                             <Wallet size={13} color="#38BDF8" />
                             <span className="admin-header-balance-val">{userBalance}</span>
-                            <span className="admin-header-balance-curr">ج.م</span>
+                            <span className="admin-header-balance-curr">{userCurrencyLabel}</span>
                         </Link>
 
                         {onRefresh && (

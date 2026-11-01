@@ -30,7 +30,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { profileApi } from '../api/endpoints';
+import { profileApi, walletApi, invalidateProductCatalogCache } from '../api/endpoints';
+import { getCurrencyLabel } from '../utils/currencyHelper';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import Select from '../components/ui/Select';
@@ -74,6 +75,13 @@ export default function ProfilePage() {
     });
     const [savingProfile, setSavingProfile] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
+    const [walletBalance, setWalletBalance] = useState(null);
+
+    useEffect(() => {
+        walletApi.getBalance()
+            .then((res) => setWalletBalance(res?.data?.data || res?.data || res || null))
+            .catch(() => {});
+    }, []);
 
     // Password Form State
     const [passwordData, setPasswordData] = useState({
@@ -111,6 +119,7 @@ export default function ProfilePage() {
             const updatedUser = res.data?.data || res.data;
             if (updatedUser) {
                 setUser(updatedUser);
+                invalidateProductCatalogCache();
             }
             addToast(t('profileUpdatedSuccess', 'تم تحديث البيانات الشخصية بنجاح'), 'success');
         } catch (err) {
@@ -368,8 +377,8 @@ export default function ProfilePage() {
                             {t('availableBalanceInWallet', 'الرصيد المتاح بالمحفظة')}
                         </span>
                         <div style={{ fontSize: '24px', fontWeight: '900', color: isLight ? '#B45309' : '#38BDF8', marginBottom: '8px' }}>
-                            {user?.wallet?.balance !== undefined ? Number(user.wallet.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}{' '}
-                            <span style={{ fontSize: '14px' }}>{language === 'en' ? 'EGP' : 'ج.م'}</span>
+                            {Number(walletBalance?.preferred_balance ?? user?.wallet?.balance ?? user?.wallet_balance ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{' '}
+                            <span style={{ fontSize: '14px' }}>{getCurrencyLabel(user?.currency || walletBalance?.preferred_currency || user?.wallet?.currency || 'EGP', language)}</span>
                         </div>
                         <Link
                             to="/wallet"

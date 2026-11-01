@@ -17,6 +17,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { TargetAppIconRenderer } from '../target/TargetAppIcons';
 import OrderConfirmModal from './OrderConfirmModal';
+import { getCurrencyLabel } from '../../utils/currencyHelper';
 import '../../../css/kaProductRecharge.css';
 
 export default function ProductRechargeModal({
@@ -69,7 +70,9 @@ export default function ProductRechargeModal({
     const [playerId, setPlayerId] = useState('');
     const [serverId, setServerId] = useState('');
     const [accountRegion, setAccountRegion] = useState('');
+    const [providerFieldValues, setProviderFieldValues] = useState({});
     const [walletBalance, setWalletBalance] = useState(0);
+    const [exchangeRates, setExchangeRates] = useState([]);
 
     const [showPackageGrid, setShowPackageGrid] = useState(false);
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -91,6 +94,7 @@ export default function ProductRechargeModal({
         setPlayerId('');
         setServerId('');
         setAccountRegion('');
+        setProviderFieldValues({});
         setErrors({});
         setShowPackageGrid(false);
     }, [product, isCustomQuantity]);
@@ -100,47 +104,66 @@ export default function ProductRechargeModal({
         if (isAuthenticated) {
             walletApi.getBalance()
                 .then(res => {
-                    if (res?.data?.balance !== undefined) {
-                        setWalletBalance(Number(res.data.balance));
+                    const data = res?.data?.data || res?.data || res;
+                    if (data?.preferred_balance !== undefined || data?.balance !== undefined) {
+                        setWalletBalance(Number(data.preferred_balance ?? data.balance));
                     }
+                })
+                .catch(() => {});
+            walletApi.getRates()
+                .then(res => {
+                    const data = res?.data?.data || res?.data || res;
+                    if (Array.isArray(data)) setExchangeRates(data);
                 })
                 .catch(() => {});
         }
     }, [isAuthenticated]);
 
-    const activeCurrency = user?.currency || 'EGP';
-    const isUsd = activeCurrency === 'USD';
+    const activeCurrency = String(user?.currency || 'EGP').toUpperCase();
+    const currencyLabel = getCurrencyLabel(activeCurrency, language);
+    const convertCurrencyAmount = (amount, fromCurrency, toCurrency) => {
+        const from = String(fromCurrency || '').toUpperCase() === 'EGY' ? 'EGP' : String(fromCurrency || '').toUpperCase();
+        const to = String(toCurrency || '').toUpperCase() === 'EGY' ? 'EGP' : String(toCurrency || '').toUpperCase();
+        const value = Number(amount);
+        if (!Number.isFinite(value)) return null;
+        if (from === to) return value;
+        const direct = exchangeRates.find(rate => rate.is_active && rate.from_currency === from && rate.to_currency === to);
+        if (direct && Number(direct.rate) > 0) return value * Number(direct.rate);
+        const inverse = exchangeRates.find(rate => rate.is_active && rate.from_currency === to && rate.to_currency === from);
+        if (inverse && Number(inverse.rate) > 0) return value / Number(inverse.rate);
+        const fromToUsd = exchangeRates.find(rate => rate.is_active && rate.from_currency === from && rate.to_currency === 'USD');
+        const usdToFrom = exchangeRates.find(rate => rate.is_active && rate.from_currency === 'USD' && rate.to_currency === from);
+        const usdToTarget = exchangeRates.find(rate => rate.is_active && rate.from_currency === 'USD' && rate.to_currency === to);
+        const targetToUsd = exchangeRates.find(rate => rate.is_active && rate.from_currency === to && rate.to_currency === 'USD');
+        const fromUsd = from === 'USD' ? value : fromToUsd && Number(fromToUsd.rate) > 0
+            ? value * Number(fromToUsd.rate)
+            : usdToFrom && Number(usdToFrom.rate) > 0 ? value / Number(usdToFrom.rate) : null;
+        const usdTargetRate = to === 'USD' ? 1 : usdToTarget && Number(usdToTarget.rate) > 0
+            ? Number(usdToTarget.rate)
+            : targetToUsd && Number(targetToUsd.rate) > 0 ? 1 / Number(targetToUsd.rate) : null;
+        return fromUsd === null || usdTargetRate === null ? null : fromUsd * usdTargetRate;
+    };
 
     // Compute unit coin rate for custom coin recharge
     const coinRate = useMemo(() => {
-        // 1. Explicit currency-specific prices from product
-        if (isUsd && product.price_usd && Number(product.price_usd) > 0) {
-            return Number(product.price_usd);
-        }
-        if (!isUsd && product.price_egp && Number(product.price_egp) > 0) {
-            return Number(product.price_egp);
+        if (product.price && Number(product.price) > 0) {
+            return convertCurrencyAmount(product.price, product.currency || activeCurrency, activeCurrency) || 0;
         }
 
         const availableTiers = product.tiers || product.active_tiers || [];
         if (availableTiers.length > 0) {
             const firstItem = availableTiers[0];
-            if (isUsd && firstItem.price_usd && Number(firstItem.price_usd) > 0) {
-                return Number(firstItem.price_usd);
-            }
-            if (!isUsd && firstItem.price_egp && Number(firstItem.price_egp) > 0) {
-                return Number(firstItem.price_egp);
-            }
             if (firstItem.price && Number(firstItem.price) > 0) {
-                return Number(firstItem.price);
+                return convertCurrencyAmount(firstItem.price, firstItem.currency || product.currency || activeCurrency, activeCurrency) || 0;
             }
             if (firstItem.source_cost && Number(firstItem.source_cost) > 0) {
                 const baseCost = Number(firstItem.source_cost) * 1.04;
-                return isUsd ? baseCost : (baseCost * 59.0);
+                return convertCurrencyAmount(baseCost, firstItem.cost_currency || 'USD', activeCurrency) || 0;
             }
         }
 
         return 0;
-    }, [product, isUsd]);
+    }, [product, activeCurrency, exchangeRates]);
 
     // Handle quantity input change with comma formatting (e.g. 2,000)
     const handleQuantityInputChange = (e) => {
@@ -186,19 +209,19 @@ export default function ProductRechargeModal({
     // Calculate total price based on tier or unit rate
     const unitPrice = useMemo(() => {
         if (selectedTier) {
-            const targetP = isUsd 
-                ? (selectedTier.price_usd ?? selectedTier.price ?? selectedTier.final_price)
-                : (selectedTier.price_egp ?? selectedTier.price ?? (selectedTier.final_price ? Number(selectedTier.final_price) * 59.0 : null));
+            const targetP = selectedTier.price !== undefined
+                ? convertCurrencyAmount(selectedTier.price, selectedTier.currency || product.currency || activeCurrency, activeCurrency)
+                : (selectedTier.price_usd ? convertCurrencyAmount(selectedTier.price_usd, 'USD', activeCurrency) : null);
             return Number(targetP || 0);
         }
         if (product.unit_price) {
-            return Number(product.unit_price);
+            return convertCurrencyAmount(product.unit_price, product.currency || activeCurrency, activeCurrency) || 0;
         }
         if (product.price) {
-            return Number(product.price);
+            return convertCurrencyAmount(product.price, product.currency || activeCurrency, activeCurrency) || 0;
         }
         return 0;
-    }, [selectedTier, product, isUsd]);
+    }, [selectedTier, product, activeCurrency, exchangeRates]);
 
     const validQty = useMemo(() => {
         const cleanStr = String(quantityInput || '').replace(/[^0-9]/g, '');
@@ -226,19 +249,9 @@ export default function ProductRechargeModal({
     // Secondary currency preview
     const secondaryPreview = useMemo(() => {
         if (totalPrice <= 0) return '0';
-        if (isUsd) {
-            const egpVal = totalPrice * 59.0;
-            return `${egpVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م`;
-        } else {
-            const usdUnit = Number(product.price_usd || product.tiers?.[0]?.price_usd || 0.0001041476);
-            if (isCustomQuantity && validQty > 0 && usdUnit > 0) {
-                const usdVal = validQty * usdUnit;
-                return `${usdVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $`;
-            }
-            const usdVal = totalPrice / 59.0;
-            return `${usdVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $`;
-        }
-    }, [totalPrice, isUsd, isCustomQuantity, validQty, product]);
+        const usdValue = convertCurrencyAmount(totalPrice, activeCurrency, 'USD');
+        return usdValue === null ? '' : `${usdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`;
+    }, [totalPrice, activeCurrency, exchangeRates]);
 
     const productImage = formatImageUrl(
         product.image_url || product.image || product.banner_url || product.icon_url
@@ -297,6 +310,9 @@ export default function ProductRechargeModal({
         if (product.requires_account_region && !accountRegion.trim()) {
             newErrors.accountRegion = t('selectAccountRegion', 'يرجى اختيار دولة / منطقة الحساب');
         }
+        (product.provider_fields || []).filter(field => field.required).forEach(field => {
+            if (!String(providerFieldValues[field.key] || '').trim()) newErrors[`provider_${field.key}`] = `يرجى إدخال ${field.label || field.key}`;
+        });
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -321,6 +337,7 @@ export default function ProductRechargeModal({
                 player_id: playerId.trim() || undefined,
                 server_id: serverId.trim() || undefined,
                 account_region: accountRegion.trim() || undefined,
+                extra_fields: providerFieldValues,
             };
 
             const res = await ordersApi.createOrder(payload);
@@ -548,7 +565,7 @@ export default function ProductRechargeModal({
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         {selectedTier && (
                                             <span style={{ fontSize: '13px', fontWeight: '900', color: isLight ? '#B45309' : '#F5D061' }}>
-                                                {Number(selectedTier.price_egp || selectedTier.price || 0).toFixed(2)} {language === 'en' ? 'EGP' : 'ج.م'}
+                                                {Number(selectedTier.price !== undefined ? convertCurrencyAmount(selectedTier.price, selectedTier.currency || product.currency || activeCurrency, activeCurrency) : unitPrice).toFixed(2)} {currencyLabel}
                                             </span>
                                         )}
                                         <ChevronDown
@@ -603,7 +620,7 @@ export default function ProductRechargeModal({
                                                         {tItem.name}
                                                     </div>
                                                     <div style={{ fontSize: '11px', color: isLight ? '#64748B' : '#9CA3AF', marginTop: '2px' }}>
-                                                        {Number(tItem.price_egp || tItem.price || 0).toFixed(2)} {language === 'en' ? 'EGP' : 'ج.م'}
+                                                        {Number(convertCurrencyAmount(tItem.price ?? 0, tItem.currency || product.currency || activeCurrency, activeCurrency) ?? 0).toFixed(2)} {currencyLabel}
                                                     </div>
                                                 </div>
                                             );
@@ -745,7 +762,7 @@ export default function ProductRechargeModal({
                                 }}>
                                     <span>{formattedTotal}</span>
                                     <span style={{ fontSize: '13px', color: isLight ? '#B45309' : '#D4A537', fontWeight: '800' }}>
-                                        {isUsd ? '$' : (language === 'en' ? 'EGP' : 'ج.م')}
+                                        {currencyLabel}
                                     </span>
                                 </div>
 
@@ -873,6 +890,14 @@ export default function ProductRechargeModal({
                                     )}
                                 </div>
                             )}
+
+                            {(product.provider_fields || []).filter(field => field.key !== 'player_id' && field.key !== 'server_id' && field.key !== 'region').map(field => (
+                                <div key={field.key} style={{ marginTop: 10 }}>
+                                    <label style={{ display: 'block', color: isLight ? '#334155' : '#CBD5E1', fontSize: 12, fontWeight: 800, marginBottom: 6 }}>{field.label || field.key}</label>
+                                    <input type={field.type === 'number' ? 'number' : 'text'} required={Boolean(field.required)} value={providerFieldValues[field.key] || ''} onChange={e => setProviderFieldValues(values => ({ ...values, [field.key]: e.target.value }))} style={{ width: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: 12 }} />
+                                    {errors[`provider_${field.key}`] && <span style={{ color: '#EF4444', fontSize: 11 }}>{errors[`provider_${field.key}`]}</span>}
+                                </div>
+                            ))}
 
                             {/* Account Region if applicable */}
                             {product.requires_account_region && (

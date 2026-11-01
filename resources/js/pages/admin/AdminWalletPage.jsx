@@ -30,6 +30,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import AdminHeader from '../../components/admin/AdminHeader';
+import { formatCurrency } from '../../utils/currencyHelper';
 
 export default function AdminWalletPage() {
     const { theme } = useTheme();
@@ -489,7 +490,7 @@ export default function AdminWalletPage() {
                                     </span>
                                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
                                         <span style={{ fontSize: '26px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
-                                            {Number(summary.user_stats?.current_balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} £
+                                            {formatCurrency(summary.user_stats?.current_balance || 0, summary.user_stats?.currency || 'EGP')}
                                         </span>
                                     </div>
                                     <span style={{ fontSize: '11px', color: '#38BDF8', fontWeight: '700' }}>
@@ -567,7 +568,7 @@ export default function AdminWalletPage() {
                                     </span>
                                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
                                         <span style={{ fontSize: '26px', fontWeight: '900', color: '#10B981' }}>
-                                            + {Number(summary.user_stats?.total_credits || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} £
+                                            + {formatCurrency(summary.user_stats?.total_credits || 0, summary.user_stats?.currency || 'EGP')}
                                         </span>
                                     </div>
                                     <span style={{ fontSize: '11px', color: isLight ? '#64748B' : '#94A3B8' }}>
@@ -608,7 +609,7 @@ export default function AdminWalletPage() {
                                     </span>
                                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
                                         <span style={{ fontSize: '26px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
-                                            {Number(summary.admin_wallet?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} £
+                                            {formatCurrency(summary.admin_wallet?.balance || 0, summary.admin_wallet?.currency || summary.admin_settings?.currency || selectedCurrency || 'EGP')}
                                         </span>
                                     </div>
                                     <span style={{ fontSize: '11px', color: isLight ? '#64748B' : '#94A3B8' }}>
@@ -732,7 +733,7 @@ export default function AdminWalletPage() {
                                     آخر إضافة
                                 </span>
                                 <span style={{ fontSize: '22px', fontWeight: '900', color: '#10B981', display: 'block', marginBottom: '4px' }}>
-                                    + {summary.user_stats?.last_credit?.amount || 0} £
+                                    + {formatCurrency(summary.user_stats?.last_credit?.amount || 0, summary.user_stats?.currency || 'EGP')}
                                 </span>
                                 <span style={{ fontSize: '13px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF', display: 'block', marginBottom: '2px' }}>
                                     {summary.user?.name || 'مستخدم'}
@@ -772,7 +773,9 @@ export default function AdminWalletPage() {
                                     آخر خصم
                                 </span>
                                 <span style={{ fontSize: '22px', fontWeight: '900', color: '#EF4444', display: 'block', marginBottom: '4px' }}>
-                                    {summary.user_stats?.last_debit?.amount || '- 0.00'} £
+                                    {summary.user_stats?.last_debit?.amount != null
+                                        ? formatCurrency(summary.user_stats.last_debit.amount, summary.user_stats?.currency || 'EGP')
+                                        : `- ${formatCurrency(0, summary.user_stats?.currency || 'EGP')}`}
                                 </span>
                                 <span style={{ fontSize: '13px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF', display: 'block', marginBottom: '2px' }}>
                                     {summary.user?.name || 'مستخدم'}
@@ -1237,7 +1240,7 @@ export default function AdminWalletPage() {
                                                 color: isDebit ? '#EF4444' : '#10B981',
                                                 direction: 'ltr',
                                             }}>
-                                                {isDebit ? `- ${absAmount} £` : `+ ${absAmount} £`}
+                                                {isDebit ? '- ' : '+ '}{formatCurrency(absAmount, tx.currency || tx.wallet?.currency || (isUserView ? summary.user_stats?.currency : summary.admin_wallet?.currency) || selectedCurrency || 'EGP')}
                                             </span>
                                         </div>
                                     </div>

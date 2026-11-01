@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductTier;
 use App\Models\User;
+use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -19,6 +20,7 @@ class OrderService
         protected WalletService $walletService,
         protected PricingService $pricingService,
         protected ProviderManagerService $providerManager,
+        protected MultiCurrencyWalletService $multiCurrencyWalletService,
     ) {}
 
     /**
@@ -26,6 +28,17 @@ class OrderService
      */
     public function createOrder(OrderRequestDTO $dto, User $user): Order
     {
+        if ($dto->idempotencyKey) {
+            $priorTransaction = WalletTransaction::where('user_id', $user->id)
+                ->where('idempotency_key', $dto->idempotencyKey)
+                ->where('reference_type', Order::class)
+                ->first();
+            if ($priorTransaction?->reference_id) {
+                $existingOrder = Order::where('user_id', $user->id)->find($priorTransaction->reference_id);
+                if ($existingOrder) return $existingOrder;
+            }
+        }
+
         $product = Product::findOrFail($dto->productId);
         $tier = ProductTier::findOrFail($dto->productTierId);
 
@@ -67,6 +80,9 @@ class OrderService
         $profitAmount = $totalAmount - $costAmount;
 
         return DB::transaction(function () use ($dto, $user, $product, $tier, $unitPrice, $totalAmount, $costAmount, $profitAmount) {
+            $currency = $user->currency ?? 'EGP';
+            $this->multiCurrencyWalletService->ensureFundsInCurrency($user, $currency, $totalAmount);
+
             // 1. Create order in PENDING status
             $order = Order::create([
                 'user_id' => $user->id,
@@ -76,7 +92,7 @@ class OrderService
                 'quantity' => $dto->quantity,
                 'unit_price' => $unitPrice,
                 'total_amount' => $totalAmount,
-                'currency' => $user->currency ?? 'EGP',
+                'currency' => $currency,
                 'cost_amount' => $costAmount,
                 'profit_amount' => $profitAmount,
                 'player_id' => $dto->playerId,
@@ -93,7 +109,7 @@ class OrderService
                 amount: $totalAmount,
                 type: WalletTxType::ORDER_PAYMENT,
                 description: "دفع قيمة الطلب {$order->public_id} ({$product->name} - {$tier->name})",
-                currency: $user->currency ?? 'EGP',
+                currency: $currency,
                 referenceType: Order::class,
                 referenceId: $order->id,
                 idempotencyKey: $dto->idempotencyKey

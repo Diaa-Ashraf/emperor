@@ -34,6 +34,42 @@ class WalletController extends Controller
         $wallet = $this->walletService->getOrCreateWallet($user, $currency);
 
         $walletsSummary = $this->multiCurrencyService->getUserWallets($user);
+        $usdBalance = 0.0;
+        $activeRates = $this->exchangeRateService->getActiveRates();
+        foreach ($walletsSummary as $walletSummary) {
+            $walletCurrency = strtoupper((string) ($walletSummary['currency'] ?? 'USD'));
+            $walletAmount = (float) ($walletSummary['available_balance'] ?? $walletSummary['balance'] ?? 0);
+            if (in_array($walletCurrency, ['USD', 'USDT'], true)) {
+                $usdBalance += $walletAmount;
+                continue;
+            }
+            if ($walletCurrency === 'EGP') {
+                $walletCurrency = 'EGY';
+            }
+            try {
+                $usdBalance += (float) $this->exchangeRateService->calculateConversion($walletCurrency, 'USD', max($walletAmount, 0.000001))['final_amount'];
+            } catch (\Throwable $e) {
+                // Ignore wallet currencies that do not have an active conversion rate.
+            }
+        }
+        $preferredBalance = 0.0;
+        $preferredCurrency = strtoupper($currency);
+        foreach ($walletsSummary as $walletSummary) {
+            $walletCurrency = strtoupper((string) ($walletSummary['currency'] ?? 'USD'));
+            if ($walletCurrency === $preferredCurrency) {
+                $preferredBalance += (float) ($walletSummary['available_balance'] ?? 0);
+                continue;
+            }
+            $walletAmount = (float) ($walletSummary['available_balance'] ?? 0);
+            if ($walletAmount <= 0) continue;
+            try {
+                $source = $walletCurrency === 'EGP' ? 'EGY' : $walletCurrency;
+                $target = $preferredCurrency === 'EGP' ? 'EGY' : $preferredCurrency;
+                $preferredBalance += (float) $this->exchangeRateService->calculateConversion($source, $target, $walletAmount)['final_amount'];
+            } catch (\Throwable $e) {
+                // Skip currencies without a configured rate.
+            }
+        }
 
         return $this->successResponse([
             'currency' => $currency,
@@ -42,6 +78,15 @@ class WalletController extends Controller
             'available_balance' => (float) max(0, $wallet->balance - $wallet->frozen_balance),
             'is_locked' => (bool) $wallet->is_locked,
             'wallets' => $walletsSummary,
+            'balance_usd' => round($usdBalance, 4),
+            'preferred_balance' => round($preferredBalance, 4),
+            'preferred_currency' => $preferredCurrency,
+            'rates' => $activeRates->map(fn ($rate) => [
+                'from_currency' => $rate->from_currency,
+                'to_currency' => $rate->to_currency,
+                'rate' => (float) $rate->rate,
+                'is_active' => (bool) $rate->is_active,
+            ])->values(),
         ], 'تم جلب رصيد المحفظة بنجاح');
     }
 

@@ -4,6 +4,7 @@ import { ShieldCheck, AlertCircle, Wallet, CheckCircle2, Zap, ArrowLeft, PlusCir
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 import { formatImageUrl } from '../../utils/imageHelper';
+import { getCurrencyLabel } from '../../utils/currencyHelper';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -29,7 +30,7 @@ export default function OrderConfirmModal({
     const isLight = theme === 'light';
 
     const unitPrice = tier
-        ? Number(tier.price_egp || tier.price || tier.final_price || 0)
+        ? Number(tier.price ?? tier.final_price ?? 0)
         : Number(product.unit_price || product.price || 0);
     const totalPrice = calculatedTotal !== undefined && calculatedTotal !== null
         ? Number(calculatedTotal)
@@ -39,7 +40,7 @@ export default function OrderConfirmModal({
     const formattedTotal = totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const formattedBalance = Number(walletBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    const currencyLabel = language === 'en' ? 'EGP' : 'ج.م';
+    const currencyLabel = getCurrencyLabel(currency, language);
 
     return (
         <Modal

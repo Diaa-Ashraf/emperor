@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CheckCircle2, Copy, Check, Calendar, CreditCard, Clock, XCircle } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { getCurrencyLabel } from '../../utils/currencyHelper';
 
 export default function DepositCard({ deposit }) {
     const { t, isRtl, language } = useLanguage();
@@ -51,7 +52,7 @@ export default function DepositCard({ deposit }) {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2,
     });
-    const currency = language === 'en' ? 'EGP' : (deposit.currency === 'EGY' || deposit.currency === 'EGP' ? 'ج.م' : deposit.currency);
+    const currency = getCurrencyLabel(deposit.currency || 'EGP', language);
     const referenceId = deposit.reference_id || deposit.transaction_reference || `dep_${deposit.id}`;
 
     let formattedDate = deposit.created_at || '';

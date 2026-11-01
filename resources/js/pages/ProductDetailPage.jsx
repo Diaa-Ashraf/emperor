@@ -39,6 +39,7 @@ export default function ProductDetailPage() {
     const [playerId, setPlayerId] = useState('');
     const [serverId, setServerId] = useState('');
     const [accountRegion, setAccountRegion] = useState('');
+    const [providerFieldValues, setProviderFieldValues] = useState({});
     const [walletBalance, setWalletBalance] = useState(0);
 
     const [showPackageGrid, setShowPackageGrid] = useState(true);
@@ -135,6 +136,12 @@ export default function ProductDetailPage() {
         if (product.requires_account_region && !accountRegion.trim()) {
             newErrors.accountRegion = 'يرجى اختيار دولة / منطقة الحساب';
         }
+        (product.provider_fields || []).filter(field => field.required).forEach(field => {
+            if (!String(providerFieldValues[field.key] || '').trim()) newErrors[`provider_${field.key}`] = `يرجى إدخال ${field.label || field.key}`;
+        });
+        (product.provider_fields || []).filter(field => field.required).forEach(field => {
+            if (!String(providerFieldValues[field.key] || '').trim()) newErrors[`provider_${field.key}`] = `يرجى إدخال ${field.label || field.key}`;
+        });
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -154,6 +161,7 @@ export default function ProductDetailPage() {
                 player_id: playerId.trim() || undefined,
                 server_id: serverId.trim() || undefined,
                 account_region: accountRegion.trim() || undefined,
+                extra_fields: providerFieldValues,
             };
 
             const res = await ordersApi.createOrder(payload);
@@ -369,6 +377,20 @@ export default function ProductDetailPage() {
                         </div>
 
                         {/* User ID Card (معرف المستخدم) */}
+                        {(product.provider_fields || []).filter(field => field.key !== 'player_id' && field.key !== 'server_id' && field.key !== 'region').map(field => (
+                            <div key={field.key} style={{ margin: '12px 0' }}>
+                                <label className="ka-input-title">{field.label || field.key}</label>
+                                <input className="ka-text-input" type={field.type === 'number' ? 'number' : 'text'} required={Boolean(field.required)} value={providerFieldValues[field.key] || ''} onChange={e => setProviderFieldValues(values => ({ ...values, [field.key]: e.target.value }))} placeholder={field.label || field.key} />
+                                {errors[`provider_${field.key}`] && <span style={{ color: '#EF4444', fontSize: 12 }}>{errors[`provider_${field.key}`]}</span>}
+                            </div>
+                        ))}
+                        {(product.provider_fields || []).filter(field => field.key !== 'player_id' && field.key !== 'server_id' && field.key !== 'region').map(field => (
+                            <div className="ka-user-input-card" key={field.key}>
+                                <label className="ka-input-title">{field.label || field.key}</label>
+                                <input className="ka-text-input" type={field.type === 'number' ? 'number' : 'text'} required={Boolean(field.required)} value={providerFieldValues[field.key] || ''} onChange={e => setProviderFieldValues(values => ({ ...values, [field.key]: e.target.value }))} placeholder={field.label || field.key} />
+                                {errors[`provider_${field.key}`] && <span style={{ color: '#EF4444', fontSize: 12 }}>{errors[`provider_${field.key}`]}</span>}
+                            </div>
+                        ))}
                         <div className="ka-user-input-card">
                             <label className="ka-input-title">
                                 <User size={16} color="#D4A537" />

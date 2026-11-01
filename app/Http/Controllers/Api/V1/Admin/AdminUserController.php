@@ -161,7 +161,7 @@ class AdminUserController extends Controller
 
         $validated = $request->validate([
             'group' => ['nullable', 'string', 'max:50'],
-            'currency' => ['nullable', 'string', 'in:EGP,USD,SAR,AED,TRY,EUR,GBP'],
+            'currency' => ['nullable', 'string', 'in:EGP,USD,SAR,AED,KWD,SYP,YER,JOD,EUR,TRY,QAR,OMR,BHD,MAD,DZD,LYD,IQD,USDT,GBP'],
             'debt_limit' => ['nullable', 'numeric', 'min:0'],
         ]);
 
@@ -206,7 +206,9 @@ class AdminUserController extends Controller
         $amount = (float) $validated['amount'];
         $currency = strtoupper($validated['currency'] ?? ($user->currency ?: 'EGP'));
         $action = $validated['action'];
-        $description = $validated['description'] ?: ($action === 'credit' ? 'إضافة رصيد لحساب المستخدم بواسطة الإدارة' : 'خصم رصيد من حساب المستخدم بواسطة الإدارة');
+        $description = (!empty($validated['description'])) 
+            ? $validated['description'] 
+            : ($action === 'credit' ? 'إضافة رصيد لحساب المستخدم بواسطة الإدارة' : 'خصم رصيد من حساب المستخدم بواسطة الإدارة');
 
         try {
             if ($action === 'credit') {
@@ -322,7 +324,7 @@ class AdminUserController extends Controller
         }
 
         $query = WalletTransaction::query()
-            ->with(['user:id,name,email,avatar']);
+            ->with(['user:id,name,email,avatar', 'wallet:id,currency']);
 
         if ($user) {
             $query->where('user_id', $user->id);
@@ -360,8 +362,11 @@ class AdminUserController extends Controller
             ? (float) WalletTransaction::where('user_id', $user->id)->whereIn('type', [WalletTxType::ORDER_PAYMENT, WalletTxType::TARGET_PAYOUT, WalletTxType::TRANSFER_OUT])->sum('amount')
             : 0.0;
 
-        // Transform collection to match Screenshot 2 breakdown
-        $transactions->getCollection()->transform(function ($tx) {
+        $displayCurrency = $wallet?->currency ?: ($user?->currency ?: 'EGP');
+
+        // Transform collection to match the ledger breakdown in the wallet currency.
+        $transactions->getCollection()->transform(function ($tx) use ($displayCurrency) {
+            $transactionCurrency = $tx->wallet?->currency ?: $displayCurrency;
             $isDebit = in_array($tx->type, [WalletTxType::ORDER_PAYMENT, WalletTxType::TARGET_PAYOUT, WalletTxType::TRANSFER_OUT])
                 || ($tx->balance_before > $tx->balance_after);
 
@@ -384,14 +389,14 @@ class AdminUserController extends Controller
                 'subtitle' => $subtitle,
                 'is_debit' => $isDebit,
                 'amount' => (float) $tx->amount,
-                'amount_formatted' => ($isDebit ? '- ' : '+ ') . number_format($tx->amount, 2) . ' £',
+                'amount_formatted' => ($isDebit ? '- ' : '+ ') . number_format($tx->amount, 2) . ' ' . $transactionCurrency,
                 'source' => $tx->metadata['source'] ?? 'محفظة الموقع',
                 'status' => $tx->metadata['status'] ?? 'مكتملة',
                 'balance_before' => (float) $tx->balance_before,
-                'balance_before_formatted' => number_format($tx->balance_before, 2) . ' £',
-                'change' => ($isDebit ? '- ' : '+ ') . number_format($tx->amount, 2) . ' £',
+                'balance_before_formatted' => number_format($tx->balance_before, 2) . ' ' . $transactionCurrency,
+                'change' => ($isDebit ? '- ' : '+ ') . number_format($tx->amount, 2) . ' ' . $transactionCurrency,
                 'balance_after' => (float) $tx->balance_after,
-                'balance_after_formatted' => number_format($tx->balance_after, 2) . ' £',
+                'balance_after_formatted' => number_format($tx->balance_after, 2) . ' ' . $transactionCurrency,
                 'date_formatted' => $tx->created_at->translatedFormat('d F Y في h:i A'),
                 'created_at' => $tx->created_at->toISOString(),
             ];
@@ -409,13 +414,13 @@ class AdminUserController extends Controller
             ] : null,
             'stats' => [
                 'current_balance' => $currentBalance,
-                'current_balance_formatted' => '£ ' . number_format($currentBalance, 2),
-                'currency' => $wallet ? $wallet->currency : 'EGP',
+                'current_balance_formatted' => $displayCurrency . ' ' . number_format($currentBalance, 2),
+                'currency' => $displayCurrency,
                 'operations_count' => $totalOperations,
                 'total_credits' => $totalCredits,
-                'total_credits_formatted' => '£ ' . number_format($totalCredits, 2),
+                'total_credits_formatted' => $displayCurrency . ' ' . number_format($totalCredits, 2),
                 'total_debits' => $totalDebits,
-                'total_debits_formatted' => '£ ' . number_format($totalDebits, 2),
+                'total_debits_formatted' => $displayCurrency . ' ' . number_format($totalDebits, 2),
             ],
             'transactions' => $transactions,
         ], 'تم جلب سجل حركة المستخدم بنجاح');

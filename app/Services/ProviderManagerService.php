@@ -20,6 +20,7 @@ class ProviderManagerService
     {
         $className = match ($driver) {
             'manual', 'manual_review' => \App\Adapters\Providers\ManualProviderAdapter::class,
+            'ad_card', 'ad-card', 'adcard' => \App\Adapters\Providers\AdCardProviderAdapter::class,
             default => \App\Adapters\Providers\EmbratorProviderAdapter::class,
         };
 
@@ -36,7 +37,12 @@ class ProviderManagerService
     public function fulfill(Order $order): ProviderOrderResultDTO
     {
         $productProviders = ProductProvider::with('provider')
-            ->where('product_tier_id', $order->product_tier_id)
+            ->where(function ($query) use ($order) {
+                $query->where('product_tier_id', $order->product_tier_id);
+                if ($order->product_id) {
+                    $query->orWhere('product_id', $order->product_id);
+                }
+            })
             ->where('is_active', true)
             ->orderBy('priority', 'asc')
             ->get();
@@ -51,14 +57,16 @@ class ProviderManagerService
             );
         }
 
+        $attemptFailures = [];
         foreach ($productProviders as $pp) {
             $provider = $pp->provider;
-            if (!$provider->is_active) {
+            if (!$provider || !$provider->is_active) {
                 continue;
             }
 
             try {
-                $adapter = $this->resolveAdapter($provider->driver, $provider->config ?? []);
+                $providerConfig = array_merge($provider->config ?? [], ['_provider_id' => $provider->id]);
+                $adapter = $this->resolveAdapter($provider->driver, $providerConfig);
                 $dto = new OrderRequestDTO(
                     userId: $order->user_id,
                     productId: $order->product_id,
@@ -67,6 +75,16 @@ class ProviderManagerService
                     playerId: $order->player_id,
                     serverId: $order->server_id,
                     accountRegion: $order->account_region,
+                    extraFields: array_merge(
+                        (array) ($order->extra_fields ?? []),
+                        array_filter([
+                            'player_id' => $order->player_id,
+                            'server_id' => $order->server_id,
+                            'region' => $order->account_region,
+                        ], fn ($value) => $value !== null && $value !== '')
+                    ),
+                    idempotencyKey: (string) $order->public_id,
+                    providerSku: (string) ($pp->provider_sku ?? ''),
                 );
 
                 $result = $adapter->executeOrder($dto);
@@ -80,16 +98,41 @@ class ProviderManagerService
 
                     return $result;
                 }
+                $attemptFailures[] = [
+                    'provider_id' => $provider->id,
+                    'provider_name' => $provider->name,
+                    'error' => $result->errorMessage,
+                    'response' => $result->rawResponse,
+                ];
             } catch (Exception $e) {
-                // Log and continue to next provider in cascade
+                $attemptFailures[] = [
+                    'provider_id' => $provider->id,
+                    'provider_name' => $provider->name,
+                    'error' => $e->getMessage(),
+                ];
                 continue;
             }
         }
 
+        \Illuminate\Support\Facades\Log::warning('All providers failed for order fulfillment.', [
+            'order_id' => $order->id,
+            'attempts' => $attemptFailures,
+        ]);
+
         return new ProviderOrderResultDTO(
             success: false,
             status: 'failed',
-            errorMessage: 'جميع المزودين غير متاحين حالياً.'
+            errorMessage: 'جميع المزودين غير متاحين حالياً.' . (count($attemptFailures) ? ' ' . implode(' | ', array_map(fn ($failure) => ($failure['provider_name'] ?? 'Provider') . ': ' . ($failure['error'] ?? 'failed'), $attemptFailures)) : '')
         );
+    }
+
+    public function checkOrder(Order $order): ProviderOrderResultDTO
+    {
+        if (!$order->provider || !$order->provider_order_id) {
+            return new ProviderOrderResultDTO(false, 'pending', errorMessage: 'لا يوجد طلب مسجل لدى المورد.');
+        }
+        $adapter = $this->resolveAdapter($order->provider->driver, array_merge($order->provider->config ?? [], ['base_url' => $order->provider->base_url]));
+        $lookupId = $order->provider_response['order_uuid'] ?? $order->provider_order_id;
+        return $adapter->checkOrderStatus((string) $lookupId);
     }
 }

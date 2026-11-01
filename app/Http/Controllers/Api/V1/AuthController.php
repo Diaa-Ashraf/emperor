@@ -501,7 +501,10 @@ class AuthController extends Controller
             // Redirect back to SPA with token query param
             // If the user is new OR their country/phone is not completed yet, flag as profile completion needed
             $needsProfileCompletion = $isNewUser || empty($user->country) || empty($user->phone);
-            return redirect("/login?oauth_token={$token}" . ($needsProfileCompletion ? '&is_new=1' : ''));
+            if ($needsProfileCompletion) {
+                return redirect("/complete-profile?oauth_token={$token}&is_new=1");
+            }
+            return redirect("/login?oauth_token={$token}");
         } catch (\Throwable $e) {
             return redirect('/login?error=' . urlencode('فشل تسجيل الدخول عبر Google: ' . $e->getMessage()));
         }

@@ -52,8 +52,9 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useToast } from '../../contexts/ToastContext';
 import { getSiteLogo, getSiteName } from '../../utils/settingsHelper';
+import { getCurrencyLabel } from '../../utils/currencyHelper';
 
-export default function UserSidebarDrawer({ isOpen, onClose }) {
+export default function UserSidebarDrawer({ isOpen, onClose, walletBalance }) {
     const { user, isAuthenticated, logout, isAdmin, isStaff, canAccessAdmin, hasApiAccess } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { language, switchLanguage, t, isRtl } = useLanguage();
@@ -248,7 +249,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
             authRequired: true
         },
         {
-            path: '/profile?tab=security',
+            path: '/account-security',
             label: t('security', 'حماية الحساب'),
             icon: Shield,
             iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
@@ -684,7 +685,7 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
                                     letterSpacing: '0.5px',
                                     fontFamily: 'var(--font-cairo)',
                                 }}>
-                                    {language === 'en' ? 'EGP' : 'ج.م'} {Number(user?.wallet?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
+                                    {getCurrencyLabel(user?.currency || walletBalance?.preferred_currency || user?.wallet?.currency || 'EGP', language)} {Number(walletBalance?.preferred_balance ?? user?.wallet?.balance ?? user?.wallet_balance ?? 0).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
                                 </div>
                             </div>
                         </div>

@@ -20,6 +20,7 @@ import { targetApi } from '../api/endpoints';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useToast } from '../contexts/ToastContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { getCurrencyLabel } from '../utils/currencyHelper';
 
 export default function TargetOrderDetailPage() {
     const { theme } = useTheme();
@@ -310,7 +311,7 @@ export default function TargetOrderDetailPage() {
                                 {t('netPayout', 'الصافي المستحق')}:
                             </span>
                             <span style={{ fontSize: '22px', fontWeight: '900', color: '#16A34A' }}>
-                                {netPayout} {language === 'en' ? 'EGP' : 'ج.م'}
+                                {netPayout} {getCurrencyLabel(order.currency || 'EGP', language)}
                             </span>
                         </div>
                     </div>

@@ -34,8 +34,7 @@ class CheckOrderStatusJob implements ShouldQueue
         }
 
         try {
-            $adapter = $providerManager->resolveAdapter($order->provider->driver, $order->provider->config ?? []);
-            $statusCheck = $adapter->checkStatus($order->provider_order_id ?? (string) $order->id);
+            $statusCheck = $providerManager->checkOrder($order);
 
             if ($statusCheck->status === 'completed') {
                 $order->update([

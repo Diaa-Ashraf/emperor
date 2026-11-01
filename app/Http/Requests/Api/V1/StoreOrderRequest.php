@@ -21,6 +21,7 @@ class StoreOrderRequest extends FormRequest
             'server_id' => ['nullable', 'string', 'max:100'],
             'account_region' => ['nullable', 'string', 'max:100'],
             'extra_fields' => ['nullable', 'array'],
+            'extra_fields.*' => ['nullable', 'string', 'max:500'],
             'idempotency_key' => ['nullable', 'string', 'max:100'],
         ];
     }

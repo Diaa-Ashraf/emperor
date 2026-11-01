@@ -15,6 +15,7 @@ readonly class OrderRequestDTO
         public array $extraFields = [],
         public ?string $idempotencyKey = null,
         public string $channel = 'web',
+        public ?string $providerSku = null,
     ) {}
 
     public static function fromArray(array $data): self
@@ -30,6 +31,7 @@ readonly class OrderRequestDTO
             extraFields: $data['extra_fields'] ?? [],
             idempotencyKey: $data['idempotency_key'] ?? null,
             channel: $data['channel'] ?? 'web',
+            providerSku: isset($data['provider_sku']) ? (string) $data['provider_sku'] : null,
         );
     }
 }

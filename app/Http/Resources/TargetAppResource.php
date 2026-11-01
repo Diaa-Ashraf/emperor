@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class TargetAppResource extends JsonResource
 {
@@ -31,7 +32,19 @@ class TargetAppResource extends JsonResource
         };
 
         $firstRate = $this->targetRates?->first();
-        $rateVal = $firstRate ? (float) $firstRate->rate_per_point : 48;
+        $user = $request->user() ?: Auth::guard('sanctum')->user();
+        $targetCurrency = strtoupper((string) ($user?->currency ?: ($firstRate?->currency ?: 'EGP')));
+        $rateVal = $firstRate ? (float) $firstRate->rate_per_point : 0.05;
+        $rateCurrency = strtoupper((string) ($firstRate?->currency ?: 'EGP'));
+        if ($rateCurrency !== $targetCurrency) {
+            try {
+                $rateVal = (float) app(\App\Services\ExchangeRateService::class)
+                    ->calculateConversion($rateCurrency, $targetCurrency, $rateVal)['final_amount'];
+                $rateCurrency = $targetCurrency;
+            } catch (\Throwable $e) {
+                // Keep the configured rate and its true currency visible if no conversion exists.
+            }
+        }
 
         return [
             'id' => $this->id,
@@ -42,7 +55,8 @@ class TargetAppResource extends JsonResource
             'player_id_label' => $this->player_id_label ?? 'آيدي الحساب (App ID)',
             'agency_id' => Setting::get('target_agency_id', 'EMP-TARGET-001'),
             'rate_per_unit' => $rateVal,
-            'rate_text' => $rateVal . ' EGP / دولار',
+            'rate_currency' => $rateCurrency,
+            'rate_text' => $rateVal . ' ' . $rateCurrency . ' / وحدة',
             'rates' => TargetRateResource::collection($this->whenLoaded('targetRates')),
         ];
     }

@@ -232,8 +232,10 @@ Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
             // Providers & Payment Methods
             Route::get('/providers', [\App\Http\Controllers\Api\V1\Admin\AdminProviderController::class, 'providers']);
             Route::post('/providers', [\App\Http\Controllers\Api\V1\Admin\AdminProviderController::class, 'store']);
+            Route::put('/providers/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminProviderController::class, 'update']);
             Route::delete('/providers/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminProviderController::class, 'destroy']);
             Route::post('/providers/{id}/check-balance', [\App\Http\Controllers\Api\V1\Admin\AdminProviderController::class, 'checkBalance']);
+            Route::get('/providers/{id}/catalog', [\App\Http\Controllers\Api\V1\Admin\AdminProviderController::class, 'catalog']);
             Route::post('/providers/{id}/toggle', [\App\Http\Controllers\Api\V1\Admin\AdminProviderController::class, 'toggleProvider']);
             // Payment Methods & Groups Management (Matching Screenshots 3, 4, 5)
             Route::get('/payment-methods', [\App\Http\Controllers\Api\V1\Admin\AdminPaymentMethodController::class, 'index']);

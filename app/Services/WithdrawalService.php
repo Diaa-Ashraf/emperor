@@ -14,6 +14,7 @@ class WithdrawalService
 {
     public function __construct(
         protected WalletService $walletService,
+        protected MultiCurrencyWalletService $multiCurrencyWalletService,
         protected ?NotificationService $notificationService = null
     ) {}
 
@@ -34,6 +35,8 @@ class WithdrawalService
         $finalAmount = $amount - $fee;
 
         return DB::transaction(function () use ($user, $method, $amount, $fee, $finalAmount, $recipientAccount) {
+            $this->multiCurrencyWalletService->ensureFundsInCurrency($user, $method->currency, $amount);
+
             // Debit from wallet upon requesting
             $this->walletService->debit(
                 user: $user,

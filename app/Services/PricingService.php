@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Enums\PriceStrategy;
 use App\Models\CatalogSource;
 use App\Models\CustomerGroup;
-use App\Models\ExchangeRate;
 use App\Models\PricingRule;
 use App\Models\Product;
 use App\Models\ProductTier;
@@ -81,6 +80,18 @@ class PricingService
         $targetCurrency = strtoupper($targetCurrency ?: 'EGP');
 
         $isManual = ($tier->metadata['fulfillment_mode'] ?? 'auto') === 'manual';
+
+        $provider = !empty($tier->metadata['provider_id']) ? \App\Models\Provider::find($tier->metadata['provider_id']) : null;
+        if (in_array($provider?->driver, ['ad_card', 'ad-card', 'adcard'], true)) {
+            $cost = (float) ($tier->source_cost ?: $tier->final_price);
+            $costCurrency = strtoupper((string) ($tier->cost_currency ?: ($tier->metadata['provider_product_currency'] ?? 'USD')));
+            if ($costCurrency === $targetCurrency) {
+                return $cost * (1 + ((float) $tier->margin_percent / 100));
+            }
+            $conversion = app(ExchangeRateService::class);
+            $convertedCost = (float) $conversion->calculateConversion($costCurrency, $targetCurrency, $cost)['final_amount'];
+            return $convertedCost * (1 + ((float) $tier->margin_percent / 100));
+        }
 
         // Resolve cost dynamically from Embrator provider API map ONLY IF not manual fulfillment
         $provProdId = $tier->metadata['provider_product_id'] ?? $tier->product?->external_product_id ?? null;
@@ -208,22 +219,7 @@ class PricingService
             return $priceInCostCurrency;
         }
 
-        // Exchange rate lookup
-        $rate = ExchangeRate::where('from_currency', $costCurrency)
-            ->where('to_currency', $targetCurrency)
-            ->where('is_active', true)
-            ->value('rate');
-
-        if (!$rate) {
-            if ($costCurrency === 'USD' && $targetCurrency === 'EGP') {
-                $rate = 59.0;
-            } elseif ($costCurrency === 'EGP' && $targetCurrency === 'USD') {
-                $rate = 1 / 59.0;
-            } else {
-                $rate = 1.0;
-            }
-        }
-
-        return $priceInCostCurrency * (float) $rate;
+        return (float) app(ExchangeRateService::class)
+            ->calculateConversion($costCurrency, $targetCurrency, $priceInCostCurrency)['final_amount'];
     }
 }

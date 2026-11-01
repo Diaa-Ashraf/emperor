@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Phone, Globe, DollarSign, Gift, ArrowLeft, Check, Sparkles } from 'lucide-react';
 import AuthLayout from '../../layouts/AuthLayout';
 import { useAuth } from '../../contexts/AuthContext';
@@ -43,10 +43,20 @@ const CURRENCIES = [
 
 export default function CompleteProfilePage() {
     const navigate = useNavigate();
-    const { user, completeProfile } = useAuth();
+    const location = useLocation();
+    const { user, completeProfile, setSession } = useAuth();
     const { theme } = useTheme();
     const isLight = theme === 'light';
     const { success, error: toastError } = useToast();
+
+    // Check if oauth_token is present in URL (direct redirect from Google callback)
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const oauthToken = queryParams.get('oauth_token');
+        if (oauthToken) {
+            setSession(oauthToken, null);
+        }
+    }, [location.search, setSession]);
 
     const [formData, setFormData] = useState({
         phone: user?.phone || '',

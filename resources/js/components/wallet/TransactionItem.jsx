@@ -1,9 +1,11 @@
 import React from 'react';
 import { ArrowDownLeft, ArrowUpRight, RefreshCw, Gift, DollarSign, ShieldAlert, Sparkles } from 'lucide-react';
+import { getCurrencyLabel } from '../../utils/currencyHelper';
 
 export default function TransactionItem({ transaction }) {
     if (!transaction) return null;
 
+    const currencyLabel = getCurrencyLabel(transaction.currency || transaction.wallet?.currency || 'EGP');
     const isCredit = Number(transaction.amount) > 0;
     const amount = Math.abs(Number(transaction.amount)).toLocaleString('en-US', {
         minimumFractionDigits: 2,
@@ -157,11 +159,11 @@ export default function TransactionItem({ transaction }) {
                     direction: 'ltr',
                     fontFamily: 'Outfit, Cairo, sans-serif',
                 }}>
-                    {isCredit ? `+${amount}` : `-${amount}`} ج.م
+                    {isCredit ? `+${amount}` : `-${amount}`} {currencyLabel}
                 </div>
 
                 <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                    الرصيد: <strong style={{ color: 'var(--text-secondary)' }}>{balanceAfter} ج.م</strong>
+                    الرصيد: <strong style={{ color: 'var(--text-secondary)' }}>{balanceAfter} {currencyLabel}</strong>
                 </span>
             </div>
         </div>

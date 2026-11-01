@@ -33,9 +33,17 @@ class AdminProviderController extends Controller
                 'balance_currency',
                 'is_active',
                 'auto_fulfill',
+                'base_url',
                 'created_at',
             ])
+            ->addSelect(['config'])
             ->get();
+
+        $providers->each(function (Provider $provider) {
+            $config = $provider->config ?? [];
+            $provider->setAttribute('has_api_token', !empty($config['api_token']) || !empty($config['api_key']));
+            $provider->makeHidden(['config']);
+        });
 
         return $this->successResponse($providers, 'تم جلب قائمة الموردين بنجاح');
     }
@@ -47,19 +55,22 @@ class AdminProviderController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:190',
-            'driver' => 'required|string|max:100',
+            'driver' => 'nullable|string|max:100',
             'base_url' => 'nullable|string|max:500',
             'api_type' => 'nullable|string',
             'integration_type' => 'nullable|string',
             'auth_type' => 'nullable|string',
+            'api_token' => 'nullable|string|max:500',
             'is_active' => 'boolean',
             'auto_fulfill' => 'boolean',
         ]);
 
+        $isAdCard = $request->input('api_type') === 'AD Card API' || strtolower((string) $request->input('driver')) === 'ad_card';
+        $driver = $isAdCard ? 'ad_card' : ($validated['driver'] ?? 'embrator');
         $provider = Provider::create([
             'name' => $validated['name'],
-            'driver' => $validated['driver'],
-            'base_url' => $validated['base_url'] ?? null,
+            'driver' => $driver,
+            'base_url' => $validated['base_url'] ?? ($isAdCard ? 'https://ad-card.com/client/api' : null),
             'balance' => 0.00,
             'balance_currency' => 'USD',
             'is_active' => $request->boolean('is_active', true),
@@ -68,10 +79,33 @@ class AdminProviderController extends Controller
                 'api_type' => $request->input('api_type', 'API (واجهة برمجة)'),
                 'integration_type' => $request->input('integration_type', 'التكامل الافتراضي'),
                 'auth_type' => $request->input('auth_type', 'بدون توثيق'),
+                'api_token' => $request->input('api_token'),
             ],
         ]);
 
-        return $this->successResponse($provider, 'تم حفظ المورد بنجاح');
+        return $this->successResponse($provider->makeHidden(['config']), 'تم حفظ المورد بنجاح');
+    }
+
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $provider = Provider::findOrFail($id);
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:190',
+            'driver' => 'sometimes|required|string|max:100',
+            'base_url' => 'nullable|string|max:500',
+            'api_token' => 'nullable|string|max:500',
+            'is_active' => 'sometimes|boolean',
+            'auto_fulfill' => 'sometimes|boolean',
+        ]);
+        $config = $provider->config ?? [];
+        if (array_key_exists('api_token', $validated) && $validated['api_token'] !== null && $validated['api_token'] !== '') {
+            $config['api_token'] = $validated['api_token'];
+            unset($validated['api_token']);
+        }
+        $provider->fill($validated);
+        $provider->config = $config;
+        $provider->save();
+        return $this->successResponse(['id' => $provider->id], 'تم تحديث بيانات المورد بنجاح');
     }
 
     /**
@@ -121,6 +155,20 @@ class AdminProviderController extends Controller
             ], 'تم تحديث رصيد المورد بنجاح');
         } catch (\Throwable $e) {
             return $this->errorResponse('فشل الاستعلام عن رصيد المورد: ' . $e->getMessage(), Response::HTTP_BAD_GATEWAY);
+        }
+    }
+
+    public function catalog(int $id): JsonResponse
+    {
+        $provider = Provider::findOrFail($id);
+        try {
+            if (!in_array($provider->driver, ['ad_card', 'ad-card', 'adcard'], true)) {
+                return $this->errorResponse('جلب الكتالوج المباشر متاح حاليًا لمورد AD Card من شاشة ربط المنتجات.', Response::HTTP_NOT_IMPLEMENTED);
+            }
+            $adapter = $this->providerService->resolveAdapter($provider->driver, array_merge($provider->config ?? [], ['base_url' => $provider->base_url]));
+            return $this->successResponse($adapter->getProducts(), 'تم الاتصال بمورد AD Card بنجاح');
+        } catch (\Throwable $e) {
+            return $this->errorResponse('فشل الاتصال بمورد AD Card: ' . $e->getMessage(), Response::HTTP_BAD_GATEWAY);
         }
     }
 

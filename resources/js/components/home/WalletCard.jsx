@@ -4,6 +4,7 @@ import { Wallet, PlusCircle, ArrowUpRight, History, ShieldCheck, Sparkles, LogIn
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { getCurrencyLabel } from '../../utils/currencyHelper';
 import Button from '../ui/Button';
 
 export default function WalletCard({ balanceData }) {
@@ -12,13 +13,13 @@ export default function WalletCard({ balanceData }) {
     const { theme } = useTheme();
     const isLight = theme === 'light';
 
-    const formattedBalance = Number(balanceData?.balance ?? user?.wallet_balance ?? 0).toLocaleString('en-US', {
+    const formattedBalance = Number(balanceData?.preferred_balance ?? balanceData?.balance ?? user?.wallet?.balance ?? user?.wallet_balance ?? 0).toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
 
-    const currency = balanceData?.currency || user?.currency || 'EGP';
-    const currencyLabel = currency === 'EGP' ? (language === 'en' ? 'EGP' : 'ج.م') : currency;
+    const currency = balanceData?.preferred_currency || balanceData?.currency || user?.currency || user?.wallet?.currency || 'EGP';
+    const currencyLabel = getCurrencyLabel(currency, language);
 
     const usdBalance = Number(balanceData?.balance_usd ?? 0).toFixed(2);
 

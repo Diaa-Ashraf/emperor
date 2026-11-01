@@ -5,12 +5,13 @@ namespace App\Http\Resources;
 use App\Services\PricingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class ProductTierResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $user = $request->user();
+        $user = $request->user() ?: Auth::guard('sanctum')->user();
         $pricingService = app(PricingService::class);
         $userPrice = $pricingService->getPriceForUser($this->resource, $user);
         $targetCurrency = $user?->currency ?: 'EGP';

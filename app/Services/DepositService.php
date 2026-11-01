@@ -29,8 +29,10 @@ class DepositService
         ?string $transactionReference = null,
         ?string $proofImage = null
     ): DepositRequest {
+        $currency = $this->normalizeCurrency($method->currency);
+
         if ($amount < $method->min_amount || $amount > $method->max_amount) {
-            throw new InvalidArgumentException("المبلغ يجب أن يكون بين {$method->min_amount} و {$method->max_amount} {$method->currency}");
+            throw new InvalidArgumentException("المبلغ يجب أن يكون بين {$method->min_amount} و {$method->max_amount} {$currency}");
         }
 
         $fee = $method->calculateFee($amount);
@@ -42,7 +44,7 @@ class DepositService
             'amount' => $amount,
             'fee' => $fee,
             'final_amount' => $finalAmount,
-            'currency' => $method->currency,
+            'currency' => $currency,
             'sender_account' => $senderAccount,
             'transaction_reference' => $transactionReference,
             'proof_image' => $proofImage,
@@ -56,7 +58,7 @@ class DepositService
                 'type' => 'deposit_submitted',
                 'data' => json_encode([
                     'title' => 'تم استلام طلب شحن الرصيد',
-                    'body' => "طلب إيداع رقم #{$deposit->id} بمبلغ {$amount} {$method->currency} قيد المراجعة.",
+                    'body' => "طلب إيداع رقم #{$deposit->id} بمبلغ {$amount} {$deposit->currency} قيد المراجعة.",
                     'link' => "/deposits/{$deposit->id}",
                     'deposit_id' => $deposit->id,
                 ]),
@@ -77,7 +79,7 @@ class DepositService
                     'type' => 'admin_deposit_alert',
                     'data' => json_encode([
                         'title' => 'طلب إيداع جديد يحتاج مراجعة',
-                        'body' => "طلب إيداع #{$deposit->id} من {$user->name} بمبلغ {$amount} {$method->currency} عبر {$method->name}",
+                        'body' => "طلب إيداع #{$deposit->id} من {$user->name} بمبلغ {$amount} {$deposit->currency} عبر {$method->name}",
                         'link' => "/admin/deposits/{$deposit->id}",
                         'deposit_id' => $deposit->id,
                     ]),
@@ -95,7 +97,9 @@ class DepositService
      */
     public function approve(DepositRequest $request, User $reviewer, ?string $notes = null): void
     {
-        DB::transaction(function () use ($request, $reviewer, $notes) {
+        $currency = $this->normalizeCurrency($request->currency);
+
+        DB::transaction(function () use ($request, $reviewer, $notes, $currency) {
             if ($request->status === DepositStatus::APPROVED) {
                 return;
             }
@@ -112,7 +116,7 @@ class DepositService
                 amount: (float) $request->final_amount,
                 type: WalletTxType::DEPOSIT,
                 description: "إيداع رصيد عبر {$request->paymentMethod->name} (طلب #{$request->id})",
-                currency: $request->currency,
+                currency: $currency,
                 referenceType: DepositRequest::class,
                 referenceId: $request->id
             );
@@ -246,11 +250,18 @@ class DepositService
                 'name' => $cleanName,
                 'full_name' => $rawName,
                 'flag' => $flag,
-                'currency' => $method->currency ?: 'USD',
+                'currency' => $this->normalizeCurrency($method->currency ?: 'USD'),
                 'methods_count' => 1,
             ];
         }
 
         return $countries;
+    }
+
+    private function normalizeCurrency(?string $currency): string
+    {
+        $normalized = strtoupper(trim((string) ($currency ?: 'EGP')));
+
+        return $normalized === 'EGY' ? 'EGP' : $normalized;
     }
 }

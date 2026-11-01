@@ -36,13 +36,13 @@ export default function AdminUserLedgerPage() {
     const [userData, setUserData] = useState(null);
     const [stats, setStats] = useState({
         current_balance: 0,
-        current_balance_formatted: '£ 0.00',
+        current_balance_formatted: 'EGP 0.00',
         currency: 'EGP',
         operations_count: 0,
         total_credits: 0,
-        total_credits_formatted: '£ 0.00',
+        total_credits_formatted: 'EGP 0.00',
         total_debits: 0,
-        total_debits_formatted: '£ 0.00',
+        total_debits_formatted: 'EGP 0.00',
     });
     const [transactions, setTransactions] = useState([]);
     const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, total: 0 });

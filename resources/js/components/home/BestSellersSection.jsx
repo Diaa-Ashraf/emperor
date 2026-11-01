@@ -16,9 +16,10 @@ import { catalogApi } from '../../api/endpoints';
 import { formatImageUrl } from '../../utils/imageHelper';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { getCurrencyLabel } from '../../utils/currencyHelper';
 
 export default function BestSellersSection() {
-    const { t, isRtl } = useLanguage();
+    const { t, isRtl, language } = useLanguage();
     const { theme } = useTheme();
     const isLight = theme === 'light';
     const [bestSellers, setBestSellers] = useState([]);
@@ -151,11 +152,13 @@ export default function BestSellersSection() {
                     {bestSellers.map((product, idx) => {
                         const img = formatImageUrl(product.image_url || product.image);
                         const tiers = product.tiers || product.active_tiers || [];
-                        let minPrice = null;
+                        let minTier = null;
                         if (tiers.length > 0) {
-                            const prices = tiers.map(t => Number(t.final_price || t.price_egp || t.price || 0)).filter(p => p > 0);
-                            if (prices.length > 0) minPrice = Math.min(...prices);
+                            minTier = tiers.filter(t => Number(t.price) > 0).sort((a, b) => Number(a.price) - Number(b.price))[0] || null;
                         }
+                        const minPrice = minTier ? Number(minTier.price) : Number(product.price || 0);
+                        const priceCurrency = minTier?.currency || product.currency || 'EGP';
+                        const usdPrice = minTier?.price_usd ?? product.price_usd;
 
                         const rankColors = [
                             { badge: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)', text: '#000', label: 'الأعلى طلباً' },
@@ -332,15 +335,16 @@ export default function BestSellersSection() {
                                     }}>
                                         <div>
                                             <span style={{ fontSize: '11px', color: isLight ? '#64748B' : '#94A3B8', display: 'block' }}>
-                                                {minPrice ? 'السعر يبدأ من' : 'الشحن المباشر'}
+                                                {minPrice > 0 ? 'السعر يبدأ من' : 'الشحن المباشر'}
                                             </span>
                                             <span style={{
                                                 fontSize: '15px',
                                                 fontWeight: '900',
                                                 color: isLight ? '#9A7210' : '#D4A537',
                                             }}>
-                                                {minPrice ? `${minPrice} ج.م` : 'شحن فوري'}
+                                                {minPrice > 0 ? `${minPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${getCurrencyLabel(priceCurrency, language)}` : 'شحن فوري'}
                                             </span>
+                                            {minPrice > 0 && Number(usdPrice) > 0 && <span style={{ fontSize: '11px', color: '#22C55E', direction: 'ltr' }}>{Number(usdPrice).toFixed(2)} USD</span>}
                                         </div>
 
                                         <div style={{

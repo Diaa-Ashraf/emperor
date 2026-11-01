@@ -4,11 +4,15 @@ import { TrendingUp, DollarSign, ArrowLeft, ArrowRight, Calculator, Smartphone }
 import { targetApi } from '../../api/endpoints';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { getCurrencyLabel } from '../../utils/currencyHelper';
 import "../../../css/liveTargetMarket.css";
 
 export default function LiveTargetMarket() {
-    const { isRtl } = useLanguage();
+    const { isRtl, language } = useLanguage();
     const { theme } = useTheme();
+    const { user } = useAuth();
+    const currencyLabel = getCurrencyLabel(user?.currency || 'EGP', language);
     const isLight = theme === 'light';
     const subtleBorder = isLight ? 'rgba(24, 24, 27, 0.24)' : 'var(--border-subtle)';
     const mediumBorder = isLight ? 'rgba(24, 24, 27, 0.34)' : 'var(--border-medium)';
@@ -224,7 +228,7 @@ export default function LiveTargetMarket() {
 
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
                                     <span style={{ fontSize: '16px', fontWeight: '900', color: 'var(--gold-300)' }}>
-                                        {appRate10k} ج.م
+                                        {appRate10k} {currencyLabel}
                                     </span>
                                     <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
                                         / 10,000 نقطة
@@ -321,7 +325,7 @@ export default function LiveTargetMarket() {
                                     تستلم كاش فوراً:
                                 </div>
                                 <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--gold-300)' }}>
-                                    {Number(estimatedPayout).toLocaleString()} <span style={{ fontSize: '14px' }}>ج.م</span>
+                                    {Number(estimatedPayout).toLocaleString()} <span style={{ fontSize: '14px' }}>{currencyLabel}</span>
                                 </div>
                             </div>
 

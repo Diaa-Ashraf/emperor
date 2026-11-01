@@ -40,6 +40,7 @@ const TargetOrderDetailPage = lazyRetry(() => import('./pages/TargetOrderDetailP
 const ReferralsPage = lazyRetry(() => import('./pages/ReferralsPage'));
 const NotificationsPage = lazyRetry(() => import('./pages/NotificationsPage'));
 const ProfilePage = lazyRetry(() => import('./pages/ProfilePage'));
+const AccountSecurityPage = lazyRetry(() => import('./pages/AccountSecurityPage'));
 const SettingsPage = lazyRetry(() => import('./pages/SettingsPage'));
 const SupportPage = lazyRetry(() => import('./pages/SupportPage'));
 const CreatedByPage = lazyRetry(() => import('./pages/CreatedByPage'));
@@ -90,6 +91,12 @@ export function ProtectedRoute({ children }) {
                 }} />
             </div>
         );
+    }
+
+    // Allow accessing route if an oauth_token is being passed directly in URL query params
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has('oauth_token')) {
+        return children;
     }
 
     if (!isAuthenticated) {
@@ -240,7 +247,8 @@ export function AppRoutes() {
                 <Route path="/referrals" element={<ProtectedRoute><ReferralsPage /></ProtectedRoute>} />
                 <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-                <Route path="/security" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                <Route path="/security" element={<ProtectedRoute><AccountSecurityPage /></ProtectedRoute>} />
+                <Route path="/account-security" element={<ProtectedRoute><AccountSecurityPage /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
                 <Route path="/developer" element={<ProtectedRoute><DeveloperApiPage /></ProtectedRoute>} />
                 <Route path="/developers/api" element={<ProtectedRoute><DeveloperApiPage /></ProtectedRoute>} />

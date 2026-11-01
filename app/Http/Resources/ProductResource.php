@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ProductResource extends JsonResource
 {
@@ -32,7 +33,9 @@ class ProductResource extends JsonResource
 
         $firstTier = $this->whenLoaded('activeTiers', fn() => $this->activeTiers->first(), fn() => $this->whenLoaded('tiers', fn() => $this->tiers->first()));
         $pricingService = app(\App\Services\PricingService::class);
-        $user = $request->user();
+        // Public catalog endpoints still need the signed-in user's currency
+        // so the displayed quote matches the price checked at order time.
+        $user = $request->user() ?: Auth::guard('sanctum')->user();
 
         $tierResources = ProductTierResource::collection($this->whenLoaded('activeTiers', function () {
             return $this->activeTiers;
@@ -43,6 +46,7 @@ class ProductResource extends JsonResource
         $userPrice = $firstTier ? $pricingService->getPriceForUser($firstTier, $user) : null;
         $usdPrice = $firstTier ? $pricingService->getPriceInCurrency($firstTier, 'USD', $user) : null;
         $egpPrice = $firstTier ? $pricingService->getPriceInCurrency($firstTier, 'EGP', $user) : null;
+        $providerFields = $firstTier?->metadata['provider_product_fields'] ?? [];
 
         return [
             'id' => $this->id,
@@ -64,7 +68,9 @@ class ProductResource extends JsonResource
             'server_options' => $this->server_options,
             'requires_account_region' => (bool) $this->requires_account_region,
             'region_options' => $this->region_options,
+            'provider_fields' => $providerFields,
             'price' => $userPrice,
+            'currency' => $user?->currency ?: 'EGP',
             'price_usd' => $usdPrice,
             'price_egp' => $egpPrice,
             'unit_price' => $userPrice,

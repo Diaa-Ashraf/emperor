@@ -82,6 +82,15 @@ function cachedGet(url, params = {}, ttlMs = 30000) {
     return promise;
 }
 
+export function invalidateProductCatalogCache() {
+    for (const key of memoryCache.keys()) {
+        if (key.startsWith('/products')) memoryCache.delete(key);
+    }
+    for (const key of inFlightRequests.keys()) {
+        if (key.startsWith('/products')) inFlightRequests.delete(key);
+    }
+}
+
 export const catalogApi = {
     getCategories: () => cachedGet('/categories', {}, 60000),
     getHeroServices: () => cachedGet('/hero-services', {}, 60000),
@@ -214,8 +223,10 @@ export const adminApi = {
     deleteProduct: (id) => api.delete(`/admin/products/${id}`),
     getProviders: () => api.get('/admin/providers'),
     createProvider: (data) => api.post('/admin/providers', data),
+    updateProvider: (id, data) => api.put(`/admin/providers/${id}`, data),
     deleteProvider: (id) => api.delete(`/admin/providers/${id}`),
     checkProviderBalance: (id) => api.post(`/admin/providers/${id}/check-balance`),
+    getProviderProducts: (id) => api.get(`/admin/providers/${id}/catalog`),
     toggleProvider: (id) => api.post(`/admin/providers/${id}/toggle`),
     getPaymentMethods: () => api.get('/admin/payment-methods'),
     createPaymentMethod: (data) => {

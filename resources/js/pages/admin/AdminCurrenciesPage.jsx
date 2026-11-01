@@ -78,59 +78,43 @@ export default function AdminCurrenciesPage() {
 
     // Filter and group rates into clean "Country/Currency vs $1 USD" list
     const countryCurrencies = useMemo(() => {
-        // Collect all distinct currencies paired with USD
         const list = [];
         const seen = new Set();
-
-        rawRates.forEach(r => {
-            let targetCurr = null;
-            let rateVsUsd = 0; // How many units of targetCurr per 1 USD
-
-            if (r.from_currency === 'USD' && r.to_currency !== 'USD') {
-                targetCurr = r.to_currency;
-                rateVsUsd = parseFloat(r.rate);
-            } else if (r.to_currency === 'USD' && r.from_currency !== 'USD') {
-                targetCurr = r.from_currency;
-                // If it's stored as EGP -> USD = 0.016949, then 1 USD = 1 / 0.016949 = 59
-                rateVsUsd = parseFloat(r.rate) > 0 ? roundNumber(1 / parseFloat(r.rate), 4) : 0;
-            }
-
-            if (targetCurr && !seen.has(targetCurr)) {
-                seen.add(targetCurr);
-
-                // Find metadata if known
-                const meta = PREDEFINED_COUNTRIES.find(c => c.currency === targetCurr) || {
-                    name: `دولة (${targetCurr})`,
-                    currency: targetCurr,
-                    flag: '🌐',
-                };
-
-                list.push({
-                    rateId: r.id,
-                    currency: targetCurr,
-                    countryName: meta.name,
-                    flag: meta.flag,
-                    ratePerUsd: rateVsUsd,
-                    isActive: Boolean(r.is_active),
-                    updatedAt: r.updated_at,
-                    updatedBy: r.updated_by?.name || 'الإدارة'
-                });
-            }
+        PREDEFINED_COUNTRIES.forEach(def => {
+            const direct = rawRates.find(rate => rate.from_currency === 'USD' && rate.to_currency === def.currency);
+            const reverse = rawRates.find(rate => rate.from_currency === def.currency && rate.to_currency === 'USD');
+            const record = direct || reverse;
+            if (record) seen.add(def.currency);
+            list.push({
+                rateId: direct?.id || null,
+                reverseRateId: reverse?.id || null,
+                currency: def.currency,
+                countryName: def.name,
+                flag: def.flag,
+                ratePerUsd: direct ? parseFloat(direct.rate) : reverse && Number(reverse.rate) > 0 ? roundNumber(1 / Number(reverse.rate), 6) : def.defaultRate,
+                isActive: record ? Boolean(record.is_active) : false,
+                isPreset: !record,
+                updatedAt: record?.updated_at,
+                updatedBy: record?.updated_by?.name || 'الإدارة',
+            });
         });
 
-        // Also add common predefined ones if not registered yet
-        PREDEFINED_COUNTRIES.slice(0, 4).forEach(def => {
-            if (!seen.has(def.currency)) {
-                list.push({
-                    rateId: null,
-                    currency: def.currency,
-                    countryName: def.name,
-                    flag: def.flag,
-                    ratePerUsd: def.defaultRate,
-                    isActive: false,
-                    isPreset: true,
-                });
-            }
+        rawRates.filter(rate => rate.from_currency === 'USD' && rate.to_currency !== 'USD').forEach(rate => {
+            if (seen.has(rate.to_currency)) return;
+            const meta = PREDEFINED_COUNTRIES.find(country => country.currency === rate.to_currency) || {
+                name: `دولة (${rate.to_currency})`, currency: rate.to_currency, flag: '🌐',
+            };
+            list.push({
+                rateId: rate.id,
+                reverseRateId: null,
+                currency: rate.to_currency,
+                countryName: meta.name,
+                flag: meta.flag,
+                ratePerUsd: Number(rate.rate),
+                isActive: Boolean(rate.is_active),
+                updatedAt: rate.updated_at,
+                updatedBy: rate.updated_by?.name || 'الإدارة',
+            });
         });
 
         return list;
@@ -233,6 +217,7 @@ export default function AdminCurrenciesPage() {
 
         try {
             await adminApi.toggleCurrency(item.rateId);
+            if (item.reverseRateId) await adminApi.toggleCurrency(item.reverseRateId);
             success(`تم تحديث حالة سعر (${item.currency}) بنجاح`);
             fetchRates();
         } catch (err) {
@@ -248,6 +233,7 @@ export default function AdminCurrenciesPage() {
 
         try {
             await adminApi.deleteCurrency(item.rateId);
+            if (item.reverseRateId) await adminApi.deleteCurrency(item.reverseRateId);
             success(`تم حذف سعر (${item.currency}) بنجاح`);
             fetchRates();
         } catch (err) {

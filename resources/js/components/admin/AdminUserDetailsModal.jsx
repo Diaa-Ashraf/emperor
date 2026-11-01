@@ -152,7 +152,7 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                 amount: parseFloat(balanceAmount),
                 action: balanceAction,
                 currency: userCurrency,
-                description: balanceDesc.trim() || undefined,
+                description: balanceDesc.trim() || '',
             });
 
             if (res && res.data) {
@@ -704,7 +704,21 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                                         <option value="USD">USD - دولار أمريكي</option>
                                         <option value="SAR">SAR - ريال سعودي</option>
                                         <option value="AED">AED - درهم إماراتي</option>
+                                        <option value="YER">YER - ريال يمني</option>
+                                        <option value="JOD">JOD - دينار أردني</option>
+                                        <option value="KWD">KWD - دينار كويتي</option>
                                         <option value="TRY">TRY - ليرة تركية</option>
+                                        <option value="USDT">USDT - دولار رقمي</option>
+                                        <option value="EUR">EUR - يورو</option>
+                                        <option value="GBP">GBP - جنيه إسترليني</option>
+                                        <option value="QAR">QAR - ريال قطري</option>
+                                        <option value="OMR">OMR - ريال عماني</option>
+                                        <option value="BHD">BHD - دينار بحريني</option>
+                                        <option value="MAD">MAD - درهم مغربي</option>
+                                        <option value="DZD">DZD - دينار جزائري</option>
+                                        <option value="LYD">LYD - دينار ليبي</option>
+                                        <option value="IQD">IQD - دينار عراقي</option>
+                                        <option value="SYP">SYP - ليرة سورية</option>
                                     </select>
                                     <button
                                         type="button"
@@ -822,7 +836,7 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                                         step="any"
                                         value={balanceAmount}
                                         onChange={(e) => setBalanceAmount(e.target.value)}
-                                        placeholder="أدخل المبلغ..."
+                                        placeholder={`أدخل المبلغ (${userCurrency})...`}
                                         style={{
                                             flex: 1,
                                             padding: '8px 12px',

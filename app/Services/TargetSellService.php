@@ -19,13 +19,14 @@ class TargetSellService
     public function __construct(
         protected WalletService $walletService,
         protected TrustLevelService $trustLevelService,
-        protected OcrVerificationService $ocrService
+        protected OcrVerificationService $ocrService,
+        protected ExchangeRateService $exchangeRateService
     ) {}
 
     /**
      * Calculate quote for selling target points.
      */
-    public function calculateQuote(Product $product, int $points): TargetQuoteDTO
+    public function calculateQuote(Product $product, int $points, ?User $user = null): TargetQuoteDTO
     {
         $rateRecord = TargetRate::where('product_id', $product->id)
             ->where('is_active', true)
@@ -36,8 +37,16 @@ class TargetSellService
         if (!$rateRecord) {
             // Default rate fallback
             $rate = 0.05; // 0.05 EGP per unit
+            $baseCurrency = 'EGP';
         } else {
             $rate = (float) $rateRecord->rate_per_point;
+            $baseCurrency = strtoupper((string) ($rateRecord->currency ?: 'EGP'));
+        }
+
+        $targetCurrency = strtoupper((string) ($user?->currency ?: $baseCurrency));
+        if ($baseCurrency !== $targetCurrency) {
+            $rate = (float) $this->exchangeRateService
+                ->calculateConversion($baseCurrency, $targetCurrency, $rate)['final_amount'];
         }
 
         $grossAmount = round($points * $rate, 2);
@@ -53,7 +62,7 @@ class TargetSellService
             grossAmount: $grossAmount,
             fee: $fee,
             netPayout: $netPayout,
-            currency: 'EGP',
+            currency: $targetCurrency,
             agencyId: $agencyId
         );
     }
@@ -82,7 +91,7 @@ class TargetSellService
         ?string $proofImage = null,
         ?string $userNotes = null
     ): TargetSellOrder {
-        $quote = $this->calculateQuote($product, $points);
+        $quote = $this->calculateQuote($product, $points, $user);
         $verificationCode = $this->generateVerificationCode();
 
         $order = TargetSellOrder::create([

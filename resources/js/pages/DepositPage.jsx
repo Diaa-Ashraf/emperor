@@ -31,6 +31,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { getCurrencyLabel } from '../utils/currencyHelper';
 
 export default function DepositPage() {
     const navigate = useNavigate();
@@ -64,6 +65,7 @@ export default function DepositPage() {
     const [dbMethods, setDbMethods] = useState([]);
     const [loadingMethods, setLoadingMethods] = useState(true);
     const [ratesList, setRatesList] = useState([]);
+    const [balanceData, setBalanceData] = useState(null);
 
     // Initial fallback if database is empty or loading
     const fallbackPaymentMethods = [
@@ -74,7 +76,7 @@ export default function DepositPage() {
             country_name: 'تحويل مصر',
             name: 'فودافون كاش',
             subName: 'VF-CASH',
-            currency: 'EGY',
+            currency: 'EGP',
             min_amount: 50,
             account_number: '01025515743',
             note: 'برجاء كتابة رقم العملية لضمان التنفيذ 0 ثانيه',
@@ -102,7 +104,7 @@ export default function DepositPage() {
             country_name: 'تحويل مصر',
             name: 'انستا بي (InstaPay)',
             subName: 'انستا بي',
-            currency: 'EGY',
+            currency: 'EGP',
             min_amount: 50,
             account_number: 'ahmedsalah@instapay',
             note: 'ahmedsalah',
@@ -126,6 +128,10 @@ export default function DepositPage() {
     ];
 
     useEffect(() => {
+        fetch('/api/v1/wallet/balance', { headers: { Accept: 'application/json', Authorization: `Bearer ${localStorage.getItem('emperor_token') || ''}` } })
+            .then(res => res.ok ? res.json() : null)
+            .then(json => setBalanceData(json?.data || null))
+            .catch(() => {});
         setLoadingMethods(true);
         depositsApi.getMethods()
             .then(res => {
@@ -152,6 +158,25 @@ export default function DepositPage() {
 
     // Current active payment methods source (DB first, fallback second)
     const activeMethods = dbMethods.length > 0 ? dbMethods : fallbackPaymentMethods;
+
+    // Start with the deposit rails for the customer's registered country so
+    // Saudi users see SAR methods instead of the first Egyptian method.
+    useEffect(() => {
+        const country = String(user?.country || '').trim().toLowerCase();
+        const preferred = ({
+            sa: { countries: ['saudi', 'saudiarabia'], currency: 'SAR' }, 'saudi arabia': { countries: ['saudi', 'saudiarabia'], currency: 'SAR' }, السعودية: { countries: ['saudi', 'saudiarabia'], currency: 'SAR' },
+            eg: { countries: ['egypt'], currency: 'EGP' }, egypt: { countries: ['egypt'], currency: 'EGP' }, مصر: { countries: ['egypt'], currency: 'EGP' },
+            ae: { countries: ['uae', 'emirates'], currency: 'AED' }, uae: { countries: ['uae', 'emirates'], currency: 'AED' }, 'united arab emirates': { countries: ['uae', 'emirates'], currency: 'AED' }, الإمارات: { countries: ['uae', 'emirates'], currency: 'AED' },
+            jo: { countries: ['jordan'], currency: 'JOD' }, jordan: { countries: ['jordan'], currency: 'JOD' }, الأردن: { countries: ['jordan'], currency: 'JOD' },
+            ye: { countries: ['yemen'], currency: 'YER' }, yemen: { countries: ['yemen'], currency: 'YER' }, اليمن: { countries: ['yemen'], currency: 'YER' },
+        })[country];
+        if (!preferred) return;
+
+        const normalize = (value) => String(value || '').toLowerCase().replace(/[^a-z]/g, '');
+        const countryMethod = activeMethods.find((method) => preferred.countries.includes(normalize(method.country)));
+        const matchingMethod = countryMethod || activeMethods.find((method) => String(method.currency || '').toUpperCase() === preferred.currency);
+        if (matchingMethod?.country) setActiveCountry(matchingMethod.country);
+    }, [user?.country, dbMethods]);
 
     // Dynamically generate the country tabs from whatever the Admin created in Dashboard
     const countries = React.useMemo(() => {
@@ -187,7 +212,46 @@ export default function DepositPage() {
         setTimeout(() => setCopied(false), 2500);
     };
 
-    const numAmount = parseFloat(amount) || 0;
+    const enteredAmount = parseFloat(amount) || 0;
+    const displayCurrency = String(user?.currency || balanceData?.preferred_currency || user?.wallet?.currency || 'EGP').toUpperCase();
+    const numAmount = (() => {
+        if (!selectedMethod || !enteredAmount) return enteredAmount;
+        const source = displayCurrency === 'EGY' ? 'EGP' : displayCurrency;
+        const target = String(selectedMethod.currency || 'EGP').toUpperCase();
+        if (source === target) return enteredAmount;
+        const direct = ratesList.find(rate => rate.from_currency === source && rate.to_currency === target && rate.is_active && Number(rate.rate) > 0);
+        if (direct) return enteredAmount * Number(direct.rate);
+        const inverse = ratesList.find(rate => rate.from_currency === target && rate.to_currency === source && rate.is_active && Number(rate.rate) > 0);
+        if (inverse) return enteredAmount / Number(inverse.rate);
+        const sourceToUsd = ratesList.find(rate => rate.from_currency === source && rate.to_currency === 'USD' && rate.is_active && Number(rate.rate) > 0);
+        const usdToTarget = ratesList.find(rate => rate.from_currency === 'USD' && rate.to_currency === target && rate.is_active && Number(rate.rate) > 0);
+        if (sourceToUsd && usdToTarget) return enteredAmount * Number(sourceToUsd.rate) * Number(usdToTarget.rate);
+        const targetToUsd = ratesList.find(rate => rate.from_currency === target && rate.to_currency === 'USD' && rate.is_active && Number(rate.rate) > 0);
+        const usdToSource = ratesList.find(rate => rate.from_currency === 'USD' && rate.to_currency === source && rate.is_active && Number(rate.rate) > 0);
+        if (targetToUsd && usdToSource) return enteredAmount * Number(usdToSource.rate) / Number(targetToUsd.rate);
+        return null;
+    })();
+    const convertFromUsd = (usd) => {
+        const targetCurrency = displayCurrency === 'EGY' ? 'EGP' : displayCurrency;
+        if (targetCurrency === 'USD') return usd;
+        const direct = ratesList.find(rate => rate.from_currency === 'USD' && rate.to_currency === targetCurrency && rate.is_active);
+        const inverse = ratesList.find(rate => rate.from_currency === targetCurrency && rate.to_currency === 'USD' && rate.is_active);
+        if (direct && Number(direct.rate) > 0) return usd * Number(direct.rate);
+        if (inverse && Number(inverse.rate) > 0) return usd / Number(inverse.rate);
+        return targetCurrency === 'EGP' ? usd * 59 : null;
+    };
+    const displayedBalance = (balanceData?.wallets || []).reduce((total, wallet) => {
+        const currency = String(wallet.currency || '').toUpperCase();
+        const balance = Number(wallet.available_balance ?? wallet.balance ?? 0);
+        if (currency === 'USD' || currency === 'USDT') return total + convertFromUsd(balance);
+        const toUsd = ratesList.find(rate => rate.from_currency === currency && rate.to_currency === 'USD' && rate.is_active);
+        const fromUsd = ratesList.find(rate => rate.from_currency === 'USD' && rate.to_currency === currency && rate.is_active);
+        const usd = toUsd && Number(toUsd.rate) > 0 ? balance * Number(toUsd.rate) : fromUsd && Number(fromUsd.rate) > 0 ? balance / Number(fromUsd.rate) : (currency === 'EGP' || currency === 'EGY' ? balance / 59 : null);
+        return usd === null ? total : total + (convertFromUsd(usd) || 0);
+    }, 0);
+    const walletDisplayBalance = balanceData?.preferred_currency === displayCurrency
+        ? Number(balanceData.preferred_balance)
+        : displayedBalance;
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -203,6 +267,11 @@ export default function DepositPage() {
         if (!isAuthenticated) {
             toastError(language === 'en' ? 'Please log in first to submit deposit request' : 'يرجى تسجيل الدخول أولاً لتتمكن من إرسال طلب الإيداع');
             navigate('/login', { state: { from: { pathname: '/deposit' } } });
+            return;
+        }
+
+        if (numAmount === null || !Number.isFinite(numAmount)) {
+            toastError(language === 'en' ? `No active exchange rate from ${displayCurrency} to ${selectedMethod?.currency || 'EGP'}` : `سعر التحويل من ${displayCurrency} إلى ${selectedMethod?.currency || 'EGP'} غير متاح حالياً`);
             return;
         }
 
@@ -439,7 +508,7 @@ export default function DepositPage() {
                                         {t('availableBalance', 'رصيدك الحالي')}
                                     </div>
                                     <div className="deposit-balance-val">
-                                        {Number(user?.wallet?.balance || 0).toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', { minimumFractionDigits: 2 })} {user?.currency || (language === 'en' ? 'EGP' : 'ج.م')}
+                                        {Number(walletDisplayBalance ?? user?.wallet?.balance ?? 0).toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {getCurrencyLabel(displayCurrency, language)}
                                     </div>
                                 </div>
                             </div>
@@ -630,7 +699,7 @@ export default function DepositPage() {
                                     <span style={{ fontSize: '13.5px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
                                         المبلغ
                                     </span>
-                                    {amount && parseFloat(amount) >= (selectedMethod.min_amount || 1) && (
+                                    {amount && numAmount !== null && numAmount >= (selectedMethod.min_amount || 1) && (
                                         <span style={{
                                             display: 'inline-flex',
                                             alignItems: 'center',
@@ -658,11 +727,11 @@ export default function DepositPage() {
                                     <input
                                         type="number"
                                         required
-                                        min={selectedMethod.min_amount || 1}
+                                        min={displayCurrency === (selectedMethod.currency || 'EGP').toUpperCase() ? (selectedMethod.min_amount || 1) : undefined}
                                         step="any"
                                         value={amount}
                                         onChange={(e) => setAmount(e.target.value)}
-                                        placeholder={`أدخل المبلغ (الحد الأدنى ${selectedMethod.min_amount || 1})`}
+                                        placeholder={`أدخل المبلغ (${getCurrencyLabel(displayCurrency, language)})`}
                                         style={{
                                             flex: 1,
                                             background: 'transparent',
@@ -690,15 +759,15 @@ export default function DepositPage() {
                                         boxShadow: '0 4px 15px rgba(245, 208, 97, 0.35)',
                                         flexShrink: 0
                                     }}>
-                                        {selectedMethod.currency || 'EGP'}
+                                        {getCurrencyLabel(displayCurrency, language)}
                                     </div>
                                 </div>
 
                                 {/* Live USD Equivalence Badge (Directly below amount input on the left) */}
                                 {(() => {
-                                    let cur = (selectedMethod.currency || 'EGP').toUpperCase();
+                                    let cur = displayCurrency.toUpperCase();
                                     if (cur === 'EGY') cur = 'EGP';
-                                    const val = parseFloat(amount);
+                                    const val = enteredAmount;
                                     if (!val || val <= 0) return null;
 
                                     let usdEquivalent = null;
@@ -712,23 +781,36 @@ export default function DepositPage() {
                                             const inverseRate = ratesList.find(r => r.from_currency === 'USD' && (r.to_currency === cur || (cur === 'EGP' && r.to_currency === 'EGY')) && r.is_active);
                                             if (inverseRate && Number(inverseRate.rate) > 0) {
                                                 usdEquivalent = val / Number(inverseRate.rate);
-                                            } else if (cur === 'EGP' || cur === 'EGY') {
-                                                // Intelligent fallback for EGP if rate is 59
-                                                usdEquivalent = val / 59.0;
-                                            } else if (cur === 'SAR') {
-                                                usdEquivalent = val / 3.75;
                                             }
                                         }
                                     }
 
                                     if (usdEquivalent === null) return null;
-
+                                    const convertedMethodAmount = selectedMethod
+                                        ? (() => {
+                                            const source = cur;
+                                            const target = String(selectedMethod.currency || 'EGP').toUpperCase();
+                                            if (source === target) return val;
+                                            const direct = ratesList.find(r => r.from_currency === source && r.to_currency === target && r.is_active && Number(r.rate) > 0);
+                                            if (direct) return val * Number(direct.rate);
+                                            const inverse = ratesList.find(r => r.from_currency === target && r.to_currency === source && r.is_active && Number(r.rate) > 0);
+                                            if (inverse) return val / Number(inverse.rate);
+                                            const sourceToUsd = ratesList.find(r => r.from_currency === source && r.to_currency === 'USD' && r.is_active && Number(r.rate) > 0);
+                                            const usdToTarget = ratesList.find(r => r.from_currency === 'USD' && r.to_currency === target && r.is_active && Number(r.rate) > 0);
+                                            return sourceToUsd && usdToTarget ? val * Number(sourceToUsd.rate) * Number(usdToTarget.rate) : null;
+                                        })()
+                                        : null;
+                                    const usdToUserRate = ratesList.find(r => r.from_currency === 'USD' && (r.to_currency === cur || (cur === 'EGP' && r.to_currency === 'EGY')) && r.is_active && Number(r.rate) > 0);
+                                    const rateInfo = usdToUserRate ? ` • 1 USD ≈ ${Number(usdToUserRate.rate).toLocaleString('en-US', { maximumFractionDigits: 2 })} ${getCurrencyLabel(cur, language)}` : '';
                                     return (
                                         <div style={{
                                             display: 'flex',
                                             justifyContent: 'flex-start',
+                                            alignItems: 'center',
                                             marginTop: '8px',
                                             direction: 'ltr',
+                                            flexWrap: 'wrap',
+                                            gap: '8px'
                                         }}>
                                             <span style={{
                                                 fontSize: '13px',
@@ -741,7 +823,7 @@ export default function DepositPage() {
                                                 fontFamily: 'monospace',
                                                 boxShadow: '0 0 10px rgba(56, 189, 248, 0.15)'
                                             }}>
-                                                ≈ {usdEquivalent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                                                ≈ {usdEquivalent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD{rateInfo}
                                             </span>
                                         </div>
                                     );
@@ -936,10 +1018,10 @@ export default function DepositPage() {
                             }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ fontSize: '14px', fontWeight: '800', color: isLight ? '#64748B' : '#A0A0B0' }}>
-                                        المبلغ الأساسي
+                                        المبلغ الأساسي ({getCurrencyLabel(displayCurrency, language)})
                                     </span>
                                     <span style={{ fontSize: '15px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', fontFamily: 'monospace' }}>
-                                        {numAmount > 0 ? numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'} {selectedMethod.currency}
+                                        {numAmount !== null && numAmount > 0 ? enteredAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'} {getCurrencyLabel(displayCurrency, language)}
                                     </span>
                                 </div>
 
@@ -950,10 +1032,10 @@ export default function DepositPage() {
 
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ fontSize: '15px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
-                                        الإجمالي المطلوب تحويله
+                                        الإجمالي المطلوب تحويله عبر طريقة الدفع
                                     </span>
                                     <span style={{ fontSize: '20px', fontWeight: '900', color: '#F5D061', fontFamily: 'monospace' }}>
-                                        {numAmount > 0 ? numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'} {selectedMethod.currency}
+                                        {numAmount !== null && numAmount > 0 ? numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'} {selectedMethod.currency}
                                     </span>
                                 </div>
                             </div>

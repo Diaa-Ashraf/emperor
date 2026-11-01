@@ -23,6 +23,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import CurrencyConverter from '../components/wallet/CurrencyConverter';
+import { getCurrencyLabel } from '../utils/currencyHelper';
 
 export default function WalletPage() {
     const { user } = useAuth();
@@ -93,12 +94,15 @@ export default function WalletPage() {
         fetchDeposits(currentPage, depositStatusFilter);
     }, [currentPage, depositStatusFilter]);
 
-    const rawBal = balanceData?.balance ?? user?.wallet?.balance ?? user?.wallet_balance ?? 0;
+    // The API's preferred_balance combines existing wallet balances into the
+    // customer's selected currency, even when older funds are held elsewhere.
+    const rawBal = balanceData?.preferred_balance ?? balanceData?.balance ?? user?.wallet?.balance ?? user?.wallet_balance ?? 0;
     const formattedBalance = Number(rawBal || 0).toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
-    const currencyLabel = language === 'en' ? 'EGP' : 'ج.م';
+    const currentCurrency = balanceData?.preferred_currency || user?.currency || balanceData?.currency || user?.wallet?.currency || 'EGP';
+    const currencyLabel = getCurrencyLabel(currentCurrency, language);
 
     return (
         <MainLayout>

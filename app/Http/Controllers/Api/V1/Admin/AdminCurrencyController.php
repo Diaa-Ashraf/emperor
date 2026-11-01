@@ -61,6 +61,9 @@ class AdminCurrencyController extends Controller
 
         $from = strtoupper(trim($validated['from_currency']));
         $to = strtoupper(trim($validated['to_currency']));
+        if ($from !== 'USD') {
+            return $this->errorResponse('عملة الأساس هي الدولار. أرسل السعر بصيغة: 1 USD = X عملة محلية.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
         $rateVal = (float) $validated['rate'];
         $fee = (float) ($validated['conversion_fee_percent'] ?? 0);
         $isActive = isset($validated['is_active']) ? (bool) $validated['is_active'] : true;
@@ -74,20 +77,11 @@ class AdminCurrencyController extends Controller
             admin: $request->user()
         );
 
-        // If setting USD -> X or X -> USD, maintain bidirectional sync automatically
+        // The configured base rate is always 1 USD = X local currency.
         if ($from === 'USD' && $rateVal > 0) {
             $this->exchangeRateService->setRate(
                 fromCurrency: $to,
                 toCurrency: 'USD',
-                rate: round(1 / $rateVal, 6),
-                feePercent: $fee,
-                isActive: $isActive,
-                admin: $request->user()
-            );
-        } elseif ($to === 'USD' && $rateVal > 0) {
-            $this->exchangeRateService->setRate(
-                fromCurrency: 'USD',
-                toCurrency: $from,
                 rate: round(1 / $rateVal, 6),
                 feePercent: $fee,
                 isActive: $isActive,
@@ -108,6 +102,9 @@ class AdminCurrencyController extends Controller
     public function update(Request $request, int $id): JsonResponse
     {
         $rateRecord = ExchangeRate::findOrFail($id);
+        if ($rateRecord->to_currency === 'USD') {
+            return $this->errorResponse('سجّل سعر الدولار مقابل العملة المحلية من لوحة أسعار الدولار.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         $validated = $request->validate([
             'rate' => ['required', 'numeric', 'min:0.000001'],
@@ -131,21 +128,20 @@ class AdminCurrencyController extends Controller
             'updated_by' => $request->user()?->id,
         ]);
 
-        // Automatically sync reverse rate if paired with USD
-        if ($rateRecord->from_currency === 'USD' && $newRate > 0) {
+        // Store the admin's USD -> local rate and its inverse as one consistent pair.
+        if ($newRate > 0) {
             $this->exchangeRateService->setRate(
-                fromCurrency: $rateRecord->to_currency,
-                toCurrency: 'USD',
-                rate: round(1 / $newRate, 6),
+                fromCurrency: 'USD',
+                toCurrency: $rateRecord->from_currency === 'USD' ? $rateRecord->to_currency : $rateRecord->from_currency,
+                rate: $rateRecord->from_currency === 'USD' ? $newRate : round(1 / $newRate, 6),
                 feePercent: $fee,
                 isActive: $isActive,
                 admin: $request->user()
             );
-        } elseif ($rateRecord->to_currency === 'USD' && $newRate > 0) {
             $this->exchangeRateService->setRate(
-                fromCurrency: 'USD',
-                toCurrency: $rateRecord->from_currency,
-                rate: round(1 / $newRate, 6),
+                fromCurrency: $rateRecord->from_currency === 'USD' ? $rateRecord->to_currency : $rateRecord->from_currency,
+                toCurrency: 'USD',
+                rate: $rateRecord->from_currency === 'USD' ? round(1 / $newRate, 6) : $newRate,
                 feePercent: $fee,
                 isActive: $isActive,
                 admin: $request->user()
@@ -164,7 +160,18 @@ class AdminCurrencyController extends Controller
     public function toggle(int $id): JsonResponse
     {
         $rate = ExchangeRate::findOrFail($id);
-        $rate->update(['is_active' => !$rate->is_active]);
+        $active = !$rate->is_active;
+        $rate->update(['is_active' => $active]);
+
+        $pairedRate = null;
+        if ($rate->from_currency === 'USD') {
+            $pairedRate = ExchangeRate::where('from_currency', $rate->to_currency)
+                ->where('to_currency', 'USD')->first();
+        } elseif ($rate->to_currency === 'USD') {
+            $pairedRate = ExchangeRate::where('from_currency', 'USD')
+                ->where('to_currency', $rate->from_currency)->first();
+        }
+        $pairedRate?->update(['is_active' => $active]);
 
         $statusText = $rate->is_active ? 'تفعيل' : 'تعطيل';
         return $this->successResponse(
@@ -180,7 +187,16 @@ class AdminCurrencyController extends Controller
     {
         $rate = ExchangeRate::findOrFail($id);
         $pair = "{$rate->from_currency} ➔ {$rate->to_currency}";
+        $pairedRate = null;
+        if ($rate->from_currency === 'USD') {
+            $pairedRate = ExchangeRate::where('from_currency', $rate->to_currency)
+                ->where('to_currency', 'USD')->first();
+        } elseif ($rate->to_currency === 'USD') {
+            $pairedRate = ExchangeRate::where('from_currency', 'USD')
+                ->where('to_currency', $rate->from_currency)->first();
+        }
         $rate->delete();
+        $pairedRate?->delete();
 
         return $this->successResponse(null, "تم حذف سعر الصرف ({$pair}) بنجاح");
     }

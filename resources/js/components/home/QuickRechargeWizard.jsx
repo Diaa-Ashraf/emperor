@@ -5,13 +5,15 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
+import { getCurrencyLabel } from '../../utils/currencyHelper';
 
 import { catalogApi } from '../../api/endpoints';
 
 export default function QuickRechargeWizard() {
-    const { isRtl } = useLanguage();
+    const { isRtl, language } = useLanguage();
     const { theme } = useTheme();
-    const { isAuthenticated } = useAuth();
+    const { user, isAuthenticated } = useAuth();
+    const currencyLabel = getCurrencyLabel(user?.currency || 'EGP', language);
     const { error: toastError } = useToast();
     const navigate = useNavigate();
     const isLight = theme === 'light';
@@ -521,7 +523,7 @@ export default function QuickRechargeWizard() {
                                                 fontWeight: '900',
                                                 color: isLight ? 'var(--gold-600)' : 'var(--gold-300)',
                                             }}>
-                                                {pkg.price.toFixed(2)} <span style={{ fontSize: '11px', fontWeight: '700' }}>ج.م</span>
+                                                {pkg.price.toFixed(2)} <span style={{ fontSize: '11px', fontWeight: '700' }}>{currencyLabel}</span>
                                             </span>
                                             {isSelected && (
                                                 <span style={{
@@ -595,7 +597,7 @@ export default function QuickRechargeWizard() {
                                 fontWeight: '900',
                                 color: 'var(--gold-400)',
                             }}>
-                                {activePackage.price.toFixed(2)} <span style={{ fontSize: '13px' }}>ج.م</span>
+                                {activePackage.price.toFixed(2)} <span style={{ fontSize: '13px' }}>{currencyLabel}</span>
                             </span>
                         </div>
                     </div>

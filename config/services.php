@@ -66,4 +66,10 @@ return [
         'api_key' => env('EMBRATOR_API_KEY', '8a36b758817f8708502c4e16cd3a4b5f9650133a1968961a68b08f6e4544ed8f'),
     ],
 
+    'ad_card' => [
+        'base_url' => env('AD_CARD_API_BASE_URL', 'https://ad-card.com/client/api'),
+        'api_token' => env('AD_CARD_API_TOKEN'),
+        'timeout' => env('AD_CARD_API_TIMEOUT', 25),
+    ],
+
 ];

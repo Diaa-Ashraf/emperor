@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Calendar, Mail, User, Copy, Check, Gamepad2 } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { getCurrencyLabel } from '../../utils/currencyHelper';
 
 export default function OrderCard({ order }) {
     const { t, isRtl, language } = useLanguage();
@@ -97,7 +98,7 @@ export default function OrderCard({ order }) {
                         {t('value', 'القيمة')}
                     </div>
                     <div style={{ fontSize: '14px', fontWeight: '900', color: isLight ? '#0284C7' : '#38bdf8' }}>
-                        {language === 'en' ? 'EGP' : 'ج.م'} {amount}
+                        {getCurrencyLabel(order.currency || 'EGP', language)} {amount}
                     </div>
                 </div>
 

@@ -310,7 +310,7 @@ class AdminWalletController extends Controller
         $adminUser = $request->user() ?: (User::where('role', 'admin')->first() ?: User::first());
 
         $validated = $request->validate([
-            'currency' => ['required', 'string', 'in:EGP,USD,SAR,AED,TRY'],
+            'currency' => ['required', 'string', 'in:EGP,USD,SAR,AED,KWD,SYP,YER,JOD,EUR,TRY,QAR,OMR,BHD,MAD,DZD,LYD,IQD,USDT,GBP'],
             'group' => ['nullable', 'string', 'max:50'],
         ], [
             'currency.required' => 'العملة مطلوبة.',

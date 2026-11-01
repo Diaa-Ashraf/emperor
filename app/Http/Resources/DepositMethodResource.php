@@ -38,7 +38,9 @@ class DepositMethodResource extends JsonResource
             'country_name' => $this->country_name ?: ($this->name),
             'tag' => $this->country_name ?: ($this->name),
             'type' => $this->type,
-            'currency' => $this->currency,
+            'currency' => strtoupper((string) $this->currency) === 'EGY'
+                ? 'EGP'
+                : strtoupper((string) $this->currency),
             'logo' => $this->logo ? (str_starts_with($this->logo, 'http') ? $this->logo : asset($this->logo)) : null,
             'account_number' => $accountNumber ?: '',
             'note' => $this->note ?: '',

@@ -23,6 +23,7 @@ import EmptyState from '../components/ui/EmptyState';
 import { ordersApi } from '../api/endpoints';
 import { useToast } from '../contexts/ToastContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { getCurrencyLabel } from '../utils/currencyHelper';
 import { useTheme } from '../contexts/ThemeContext';
 
 export default function OrderDetailPage() {
@@ -125,7 +126,7 @@ export default function OrderDetailPage() {
         maximumFractionDigits: 2,
     });
 
-    const currencySymbol = language === 'en' ? 'EGP' : 'ج.م';
+    const currencySymbol = getCurrencyLabel(order.currency || 'EGP', language);
     const orderPublicId = order.public_id || `#${order.id}`;
 
     return (

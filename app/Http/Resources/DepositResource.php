@@ -9,6 +9,7 @@ class DepositResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $currency = strtoupper((string) ($this->currency ?: 'EGP'));
         $referenceId = $this->transaction_reference ?: substr(md5('deposit_req_' . $this->id . $this->created_at), 0, 24);
 
         return [
@@ -17,7 +18,7 @@ class DepositResource extends JsonResource
             'amount' => (float) $this->amount,
             'fee' => (float) ($this->fee ?? 0),
             'final_amount' => (float) ($this->final_amount ?? $this->amount),
-            'currency' => $this->currency ?: 'EGY',
+            'currency' => $currency === 'EGY' ? 'EGP' : $currency,
             'status' => $this->status?->value ?? (string)$this->status,
             'status_label' => method_exists($this->status, 'label') ? $this->status->label() : ($this->status === 'approved' || $this->status === 'completed' ? 'مكتملة' : ($this->status === 'rejected' ? 'مرفوضة' : 'انتظار')),
             'sender_account' => $this->sender_account,

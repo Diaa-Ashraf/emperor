@@ -168,8 +168,9 @@ export default function HeroSection({ products = [] }) {
                                                     </div>
                                                     <span style={{ fontSize: '13px', fontWeight: '800', color: '#F8E8B8' }}>{item.name}</span>
                                                 </div>
-                                                <span style={{ fontSize: '12px', fontWeight: '900', color: '#F5D061' }}>
-                                                    {item.price_egp ? `${item.price_egp} ${t('currency', 'ج.م')}` : t('viewPackages', 'عرض الباقات')}
+                                                <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: '12px', fontWeight: '900', color: '#F5D061' }}>
+                                                    {item.price ? `${Number(item.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${item.currency || 'EGP'}` : t('viewPackages', 'عرض الباقات')}
+                                                    {Number(item.price_usd) > 0 && <small style={{ color: '#22C55E', direction: 'ltr' }}>{Number(item.price_usd).toFixed(2)} USD</small>}
                                                 </span>
                                             </div>
                                         );

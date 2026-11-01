@@ -130,6 +130,11 @@ export default function AdminReferralsPage() {
         fetchData();
     }, []);
 
+    const handleSearch = (event) => {
+        event.preventDefault();
+        fetchData();
+    };
+
     const handleSaveRate = async (e) => {
         e.preventDefault();
         const val = parseFloat(rateInput);

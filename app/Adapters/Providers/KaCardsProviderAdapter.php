@@ -32,7 +32,8 @@ class KaCardsProviderAdapter implements ProviderAdapter
         $externalProductId = null;
         if ($orderDto->productTierId) {
             $pp = \App\Models\ProductProvider::where('product_tier_id', $orderDto->productTierId)
-                ->whereHas('provider', fn($q) => $q->where('driver', 'ka_cards_api'))
+                ->where('provider_id', $this->config['_provider_id'] ?? 0)
+                ->where('is_active', true)
                 ->first();
             $externalProductId = $pp?->provider_sku ?: ($tier?->metadata['ka_product_id'] ?? null);
         }

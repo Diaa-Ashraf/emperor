@@ -20,7 +20,10 @@ class MultiCurrencyWalletService
      */
     public function getUserWallets(User $user): array
     {
-        $currencies = ['EGP', 'USD', 'SAR'];
+        $currencies = array_unique(array_merge(
+            ['EGP', 'USD', 'SAR', strtoupper((string) ($user->currency ?: 'USD'))],
+            Wallet::where('user_id', $user->id)->pluck('currency')->all()
+        ));
         $wallets = [];
 
         foreach ($currencies as $curr) {
@@ -35,6 +38,65 @@ class MultiCurrencyWalletService
         }
 
         return $wallets;
+    }
+
+    /**
+     * Consolidate enough available funds into a requested wallet currency.
+     * Existing balances stay in their original currency until a purchase or
+     * withdrawal needs them, at which point the configured FX rate is applied.
+     */
+    public function ensureFundsInCurrency(User $user, string $currency, float $requiredAmount): void
+    {
+        $target = strtoupper(trim($currency));
+        DB::transaction(function () use ($user, $target, $requiredAmount) {
+            $destination = $this->walletService->getOrCreateWallet($user, $target);
+            $destination->refresh();
+            $available = (float) ($destination->balance - $destination->frozen_balance);
+            if ($available >= $requiredAmount) return;
+
+            $sources = Wallet::where('user_id', $user->id)
+                ->where('currency', '!=', $target)
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->get();
+
+            foreach ($sources as $source) {
+                $sourceAvailable = max(0, (float) ($source->balance - $source->frozen_balance));
+                if ($sourceAvailable <= 0) continue;
+
+                try {
+                    $neededInTarget = $requiredAmount - $available;
+                    $fullSourceConversion = $this->exchangeRateService->calculateConversion(
+                        $source->currency,
+                        $target,
+                        $sourceAvailable
+                    );
+                    if ((float) $fullSourceConversion['final_amount'] < $neededInTarget) {
+                        $sourceAmount = $sourceAvailable;
+                    } else {
+                        $sourceAmount = min(
+                            $sourceAvailable,
+                            ceil(($sourceAvailable * $neededInTarget / (float) $fullSourceConversion['final_amount']) * 10000) / 10000
+                        );
+                        while ($sourceAmount < $sourceAvailable) {
+                            $trial = $this->exchangeRateService->calculateConversion($source->currency, $target, $sourceAmount);
+                            if ((float) $trial['final_amount'] >= $neededInTarget) break;
+                            $sourceAmount = min($sourceAvailable, $sourceAmount + 0.0001);
+                        }
+                    }
+                    $this->convertCurrency($user, $source->currency, $target, $sourceAmount);
+                } catch (\Throwable $e) {
+                    // Ignore currencies without an active conversion rate.
+                    continue;
+                }
+
+                $destination->refresh();
+                $available = (float) ($destination->balance - $destination->frozen_balance);
+                if ($available >= $requiredAmount) return;
+            }
+
+            throw new \RuntimeException('الرصيد المتاح غير كافٍ بعد تحويل أرصدة العملات الأخرى بسعر الصرف الحالي.');
+        });
     }
 
     /**
