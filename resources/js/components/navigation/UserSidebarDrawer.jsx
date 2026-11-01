@@ -93,9 +93,9 @@ export default function UserSidebarDrawer({ isOpen, onClose }) {
 
     if (!isOpen) return null;
 
-    const userDisplayId = user?.id ? `${String(user.id).padStart(6, '0')}f39e...` : '9705f39e...';
+    const userDisplayId = user?.id ? `ID: SM-${user.id}` : 'ID: SM-1';
     const copyUserId = () => {
-        const idToCopy = user?.id ? `EMP-${user.id}` : 'EMP-9705F';
+        const idToCopy = user?.id ? `SM-${user.id}` : 'SM-1';
         navigator.clipboard.writeText(idToCopy);
         setCopiedId(true);
         success(t('copied') || 'تم النسخ بنجاح');

@@ -170,7 +170,7 @@ export default function ApiResellerBanner() {
                             {`{
   "success": true,
   "data": {
-    "order_id": "EMP-884920",
+    "order_id": "SM-884920",
     "status": "completed",
     "delivery": "instant_api",
     "player_id": "5129481239",

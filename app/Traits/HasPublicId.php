@@ -13,7 +13,7 @@ trait HasPublicId
     {
         static::creating(function ($model) {
             if (empty($model->public_id)) {
-                $prefix = defined(static::class . '::PUBLIC_ID_PREFIX') ? static::PUBLIC_ID_PREFIX : 'EMP';
+                $prefix = defined(static::class . '::PUBLIC_ID_PREFIX') ? static::PUBLIC_ID_PREFIX : 'SM';
                 $model->public_id = $prefix . '-' . strtoupper(Str::random(10));
             }
         });

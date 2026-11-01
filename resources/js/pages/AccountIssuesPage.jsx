@@ -109,7 +109,7 @@ export default function AccountIssuesPage() {
 *Issue Details:* ${details.trim() || 'No additional details provided'}
 *Email:* ${userEmail.trim() || (user?.email || 'Not specified')}
 *Phone:* ${userPhone.trim() || (user?.phone || 'Not specified')}
-*Account ID:* ${user?.id ? `EMP-${user.id}` : 'Guest / Unregistered'}
+*Account ID:* ${user?.id ? `SM-${user.id}` : 'Guest / Unregistered'}
 ----------------------------------------
 _Sent via Official Account Issues Page_`
         : `*رسالة دعم فني إلى إدارة منصة سند ومهره كارد*
@@ -118,7 +118,7 @@ _Sent via Official Account Issues Page_`
 *تفاصيل المشكلة:* ${details.trim() || 'لم تتم كتابة تفاصيل إضافية'}
 *البريد الإلكتروني:* ${userEmail.trim() || (user?.email || 'غير محدد')}
 *رقم الهاتف:* ${userPhone.trim() || (user?.phone || 'غير محدد')}
-*معرّف الحساب:* ${user?.id ? `EMP-${user.id}` : 'زائر / غير مسجل'}
+*معرّف الحساب:* ${user?.id ? `SM-${user.id}` : 'زائر / غير مسجل'}
 ----------------------------------------
 _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
 
@@ -432,7 +432,7 @@ _مرسل عبر صفحة مشاكل الحساب الرسمية_`;
                                     <strong>{language === 'en' ? 'Issue Details:' : 'تفاصيل المشكلة:'}</strong> {details.trim() || '—'}
                                 </div>
                                 <div style={{ color: isLight ? '#64748B' : '#94A3B8', marginTop: '4px', fontSize: '12px' }}>
-                                    <strong>{language === 'en' ? 'Account Details:' : 'بيانات الحساب:'}</strong> {user?.name ? `${user.name} (ID: EMP-${user.id})` : (userPhone || userEmail || (language === 'en' ? 'Guest' : 'زائر'))}
+                                    <strong>{language === 'en' ? 'Account Details:' : 'بيانات الحساب:'}</strong> {user?.name ? `${user.name} (ID: SM-${user.id})` : (userPhone || userEmail || (language === 'en' ? 'Guest' : 'زائر'))}
                                 </div>
                             </div>
                         </div>

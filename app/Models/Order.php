@@ -14,7 +14,7 @@ class Order extends Model
 {
     use HasFactory, HasPublicId, LogsAdminActivity;
 
-    public const PUBLIC_ID_PREFIX = 'EMP-ORD';
+    public const PUBLIC_ID_PREFIX = 'SM-ORD';
 
     protected $fillable = [
         'public_id',

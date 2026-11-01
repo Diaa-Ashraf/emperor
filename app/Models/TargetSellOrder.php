@@ -13,7 +13,7 @@ class TargetSellOrder extends Model
 {
     use HasFactory, HasPublicId, LogsAdminActivity;
 
-    public const PUBLIC_ID_PREFIX = 'EMP-TGT';
+    public const PUBLIC_ID_PREFIX = 'SM-TGT';
 
     protected $fillable = [
         'public_id',

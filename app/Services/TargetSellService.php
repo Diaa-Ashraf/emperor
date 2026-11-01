@@ -59,12 +59,12 @@ class TargetSellService
     }
 
     /**
-     * Generate unique verification code (e.g. EMP-7K9A).
+     * Generate unique verification code (e.g. SM-7K9A).
      */
     public function generateVerificationCode(): string
     {
         do {
-            $code = 'EMP-' . strtoupper(Str::random(4));
+            $code = 'SM-' . strtoupper(Str::random(4));
         } while (TargetSellOrder::where('verification_code', $code)->exists());
 
         return $code;
