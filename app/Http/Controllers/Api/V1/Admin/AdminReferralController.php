@@ -242,7 +242,6 @@ class AdminReferralController extends Controller
 
         return $this->successResponse(null, $validated['action'] === 'approve' ? 'تمت الموافقة وتأكيد التحويل بنجاح' : 'تم رفض طلب السحب');
     }
-    }
 
     /**
      * Update referral commission rate.
