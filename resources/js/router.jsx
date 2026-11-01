@@ -240,6 +240,7 @@ export function AppRoutes() {
                 <Route path="/referrals" element={<ProtectedRoute><ReferralsPage /></ProtectedRoute>} />
                 <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                <Route path="/security" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
                 <Route path="/developer" element={<ProtectedRoute><DeveloperApiPage /></ProtectedRoute>} />
                 <Route path="/developers/api" element={<ProtectedRoute><DeveloperApiPage /></ProtectedRoute>} />

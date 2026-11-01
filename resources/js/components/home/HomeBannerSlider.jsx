@@ -172,7 +172,7 @@ export default function HomeBannerSlider() {
                     </span>
                 </div>
                 <Link
-                    to="/settings"
+                    to="/profile?tab=security"
                     style={{
                         background: 'rgba(16, 185, 129, 0.18)',
                         border: '1px solid rgba(16, 185, 129, 0.5)',

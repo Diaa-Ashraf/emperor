@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
     User,
     Mail,
@@ -46,8 +46,22 @@ export default function ProfilePage() {
     const { theme } = useTheme();
     const isLight = theme === 'light';
     const fileInputRef = useRef(null);
+    const [searchParams, setSearchParams] = useSearchParams();
 
-    const [activeTab, setActiveTab] = useState('info'); // 'info' | 'security'
+    // Default to 'security' tab if ?tab=security is present in URL or path is /security
+    const isSecurityPath = window.location.pathname.startsWith('/security');
+    const initialTab = (searchParams.get('tab') === 'security' || isSecurityPath) ? 'security' : 'info';
+    const [activeTab, setActiveTab] = useState(initialTab); // 'info' | 'security'
+
+    // Update activeTab when query param or path changes
+    useEffect(() => {
+        const tab = searchParams.get('tab');
+        if (tab === 'security' || window.location.pathname.startsWith('/security')) {
+            setActiveTab('security');
+        } else if (tab === 'info') {
+            setActiveTab('info');
+        }
+    }, [searchParams]);
     const [copiedRef, setCopiedRef] = useState(false);
     const [showPhoneModal, setShowPhoneModal] = useState(false);
 
@@ -493,7 +507,10 @@ export default function ProfilePage() {
                 paddingBottom: '12px',
             }}>
                 <button
-                    onClick={() => setActiveTab('info')}
+                    onClick={() => {
+                        setActiveTab('info');
+                        setSearchParams({ tab: 'info' }, { replace: true });
+                    }}
                     style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -515,7 +532,10 @@ export default function ProfilePage() {
                 </button>
 
                 <button
-                    onClick={() => setActiveTab('security')}
+                    onClick={() => {
+                        setActiveTab('security');
+                        setSearchParams({ tab: 'security' }, { replace: true });
+                    }}
                     style={{
                         display: 'flex',
                         alignItems: 'center',
