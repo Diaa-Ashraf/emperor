@@ -80,9 +80,19 @@ class PricingService
         $costCurrency = strtoupper($tier->cost_currency ?: 'USD');
         $targetCurrency = strtoupper($targetCurrency ?: 'EGP');
 
-        // Resolve cost dynamically from Embrator provider API map if cost is missing, zero, or linked to Embrator
+        $isManual = ($tier->metadata['fulfillment_mode'] ?? 'auto') === 'manual';
+
+        // Resolve cost dynamically from Embrator provider API map ONLY IF not manual fulfillment
         $provProdId = $tier->metadata['provider_product_id'] ?? $tier->product?->external_product_id ?? null;
         
+        if ($isManual) {
+            // For manual products, the fixed selling price set by admin takes precedence
+            if ($tier->final_price > 0 || $tier->sale_price > 0) {
+                $manualPrice = (float) ($tier->final_price > 0 ? $tier->final_price : $tier->sale_price);
+                return $manualPrice;
+            }
+        }
+
         $embratorMap = \Illuminate\Support\Facades\Cache::remember('embrator_products_id_map_v3', 300, function () {
             try {
                 $service = app(\App\Services\EmbratorService::class);

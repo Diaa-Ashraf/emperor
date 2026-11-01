@@ -1651,8 +1651,8 @@ export default function AdminProductsPage() {
                                                         <div style={{ fontSize: '13px', fontWeight: '900', color: '#10B981', marginBottom: '2px' }}>
                                                             ✓ تم اختيار المنتج للسحب من المورد:
                                                         </div>
-                                                        <div style={{ fontSize: '13.5px', fontWeight: '800', color: '#FFFFFF' }}>
-                                                            {selectedProviderProduct.name}
+                                                        <div style={{ fontSize: '14px', fontWeight: '900', color: '#F5D061' }}>
+                                                            {formProdName ? `${formProdName} — ` : ''}{selectedProviderProduct.name}
                                                         </div>
                                                         <div style={{ fontSize: '11px', color: '#38BDF8', marginTop: '2px', direction: 'ltr', textAlign: 'right' }}>
                                                             معرف المورد: {selectedProviderProduct.id} | التكلفة: {selectedProviderProduct.price} {selectedProviderProduct.currency_label}

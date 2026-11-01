@@ -41,21 +41,13 @@ export default function ProductRechargeModal({
     // Detect if this is a custom-quantity coin/voice app (matching KA-CARD mode)
     const isCustomQuantity = useMemo(() => {
         const firstTier = (product.tiers || product.active_tiers || [])[0];
-        if (product.is_package || (firstTier && firstTier.is_package) || (firstTier && Number(firstTier.max_qty) === 1 && Number(firstTier.min_qty) === 1)) {
-            return false;
+        if (product.is_package || (firstTier && firstTier.is_package)) {
+            // If explicitly package with max=1, min=1, still allow custom if in voice apps category
+            if (firstTier && Number(firstTier.max_qty) === 1 && Number(firstTier.min_qty) === 1 && !product.category?.slug?.includes('app')) {
+                return false;
+            }
         }
-        const catType = product.category?.type;
-        const catSlug = product.category?.slug;
-        if (catType === 'voice_apps' || catSlug === 'apps' || catSlug === 'voice_apps') return true;
-        if (typeof window !== 'undefined' && (window.location.pathname.includes('/apps') || window.location.search.includes('app='))) return true;
-        if (product.parent_id !== null && product.parent_id !== undefined) return true;
-        const nameLower = (product.name || '').toLowerCase();
-        const voiceKeywords = [
-            'فان اب', 'هلين', 'أهلاً', 'يوهو', 'يويو', 'بولا', 'مجلس',
-            'زينا', 'هايو', 'زفا', 'شات', 'كوينز', 'funup', 'haahlan',
-            'yoho', 'yoyo', 'pola', 'majlis', 'zina', 'yabi', 'zafa', 'soulchill', 'جانكو', 'jawaker'
-        ];
-        return voiceKeywords.some(kw => nameLower.includes(kw));
+        return true;
     }, [product]);
 
     const [selectedTier, setSelectedTier] = useState(tiers.length > 0 ? tiers[0] : null);
@@ -72,8 +64,8 @@ export default function ProductRechargeModal({
         return val ? Number(val) : (isCustomQuantity ? 50000000 : 9999);
     }, [selectedTier, product, isCustomQuantity]);
 
-    const [quantity, setQuantity] = useState(isCustomQuantity ? 0 : 1);
-    const [quantityInput, setQuantityInput] = useState(isCustomQuantity ? '0' : '1');
+    const [quantity, setQuantity] = useState(0);
+    const [quantityInput, setQuantityInput] = useState('0');
     const [playerId, setPlayerId] = useState('');
     const [serverId, setServerId] = useState('');
     const [accountRegion, setAccountRegion] = useState('');
@@ -93,13 +85,8 @@ export default function ProductRechargeModal({
             setSelectedTier(null);
         }
 
-        if (isCustomQuantity) {
-            setQuantity(0);
-            setQuantityInput('0');
-        } else {
-            setQuantity(1);
-            setQuantityInput('1');
-        }
+        setQuantity(0);
+        setQuantityInput('0');
 
         setPlayerId('');
         setServerId('');

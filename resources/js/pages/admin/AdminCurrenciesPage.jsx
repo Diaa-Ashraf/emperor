@@ -619,15 +619,15 @@ export default function AdminCurrenciesPage() {
                                             width: '100%',
                                             padding: '10px 12px',
                                             borderRadius: '12px',
-                                            backgroundColor: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.05)',
-                                            border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.12)',
-                                            color: isLight ? '#0F172A' : '#FFFFFF',
+                                            backgroundColor: isLight ? '#FFFFFF' : '#0B1322',
+                                            border: isLight ? '1.5px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.4)',
+                                            color: isLight ? '#0F172A' : '#F5D061',
                                             fontWeight: '800',
                                             fontSize: '13px',
                                             outline: 'none',
                                         }}
                                     >
-                                        {supportedCurrencies.map(c => <option key={c} value={c}>{c}</option>)}
+                                        {supportedCurrencies.map(c => <option key={c} value={c} style={{ backgroundColor: isLight ? '#FFFFFF' : '#0B1322', color: isLight ? '#0F172A' : '#FFFFFF' }}>{c}</option>)}
                                     </select>
                                 </div>
 
@@ -643,6 +643,16 @@ export default function AdminCurrenciesPage() {
                                             width: '100%',
                                             padding: '10px 12px',
                                             borderRadius: '12px',
+                                            backgroundColor: isLight ? '#FFFFFF' : '#0B1322',
+                                            border: isLight ? '1.5px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.4)',
+                                            color: isLight ? '#0F172A' : '#F5D061',
+                                            fontWeight: '800',
+                                            fontSize: '13px',
+                                            outline: 'none',
+                                        }}
+                                    >
+                                        {supportedCurrencies.map(c => <option key={c} value={c} style={{ backgroundColor: isLight ? '#FFFFFF' : '#0B1322', color: isLight ? '#0F172A' : '#FFFFFF' }}>{c}</option>)}
+                                    </select>
                                             backgroundColor: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.05)',
                                             border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.12)',
                                             color: isLight ? '#0F172A' : '#FFFFFF',
