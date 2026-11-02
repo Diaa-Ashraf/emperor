@@ -87,6 +87,19 @@ class ExchangeRateService
         $to = strtoupper(trim($toCurrency));
 
         if ($amount <= 0) {
+            if ($amount === 0.0) {
+                return [
+                    'from_currency' => $from,
+                    'to_currency' => $to,
+                    'source_amount' => 0.0,
+                    'rate' => 0.0,
+                    'fee_percent' => 0.0,
+                    'fee_amount' => 0.0,
+                    'converted_amount' => 0.0,
+                    'final_amount' => 0.0,
+                ];
+            }
+
             throw new InvalidArgumentException('المبلغ يجب أن يكون أكبر من الصفر.');
         }
 
