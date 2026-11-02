@@ -499,9 +499,9 @@ class AuthController extends Controller
             $token = $user->createToken('Google Web Session', ['*'], now()->addHours(24))->plainTextToken;
 
             // Redirect back to SPA with token query param
-            // If the user is new OR their country/phone is not completed yet, flag as profile completion needed
-            $needsProfileCompletion = $isNewUser || empty($user->country) || empty($user->phone);
-            if ($needsProfileCompletion) {
+            // Only accounts created in this OAuth flow need onboarding.
+            // Existing accounts may have legacy profile fields unset and should still log in normally.
+            if ($isNewUser) {
                 return redirect("/complete-profile?oauth_token={$token}&is_new=1");
             }
             return redirect("/login?oauth_token={$token}");
