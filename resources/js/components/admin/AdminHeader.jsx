@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, Menu, Sun, Moon, Bell, RefreshCw, Shield, Wallet } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -6,6 +6,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import UserSidebarDrawer from '../navigation/UserSidebarDrawer';
 import { getSiteLogo, getSiteName } from '../../utils/settingsHelper';
 import { getCurrencyLabel } from '../../utils/currencyHelper';
+import { notificationsApi } from '../../api/endpoints';
+import { playNotificationSound } from '../../utils/soundHelper';
+
+const seenAdminNotificationIds = new Set();
+let adminNotificationsInitialized = false;
+const adminNotificationSoundEnabled = window.localStorage.getItem('adminNotificationSoundEnabled') === 'true';
 
 export default function AdminHeader({ title, subtitle, onRefresh, refreshing = false, badge = 'لوحة القيادة الإدارية' }) {
     const navigate = useNavigate();
@@ -13,6 +19,102 @@ export default function AdminHeader({ title, subtitle, onRefresh, refreshing = f
     const { user } = useAuth();
     const isLight = theme === 'light';
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [notificationMenuOpen, setNotificationMenuOpen] = useState(false);
+    const [adminNotifications, setAdminNotifications] = useState([]);
+    const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+    const [notificationSoundEnabled, setNotificationSoundEnabled] = useState(adminNotificationSoundEnabled);
+    const notificationMenuRef = useRef(null);
+
+    useEffect(() => {
+        let mounted = true;
+        let requestInProgress = false;
+
+        const syncAdminNotifications = async () => {
+            if (requestInProgress || document.visibilityState !== 'visible') return;
+            requestInProgress = true;
+
+            try {
+                const res = await notificationsApi.checkLatest();
+                const payload = res?.data?.data;
+                if (!mounted || !payload) return;
+
+                const items = Array.isArray(payload.notifications) ? payload.notifications : [];
+                const newlyArrived = adminNotificationsInitialized
+                    ? items.filter((item) => item.id && !seenAdminNotificationIds.has(item.id))
+                    : [];
+
+                items.forEach((item) => {
+                    if (item.id) seenAdminNotificationIds.add(item.id);
+                });
+
+                if (newlyArrived.length > 0) {
+                    if (notificationSoundEnabled) playNotificationSound('default');
+                    if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+                        const newest = newlyArrived[0];
+                        new Notification(newest.title || 'إشعار إداري جديد', {
+                            body: newest.body || '',
+                            icon: getSiteLogo(),
+                        });
+                    }
+                }
+
+                adminNotificationsInitialized = true;
+                setAdminNotifications(items);
+                setUnreadNotificationCount(Number(payload.unread_count) || 0);
+            } catch {
+                // Retry silently on the next poll.
+            } finally {
+                requestInProgress = false;
+            }
+        };
+
+        syncAdminNotifications();
+        const interval = window.setInterval(syncAdminNotifications, 5000);
+        const syncWhenVisible = () => {
+            if (document.visibilityState === 'visible') syncAdminNotifications();
+        };
+        window.addEventListener('focus', syncWhenVisible);
+        document.addEventListener('visibilitychange', syncWhenVisible);
+
+        return () => {
+            mounted = false;
+            window.clearInterval(interval);
+            window.removeEventListener('focus', syncWhenVisible);
+            document.removeEventListener('visibilitychange', syncWhenVisible);
+        };
+    }, [user?.id, notificationSoundEnabled]);
+
+    useEffect(() => {
+        if (!notificationMenuOpen) return undefined;
+        const closeOnOutsideClick = (event) => {
+            if (!notificationMenuRef.current?.contains(event.target)) setNotificationMenuOpen(false);
+        };
+        document.addEventListener('pointerdown', closeOnOutsideClick);
+        return () => document.removeEventListener('pointerdown', closeOnOutsideClick);
+    }, [notificationMenuOpen]);
+
+    const handleAdminNotificationClick = async (notification) => {
+        setNotificationMenuOpen(false);
+
+        if (!notification.is_read && !notification.read_at) {
+            setAdminNotifications((current) => current.map((item) =>
+                item.id === notification.id ? { ...item, is_read: true, read_at: new Date().toISOString() } : item
+            ));
+            setUnreadNotificationCount((current) => Math.max(0, current - 1));
+            notificationsApi.markAsRead(notification.id).catch(() => {});
+        }
+
+        const rawLink = notification.link || '';
+        const adminRoute = rawLink.match(/^\/admin\/(deposits|orders|targets)(?:\/.*)?$/)?.[1];
+        const target = adminRoute ? `/admin/${adminRoute}` : (rawLink.startsWith('/') ? rawLink : '/notifications');
+        navigate(target);
+    };
+
+    const enableNotificationSound = () => {
+        playNotificationSound('default');
+        window.localStorage.setItem('adminNotificationSoundEnabled', 'true');
+        setNotificationSoundEnabled(true);
+    };
 
     const handleBack = () => {
         if (window.history.length > 1) {
@@ -275,6 +377,149 @@ export default function AdminHeader({ title, subtitle, onRefresh, refreshing = f
                             <span className="admin-header-balance-val">{userBalance}</span>
                             <span className="admin-header-balance-curr">{userCurrencyLabel}</span>
                         </Link>
+
+                        <div ref={notificationMenuRef} style={{ position: 'relative' }}>
+                            <button
+                                type="button"
+                                onClick={() => setNotificationMenuOpen((open) => !open)}
+                                aria-label={`إشعارات الإدارة${unreadNotificationCount ? `، ${unreadNotificationCount} غير مقروء` : ''}`}
+                                aria-expanded={notificationMenuOpen}
+                                title="إشعارات الإدارة"
+                                className="admin-header-action-btn"
+                                style={{
+                                    position: 'relative',
+                                    backgroundColor: isLight ? '#F1F5F9' : 'rgba(255, 255, 255, 0.08)',
+                                    border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.3)',
+                                    color: '#38BDF8',
+                                }}
+                            >
+                                <Bell size={16} />
+                                {unreadNotificationCount > 0 && (
+                                    <span style={{
+                                        position: 'absolute',
+                                        top: '-6px',
+                                        right: '-7px',
+                                        minWidth: '17px',
+                                        height: '17px',
+                                        padding: '0 4px',
+                                        borderRadius: '999px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        background: '#EF4444',
+                                        color: '#FFFFFF',
+                                        border: `2px solid ${isLight ? '#FFFFFF' : '#070A12'}`,
+                                        fontSize: '9px',
+                                        fontWeight: 900,
+                                        lineHeight: 1,
+                                    }}>
+                                        {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
+                                    </span>
+                                )}
+                            </button>
+
+                            {notificationMenuOpen && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: 'calc(100% + 10px)',
+                                    left: 0,
+                                    width: 'min(360px, calc(100vw - 24px))',
+                                    maxHeight: 'min(480px, calc(100dvh - 90px))',
+                                    overflowY: 'auto',
+                                    zIndex: 1300,
+                                    borderRadius: '16px',
+                                    background: isLight ? '#FFFFFF' : '#0B1322',
+                                    border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.35)',
+                                    boxShadow: '0 18px 45px rgba(0,0,0,0.45)',
+                                    color: isLight ? '#0F172A' : '#FFFFFF',
+                                    direction: 'rtl',
+                                }}>
+                                    <div style={{
+                                        position: 'sticky',
+                                        top: 0,
+                                        zIndex: 1,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        gap: '8px',
+                                        padding: '12px 14px',
+                                        background: isLight ? '#FFFFFF' : '#0B1322',
+                                        borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid rgba(148, 163, 184, 0.16)',
+                                    }}>
+                                        <strong style={{ fontSize: '13px', fontWeight: 900 }}>إشعارات الإدارة</strong>
+                                        <span style={{ fontSize: '11px', color: unreadNotificationCount ? '#EF4444' : '#94A3B8', fontWeight: 800 }}>
+                                            {unreadNotificationCount} غير مقروء
+                                        </span>
+                                    </div>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', padding: '8px 14px', borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid rgba(148, 163, 184, 0.1)' }}>
+                                        <span style={{ fontSize: '11px', color: '#94A3B8' }}>تنبيه صوتي عند وصول جديد</span>
+                                        <button type="button" onClick={enableNotificationSound} style={{ border: '1px solid rgba(34, 197, 94, 0.35)', borderRadius: '8px', padding: '5px 9px', background: notificationSoundEnabled ? 'rgba(34, 197, 94, 0.12)' : 'transparent', color: notificationSoundEnabled ? '#22C55E' : '#38BDF8', fontSize: '10px', fontWeight: 900, cursor: 'pointer', fontFamily: 'Cairo, sans-serif' }}>
+                                            {notificationSoundEnabled ? 'الصوت مفعّل' : 'تفعيل الصوت'}
+                                        </button>
+                                    </div>
+
+                                    {adminNotifications.length === 0 ? (
+                                        <div style={{ padding: '24px 16px', textAlign: 'center', fontSize: '12px', color: '#94A3B8' }}>
+                                            لا توجد إشعارات جديدة حالياً
+                                        </div>
+                                    ) : (
+                                        adminNotifications.slice(0, 8).map((notification) => (
+                                            <button
+                                                key={notification.id}
+                                                type="button"
+                                                onClick={() => handleAdminNotificationClick(notification)}
+                                                style={{
+                                                    width: '100%',
+                                                    display: 'block',
+                                                    padding: '12px 14px',
+                                                    textAlign: 'right',
+                                                    background: notification.is_read ? 'transparent' : (isLight ? '#F8FAFC' : 'rgba(56, 189, 248, 0.07)'),
+                                                    border: 'none',
+                                                    borderBottom: isLight ? '1px solid #E2E8F0' : '1px solid rgba(148, 163, 184, 0.1)',
+                                                    color: isLight ? '#0F172A' : '#FFFFFF',
+                                                    cursor: 'pointer',
+                                                    fontFamily: 'Cairo, sans-serif',
+                                                }}
+                                            >
+                                                <span style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', alignItems: 'flex-start' }}>
+                                                    <strong style={{ fontSize: '12px', lineHeight: 1.5 }}>{notification.title || 'إشعار إداري جديد'}</strong>
+                                                    {!notification.is_read && <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#38BDF8', flexShrink: 0, marginTop: '5px' }} />}
+                                                </span>
+                                                {notification.body && (
+                                                    <span style={{ display: 'block', marginTop: '4px', fontSize: '11px', color: '#94A3B8', lineHeight: 1.6 }}>
+                                                        {notification.body}
+                                                    </span>
+                                                )}
+                                                {notification.time_ago && (
+                                                    <span style={{ display: 'block', marginTop: '5px', fontSize: '10px', color: '#64748B' }}>
+                                                        {notification.time_ago}
+                                                    </span>
+                                                )}
+                                            </button>
+                                        ))
+                                    )}
+
+                                    <button
+                                        type="button"
+                                        onClick={() => { setNotificationMenuOpen(false); navigate('/notifications'); }}
+                                        style={{
+                                            width: '100%',
+                                            padding: '11px',
+                                            border: 'none',
+                                            background: 'transparent',
+                                            color: '#38BDF8',
+                                            fontSize: '11px',
+                                            fontWeight: 900,
+                                            cursor: 'pointer',
+                                            fontFamily: 'Cairo, sans-serif',
+                                        }}
+                                    >
+                                        فتح مركز الإشعارات
+                                    </button>
+                                </div>
+                            )}
+                        </div>
 
                         {onRefresh && (
                             <button

@@ -31,7 +31,10 @@ class NotificationResource extends JsonResource
                 'order_created', 'order_completed', 'order_failed', 'order_refunded' => 'تحديث بشأن الطلب',
                 'referral_commission', 'referral_registered' => 'مكافأة إحالة جديدة',
                 'target_order_submitted', 'target_order_approved', 'target_order_rejected' => 'تحديث تارجت الرومات',
-                'admin_deposit_alert', 'admin_new_order_alert' => 'تنبيه إداري جديد',
+                'admin_deposit_alert' => 'طلب إيداع جديد يحتاج مراجعة',
+                'admin_new_order_alert' => 'طلب شحن جديد',
+                'admin_target_order_alert' => 'طلب بيع تارجت جديد',
+                'App\\Notifications\\ApiAccessRequestedNotification' => 'طلب تفعيل ربط برمجي جديد (B2B API)',
                 default => 'إشعار من منصة سند ومهره كارد',
             };
         }
