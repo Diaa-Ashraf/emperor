@@ -507,7 +507,10 @@ export default function AdminProductsPage() {
             setIsProductModalOpen(false);
             fetchProducts();
         } catch (err) {
-            toastError(err.response?.data?.message || 'فشل حفظ بيانات المنتج');
+            const validationMessage = Object.values(err.response?.data?.errors || {})
+                .flat()
+                .find(Boolean);
+            toastError(err.response?.data?.message || validationMessage || err.message || 'فشل حفظ بيانات المنتج');
         } finally {
             setProductSubmitting(false);
         }
