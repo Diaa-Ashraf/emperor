@@ -39,13 +39,13 @@ class ProductTier extends Model
     {
         return [
             'price_strategy' => PriceStrategy::class,
-            'source_cost' => 'decimal:4',
+            'source_cost' => 'decimal:8',
             'margin_percent' => 'decimal:2',
-            'fixed_margin' => 'decimal:4',
-            'final_price' => 'decimal:2',
-            'agent_price' => 'decimal:2',
-            'api_price' => 'decimal:2',
-            'sale_price' => 'decimal:2',
+            'fixed_margin' => 'decimal:8',
+            'final_price' => 'decimal:8',
+            'agent_price' => 'decimal:8',
+            'api_price' => 'decimal:8',
+            'sale_price' => 'decimal:8',
             'min_qty' => 'integer',
             'max_qty' => 'integer',
             'in_stock' => 'boolean',
@@ -84,8 +84,8 @@ class ProductTier extends Model
         $cost = (float) $this->source_cost;
 
         return match ($this->price_strategy) {
-            PriceStrategy::PERCENTAGE => round($cost * (1 + ($this->margin_percent / 100)), 2),
-            PriceStrategy::FIXED_ADDITION => round($cost + $this->fixed_margin, 2),
+            PriceStrategy::PERCENTAGE => round($cost * (1 + ($this->margin_percent / 100)), 8),
+            PriceStrategy::FIXED_ADDITION => round($cost + $this->fixed_margin, 8),
             PriceStrategy::MANUAL => (float) $this->final_price,
             default => (float) $this->final_price,
         };
