@@ -14,7 +14,7 @@ import {
     CheckCircle2,
     ArrowRight
 } from 'lucide-react';
-import { adminApi } from '../../api/endpoints';
+import { adminApi, invalidateProductCatalogCache } from '../../api/endpoints';
 import { useToast } from '../../contexts/ToastContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import AdminHeader from '../../components/admin/AdminHeader';
@@ -400,6 +400,7 @@ export default function AdminProductsPage() {
             };
 
             await adminApi.saveProduct(payload, editingProduct?.id);
+            invalidateProductCatalogCache();
             success(editingProduct ? 'تم تعديل المنتج وتحديث ربطه بالمورد بنجاح' : 'تمت إضافة المنتج الجديد وربطه بالمورد بنجاح');
             setIsProductModalOpen(false);
             fetchProducts();

@@ -144,6 +144,7 @@ class AdminProductController extends Controller
         $product = Product::findOrFail($id);
         $product->is_active = !$product->is_active;
         $product->save();
+        \Illuminate\Support\Facades\Cache::flush();
 
         return $this->successResponse([
             'id' => $product->id,
@@ -287,6 +288,8 @@ class AdminProductController extends Controller
                 }
             }
 
+            \Illuminate\Support\Facades\Cache::flush();
+
             return $this->successResponse([
                 'id' => $product->id,
                 'name' => $product->name,
@@ -304,6 +307,7 @@ class AdminProductController extends Controller
     {
         $product = Product::findOrFail($id);
         $product->delete();
+        \Illuminate\Support\Facades\Cache::flush();
 
         return $this->successResponse(null, 'تم حذف المنتج بنجاح');
     }
