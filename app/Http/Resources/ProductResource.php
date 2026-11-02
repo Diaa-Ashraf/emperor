@@ -37,15 +37,16 @@ class ProductResource extends JsonResource
         // so the displayed quote matches the price checked at order time.
         $user = $request->user() ?: Auth::guard('sanctum')->user();
 
-        $tierResources = ProductTierResource::collection($this->whenLoaded('activeTiers', function () {
+        $isParentProduct = (bool) $this->is_parent;
+        $tierResources = $isParentProduct ? [] : ProductTierResource::collection($this->whenLoaded('activeTiers', function () {
             return $this->activeTiers;
         }, function () {
             return $this->whenLoaded('tiers');
         }));
 
-        $userPrice = $firstTier ? $pricingService->getPriceForUser($firstTier, $user) : null;
-        $usdPrice = $firstTier ? $pricingService->getPriceInCurrency($firstTier, 'USD', $user) : null;
-        $egpPrice = $firstTier ? $pricingService->getPriceInCurrency($firstTier, 'EGP', $user) : null;
+        $userPrice = !$isParentProduct && $firstTier ? $pricingService->getPriceForUser($firstTier, $user) : null;
+        $usdPrice = !$isParentProduct && $firstTier ? $pricingService->getPriceInCurrency($firstTier, 'USD', $user) : null;
+        $egpPrice = !$isParentProduct && $firstTier ? $pricingService->getPriceInCurrency($firstTier, 'EGP', $user) : null;
         $providerFields = $firstTier?->metadata['provider_product_fields'] ?? [];
         $categoryType = $this->effectiveCategoryType();
         $effectiveType = match ($categoryType) {
@@ -87,9 +88,9 @@ class ProductResource extends JsonResource
             'price_usd' => $usdPrice,
             'price_egp' => $egpPrice,
             'unit_price' => $userPrice,
-            'min_qty' => $firstTier ? (int) ($firstTier->min_qty ?: 1) : 1,
-            'max_qty' => $firstTier ? (int) ($firstTier->max_qty ?: 10000000) : 10000000,
-            'is_package' => $firstTier ? ((int) ($firstTier->max_qty ?: 1) === 1 && (int) ($firstTier->min_qty ?: 1) === 1) : false,
+            'min_qty' => !$isParentProduct && $firstTier ? (int) ($firstTier->min_qty ?: 1) : 1,
+            'max_qty' => !$isParentProduct && $firstTier ? (int) ($firstTier->max_qty ?: 10000000) : 10000000,
+            'is_package' => !$isParentProduct && $firstTier ? ((int) ($firstTier->max_qty ?: 1) === 1 && (int) ($firstTier->min_qty ?: 1) === 1) : false,
             'variants_count' => $this->variants_count ?? $this->whenLoaded('variants', fn() => $this->variants->count(), 0),
             'variants' => ProductResource::collection($this->whenLoaded('variants')),
             'tiers' => $tierResources,

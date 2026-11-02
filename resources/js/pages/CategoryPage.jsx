@@ -516,24 +516,9 @@ export default function CategoryPage() {
                             </div>
                         ) : (
                             <div style={{ textAlign: 'center', padding: '40px 0' }}>
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveRechargeProduct(selectedParentApp)}
-                                    style={{
-                                        background: 'linear-gradient(135deg, #F5D061 0%, #D4A537 100%)',
-                                        color: '#0A0A0E',
-                                        border: 'none',
-                                        borderRadius: '14px',
-                                        padding: '14px 28px',
-                                        fontSize: '15px',
-                                        fontWeight: '900',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 6px 20px rgba(212, 165, 55, 0.35)',
-                                        fontFamily: 'var(--font-cairo)',
-                                    }}
-                                >
-                                    فتح نموذج الشحن الفوري لـ {selectedParentApp.name}
-                                </button>
+                                <div style={{ color: isLight ? '#64748B' : '#94A3B8', fontSize: '14px', fontWeight: '700' }}>
+                                    لا توجد نسخ متاحة لهذا المنتج حاليًا.
+                                </div>
                             </div>
                         )}
                     </div>

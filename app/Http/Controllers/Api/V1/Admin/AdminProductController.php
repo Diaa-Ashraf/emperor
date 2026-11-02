@@ -107,13 +107,13 @@ class AdminProductController extends Controller
             $requiresPlayerId = array_key_exists('requires_player_id', $meta)
                 ? (bool) $meta['requires_player_id']
                 : $effectiveType !== ProductType::VOUCHER;
-            $providerName = $meta['provider_name'] ?? 'منصة إمبراطور (Embrator Store)';
+            $providerName = $p->is_parent ? 'مجموعة منتجات' : ($meta['provider_name'] ?? 'منصة إمبراطور (Embrator Store)');
             $providerProductId = $meta['provider_product_id'] ?? $p->external_product_id ?? null;
             $providerProductName = $meta['provider_product_name'] ?? $p->name;
             $fulfillmentMode = $meta['fulfillment_mode'] ?? 'auto';
 
-            $basePrice = $firstTier ? (float) ($firstTier->source_cost ?: $firstTier->final_price) : 0;
-            $finalPrice = $firstTier ? (float) $firstTier->final_price : 0;
+            $basePrice = !$p->is_parent && $firstTier ? (float) ($firstTier->source_cost ?: $firstTier->final_price) : 0;
+            $finalPrice = !$p->is_parent && $firstTier ? (float) $firstTier->final_price : 0;
 
             return [
                 'id' => $p->id,
@@ -320,12 +320,6 @@ class AdminProductController extends Controller
             // A group root is only a display container. Fulfillment and pricing
             // belong to its child products, each with its own provider mapping.
             if ($isParent) {
-                $tierIds = $product->tiers()->pluck('id');
-                if ($tierIds->isNotEmpty() && DB::table('orders')->whereIn('product_tier_id', $tierIds)->exists()) {
-                    return $this->errorResponse('لا يمكن تحويل منتج عليه طلبات سابقة إلى منتج رئيسي.', Response::HTTP_UNPROCESSABLE_ENTITY);
-                }
-                DB::table('product_providers')->where('product_id', $product->id)->delete();
-                $product->tiers()->delete();
                 $this->clearPublicCatalogCache();
 
                 return $this->successResponse([

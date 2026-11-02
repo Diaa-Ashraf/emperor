@@ -72,9 +72,6 @@ class ProductController extends Controller
                 $query->where('is_parent', false);
             } else {
                 $query->whereNull('parent_id');
-                $query->where(function ($q) {
-                    $q->where('is_parent', false)->orWhereHas('variants', fn ($variants) => $variants->where('is_active', true));
-                });
             }
         }
 
