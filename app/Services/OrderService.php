@@ -42,6 +42,13 @@ class OrderService
         $product = Product::findOrFail($dto->productId);
         $tier = ProductTier::findOrFail($dto->productTierId);
 
+        if ((int) $tier->product_id !== (int) $product->id) {
+            throw new InvalidArgumentException('باقة السعر المحددة لا تتبع هذا المنتج. حدّث الصفحة وحاول مرة أخرى.');
+        }
+        if ($product->is_parent) {
+            throw new InvalidArgumentException('اختر إحدى نسخ المنتج لإكمال الطلب.');
+        }
+
         if (!$tier->is_active || !$product->is_active) {
             throw new InvalidArgumentException('هذا المنتج غير متاح حالياً للطلب.');
         }

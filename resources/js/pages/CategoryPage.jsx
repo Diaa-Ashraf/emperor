@@ -196,7 +196,7 @@ export default function CategoryPage() {
     const isAllTabActive = !selectedCategory;
 
     const handleProductClick = (product) => {
-        const hasVariants = (product.variants && product.variants.length > 0) || (product.variants_count && product.variants_count > 0);
+        const hasVariants = Boolean(product.is_parent) || (product.variants && product.variants.length > 0) || (product.variants_count && product.variants_count > 0);
         if (hasVariants) {
             setSelectedParentApp(product);
             const newParams = new URLSearchParams(searchParams);

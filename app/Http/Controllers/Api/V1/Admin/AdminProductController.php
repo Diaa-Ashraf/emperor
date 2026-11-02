@@ -46,6 +46,7 @@ class AdminProductController extends Controller
                 'id',
                 'category_id',
                 'parent_id',
+                'is_parent',
                 'name',
                 'slug',
                 'description',
@@ -62,6 +63,10 @@ class AdminProductController extends Controller
                 'category:id,name,type,sort_order',
                 'tiers',
             ]);
+        $query->withCount('variants');
+        $query->where(function ($q) {
+            $q->whereNull('parent_id')->orWhere('is_parent', true);
+        });
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->input('category_id'));
@@ -112,6 +117,9 @@ class AdminProductController extends Controller
 
             return [
                 'id' => $p->id,
+                'parent_id' => $p->parent_id,
+                'is_parent' => (bool) $p->is_parent,
+                'variants_count' => (int) ($p->variants_count ?? 0),
                 'name' => $p->name,
                 'slug' => $p->slug,
                 'description' => $p->description,
@@ -157,6 +165,19 @@ class AdminProductController extends Controller
         return $this->successResponse($product, 'تم جلب تفاصيل المنتج بنجاح');
     }
 
+    /** Active root products available as parents for new variants. */
+    public function parents(): JsonResponse
+    {
+        $parents = Product::query()
+            ->where('is_parent', true)
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get(['id', 'name', 'category_id']);
+
+        return $this->successResponse($parents, 'تم جلب المنتجات الرئيسية بنجاح');
+    }
+
     /**
      * Toggle product active status.
      */
@@ -183,6 +204,8 @@ class AdminProductController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
             'category_id' => ['required', 'exists:categories,id'],
+            'parent_id' => ['nullable', 'integer', 'exists:products,id'],
+            'is_parent' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'image' => ['nullable', 'string'],
             // Step 2: Integration & Pricing
@@ -209,7 +232,8 @@ class AdminProductController extends Controller
 
         // Validate the selected supplier here so a stale/invalid ID cannot
         // result in a product that appears linked in the UI but cannot fulfill.
-        if (!empty($validated['provider_id'])) {
+        $isParent = (bool) ($validated['is_parent'] ?? false);
+        if (!$isParent && !empty($validated['provider_id'])) {
             $request->validate([
                 'provider_id' => ['integer', 'exists:providers,id'],
             ], [
@@ -217,19 +241,43 @@ class AdminProductController extends Controller
             ]);
         }
         $providerProductId = trim((string) ($validated['provider_product_id'] ?? ''));
-        if (!empty($validated['provider_id']) && $providerProductId === '') {
+        if (!$isParent && !empty($validated['provider_id']) && $providerProductId === '') {
             $selectedProvider = Provider::find((int) $validated['provider_id']);
             if (in_array($selectedProvider?->driver, ['ad_card', 'ad-card', 'adcard'], true)) {
                 return $this->errorResponse('اختر المنتج المطلوب من كتالوج المورد قبل الحفظ.', Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         }
 
-        return DB::transaction(function () use ($validated, $id, $request) {
+        return DB::transaction(function () use ($validated, $id, $request, $isParent) {
             $product = $id ? Product::findOrFail($id) : new Product();
+            $parentId = $isParent ? null : (isset($validated['parent_id']) ? (int) $validated['parent_id'] : null);
+            if ($parentId !== null) {
+                $parent = Product::where('is_parent', true)->findOrFail($parentId);
+                if ((int) $parent->id === (int) $product->id) {
+                    return $this->errorResponse('لا يمكن ربط المنتج الرئيسي بنفسه كنسخة.', Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+                if ((int) $parent->category_id !== (int) $validated['category_id']) {
+                    return $this->errorResponse('المنتج والنسخة لازم يكونوا في نفس القسم.', Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+            }
+            if ($product->exists && $isParent && $product->orders()->exists()) {
+                return $this->errorResponse('لا يمكن تحويل منتج عليه طلبات سابقة إلى منتج رئيسي.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            if ($product->exists && !$isParent && $product->is_parent && $product->variants()->exists()) {
+                return $this->errorResponse('المنتج الرئيسي يحتوي على نسخ؛ اتركه رئيسياً أو احذف نسخه أولاً.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            if ($product->exists && $product->is_parent && (int) $product->category_id !== (int) $validated['category_id'] && $product->variants()->exists()) {
+                return $this->errorResponse('لا يمكن تغيير قسم المنتج الرئيسي بعد إضافة نسخ له؛ انقل النسخ أولاً.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            if ($product->exists && !$isParent && $product->orders()->exists() && (int) $product->parent_id !== (int) $parentId) {
+                return $this->errorResponse('لا يمكن نقل منتج له طلبات سابقة إلى مجموعة أخرى.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
 
             $product->name = $validated['name'];
             $product->description = $validated['description'] ?? null;
             $product->category_id = $validated['category_id'];
+            $product->parent_id = $parentId;
+            $product->is_parent = $isParent;
             $product->sort_order = $validated['sort_order'] ?? 1;
             if (!empty($validated['image'])) {
                 if (str_starts_with($validated['image'], 'data:image')) {
@@ -256,6 +304,9 @@ class AdminProductController extends Controller
                 CategoryType::CARDS => ProductType::VOUCHER,
                 default => ProductType::PLAYER_ID,
             };
+            if ($isParent) {
+                $product->type = ProductType::DIRECT_TOPUP;
+            }
             $product->player_id_label = $validated['player_id_label'] ?? 'آيدي الحساب (User ID)';
             $product->is_active = true;
             $product->catalog_source_id = null;
@@ -265,6 +316,25 @@ class AdminProductController extends Controller
                 $product->slug = Str::slug($product->name) . '-' . time();
             }
             $product->save();
+
+            // A group root is only a display container. Fulfillment and pricing
+            // belong to its child products, each with its own provider mapping.
+            if ($isParent) {
+                $tierIds = $product->tiers()->pluck('id');
+                if ($tierIds->isNotEmpty() && DB::table('orders')->whereIn('product_tier_id', $tierIds)->exists()) {
+                    return $this->errorResponse('لا يمكن تحويل منتج عليه طلبات سابقة إلى منتج رئيسي.', Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+                DB::table('product_providers')->where('product_id', $product->id)->delete();
+                $product->tiers()->delete();
+                $this->clearPublicCatalogCache();
+
+                return $this->successResponse([
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'is_parent' => true,
+                    'variants_count' => $product->variants()->count(),
+                ], 'تم حفظ المنتج الرئيسي. أضف تحته النسخ واربط كل نسخة بموردها.');
+            }
 
             // Create or update Tier
             $providerName = $validated['provider_name'] ?? 'منصة إمبراطور (Embrator Store)';
@@ -359,6 +429,9 @@ class AdminProductController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $product = Product::findOrFail($id);
+        if ($product->is_parent && $product->variants()->exists()) {
+            return $this->errorResponse('احذف نسخ المنتج أولاً قبل حذف المنتج الرئيسي.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
         $product->delete();
             $this->clearPublicCatalogCache();
 

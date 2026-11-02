@@ -215,6 +215,7 @@ export const adminApi = {
     deletePricingTier: (id) => api.delete(`/admin/pricing-tiers/${id}`),
     getActivityLogs: (params = {}) => api.get('/admin/activity-logs', { params }),
     getProducts: (params = {}) => api.get('/admin/products', { params }),
+    getProductParents: () => api.get('/admin/products/parents'),
     getProviderCatalog: (params = {}) => api.get('/admin/products/provider-catalog', { params }),
     getProduct: (id) => api.get(`/admin/products/${id}`),
     toggleProductActive: (id) => api.post(`/admin/products/${id}/toggle-active`),

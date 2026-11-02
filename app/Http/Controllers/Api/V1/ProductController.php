@@ -47,7 +47,7 @@ class ProductController extends Controller
         }
 
         $selectColumns = [
-            'id', 'category_id', 'name', 'slug', 'description', 'image',
+            'id', 'category_id', 'is_parent', 'name', 'slug', 'description', 'image',
             'type', 'player_id_label', 'player_id_validation_regex',
             'player_id_guide_image', 'has_server_id', 'server_id_label',
             'server_options', 'requires_account_region', 'region_options',
@@ -69,8 +69,12 @@ class ProductController extends Controller
 
             if ($parentId !== null && $parentId !== '') {
                 $query->where('parent_id', $parentId);
-            } elseif ($search === '' && !$catId && !$catSlug) {
+                $query->where('is_parent', false);
+            } else {
                 $query->whereNull('parent_id');
+                $query->where(function ($q) {
+                    $q->where('is_parent', false)->orWhereHas('variants', fn ($variants) => $variants->where('is_active', true));
+                });
             }
         }
 
@@ -123,7 +127,14 @@ class ProductController extends Controller
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%");
+                  ->orWhere('slug', 'like', "%{$search}%")
+                  ->orWhereHas('variants', function ($variants) use ($search) {
+                      $variants->where('is_active', true)
+                          ->where(function ($variantQuery) use ($search) {
+                              $variantQuery->where('name', 'like', "%{$search}%")
+                                  ->orWhere('slug', 'like', "%{$search}%");
+                          });
+                  });
             });
         }
 

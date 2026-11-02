@@ -219,6 +219,7 @@ Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
             Route::post('/categories/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminCategoryController::class, 'update']);
             Route::delete('/categories/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminCategoryController::class, 'destroy']);
             Route::get('/products', [\App\Http\Controllers\Api\V1\Admin\AdminProductController::class, 'index']);
+            Route::get('/products/parents', [\App\Http\Controllers\Api\V1\Admin\AdminProductController::class, 'parents']);
             Route::get('/products/provider-catalog', [\App\Http\Controllers\Api\V1\Admin\AdminProductController::class, 'providerCatalog']);
             Route::get('/products/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminProductController::class, 'show']);
             Route::post('/products/{id}/toggle-active', [\App\Http\Controllers\Api\V1\Admin\AdminProductController::class, 'toggleActive']);

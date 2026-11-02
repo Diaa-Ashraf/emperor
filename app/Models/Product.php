@@ -17,6 +17,7 @@ class Product extends Model
     protected $fillable = [
         'category_id',
         'parent_id',
+        'is_parent',
         'catalog_source_id',
         'external_product_id',
         'name',
@@ -68,6 +69,7 @@ class Product extends Model
     {
         return [
             'type' => ProductType::class,
+            'is_parent' => 'boolean',
             'has_server_id' => 'boolean',
             'server_options' => 'array',
             'requires_account_region' => 'boolean',

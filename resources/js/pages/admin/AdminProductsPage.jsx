@@ -64,6 +64,9 @@ export default function AdminProductsPage() {
     const [formProdCategory, setFormProdCategory] = useState('');
     const [formProdSortOrder, setFormProdSortOrder] = useState('1');
     const [formProdImage, setFormProdImage] = useState('');
+    const [productParents, setProductParents] = useState([]);
+    const [formParentId, setFormParentId] = useState('');
+    const [isParentProduct, setIsParentProduct] = useState(false);
     const prodFileInputRef = useRef(null);
 
     // Step 2: Integration & Pricing
@@ -146,6 +149,16 @@ export default function AdminProductsPage() {
         }
     };
 
+    const fetchProductParents = async () => {
+        try {
+            const res = await adminApi.getProductParents();
+            const list = res?.data?.data || res?.data || [];
+            setProductParents(Array.isArray(list) ? list : []);
+        } catch (err) {
+            console.error('Failed fetching product groups:', err);
+        }
+    };
+
     const fetchProviderCatalog = async (providerId, searchStr = '') => {
         try {
             const provider = providers.find(p => p.id == providerId || p.name === providerId);
@@ -181,6 +194,7 @@ export default function AdminProductsPage() {
         fetchCategories();
         fetchProducts();
         fetchProviders();
+        fetchProductParents();
     }, []);
 
     useEffect(() => {
@@ -318,6 +332,8 @@ export default function AdminProductsPage() {
         setFormProdCategory(categories[0]?.id || '');
         setFormProdSortOrder((products.length + 1).toString());
         setFormProdImage('');
+        setFormParentId('');
+        setIsParentProduct(false);
         setFulfillmentMode('auto');
         const defaultProv = providers.find(p => p.driver === 'embrator_reseller_api' || p.name?.includes('إمبراطور')) || providers[0];
         setSelectedProvider(defaultProv ? defaultProv.id : '');
@@ -342,6 +358,9 @@ export default function AdminProductsPage() {
         setFormProdCategory(prod.category_id || (categories[0]?.id || ''));
         setFormProdSortOrder((prod.sort_order || 1).toString());
         setFormProdImage(prod.image || '');
+        setFormParentId(prod.is_parent ? '' : (prod.parent_id ? String(prod.parent_id) : ''));
+        setIsParentProduct(Boolean(prod.is_parent));
+        fetchProductParents();
         setFulfillmentMode(prod.fulfillment_mode || 'auto');
         setSelectedProvider(prod.provider_name || 'منصة إمبراطور (Embrator Store)');
         setSelectedProviderProduct(prod.provider_product_id ? {
@@ -403,23 +422,25 @@ export default function AdminProductsPage() {
 
         try {
             setProductSubmitting(true);
-            const provObj = providers.find(p => p.name === selectedProvider || p.id == selectedProvider);
+            const provObj = isParentProduct ? null : providers.find(p => p.name === selectedProvider || p.id == selectedProvider);
             const payload = {
                 name: formProdName.trim(),
                 description: formProdDescription.trim() || null,
                 category_id: formProdCategory,
                 sort_order: parseInt(formProdSortOrder) || 1,
                 image: formProdImage || null,
+                parent_id: isParentProduct ? null : (formParentId || null),
+                is_parent: isParentProduct,
                 fulfillment_mode: fulfillmentMode,
-                provider_id: provObj ? provObj.id : (providers.length > 0 ? providers[0].id : null),
-                provider_name: provObj ? provObj.name : (selectedProvider || 'منصة إمبراطور (Embrator Store)'),
-                provider_product_id: selectedProviderProduct ? String(selectedProviderProduct.id) : null,
-                provider_product_name: selectedProviderProduct ? selectedProviderProduct.name : formProdName.trim(),
+                provider_id: isParentProduct ? null : (provObj ? provObj.id : (providers.length > 0 ? providers[0].id : null)),
+                provider_name: isParentProduct ? null : (provObj ? provObj.name : (selectedProvider || 'منصة إمبراطور (Embrator Store)')),
+                provider_product_id: isParentProduct ? null : (selectedProviderProduct ? String(selectedProviderProduct.id) : null),
+                provider_product_name: isParentProduct ? null : (selectedProviderProduct ? selectedProviderProduct.name : formProdName.trim()),
                 provider_product_fields: selectedProviderProduct?.fields || [],
                 provider_product_currency: selectedProviderProduct?.currency || 'USD',
-                auto_fulfill: autoFulfillmentEnabled,
-                sync_pricing: syncPricingEnabled,
-                manual_price: manualPriceEnabled,
+                auto_fulfill: isParentProduct ? false : autoFulfillmentEnabled,
+                sync_pricing: isParentProduct ? false : syncPricingEnabled,
+                manual_price: isParentProduct ? false : manualPriceEnabled,
                 min_qty: parseFloat(minQty) || 1,
                 max_qty: parseFloat(maxQty) || 1000,
                 base_price: parseFloat(basePrice) || 0,
@@ -896,7 +917,7 @@ export default function AdminProductsPage() {
                                                     {p.name}
                                                 </div>
                                                 <div style={{ fontSize: '11px', color: '#38BDF8', fontWeight: '700' }}>
-                                                    #{p.id}
+                                                    #{p.id}{p.is_parent ? ` · منتج رئيسي (${p.variants_count || 0} نسخة)` : (p.parent_id ? ' · نسخة تابعة' : '')}
                                                 </div>
                                             </div>
 
@@ -948,7 +969,7 @@ export default function AdminProductsPage() {
                                         }}>
                                             <div style={{ fontSize: '10.5px', color: '#94A3B8', fontWeight: '700' }}>المزود</div>
                                             <div style={{ fontSize: '12.5px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
-                                                {p.provider_name}
+                                                {p.is_parent ? 'مجموعة منتجات' : p.provider_name}
                                             </div>
                                         </div>
 
@@ -960,7 +981,7 @@ export default function AdminProductsPage() {
                                         }}>
                                             <div style={{ fontSize: '10.5px', color: '#94A3B8', fontWeight: '700' }}>السعر الأساسي</div>
                                             <div style={{ fontSize: '11px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF', direction: 'ltr', textAlign: 'right', wordBreak: 'break-all' }}>
-                                                {p.base_price || 0.00174232}
+                                                {p.is_parent ? 'يحدد لكل نسخة' : (p.base_price || 0.00174232)}
                                             </div>
                                         </div>
 
@@ -1435,6 +1456,41 @@ export default function AdminProductsPage() {
                                         </select>
                                     </div>
 
+                                    <div style={{ display: 'grid', gap: '10px', marginBottom: '16px', padding: '14px', borderRadius: '14px', backgroundColor: '#060B18', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#FFFFFF', fontSize: '13px', fontWeight: '800', cursor: 'pointer' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={isParentProduct}
+                                                onChange={(e) => {
+                                                    setIsParentProduct(e.target.checked);
+                                                    if (e.target.checked) setFormParentId('');
+                                                }}
+                                                disabled={Boolean(formParentId) || Boolean(editingProduct?.variants_count)}
+                                            />
+                                            إنشاء منتج رئيسي يحتوي على نسخ مرتبطة بموردين
+                                        </label>
+                                        {!isParentProduct && (
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
+                                                    المنتج الرئيسي (اختياري)
+                                                </label>
+                                                <select
+                                                    value={formParentId}
+                                                    onChange={(e) => setFormParentId(e.target.value)}
+                                                    style={{ width: '100%', padding: '11px 12px', borderRadius: '12px', backgroundColor: '#040711', border: '1px solid rgba(56, 189, 248, 0.25)', color: '#FFFFFF', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
+                                                >
+                                                    <option value="">منتج مستقل (بدون مجموعة)</option>
+                                                    {productParents.filter(parent => !formProdCategory || String(parent.category_id) === String(formProdCategory)).map(parent => (
+                                                        <option key={parent.id} value={parent.id}>{parent.name}</option>
+                                                    ))}
+                                                </select>
+                                                <div style={{ marginTop: '6px', color: '#94A3B8', fontSize: '11px' }}>
+                                                    النسخة ستظهر داخل المنتج الرئيسي، وسيكون لها موردها وسعرها الخاصان.
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
                                     <div style={{ marginBottom: '16px' }}>
                                         <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', color: '#CBD5E1', marginBottom: '6px' }}>
                                             ترتيب الظهور
@@ -1588,6 +1644,13 @@ export default function AdminProductsPage() {
                                         2 الكمية والتسعير
                                     </div>
 
+                                    {isParentProduct ? (
+                                        <div style={{ backgroundColor: '#060B18', border: '1px solid rgba(56, 189, 248, 0.25)', borderRadius: '18px', padding: '22px', marginBottom: '16px', color: '#CBD5E1', lineHeight: 1.9 }}>
+                                            <div style={{ fontSize: '15px', fontWeight: '900', color: '#F5D061', marginBottom: '6px' }}>المنتج الرئيسي لا يسحب من مورد</div>
+                                            <div>احفظ «{formProdName || 'المنتج'}» كمجموعة، ثم أضف لكل مورد نسخة منفصلة من المنتج واربطها بمنتج المورد وحدد سعرها. الطلب سيتجه لمورد النسخة التي اختارها العميل.</div>
+                                        </div>
+                                    ) : (
+                                        <>
                                     {/* Sub Card Container */}
                                     <div style={{
                                         backgroundColor: '#060B18',
@@ -1971,6 +2034,8 @@ export default function AdminProductsPage() {
                                             />
                                         </div>
                                     </div>
+                                        </>
+                                    )}
 
                                     {/* Navigation Buttons */}
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
