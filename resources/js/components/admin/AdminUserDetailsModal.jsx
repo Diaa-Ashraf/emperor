@@ -224,8 +224,10 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                     maxWidth: '520px',
                     maxHeight: '90vh',
                     overflowY: 'auto',
+                    overflowX: 'hidden',
                     boxShadow: '0 25px 60px rgba(0, 0, 0, 0.6)',
                     padding: '24px 20px',
+                    boxSizing: 'border-box',
                 }}
             >
                 {/* Modal Header */}
@@ -811,8 +813,8 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                             </h4>
 
                             {/* Balance Adjust Form */}
-                            <form onSubmit={handleBalanceSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
-                                <div style={{ display: 'flex', gap: '8px' }}>
+                            <form onSubmit={handleBalanceSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px', width: '100%', boxSizing: 'border-box' }}>
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', width: '100%' }}>
                                     <select
                                         value={balanceAction}
                                         onChange={(e) => setBalanceAction(e.target.value)}
@@ -825,6 +827,9 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                                             fontWeight: '800',
                                             fontSize: '12px',
                                             fontFamily: 'Cairo, sans-serif',
+                                            flex: '1 1 110px',
+                                            minWidth: '0',
+                                            boxSizing: 'border-box',
                                         }}
                                     >
                                         <option value="credit">+ إضافة رصيد</option>
@@ -838,7 +843,10 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                                         onChange={(e) => setBalanceAmount(e.target.value)}
                                         placeholder={`أدخل المبلغ (${userCurrency})...`}
                                         style={{
-                                            flex: 1,
+                                            flex: '2 1 120px',
+                                            minWidth: '0',
+                                            width: 'auto',
+                                            boxSizing: 'border-box',
                                             padding: '8px 12px',
                                             borderRadius: '8px',
                                             backgroundColor: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.05)',
@@ -862,6 +870,9 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                                             fontWeight: '800',
                                             cursor: submittingBalance ? 'not-allowed' : 'pointer',
                                             fontFamily: 'Cairo, sans-serif',
+                                            flex: '0 0 auto',
+                                            minWidth: '60px',
+                                            boxSizing: 'border-box',
                                         }}
                                     >
                                         {submittingBalance ? '...' : 'تنفيذ'}
@@ -874,6 +885,9 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                                     onChange={(e) => setBalanceDesc(e.target.value)}
                                     placeholder="ملاحظات / بيان العملية (اختياري)..."
                                     style={{
+                                        width: '100%',
+                                        boxSizing: 'border-box',
+                                        minWidth: '0',
                                         padding: '7px 12px',
                                         borderRadius: '8px',
                                         backgroundColor: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.04)',
@@ -886,14 +900,17 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                             </form>
 
                             {/* Password Reset Form */}
-                            <form onSubmit={handlePasswordSubmit} style={{ display: 'flex', gap: '8px', paddingTop: '12px', borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.06)' }}>
+                            <form onSubmit={handlePasswordSubmit} style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', width: '100%', boxSizing: 'border-box', paddingTop: '12px', borderTop: isLight ? '1px solid #E2E8F0' : '1px solid rgba(255, 255, 255, 0.06)' }}>
                                 <input
                                     type="password"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
                                     placeholder="كلمة مرور جديدة للمستخدم..."
                                     style={{
-                                        flex: 1,
+                                        flex: '1 1 160px',
+                                        minWidth: '0',
+                                        width: 'auto',
+                                        boxSizing: 'border-box',
                                         padding: '8px 12px',
                                         borderRadius: '8px',
                                         backgroundColor: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.05)',
@@ -916,6 +933,8 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                                         fontWeight: '800',
                                         cursor: submittingPass ? 'not-allowed' : 'pointer',
                                         fontFamily: 'Cairo, sans-serif',
+                                        flex: '0 0 auto',
+                                        boxSizing: 'border-box',
                                     }}
                                 >
                                     {submittingPass ? '...' : 'تحديث المرور'}

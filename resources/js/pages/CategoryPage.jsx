@@ -23,7 +23,8 @@ export default function CategoryPage() {
     const { t, isRtl } = useLanguage();
     const isLight = theme === 'light';
     const rawSlug = params.slug || params.id || 'all';
-    const slug = rawSlug.toLowerCase();
+    const decodedRawSlug = decodeURIComponent(rawSlug).trim();
+    const slug = decodedRawSlug.toLowerCase();
 
     const appParam = searchParams.get('app');
 
@@ -100,7 +101,18 @@ export default function CategoryPage() {
 
     const selectedCategory = useMemo(() => {
         if (!slug || slug === 'all') return null;
-        return categories.find(c => c.slug?.toLowerCase() === slug || String(c.id) === String(slug)) || null;
+        const normalizedSlug = slug.replace(/\s+/g, '-').toLowerCase();
+        return categories.find(c => {
+            const catSlug = (c.slug || '').toLowerCase();
+            const catName = (c.name || '').toLowerCase();
+            const catNameSlug = catName.replace(/\s+/g, '-');
+            return catSlug === slug ||
+                   catSlug === normalizedSlug ||
+                   String(c.id) === slug ||
+                   catName === slug ||
+                   catNameSlug === slug ||
+                   catNameSlug === normalizedSlug;
+        }) || null;
     }, [slug, categories]);
 
     const currentActiveType = useMemo(() => {
@@ -119,7 +131,9 @@ export default function CategoryPage() {
         setLoading(true);
         const queryParams = {};
 
-        if (slug && slug !== 'all') {
+        if (selectedCategory?.id) {
+            queryParams.category_id = selectedCategory.id;
+        } else if (slug && slug !== 'all') {
             queryParams.category_slug = slug;
         }
 
@@ -141,7 +155,7 @@ export default function CategoryPage() {
                 setProducts([]);
             })
             .finally(() => setLoading(false));
-    }, [slug, debouncedSearch]);
+    }, [slug, selectedCategory?.id, debouncedSearch]);
 
     // Synchronize parent app from URL search parameter
     useEffect(() => {

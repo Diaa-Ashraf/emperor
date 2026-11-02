@@ -20,7 +20,10 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         $catId = $request->input('category_id');
-        $catSlug = $request->input('category_slug');
+        $rawCatSlug = $request->input('category_slug');
+        $catSlug = $rawCatSlug ? trim(urldecode((string) $rawCatSlug)) : null;
+        $catSlugSpaces = $catSlug ? str_replace('-', ' ', $catSlug) : null;
+        $catSlugDashes = $catSlug ? str_replace(' ', '-', $catSlug) : null;
         $parentId = $request->input('parent_id');
         $type = $request->input('type');
         $search = trim((string) $request->input('search'));
@@ -83,28 +86,34 @@ class ProductController extends Controller
                 'target' => 'target',
                 'bbgy' => 'games',
                 'pubg' => 'games',
+                'قسم-التطبيقات' => 'voice_apps',
+                'قسم التطبيقات' => 'voice_apps',
+                'تطبيقات' => 'voice_apps',
+                'العاب' => 'games',
+                'قسم-العاب' => 'games',
+                'قسم العاب' => 'games',
+                'قسم-الألعاب' => 'games',
+                'قسم الألعاب' => 'games',
             ];
 
-            if (isset($typeAliases[$catSlug])) {
-                $categoryType = $typeAliases[$catSlug];
-                $query->where(function ($q) use ($catSlug, $categoryType) {
-                    $q->whereHas('category', function ($cq) use ($catSlug, $categoryType) {
-                        $cq->where('slug', $catSlug)
-                           ->orWhere('type', $categoryType)
-                           ->orWhere('slug', 'like', "%{$catSlug}%")
-                           ->orWhere('name', 'like', "%{$catSlug}%");
-                    })->orWhere('slug', 'like', "%{$catSlug}%")
-                      ->orWhere('name', 'like', "%{$catSlug}%");
-                });
-            } else {
-                $query->where(function ($q) use ($catSlug) {
-                    $q->whereHas('category', function ($cq) use ($catSlug) {
-                        $cq->where('slug', $catSlug)
-                           ->orWhere('slug', 'like', "%{$catSlug}%")
-                           ->orWhere('name', 'like', "%{$catSlug}%");
-                    })->orWhere('slug', 'like', "%{$catSlug}%");
-                });
-            }
+            $categoryType = $typeAliases[$catSlug] ?? $typeAliases[$catSlugSpaces] ?? $typeAliases[$catSlugDashes] ?? null;
+
+            $query->where(function ($q) use ($catSlug, $catSlugSpaces, $catSlugDashes, $categoryType) {
+                $q->whereHas('category', function ($cq) use ($catSlug, $catSlugSpaces, $catSlugDashes, $categoryType) {
+                    $cq->where('slug', $catSlug)
+                       ->orWhere('slug', $catSlugDashes)
+                       ->orWhere('name', $catSlug)
+                       ->orWhere('name', $catSlugSpaces)
+                       ->orWhere('slug', 'like', "%{$catSlug}%")
+                       ->orWhere('name', 'like', "%{$catSlug}%")
+                       ->orWhere('name', 'like', "%{$catSlugSpaces}%");
+
+                    if ($categoryType) {
+                        $cq->orWhere('type', $categoryType);
+                    }
+                })->orWhere('slug', 'like', "%{$catSlug}%")
+                  ->orWhere('name', 'like', "%{$catSlug}%");
+            });
         }
 
         if ($type && $type !== 'all') {
