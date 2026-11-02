@@ -42,13 +42,12 @@ export default function ProductRechargeModal({
     // Detect if this is a custom-quantity coin/voice app (matching KA-CARD mode)
     const isCustomQuantity = useMemo(() => {
         const firstTier = (product.tiers || product.active_tiers || [])[0];
-        if (product.is_package || (firstTier && firstTier.is_package)) {
-            // If explicitly package with max=1, min=1, still allow custom if in voice apps category
-            if (firstTier && Number(firstTier.max_qty) === 1 && Number(firstTier.min_qty) === 1 && !product.category?.slug?.includes('app')) {
-                return false;
-            }
-        }
-        return true;
+        const productCategory = String(product.category?.slug || product.category_slug || product.category_name || '').toLowerCase();
+        const isVoiceApp = productCategory.includes('app') || productCategory.includes('تطبيق') || productCategory.includes('شات');
+        const hasExplicitQuantityRange = firstTier && (Number(firstTier.max_qty) > 1 || Number(firstTier.min_qty) > 1);
+        if (product.is_package || (firstTier?.is_package && !hasExplicitQuantityRange)) return false;
+        if (firstTier && Number(firstTier.min_qty) === 1 && Number(firstTier.max_qty) === 1) return false;
+        return Boolean(firstTier && hasExplicitQuantityRange) || (!firstTier && isVoiceApp);
     }, [product]);
 
     const [selectedTier, setSelectedTier] = useState(tiers.length > 0 ? tiers[0] : null);
@@ -149,22 +148,23 @@ export default function ProductRechargeModal({
 
     // Compute unit coin rate for custom coin recharge
     const coinRate = useMemo(() => {
-        if (product.price && Number(product.price) > 0) {
-            return convertCurrencyAmount(product.price, product.currency || activeCurrency, activeCurrency) || 0;
-        }
-
         const availableTiers = product.tiers || product.active_tiers || [];
         if (availableTiers.length > 0) {
             const firstItem = availableTiers[0];
-            if (firstItem.price && Number(firstItem.price) > 0) {
+            if (Number(firstItem.price) > 0) {
                 return convertCurrencyAmount(firstItem.price, firstItem.currency || product.currency || activeCurrency, activeCurrency) || 0;
             }
-            if (firstItem.source_cost && Number(firstItem.source_cost) > 0) {
-                const baseCost = Number(firstItem.source_cost) * 1.04;
-                return convertCurrencyAmount(baseCost, firstItem.cost_currency || 'USD', activeCurrency) || 0;
+            if (Number(firstItem.price_usd) > 0) {
+                return convertCurrencyAmount(firstItem.price_usd, 'USD', activeCurrency) || 0;
             }
         }
 
+        if (Number(product.price) > 0) {
+            return convertCurrencyAmount(product.price, product.currency || activeCurrency, activeCurrency) || 0;
+        }
+        if (Number(product.price_usd) > 0) {
+            return convertCurrencyAmount(product.price_usd, 'USD', activeCurrency) || 0;
+        }
         return 0;
     }, [product, activeCurrency, exchangeRates]);
 
@@ -214,10 +214,10 @@ export default function ProductRechargeModal({
     // Calculate total price based on tier or unit rate
     const unitPrice = useMemo(() => {
         if (selectedTier) {
-            const targetP = selectedTier.price !== undefined
+            const targetP = Number(selectedTier.price) > 0
                 ? convertCurrencyAmount(selectedTier.price, selectedTier.currency || product.currency || activeCurrency, activeCurrency)
-                : (selectedTier.price_usd ? convertCurrencyAmount(selectedTier.price_usd, 'USD', activeCurrency) : null);
-            return Number(targetP || 0);
+                : (Number(selectedTier.price_usd) > 0 ? convertCurrencyAmount(selectedTier.price_usd, 'USD', activeCurrency) : null);
+            if (Number(targetP) > 0) return Number(targetP);
         }
         if (product.unit_price) {
             return convertCurrencyAmount(product.unit_price, product.currency || activeCurrency, activeCurrency) || 0;
@@ -254,9 +254,13 @@ export default function ProductRechargeModal({
     // Secondary currency preview
     const secondaryPreview = useMemo(() => {
         if (totalPrice <= 0) return '0';
-        const unitPriceUsd = Number(selectedTier?.price_usd ?? product.price_usd ?? 0);
-        const usdValue = unitPriceUsd > 0
-            ? unitPriceUsd * (isCustomQuantity ? validQty : quantity)
+        const selectedUnitPriceUsd = Number(selectedTier?.price_usd ?? 0);
+        const productUnitPriceUsd = Number(product.price_usd ?? 0);
+        const unitPriceUsd = selectedUnitPriceUsd > 0
+            ? selectedUnitPriceUsd
+            : (productUnitPriceUsd > 0 ? productUnitPriceUsd : 0);
+        const usdValue = unitPriceUsd > 0 && isCustomQuantity
+            ? unitPriceUsd * validQty
             : convertCurrencyAmount(totalPrice, activeCurrency, 'USD');
         return usdValue === null ? '' : `${usdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`;
     }, [selectedTier, product, totalPrice, activeCurrency, exchangeRates, isCustomQuantity, validQty, quantity]);

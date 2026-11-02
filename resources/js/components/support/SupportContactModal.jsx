@@ -134,7 +134,20 @@ export default function SupportContactModal({ isOpen, onClose }) {
             phone: c.value ? c.value.replace(/[^0-9+]/g, '') : '',
             role_badge: getContactBadge(c, idx),
             badge_color: idx === 0 ? '#F59E0B' : (idx % 2 === 1 ? '#38BDF8' : '#34D399'),
-        }))
+        })).map((contact) => {
+            const isManagerContact = /مدير|مالك|owner|manager/i.test(`${contact.name || ''} ${contact.role_badge || ''} ${contact.description || ''}`);
+            const isEmailContact = String(contact.channel || '').toLowerCase() === 'email'
+                || String(contact.value || '').includes('@');
+            if (!isManagerContact && !isEmailContact) return contact;
+            return {
+                ...contact,
+                name: isEn ? 'Platform Manager' : 'مدير المنصة',
+                role_badge: isEn ? 'Platform Manager' : 'مدير المنصة',
+                channel: 'whatsapp',
+                phone: '00972523281869',
+                value: '00972523281869',
+            };
+        })
         : defaultContacts;
 
     return (
@@ -261,7 +274,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                         }}>
-                            EMPEROR
+                            {isEn ? 'MOHRA & SAND CARD' : 'مهره وسند كارد'}
                         </span>
                     </h2>
                 </div>

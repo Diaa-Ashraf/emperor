@@ -377,6 +377,13 @@ class AdminProductController extends Controller
             ];
             $tier->save();
 
+            // Product details (including parent variants and their tier prices)
+            // are cached independently from the public catalog list.
+            Cache::forget("api_product_detail_v4_{$product->id}");
+            if ($parentId !== null) {
+                Cache::forget("api_product_detail_v4_{$parentId}");
+            }
+
             // Replace the previous supplier mapping atomically. Leaving the old
             // row active can route orders to a stale AD Card SKU after edits.
             DB::table('product_providers')->where('product_tier_id', $tier->id)->delete();
@@ -423,11 +430,25 @@ class AdminProductController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $product = Product::findOrFail($id);
-        if ($product->is_parent && $product->variants()->exists()) {
-            return $this->errorResponse('احذف نسخ المنتج أولاً قبل حذف المنتج الرئيسي.', Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-        $product->delete();
-            $this->clearPublicCatalogCache();
+
+        DB::transaction(function () use ($product) {
+            if ($product->is_parent) {
+                // A parent is a catalog group. Remove all its variants from
+                // the public catalog with it while keeping historical orders
+                // intact through Product's soft-delete behavior.
+                Product::where('parent_id', $product->id)
+                    ->get()
+                    ->each(function (Product $variant) {
+                        $variant->delete();
+                        \Illuminate\Support\Facades\Cache::forget("api_product_detail_v4_{$variant->id}");
+                    });
+            }
+
+            $product->delete();
+        });
+
+        \Illuminate\Support\Facades\Cache::forget("api_product_detail_v4_{$id}");
+        $this->clearPublicCatalogCache();
 
         return $this->successResponse(null, 'تم حذف المنتج بنجاح');
     }

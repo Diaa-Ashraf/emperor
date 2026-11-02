@@ -264,7 +264,7 @@ export default function AdminProductsPage() {
             setDeletingProduct(null);
             fetchProducts();
         } catch (err) {
-            toastError(err.response?.data?.message || 'فشل حذف المنتج');
+            toastError(err.message || err.response?.data?.message || 'فشل حذف المنتج');
         } finally {
             setDeleteProdSubmitting(false);
         }
@@ -2262,7 +2262,12 @@ export default function AdminProductsPage() {
                             تأكيد حذف المنتج
                         </h3>
                         <p style={{ fontSize: '12.5px', color: '#94A3B8', marginBottom: '20px' }}>
-                            هل أنت متأكد من حذف المنتج "{deletingProduct.name}" نهائيًا؟
+                            هل أنت متأكد من حذف المنتج "{deletingProduct.name}" من الكتالوج؟
+                            {deletingProduct.is_parent && Number(deletingProduct.variants_count) > 0 && (
+                                <span style={{ display: 'block', marginTop: '8px', color: '#FCA5A5', fontWeight: 800 }}>
+                                    سيتم إخفاء النسخ التابعة له أيضًا. ستظل الطلبات السابقة محفوظة.
+                                </span>
+                            )}
                         </p>
 
                         <div style={{ display: 'flex', gap: '10px' }}>
