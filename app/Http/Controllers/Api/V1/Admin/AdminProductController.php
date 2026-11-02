@@ -162,6 +162,16 @@ class AdminProductController extends Controller
             ->with(['category', 'tiers'])
             ->findOrFail($id);
 
+        if ($product->is_parent) {
+            $variants = Product::query()
+                ->where('parent_id', $product->id)
+                ->with('tiers')
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get();
+            $product->setRelation('variants', $variants);
+        }
+
         return $this->successResponse($product, 'تم جلب تفاصيل المنتج بنجاح');
     }
 

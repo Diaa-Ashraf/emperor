@@ -51,6 +51,9 @@ export default function AdminProductsPage() {
     // Delete Product Modal
     const [deletingProduct, setDeletingProduct] = useState(null);
     const [deleteProdSubmitting, setDeleteProdSubmitting] = useState(false);
+    const [expandedVariantsParentId, setExpandedVariantsParentId] = useState(null);
+    const [parentVariants, setParentVariants] = useState([]);
+    const [variantsLoading, setVariantsLoading] = useState(false);
 
     // ═══ 3-Step Add / Edit Product Modal (Screenshot 4 & 5) ═══
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -163,6 +166,27 @@ export default function AdminProductsPage() {
         }
     };
 
+    const toggleParentVariants = async (parent) => {
+        if (String(expandedVariantsParentId) === String(parent.id)) {
+            setExpandedVariantsParentId(null);
+            setParentVariants([]);
+            return;
+        }
+
+        setExpandedVariantsParentId(parent.id);
+        setVariantsLoading(true);
+        try {
+            const res = await adminApi.getProduct(parent.id);
+            const product = res?.data?.data || res?.data || {};
+            setParentVariants(Array.isArray(product.variants) ? product.variants : []);
+        } catch (err) {
+            setParentVariants([]);
+            toastError(err.message || 'فشل تحميل نسخ المنتج');
+        } finally {
+            setVariantsLoading(false);
+        }
+    };
+
     const fetchProviderCatalog = async (providerId, searchStr = '', page = 1, append = false) => {
         const requestId = ++providerCatalogRequestRef.current;
         if (!append) {
@@ -262,6 +286,10 @@ export default function AdminProductsPage() {
             await adminApi.deleteProduct(deletingProduct.id);
             success('تم حذف المنتج بنجاح');
             setDeletingProduct(null);
+            if (deletingProduct.parent_id) {
+                setExpandedVariantsParentId(null);
+                setParentVariants([]);
+            }
             fetchProducts();
         } catch (err) {
             toastError(err.message || err.response?.data?.message || 'فشل حذف المنتج');
@@ -880,8 +908,8 @@ export default function AdminProductsPage() {
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             {products.map((p) => (
+                                <React.Fragment key={p.id}>
                                 <div
-                                    key={p.id}
                                     style={{
                                         backgroundColor: isLight ? '#FFFFFF' : '#080E1C',
                                         border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.25)',
@@ -1086,8 +1114,63 @@ export default function AdminProductsPage() {
                                             <Power size={14} />
                                             <span>{p.is_active ? 'إيقاف' : 'تشغيل'}</span>
                                         </button>
+                                        {p.is_parent && Number(p.variants_count) > 0 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => toggleParentVariants(p)}
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px',
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    color: '#A78BFA',
+                                                    fontSize: '12px',
+                                                    fontWeight: '800',
+                                                    cursor: 'pointer',
+                                                }}
+                                            >
+                                                <Package size={14} />
+                                                <span>{String(expandedVariantsParentId) === String(p.id) ? 'إخفاء النسخ' : `النسخ (${p.variants_count})`}</span>
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
+                                {String(expandedVariantsParentId) === String(p.id) && (
+                                    <div style={{
+                                        marginTop: '-6px',
+                                        padding: '12px',
+                                        borderRadius: '16px',
+                                        background: isLight ? '#F8FAFC' : '#060B18',
+                                        border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(167, 139, 250, 0.3)',
+                                    }}>
+                                        <div style={{ fontSize: '12px', fontWeight: 900, color: isLight ? '#334155' : '#C4B5FD', marginBottom: '10px' }}>
+                                            نسخ «{p.name}» — احذف كل نسخة بشكل مستقل
+                                        </div>
+                                        {variantsLoading ? (
+                                            <div style={{ padding: '12px', textAlign: 'center', color: '#94A3B8', fontSize: '12px' }}>جاري تحميل النسخ...</div>
+                                        ) : parentVariants.length === 0 ? (
+                                            <div style={{ padding: '12px', textAlign: 'center', color: '#94A3B8', fontSize: '12px' }}>لا توجد نسخ تابعة لهذا المنتج.</div>
+                                        ) : parentVariants.map((variant) => (
+                                            <div key={variant.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '10px 12px', borderRadius: '12px', background: isLight ? '#FFFFFF' : '#0A1224', border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(56, 189, 248, 0.16)', marginTop: '7px' }}>
+                                                <div style={{ minWidth: 0 }}>
+                                                    <div style={{ fontSize: '13px', fontWeight: 900, color: isLight ? '#0F172A' : '#FFFFFF' }}>{variant.name}</div>
+                                                    <div style={{ marginTop: '3px', fontSize: '10px', color: variant.is_active ? '#10B981' : '#94A3B8' }}>{variant.is_active ? 'نشط في الموقع' : 'متوقف'}</div>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setDeletingProduct({ ...variant, parent_id: p.id, parent_name: p.name, is_parent: false })}
+                                                    title={`حذف النسخة ${variant.name}`}
+                                                    aria-label={`حذف النسخة ${variant.name}`}
+                                                    style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 10px', borderRadius: '9px', border: '1px solid rgba(239, 68, 68, 0.3)', background: 'rgba(239, 68, 68, 0.08)', color: '#EF4444', fontSize: '11px', fontWeight: 900, cursor: 'pointer', flexShrink: 0 }}
+                                                >
+                                                    <Trash2 size={13} /> حذف النسخة
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                </React.Fragment>
                             ))}
                         </div>
                     )}
@@ -2259,10 +2342,12 @@ export default function AdminProductsPage() {
                         </div>
 
                         <h3 style={{ fontSize: '17px', fontWeight: '900', margin: '0 0 6px', color: '#FFFFFF' }}>
-                            تأكيد حذف المنتج
+                            {deletingProduct.parent_id ? 'تأكيد حذف النسخة' : 'تأكيد حذف المنتج'}
                         </h3>
                         <p style={{ fontSize: '12.5px', color: '#94A3B8', marginBottom: '20px' }}>
-                            هل أنت متأكد من حذف المنتج "{deletingProduct.name}" من الكتالوج؟
+                            {deletingProduct.parent_id
+                                ? `هل أنت متأكد من حذف النسخة "${deletingProduct.name}" فقط من مجموعة "${deletingProduct.parent_name || 'المنتج الرئيسي'}"؟ النسخ الأخرى ستظل كما هي.`
+                                : `هل أنت متأكد من حذف المنتج "${deletingProduct.name}" من الكتالوج؟`}
                             {deletingProduct.is_parent && Number(deletingProduct.variants_count) > 0 && (
                                 <span style={{ display: 'block', marginTop: '8px', color: '#FCA5A5', fontWeight: 800 }}>
                                     سيتم إخفاء النسخ التابعة له أيضًا. ستظل الطلبات السابقة محفوظة.
@@ -2287,7 +2372,7 @@ export default function AdminProductsPage() {
                                     cursor: 'pointer',
                                 }}
                             >
-                                {deleteProdSubmitting ? 'جاري الحذف...' : 'نعم، احذف'}
+                                {deleteProdSubmitting ? 'جاري الحذف...' : (deletingProduct.parent_id ? 'نعم، احذف النسخة' : 'نعم، احذف')}
                             </button>
                             <button
                                 type="button"
