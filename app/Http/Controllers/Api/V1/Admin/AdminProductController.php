@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Enums\ProductType;
+use App\Enums\CategoryType;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
@@ -185,6 +186,23 @@ class AdminProductController extends Controller
             'category_id.exists' => 'القسم المحدد غير موجود.',
         ]);
 
+        // Validate the selected supplier here so a stale/invalid ID cannot
+        // result in a product that appears linked in the UI but cannot fulfill.
+        if (!empty($validated['provider_id'])) {
+            $request->validate([
+                'provider_id' => ['integer', 'exists:providers,id'],
+            ], [
+                'provider_id.exists' => 'المورد المحدد غير موجود. حدّث قائمة الموردين ثم حاول مرة أخرى.',
+            ]);
+        }
+        $providerProductId = trim((string) ($validated['provider_product_id'] ?? ''));
+        if (!empty($validated['provider_id']) && $providerProductId === '') {
+            $selectedProvider = Provider::find((int) $validated['provider_id']);
+            if (in_array($selectedProvider?->driver, ['ad_card', 'ad-card', 'adcard'], true)) {
+                return $this->errorResponse('اختر المنتج المطلوب من كتالوج المورد قبل الحفظ.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        }
+
         return DB::transaction(function () use ($validated, $id, $request) {
             $product = $id ? Product::findOrFail($id) : new Product();
 
@@ -211,7 +229,12 @@ class AdminProductController extends Controller
                     $product->image = $validated['image'];
                 }
             }
-            $product->type = ProductType::PLAYER_ID;
+            $categoryType = $product->category?->type;
+            $product->type = match ($categoryType) {
+                CategoryType::VOICE_APPS => ProductType::DIRECT_TOPUP,
+                CategoryType::CARDS => ProductType::VOUCHER,
+                default => ProductType::PLAYER_ID,
+            };
             $product->player_id_label = $validated['player_id_label'] ?? 'آيدي الحساب (User ID)';
             $product->is_active = true;
             $product->catalog_source_id = null;
@@ -265,30 +288,26 @@ class AdminProductController extends Controller
             ];
             $tier->save();
 
-            // Also maintain product_providers row for fulfillment engine mapping IF provider exists
+            // Replace the previous supplier mapping atomically. Leaving the old
+            // row active can route orders to a stale AD Card SKU after edits.
+            DB::table('product_providers')->where('product_tier_id', $tier->id)->delete();
             if (!empty($validated['provider_id']) && !empty($providerProductId)) {
-                $providerId = (int) $validated['provider_id'];
-                if (\App\Models\Provider::where('id', $providerId)->exists()) {
-                    DB::table('product_providers')->updateOrInsert(
-                        [
-                            'product_tier_id' => $tier->id,
-                            'provider_id' => $providerId,
-                        ],
-                        [
-                            'product_id' => $product->id,
-                            'provider_sku' => (string) $providerProductId,
-                            'cost_price' => $basePrice,
-                            'cost_currency' => (string) $request->input('provider_product_currency', 'USD'),
-                            'priority' => 1,
-                            'is_active' => true,
-                            'updated_at' => now(),
-                            'created_at' => now(),
-                        ]
-                    );
-                }
+                $provider = Provider::findOrFail((int) $validated['provider_id']);
+                DB::table('product_providers')->insert([
+                    'product_id' => $product->id,
+                    'product_tier_id' => $tier->id,
+                    'provider_id' => $provider->id,
+                    'provider_sku' => $providerProductId,
+                    'cost_price' => $basePrice,
+                    'cost_currency' => (string) $request->input('provider_product_currency', 'USD'),
+                    'priority' => 1,
+                    'is_active' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
             }
 
-            \Illuminate\Support\Facades\Cache::flush();
+            $this->clearPublicCatalogCache();
 
             return $this->successResponse([
                 'id' => $product->id,
@@ -298,6 +317,14 @@ class AdminProductController extends Controller
                 'tier' => $tier,
             ], 'تم حفظ المنتج وربطه بنجاح');
         });
+    }
+
+    /** Clear cached category and product catalog responses after a product change. */
+    private function clearPublicCatalogCache(): void
+    {
+        foreach (['all', 'games', 'cards', 'voice_apps', 'target', 'telecom'] as $type) {
+            \Illuminate\Support\Facades\Cache::forget('api_categories_v1_' . $type);
+        }
     }
 
     /**

@@ -152,7 +152,18 @@ export default function AdminProductsPage() {
             });
             if (res && res.data) {
                 const data = res.data.data || res.data;
-                setProviderCatalogItems(Array.isArray(data) ? data : Array.isArray(data.items) ? data.items : []);
+                const items = Array.isArray(data) ? data : Array.isArray(data.items) ? data.items : [];
+                setProviderCatalogItems(items.map((item) => {
+                    const id = item.id ?? item.product_id ?? item.products_id ?? item.sku;
+                    return {
+                        ...item,
+                        id: id == null ? '' : String(id),
+                        name: item.name ?? item.title ?? item.product_name ?? `Product ${id ?? ''}`,
+                        price: item.price ?? item.priceUsd ?? item.price_usd ?? 0,
+                        currency: item.currency ?? 'USD',
+                        currency_label: item.currency_label ?? 'دولار',
+                    };
+                }).filter((item) => item.id !== ''));
             }
         } catch (err) {
             console.error('Failed fetching provider catalog:', err);
@@ -346,21 +357,29 @@ export default function AdminProductsPage() {
 
     // Selecting a product from provider catalog (Screenshot 5)
     const handleSelectProviderProduct = (item) => {
-        setSelectedProviderProduct(item);
+        const selected = {
+            ...item,
+            id: String(item.id ?? item.provider_sku ?? item.product_id ?? ''),
+        };
+        if (!selected.id) {
+            toastError('معرف المنتج غير متاح في استجابة المورد. حدّث الكتالوج وحاول مجددًا.');
+            return;
+        }
+        setSelectedProviderProduct(selected);
         if (syncPricingEnabled) {
-            const rawCost = item.price ? parseFloat(item.price) : 0;
+            const rawCost = selected.price ? parseFloat(selected.price) : 0;
             setBasePrice(rawCost.toString());
             // Suggest selling price with default 4% profit margin
             const suggestedSelling = rawCost > 0 ? (rawCost * 1.04) : 0;
             setFinalPrice(suggestedSelling.toString());
-            setMinQty(item.min_qty ? item.min_qty.toString() : '1');
-            setMaxQty(item.max_qty ? item.max_qty.toString() : '10000000');
+            setMinQty(selected.min_qty ? selected.min_qty.toString() : '1');
+            setMaxQty(selected.max_qty ? selected.max_qty.toString() : '10000000');
         }
-        if (!formProdImage && item.image) {
-            setFormProdImage(item.image);
+        if (!formProdImage && selected.image) {
+            setFormProdImage(selected.image);
         }
-        if (!formProdDescription && item.description) {
-            setFormProdDescription(item.description);
+        if (!formProdDescription && selected.description) {
+            setFormProdDescription(selected.description);
         }
     };
 
@@ -385,7 +404,7 @@ export default function AdminProductsPage() {
                 fulfillment_mode: fulfillmentMode,
                 provider_id: provObj ? provObj.id : (providers.length > 0 ? providers[0].id : null),
                 provider_name: provObj ? provObj.name : (selectedProvider || 'منصة إمبراطور (Embrator Store)'),
-                provider_product_id: selectedProviderProduct ? selectedProviderProduct.id : null,
+                provider_product_id: selectedProviderProduct ? String(selectedProviderProduct.id) : null,
                 provider_product_name: selectedProviderProduct ? selectedProviderProduct.name : formProdName.trim(),
                 provider_product_fields: selectedProviderProduct?.fields || [],
                 provider_product_currency: selectedProviderProduct?.currency || 'USD',
@@ -415,10 +434,9 @@ export default function AdminProductsPage() {
     const filteredProviderItems = useMemo(() => {
         if (!providerCatalogSearch.trim()) return providerCatalogItems;
         const q = providerCatalogSearch.toLowerCase().trim();
-        return providerCatalogItems.filter(item =>
-            (item.name || '').toLowerCase().includes(q) ||
-            (item.id || '').toLowerCase().includes(q) ||
-            (item.provider_sku || '').toLowerCase().includes(q)
+        const asSearchText = value => value == null ? '' : String(value).toLowerCase();
+        return providerCatalogItems.filter(item => [item.name, item.id, item.provider_sku]
+            .some(value => asSearchText(value).includes(q))
         );
     }, [providerCatalogItems, providerCatalogSearch]);
 
