@@ -93,6 +93,12 @@ class AdminProductController extends Controller
                 CategoryType::TELECOM => ProductType::DIRECT_TOPUP,
                 default => $p->type ?? ProductType::PLAYER_ID,
             };
+            $expectedSyncedPrice = (float) ($firstTier?->source_cost ?? 0)
+                * (1 + (((float) ($firstTier?->margin_percent ?? 0) > 0 ? (float) $firstTier->margin_percent : 4.0) / 100));
+            $customFinalPrice = (float) ($firstTier?->final_price ?? 0) > 0
+                && $expectedSyncedPrice > 0
+                && abs((float) $firstTier->final_price - $expectedSyncedPrice) > max(0.00000001, $expectedSyncedPrice * 0.0001);
+            $isManualPrice = (bool) ($meta['manual_price'] ?? false) || $customFinalPrice;
             $requiresPlayerId = array_key_exists('requires_player_id', $meta)
                 ? (bool) $meta['requires_player_id']
                 : $effectiveType !== ProductType::VOUCHER;
@@ -119,6 +125,8 @@ class AdminProductController extends Controller
                 'provider_product_id' => $providerProductId,
                 'provider_product_name' => $providerProductName,
                 'fulfillment_mode' => $fulfillmentMode,
+                'sync_pricing' => (bool) ($meta['sync_pricing'] ?? true) && !$isManualPrice,
+                'manual_price' => $isManualPrice,
                 'sort_order' => $p->sort_order ?: 1,
                 'base_price' => $basePrice,
                 'base_price_formatted' => number_format($basePrice, 8) . ' دولار',
@@ -296,6 +304,9 @@ class AdminProductController extends Controller
                 'provider_product_currency' => $request->input('provider_product_currency', 'USD'),
                 'auto_fulfill' => $validated['auto_fulfill'] ?? true,
                 'sync_pricing' => $validated['sync_pricing'] ?? true,
+                'manual_price' => (bool) ($validated['manual_price'] ?? false)
+                    || !(bool) ($validated['sync_pricing'] ?? true),
+                'manual_price_currency' => 'USD',
                 'fulfillment_mode' => $validated['fulfillment_mode'] ?? 'auto',
                 'is_visible' => true,
                 'is_available' => true,

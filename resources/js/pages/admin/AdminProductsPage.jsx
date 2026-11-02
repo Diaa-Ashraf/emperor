@@ -353,8 +353,8 @@ export default function AdminProductsPage() {
             max_qty: prod.max_qty || 10000000,
         } : null);
         setAutoFulfillmentEnabled(true);
-        setSyncPricingEnabled(true);
-        setManualPriceEnabled(false);
+        setSyncPricingEnabled(prod.sync_pricing ?? true);
+        setManualPriceEnabled(prod.manual_price ?? false);
         setMinQty((prod.min_qty || 1).toString());
         setMaxQty((prod.max_qty || 10000000).toString());
         setFinalPrice((prod.final_price || 0).toString());
@@ -1884,7 +1884,10 @@ export default function AdminProductsPage() {
                                             <input
                                                 type="checkbox"
                                                 checked={syncPricingEnabled}
-                                                onChange={(e) => setSyncPricingEnabled(e.target.checked)}
+                                                onChange={(e) => {
+                                                    setSyncPricingEnabled(e.target.checked);
+                                                    setManualPriceEnabled(!e.target.checked);
+                                                }}
                                                 style={{ width: '18px', height: '18px', accentColor: '#38BDF8' }}
                                             />
                                             <span style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF' }}>
@@ -1947,7 +1950,11 @@ export default function AdminProductsPage() {
                                             <input
                                                 type="text"
                                                 value={finalPrice}
-                                                onChange={(e) => setFinalPrice(e.target.value)}
+                                                onChange={(e) => {
+                                                    setFinalPrice(e.target.value);
+                                                    setSyncPricingEnabled(false);
+                                                    setManualPriceEnabled(true);
+                                                }}
                                                 style={{
                                                     width: '100%',
                                                     padding: '10px 12px',

@@ -66,7 +66,7 @@ export default function ProductRechargeModal({
         return val ? Number(val) : (isCustomQuantity ? 50000000 : 9999);
     }, [selectedTier, product, isCustomQuantity]);
 
-    const initialQuantity = isCustomQuantity ? minAllowed : 1;
+    const initialQuantity = isCustomQuantity ? 0 : 1;
     const [quantity, setQuantity] = useState(initialQuantity);
     const [quantityInput, setQuantityInput] = useState(initialQuantity.toLocaleString('en-US'));
     const [playerId, setPlayerId] = useState('');
@@ -90,9 +90,7 @@ export default function ProductRechargeModal({
             setSelectedTier(null);
         }
 
-        const firstTier = availableTiers[0];
-        const minQty = Number(firstTier?.min_qty || product.min_qty || (isCustomQuantity ? 1000 : 1));
-        const startingQuantity = isCustomQuantity && Number.isFinite(minQty) && minQty > 0 ? minQty : 1;
+        const startingQuantity = isCustomQuantity ? 0 : 1;
         setQuantity(startingQuantity);
         setQuantityInput(startingQuantity.toLocaleString('en-US'));
 
@@ -197,8 +195,8 @@ export default function ProductRechargeModal({
     const handleQuantityInputBlur = () => {
         if (quantityInput === '' || parseInt(quantityInput.replace(/[^0-9]/g, ''), 10) <= 0) {
             if (isCustomQuantity) {
-                setQuantity(minAllowed);
-                setQuantityInput(minAllowed.toLocaleString('en-US'));
+                setQuantity(0);
+                setQuantityInput('0');
             } else {
                 setQuantity(1);
                 setQuantityInput('1');
@@ -206,8 +204,8 @@ export default function ProductRechargeModal({
         } else {
             const parsed = parseInt(quantityInput.replace(/[^0-9]/g, ''), 10);
             const clamped = isCustomQuantity
-                ? Math.max(minAllowed, Math.min(maxAllowed, parsed))
-                : Math.max(1, Math.min(9999, parsed));
+                ? Math.min(maxAllowed, parsed)
+                : Math.max(minAllowed, Math.min(maxAllowed, parsed));
             setQuantity(clamped);
             setQuantityInput(clamped.toLocaleString('en-US'));
         }
@@ -256,9 +254,12 @@ export default function ProductRechargeModal({
     // Secondary currency preview
     const secondaryPreview = useMemo(() => {
         if (totalPrice <= 0) return '0';
-        const usdValue = convertCurrencyAmount(totalPrice, activeCurrency, 'USD');
+        const unitPriceUsd = Number(selectedTier?.price_usd ?? product.price_usd ?? 0);
+        const usdValue = unitPriceUsd > 0
+            ? unitPriceUsd * (isCustomQuantity ? validQty : quantity)
+            : convertCurrencyAmount(totalPrice, activeCurrency, 'USD');
         return usdValue === null ? '' : `${usdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`;
-    }, [totalPrice, activeCurrency, exchangeRates]);
+    }, [selectedTier, product, totalPrice, activeCurrency, exchangeRates, isCustomQuantity, validQty, quantity]);
 
     const productImage = formatImageUrl(
         product.image_url || product.image || product.banner_url || product.icon_url
@@ -729,9 +730,7 @@ export default function ProductRechargeModal({
                                     fontFamily: 'monospace',
                                     fontWeight: '700'
                                 }}>
-                                    {isCustomQuantity 
-                                        ? `${minAllowed.toLocaleString()} — ${maxAllowed.toLocaleString()}` 
-                                        : '1 — 9,999'}
+                                    {`${minAllowed.toLocaleString()} — ${maxAllowed.toLocaleString()}`}
                                 </span>
                             </div>
 
