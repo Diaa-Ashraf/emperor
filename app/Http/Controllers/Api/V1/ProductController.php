@@ -69,7 +69,7 @@ class ProductController extends Controller
 
             if ($parentId !== null && $parentId !== '') {
                 $query->where('parent_id', $parentId);
-            } elseif ($search === '') {
+            } elseif ($search === '' && !$catId && !$catSlug) {
                 $query->whereNull('parent_id');
             }
         }
@@ -129,7 +129,7 @@ class ProductController extends Controller
 
         // Cache default requests without search for 2 minutes
         if ($search === '') {
-            $cacheKey = "api_products_list_v4_c{$catId}_cs{$catSlug}_p{$parentId}_t{$type}_pg{$page}_l{$perPage}";
+            $cacheKey = "api_products_list_v5_c{$catId}_cs{$catSlug}_p{$parentId}_t{$type}_pg{$page}_l{$perPage}";
             $products = Cache::remember($cacheKey, 120, function () use ($query, $perPage) {
                 return $query->orderBy('sort_order', 'asc')->paginate($perPage);
             });

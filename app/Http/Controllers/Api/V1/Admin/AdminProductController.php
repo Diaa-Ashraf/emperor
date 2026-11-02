@@ -145,7 +145,7 @@ class AdminProductController extends Controller
         $product = Product::findOrFail($id);
         $product->is_active = !$product->is_active;
         $product->save();
-        \Illuminate\Support\Facades\Cache::flush();
+        $this->clearPublicCatalogCache();
 
         return $this->successResponse([
             'id' => $product->id,
@@ -307,7 +307,7 @@ class AdminProductController extends Controller
                 ]);
             }
 
-            $this->clearPublicCatalogCache();
+        $this->clearPublicCatalogCache();
 
             return $this->successResponse([
                 'id' => $product->id,
@@ -322,6 +322,7 @@ class AdminProductController extends Controller
     /** Clear cached category and product catalog responses after a product change. */
     private function clearPublicCatalogCache(): void
     {
+        \Illuminate\Support\Facades\Cache::flush();
         foreach (['all', 'games', 'cards', 'voice_apps', 'target', 'telecom'] as $type) {
             \Illuminate\Support\Facades\Cache::forget('api_categories_v1_' . $type);
         }
@@ -334,7 +335,7 @@ class AdminProductController extends Controller
     {
         $product = Product::findOrFail($id);
         $product->delete();
-        \Illuminate\Support\Facades\Cache::flush();
+            $this->clearPublicCatalogCache();
 
         return $this->successResponse(null, 'تم حذف المنتج بنجاح');
     }
@@ -489,7 +490,7 @@ class AdminProductController extends Controller
                 }
             }
 
-            \Illuminate\Support\Facades\Cache::flush();
+        $this->clearPublicCatalogCache();
 
             return $this->successResponse([
                 'updated_count' => $updatedCount,
