@@ -451,7 +451,7 @@ export default function OrderDetailPage() {
                         </div>
 
                         <a
-                            href={`https://wa.me/201026042456?text=${encodeURIComponent(language === 'en' ? `Hello Support, I have an inquiry/complaint regarding Order #${orderPublicId}` : `مرحباً خدمة العملاء، لدي استفسار/شكوى بخصوص الطلب رقم: ${orderPublicId}`)}`}
+                            href={`https://wa.me/201002575638?text=${encodeURIComponent(language === 'en' ? `Hello Support, I have an inquiry/complaint regarding Order #${orderPublicId}` : `مرحباً خدمة العملاء، لدي استفسار/شكوى بخصوص الطلب رقم: ${orderPublicId}`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{

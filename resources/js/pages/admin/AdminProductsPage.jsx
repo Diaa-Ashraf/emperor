@@ -74,6 +74,10 @@ export default function AdminProductsPage() {
     const [providers, setProviders] = useState([]);
     const [selectedProvider, setSelectedProvider] = useState('منصة إمبراطور (Embrator Store)');
     const [providerCatalogItems, setProviderCatalogItems] = useState([]);
+    const [providerCatalogTotal, setProviderCatalogTotal] = useState(0);
+    const [providerCatalogPage, setProviderCatalogPage] = useState(1);
+    const [providerCatalogLoading, setProviderCatalogLoading] = useState(false);
+    const providerCatalogRequestRef = useRef(0);
     const [selectedProviderProduct, setSelectedProviderProduct] = useState(null);
     const [providerCatalogSearch, setProviderCatalogSearch] = useState('');
     const [autoFulfillmentEnabled, setAutoFulfillmentEnabled] = useState(true);
@@ -83,7 +87,7 @@ export default function AdminProductsPage() {
     const [maxQty, setMaxQty] = useState('5000000');
     const [finalPrice, setFinalPrice] = useState('0.00174232');
     const [basePrice, setBasePrice] = useState('0.00174232');
-    const [providerPageSize, setProviderPageSize] = useState(80);
+    const providerCatalogPageSize = 80;
 
     // Step 3: Fields
     const [playerIdLabel, setPlayerIdLabel] = useState('آيدي الحساب (User ID)');
@@ -159,7 +163,14 @@ export default function AdminProductsPage() {
         }
     };
 
-    const fetchProviderCatalog = async (providerId, searchStr = '') => {
+    const fetchProviderCatalog = async (providerId, searchStr = '', page = 1, append = false) => {
+        const requestId = ++providerCatalogRequestRef.current;
+        if (!append) {
+            setProviderCatalogItems([]);
+            setProviderCatalogTotal(0);
+            setProviderCatalogPage(1);
+        }
+        setProviderCatalogLoading(true);
         try {
             const provider = providers.find(p => p.id == providerId || p.name === providerId);
             const isAdCard = ['ad_card', 'ad-card', 'adcard'].includes(provider?.driver);
@@ -168,12 +179,13 @@ export default function AdminProductsPage() {
                 : await adminApi.getProviderCatalog({
                 provider_id: provider?.id,
                 search: searchStr.trim() || undefined,
-                per_page: providerPageSize,
+                page,
+                per_page: providerCatalogPageSize,
             });
             if (res && res.data) {
                 const data = res.data.data || res.data;
                 const items = Array.isArray(data) ? data : Array.isArray(data.items) ? data.items : [];
-                setProviderCatalogItems(items.map((item) => {
+                const normalizedItems = items.map((item) => {
                     const id = item.id ?? item.product_id ?? item.products_id ?? item.sku;
                     return {
                         ...item,
@@ -183,10 +195,22 @@ export default function AdminProductsPage() {
                         currency: item.currency ?? 'USD',
                         currency_label: item.currency_label ?? 'دولار',
                     };
-                }).filter((item) => item.id !== ''));
+                }).filter((item) => item.id !== '');
+                if (requestId === providerCatalogRequestRef.current) {
+                    setProviderCatalogItems((current) => append ? [...current, ...normalizedItems] : normalizedItems);
+                    setProviderCatalogTotal(Number(data.total_available ?? data.total ?? data.count ?? normalizedItems.length));
+                    setProviderCatalogPage(page);
+                }
             }
         } catch (err) {
             console.error('Failed fetching provider catalog:', err);
+            if (requestId === providerCatalogRequestRef.current && !append) {
+                setProviderCatalogItems([]);
+                setProviderCatalogTotal(0);
+                setProviderCatalogPage(1);
+            }
+        } finally {
+            if (requestId === providerCatalogRequestRef.current) setProviderCatalogLoading(false);
         }
     };
 
@@ -203,9 +227,9 @@ export default function AdminProductsPage() {
 
     useEffect(() => {
         if (selectedProvider) {
-            fetchProviderCatalog(selectedProvider, providerCatalogSearch);
+            fetchProviderCatalog(selectedProvider, providerCatalogSearch, 1, false);
         }
-    }, [selectedProvider, providerCatalogSearch, providerPageSize]);
+    }, [selectedProvider, providerCatalogSearch]);
 
     const handleRefresh = async () => {
         setRefreshing(true);
@@ -1838,7 +1862,7 @@ export default function AdminProductsPage() {
 
                                                     {/* Counter Subtitle matching Screenshot 5 */}
                                                     <div style={{ fontSize: '11.5px', color: '#94A3B8', marginBottom: '10px' }}>
-                                                        1271 منتج متاح، يتم عرض {filteredProviderItems.length}
+                                                        {providerCatalogSearch.trim() ? 'نتائج مطابقة' : 'منتجات في كتالوج المورد'}: {providerCatalogTotal}، يتم عرض {filteredProviderItems.length}
                                                     </div>
 
                                                     {/* Products Cards List matching Screenshot 5 */}
@@ -1905,10 +1929,11 @@ export default function AdminProductsPage() {
                                                     </div>
 
                                                     {/* Load More Button */}
-                                                    {filteredProviderItems.length >= providerPageSize && (
+                                                    {providerCatalogItems.length < providerCatalogTotal && (
                                                         <button
                                                             type="button"
-                                                            onClick={() => setProviderPageSize(prev => prev + 40)}
+                                                            disabled={providerCatalogLoading}
+                                                            onClick={() => fetchProviderCatalog(selectedProvider, providerCatalogSearch, providerCatalogPage + 1, true)}
                                                             style={{
                                                                 width: '100%',
                                                                 padding: '8px',
@@ -1918,11 +1943,12 @@ export default function AdminProductsPage() {
                                                                 color: '#38BDF8',
                                                                 fontSize: '12px',
                                                                 fontWeight: '800',
-                                                                cursor: 'pointer',
+                                                                cursor: providerCatalogLoading ? 'wait' : 'pointer',
+                                                                opacity: providerCatalogLoading ? 0.7 : 1,
                                                                 marginTop: '8px',
                                                             }}
                                                         >
-                                                            عرض المزيد ({filteredProviderItems.length} منتج)
+                                                            {providerCatalogLoading ? 'جاري تحميل المنتجات...' : `عرض المزيد (${providerCatalogItems.length} من ${providerCatalogTotal})`}
                                                         </button>
                                                     )}
                                                 </div>

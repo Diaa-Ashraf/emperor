@@ -97,7 +97,7 @@ export default function AccountIssuesPage() {
     }, [subIndex, subText]);
 
     // WhatsApp Support Number
-    const whatsappSupportNumber = '201026042456';
+    const whatsappSupportNumber = '201002575638';
 
     const selectedLabel = t(selectedType.key, selectedType.label);
 

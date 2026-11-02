@@ -25,6 +25,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { formatCurrency } from '../../utils/currencyHelper';
 import AdminHeader from '../../components/admin/AdminHeader';
+import '../../../css/adminPagesResponsive.css';
 
 export default function AdminTargetsPage() {
     const { theme } = useTheme();
@@ -262,7 +263,7 @@ export default function AdminTargetsPage() {
     };
 
     return (
-        <div style={{
+        <div className="admin-targets-page" style={{
             minHeight: '100vh',
             backgroundColor: isLight ? '#F8FAFC' : '#070709',
             color: isLight ? '#0F172A' : '#FFFFFF',
@@ -270,7 +271,7 @@ export default function AdminTargetsPage() {
             fontFamily: 'Cairo, sans-serif',
             direction: 'rtl',
         }}>
-            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px' }}>
+            <div className="admin-targets-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px' }}>
                 <AdminHeader />
 
                 {/* Back / Tab Toggle */}
@@ -326,7 +327,7 @@ export default function AdminTargetsPage() {
                     padding: '22px',
                     marginBottom: '16px',
                 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
+                    <div className="admin-targets-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
                         <div>
                             <h2 style={{ fontSize: '20px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', margin: '0 0 6px' }}>
                                 تطبيقات وطلبات التارجت
@@ -351,7 +352,7 @@ export default function AdminTargetsPage() {
                     </div>
 
                     {/* 3 Counter Badges */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                    <div className="admin-targets-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                         {/* Box 1: التطبيقات */}
                         <div style={{
                             backgroundColor: isLight ? '#F0F9FF' : '#070D1A',
@@ -419,7 +420,7 @@ export default function AdminTargetsPage() {
                     padding: '20px',
                     marginBottom: '16px',
                 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
+                    <div className="admin-targets-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
                         <div>
                             <h3 style={{ fontSize: '17px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF', margin: '0 0 6px' }}>
                                 طلبات التارجت
@@ -520,7 +521,7 @@ export default function AdminTargetsPage() {
                         ) : (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 {orders.data?.map(ord => (
-                                    <div key={ord.id} style={{
+                                    <div key={ord.id} className="admin-target-order-card" style={{
                                         backgroundColor: isLight ? '#F8FAFC' : '#070D1A',
                                         border: '1px solid #1E293B',
                                         borderRadius: '14px',
@@ -753,7 +754,9 @@ export default function AdminTargetsPage() {
                         width: '100%',
                         maxWidth: '480px',
                         padding: '24px',
-                        maxHeight: '90vh',
+                        maxHeight: 'calc(100dvh - 24px)',
+                        overflowX: 'hidden',
+                        boxSizing: 'border-box',
                         overflowY: 'auto',
                     }}>
                         {/* Header */}
@@ -865,7 +868,7 @@ export default function AdminTargetsPage() {
                             </div>
 
                             {/* Exchange Rate & Receiving ID */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+                            <div className="admin-target-app-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
                                 <div>
                                     <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#94A3B8', marginBottom: '4px' }}>
                                         سعر الصرف (EGP / دولار)

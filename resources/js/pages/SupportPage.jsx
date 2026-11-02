@@ -3,7 +3,6 @@ import {
     Headphones,
     MessageCircle,
     Phone,
-    Send,
     Mail,
     Clock,
     ShieldCheck,
@@ -46,7 +45,7 @@ export default function SupportPage() {
             try {
                 const res = await supportApi.getSupportContacts();
                 const data = res.data?.data || res.data || [];
-                setContacts(Array.isArray(data) ? data : []);
+                setContacts(Array.isArray(data) ? data.filter((contact) => !`${contact.channel || ''} ${contact.name || ''} ${contact.value || ''}`.toLowerCase().includes('telegram') && !`${contact.name || ''}`.includes('تليجرام')) : []);
             } catch (err) {
                 console.error('Error fetching support contacts:', err);
             } finally {
@@ -68,30 +67,21 @@ export default function SupportPage() {
     const fallbackContacts = [
         {
             id: 'wa-main',
-            name: 'خدمة العملاء الرئيسية (واتساب)',
+            name: 'خدمة العملاء (واتساب)',
             channel: 'whatsapp',
             channel_label: 'واتساب',
-            value: '+201000000000',
-            description: 'متاح 24/7 للاستفسارات العامة، متابعة الطلبات، وتأكيد الإيداعات',
+            value: '+201002575638',
+            description: 'متاح للاستفسارات العامة ومتابعة الطلبات',
             icon: 'message-circle',
         },
         {
             id: 'wa-target',
-            name: 'قسم بيع التارجت والوكالات',
+            name: 'مدير المنصة (واتساب)',
             channel: 'whatsapp',
             channel_label: 'واتساب',
-            value: '+201100000000',
-            description: 'مخصص لاستلام أرباح صانعي المحتوى وموزعي التارجت في كافة التطبيقات',
+            value: '+972523281869',
+            description: 'للتواصل المباشر مع مدير المنصة',
             icon: 'zap',
-        },
-        {
-            id: 'tg-channel',
-            name: 'قناة سند ومهره كارد الرسمية (تليجرام)',
-            channel: 'telegram',
-            channel_label: 'تليجرام',
-            value: 'https://t.me/MohraSandCard',
-            description: 'عروض يومية حصرية، تحديثات أسعار التارجت الفورية، ومسابقات وجوائز',
-            icon: 'send',
         },
         {
             id: 'email-support',
@@ -194,9 +184,6 @@ export default function SupportPage() {
             return `https://wa.me/${cleanPhone}?text=${msg}`;
         }
 
-        if (ch.includes('telegram') || val.includes('t.me')) {
-            return val.startsWith('http') ? val : `https://t.me/${val.replace('@', '')}`;
-        }
 
         if (ch.includes('email') || val.includes('@')) {
             return `mailto:${val}`;
@@ -332,12 +319,11 @@ export default function SupportPage() {
                 }}>
                     {displayContacts.map((contact, index) => {
                         const isWhatsapp = (contact.channel || '').toLowerCase().includes('whatsapp') || (contact.name || '').includes('واتساب');
-                        const isTelegram = (contact.channel || '').toLowerCase().includes('telegram') || (contact.name || '').includes('تليجرام');
                         const isEmail = (contact.channel || '').toLowerCase().includes('email') || (contact.name || '').includes('بريد');
 
-                        const Icon = isWhatsapp ? MessageCircle : (isTelegram ? Send : (isEmail ? Mail : Phone));
-                        const iconColor = isWhatsapp ? '#22C55E' : (isTelegram ? '#38BDF8' : '#D4A537');
-                        const iconBg = isWhatsapp ? 'rgba(34, 197, 94, 0.15)' : (isTelegram ? 'rgba(56, 189, 248, 0.15)' : 'rgba(212, 165, 55, 0.15)');
+                        const Icon = isWhatsapp ? MessageCircle : (isEmail ? Mail : Phone);
+                        const iconColor = isWhatsapp ? '#22C55E' : '#D4A537';
+                        const iconBg = isWhatsapp ? 'rgba(34, 197, 94, 0.15)' : 'rgba(212, 165, 55, 0.15)';
                         const actionUrl = getChannelAction(contact);
 
                         return (
@@ -391,7 +377,7 @@ export default function SupportPage() {
                                                 padding: '2px 8px',
                                                 borderRadius: '6px',
                                             }}>
-                                                {contact.channel_label || (isWhatsapp ? 'واتساب' : 'تليجرام')}
+                                                {contact.channel_label || (isWhatsapp ? 'واتساب' : (isEmail ? 'بريد إلكتروني' : 'هاتف'))}
                                             </span>
                                         </div>
                                     </div>

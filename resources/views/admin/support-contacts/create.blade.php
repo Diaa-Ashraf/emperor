@@ -41,7 +41,6 @@
                             <label class="form-label text-white fw-bold">نوع الوسيلة (Channel) <span class="text-danger">*</span></label>
                             <select name="channel" class="form-select" required>
                                 <option value="whatsapp" {{ old('channel') === 'whatsapp' ? 'selected' : '' }}>واتساب (WhatsApp)</option>
-                                <option value="telegram" {{ old('channel') === 'telegram' ? 'selected' : '' }}>تيليجرام (Telegram)</option>
                                 <option value="phone" {{ old('channel') === 'phone' ? 'selected' : '' }}>مكالمة هاتفية (Phone)</option>
                                 <option value="email" {{ old('channel') === 'email' ? 'selected' : '' }}>بريد إلكتروني (Email)</option>
                             </select>

@@ -58,7 +58,6 @@ export default function CreatedByPage() {
             social: {
                 github: 'https://github.com',
                 linkedin: 'https://linkedin.com',
-                telegram: 'https://t.me',
             }
         },
         {

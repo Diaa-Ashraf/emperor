@@ -17,8 +17,7 @@ import {
     Sparkles,
     ShieldCheck,
     Clock,
-    Mail,
-    Send
+    Mail
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AdminHeader from '../../components/admin/AdminHeader';
@@ -42,9 +41,8 @@ export default function AdminSettingsPage() {
         footer_slogan: 'سند ومهره كارد — المنصة الرائدة والأولى لشحن الألعاب والبطاقات الرقمية وبيع التارجت بأفضل الأسعار.',
         site_logo: '/images/mohra_sand_logo.png',
         site_favicon: '/images/mohra_sand_logo.png',
-        whatsapp_support: '+201000000000',
-        whatsapp_channel: 'https://whatsapp.com/channel/',
-        telegram_support: 'https://t.me/',
+        whatsapp_support: '+201002575638',
+        whatsapp_channel: 'https://whatsapp.com/channel/0029VbDuIu76mYPJomZfr72N',
         support_email: 'support@sm-cards.online',
         support_phone: '',
         working_hours: 'على مدار 24 ساعة طوال أيام الأسبوع',
@@ -738,7 +736,7 @@ export default function AdminSettingsPage() {
                                         <span>أرقام وقنوات الدعم الفني المباشر</span>
                                     </h3>
                                     <p style={{ margin: '4px 0 0', fontSize: '12px', color: textSub }}>
-                                        روابط التواصل المباشر مع العملاء عبر الواتساب والتليجرام والبريد الإلكتروني
+                                        روابط التواصل المباشر مع العملاء عبر الواتساب والبريد الإلكتروني
                                     </p>
                                 </div>
 
@@ -751,7 +749,7 @@ export default function AdminSettingsPage() {
                                             type="text"
                                             value={settings.whatsapp_support}
                                             onChange={(e) => handleChange('whatsapp_support', e.target.value)}
-                                            placeholder="+201000000000"
+                                            placeholder="+201002575638"
                                             style={{
                                                 width: '100%',
                                                 padding: '10px 14px',
@@ -795,30 +793,6 @@ export default function AdminSettingsPage() {
                                         <span style={{ fontSize: '11px', color: textSub, marginTop: '4px', display: 'block' }}>
                                             يفتح مباشرة عند نقر الزائر على زر 'قناة الواتساب' في الهيدر العلوي.
                                         </span>
-                                    </div>
-
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', marginBottom: '6px', color: textMain }}>
-                                            حساب التليجرام الرسمي للدعم
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={settings.telegram_support}
-                                            onChange={(e) => handleChange('telegram_support', e.target.value)}
-                                            placeholder="https://t.me/sm_support"
-                                            style={{
-                                                width: '100%',
-                                                padding: '10px 14px',
-                                                borderRadius: '10px',
-                                                backgroundColor: inputBg,
-                                                border: `1px solid ${inputBorder}`,
-                                                color: textMain,
-                                                fontSize: '13px',
-                                                fontWeight: '700',
-                                                outline: 'none',
-                                                boxSizing: 'border-box',
-                                            }}
-                                        />
                                     </div>
 
                                     <div>

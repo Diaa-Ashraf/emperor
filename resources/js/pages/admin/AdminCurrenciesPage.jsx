@@ -86,7 +86,7 @@ export default function AdminCurrenciesPage() {
             const record = direct || reverse;
             if (record) seen.add(def.currency);
             list.push({
-                rateId: direct?.id || null,
+                rateId: direct?.id || reverse?.id || null,
                 reverseRateId: reverse?.id || null,
                 currency: def.currency,
                 countryName: def.name,
@@ -217,7 +217,6 @@ export default function AdminCurrenciesPage() {
 
         try {
             await adminApi.toggleCurrency(item.rateId);
-            if (item.reverseRateId) await adminApi.toggleCurrency(item.reverseRateId);
             success(`تم تحديث حالة سعر (${item.currency}) بنجاح`);
             fetchRates();
         } catch (err) {

@@ -77,7 +77,7 @@ export default function ProductCard({ product, onClick }) {
                     boxSizing: 'border-box',
                 }}
             >
-                {/* ── Top-Corner Emperor Luxury Emblem Badge (KA-CARD Match) ── */}
+                {/* ── Top-Corner Platform Brand Badge ── */}
                 <div
                     className="emperor-card-corner-badge"
                     style={{
@@ -104,10 +104,10 @@ export default function ProductCard({ product, onClick }) {
                         fontSize: '8px',
                         fontWeight: '900',
                         color: '#F5D061',
-                        letterSpacing: '0.4px',
-                        fontFamily: 'monospace',
+                        whiteSpace: 'nowrap',
+                        fontFamily: 'Cairo, sans-serif',
                     }}>
-                        EMPEROR
+                        مهرة وسند كارد
                     </span>
                 </div>
 

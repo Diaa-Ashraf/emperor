@@ -156,15 +156,10 @@
                                 <label class="form-label text-white fw-semibold">رقم الواتساب للدعم الفني</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-dark border-secondary text-success"><i class="ti ti-brand-whatsapp"></i></span>
-                                    <input type="text" name="whatsapp_support" class="form-control font-monospace" value="{{ old('whatsapp_support', $settings['whatsapp_support'] ?? '+201000000000') }}" required>
+                                    <input type="text" name="whatsapp_support" class="form-control font-monospace" value="{{ old('whatsapp_support', $settings['whatsapp_support'] ?? '+201002575638') }}" required>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label class="form-label text-white fw-semibold">معرّف تيليجرام للدعم</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-dark border-secondary text-info"><i class="ti ti-brand-telegram"></i></span>
-                                    <input type="text" name="telegram_support" class="form-control font-monospace" value="{{ old('telegram_support', $settings['telegram_support'] ?? 'EmperorSupport') }}">
-                                </div>
                             </div>
                         </div>
 
@@ -219,11 +214,6 @@
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label class="form-label text-muted fs-7">رابط قناة تيليجرام العامة</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-dark border-secondary text-info"><i class="ti ti-brand-telegram"></i></span>
-                                    <input type="url" name="social_telegram" class="form-control form-control-sm font-monospace" placeholder="https://t.me/..." value="{{ old('social_telegram', $settings['social_telegram'] ?? '') }}">
-                                </div>
                             </div>
                         </div>
 

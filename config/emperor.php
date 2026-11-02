@@ -33,7 +33,7 @@ return [
 
     // WhatsApp Floating Support Number
     'support' => [
-        'whatsapp' => env('WHATSAPP_SUPPORT_NUMBER', '+201000000000'),
+        'whatsapp' => env('WHATSAPP_SUPPORT_NUMBER', '+201002575638'),
         'telegram' => env('TELEGRAM_SUPPORT_USERNAME', 'EmperorSupport'),
     ],
 

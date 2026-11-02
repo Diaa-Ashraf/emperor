@@ -32,7 +32,6 @@ class SupportContact extends Model
     {
         return match ($this->channel) {
             'whatsapp' => 'واتساب WhatsApp',
-            'telegram' => 'تيليجرام Telegram',
             'phone' => 'اتصال هاتفي Phone',
             'email' => 'البريد الإلكتروني Email',
             default => ucfirst($this->channel),
@@ -43,7 +42,6 @@ class SupportContact extends Model
     {
         return match ($this->channel) {
             'whatsapp' => 'ti-brand-whatsapp text-success',
-            'telegram' => 'ti-brand-telegram text-info',
             'phone' => 'ti-phone text-warning',
             'email' => 'ti-mail text-danger',
             default => 'ti-headset text-warning',

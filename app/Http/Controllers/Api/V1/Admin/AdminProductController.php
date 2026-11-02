@@ -500,11 +500,12 @@ class AdminProductController extends Controller
         }
 
         $totalAvailable = count($filtered);
-        $displayedItems = array_slice($filtered, 0, $perPage);
+        $displayedItems = array_slice($filtered, ($page - 1) * $perPage, $perPage);
 
         return $this->successResponse([
             'total_available' => $totalAvailable,
             'displayed_count' => count($displayedItems),
+            'current_page' => $page,
             'items' => $displayedItems,
         ], 'تم جلب كتالوج المورد بنجاح');
     }

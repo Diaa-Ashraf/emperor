@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { X, RefreshCw, Eye, Wallet } from 'lucide-react';
 import { adminApi } from '../../api/endpoints';
 import { useToast } from '../../contexts/ToastContext';
+import '../../../css/adminPagesResponsive.css';
 
 // Shared Arabic date formatter instance (allocated once)
 const arabicDateFormatter = new Intl.DateTimeFormat('ar-EG', {
@@ -39,7 +40,6 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
     // Balance adjust state
     const [balanceAction, setBalanceAction] = useState('credit');
     const [balanceAmount, setBalanceAmount] = useState('');
-    const [balanceDesc, setBalanceDesc] = useState('');
     const [submittingBalance, setSubmittingBalance] = useState(false);
 
     // Password state
@@ -152,13 +152,11 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                 amount: parseFloat(balanceAmount),
                 action: balanceAction,
                 currency: userCurrency,
-                description: balanceDesc.trim() || '',
             });
 
             if (res && res.data) {
                 success('تم تعديل رصيد المستخدم بنجاح');
                 setBalanceAmount('');
-                setBalanceDesc('');
                 fetchDetails();
                 if (onUserUpdated) onUserUpdated();
             }
@@ -208,26 +206,27 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '16px',
+                padding: 'clamp(8px, 2vw, 16px)',
                 direction: 'rtl',
             }}
             onClick={(e) => {
                 if (e.target === e.currentTarget) onClose();
             }}
         >
-            <div
+            <div className="admin-user-details-modal"
                 style={{
                     backgroundColor: isLight ? '#FFFFFF' : '#0B0F19',
                     border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(56, 189, 248, 0.3)',
                     borderRadius: '24px',
                     width: '100%',
                     maxWidth: '520px',
-                    maxHeight: '90vh',
+                    maxHeight: 'calc(100dvh - 16px)',
                     overflowY: 'auto',
                     overflowX: 'hidden',
                     boxShadow: '0 25px 60px rgba(0, 0, 0, 0.6)',
-                    padding: '24px 20px',
+                    padding: 'clamp(14px, 4vw, 24px) clamp(12px, 3vw, 20px)',
                     boxSizing: 'border-box',
+                    minWidth: 0,
                 }}
             >
                 {/* Modal Header */}
@@ -239,13 +238,14 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                         marginBottom: '20px',
                     }}
                 >
-                    <div>
+                        <div style={{ minWidth: 0, flex: 1 }}>
                         <h2
                             style={{
                                 margin: '0 0 4px',
-                                fontSize: '19px',
+                                fontSize: 'clamp(15px, 4vw, 19px)',
                                 fontWeight: '900',
                                 color: isLight ? '#0F172A' : '#FFFFFF',
+                                overflowWrap: 'anywhere',
                             }}
                         >
                             بيانات الحساب - {user.name}
@@ -636,7 +636,7 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                                 <label style={{ fontSize: '12px', color: isLight ? '#64748B' : '#94A3B8', display: 'block', marginBottom: '6px' }}>
                                     المجموعة
                                 </label>
-                                <div style={{ display: 'flex', gap: '8px' }}>
+                                <div className="admin-user-setting-row" style={{ display: 'flex', gap: '8px', minWidth: 0 }}>
                                     <select
                                         value={userGroup}
                                         onChange={(e) => setUserGroup(e.target.value)}
@@ -685,7 +685,7 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                                 <label style={{ fontSize: '12px', color: isLight ? '#64748B' : '#94A3B8', display: 'block', marginBottom: '6px' }}>
                                     العملة
                                 </label>
-                                <div style={{ display: 'flex', gap: '8px' }}>
+                                <div className="admin-user-setting-row" style={{ display: 'flex', gap: '8px', minWidth: 0 }}>
                                     <select
                                         value={userCurrency}
                                         onChange={(e) => setUserCurrency(e.target.value)}
@@ -748,7 +748,7 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                                 <label style={{ fontSize: '12px', color: isLight ? '#64748B' : '#94A3B8', display: 'block', marginBottom: '6px' }}>
                                     حد الدين
                                 </label>
-                                <div style={{ display: 'flex', gap: '8px' }}>
+                                <div className="admin-user-setting-row" style={{ display: 'flex', gap: '8px', minWidth: 0 }}>
                                     <input
                                         type="number"
                                         value={userDebtLimit}
@@ -879,24 +879,6 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                                     </button>
                                 </div>
 
-                                <input
-                                    type="text"
-                                    value={balanceDesc}
-                                    onChange={(e) => setBalanceDesc(e.target.value)}
-                                    placeholder="ملاحظات / بيان العملية (اختياري)..."
-                                    style={{
-                                        width: '100%',
-                                        boxSizing: 'border-box',
-                                        minWidth: '0',
-                                        padding: '7px 12px',
-                                        borderRadius: '8px',
-                                        backgroundColor: isLight ? '#FFFFFF' : 'rgba(255, 255, 255, 0.04)',
-                                        border: isLight ? '1px solid #CBD5E1' : '1px solid rgba(255, 255, 255, 0.08)',
-                                        color: isLight ? '#0F172A' : '#FFFFFF',
-                                        fontSize: '12px',
-                                        outline: 'none',
-                                    }}
-                                />
                             </form>
 
                             {/* Password Reset Form */}

@@ -36,7 +36,7 @@ return new class extends Migration
         Schema::create('support_contacts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('channel', 32)->default('whatsapp'); // whatsapp, phone, telegram, email
+            $table->string('channel', 32)->default('whatsapp'); // whatsapp, phone, email
             $table->string('value');
             $table->string('icon', 64)->nullable();
             $table->string('description')->nullable();

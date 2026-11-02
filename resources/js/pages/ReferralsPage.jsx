@@ -9,7 +9,6 @@ import {
     Check,
     Share2,
     MessageCircle,
-    Send,
     Sparkles,
     ShieldCheck,
     ArrowLeft,
@@ -103,10 +102,6 @@ export default function ReferralsPage() {
 
     const handleWhatsAppShare = () => {
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareMessage)}`, '_blank');
-    };
-
-    const handleTelegramShare = () => {
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(language === 'en' ? 'Register on Mohra & Sand Card platform and top up games at the best prices!' : 'سجل في منصة سند ومهره كارد واشحن ألعابك بأفضل الأسعار!')}`, '_blank');
     };
 
     const handleNativeShare = () => {
@@ -420,10 +415,10 @@ export default function ReferralsPage() {
                     </button>
                 </div>
 
-                {/* Social Share Buttons (واتساب، تيليجرام، مشاركة) */}
+                {/* Social Share Buttons */}
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
                     gap: '10px',
                 }}>
                     <button
@@ -446,28 +441,6 @@ export default function ReferralsPage() {
                     >
                         <MessageCircle size={16} />
                         <span>{t('whatsapp', 'واتساب')}</span>
-                    </button>
-
-                    <button
-                        onClick={handleTelegramShare}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '6px',
-                            padding: '10px 8px',
-                            borderRadius: '12px',
-                            background: '#0284c7',
-                            color: '#FFFFFF',
-                            border: 'none',
-                            fontSize: '13px',
-                            fontWeight: '800',
-                            cursor: 'pointer',
-                            boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)',
-                        }}
-                    >
-                        <Send size={16} />
-                        <span>{t('telegram', 'تيليجرام')}</span>
                     </button>
 
                     <button
@@ -912,29 +885,6 @@ export default function ReferralsPage() {
                         >
                             <MessageCircle size={17} />
                             <span>{language === 'en' ? 'WhatsApp' : 'واتساب'}</span>
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={handleTelegramShare}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '8px',
-                                padding: '12px 14px',
-                                borderRadius: '12px',
-                                background: '#0284c7',
-                                color: '#FFFFFF',
-                                border: 'none',
-                                fontSize: '13px',
-                                fontWeight: '800',
-                                cursor: 'pointer',
-                                boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)',
-                            }}
-                        >
-                            <Send size={17} />
-                            <span>{language === 'en' ? 'Telegram' : 'تيليجرام'}</span>
                         </button>
 
                         <button

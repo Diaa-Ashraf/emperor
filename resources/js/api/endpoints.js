@@ -260,10 +260,6 @@ export const adminApi = {
     toggleCurrency: (id) => api.post(`/admin/currencies/${id}/toggle`),
     deleteCurrency: (id) => api.delete(`/admin/currencies/${id}`),
 
-    // WhatsApp Integration
-    getWhatsAppSettings: () => api.get('/admin/whatsapp/settings'),
-    saveWhatsAppSettings: (data) => api.post('/admin/whatsapp/settings', data),
-    sendTestWhatsApp: (data) => api.post('/admin/whatsapp/test', data),
 };
 
 export default {

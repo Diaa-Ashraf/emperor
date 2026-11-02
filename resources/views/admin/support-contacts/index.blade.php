@@ -9,7 +9,7 @@
                 <i class="ti ti-headset text-gold"></i>
                 <span>قنوات وأرقام الدعم الفني</span>
             </h3>
-            <p class="page-header-subtitle mb-0">إدارة أرقام واتساب، معرفات تيليجرام، ووسائل التواصل المباشر المعروضة للمستخدمين</p>
+            <p class="page-header-subtitle mb-0">إدارة أرقام واتساب ووسائل التواصل المباشر المعروضة للمستخدمين</p>
         </div>
         <div class="d-flex flex-wrap align-items-center gap-2">
             <a href="{{ route('admin.support-contacts.create') }}" class="btn btn-primary fw-bold px-3 d-inline-flex align-items-center gap-2">

@@ -3,7 +3,6 @@ import {
     X,
     Phone,
     MessageCircle,
-    Send,
     Mail,
     ExternalLink,
     Crown,
@@ -55,7 +54,7 @@ export default function SupportContactModal({ isOpen, onClose }) {
                 const res = await supportApi.getSupportContacts();
                 const data = res.data?.data || res.data || [];
                 if (isMounted) {
-                    setContacts(Array.isArray(data) ? data : []);
+                    setContacts(Array.isArray(data) ? data.filter((contact) => !`${contact.channel || ''} ${contact.name || ''} ${contact.value || ''}`.toLowerCase().includes('telegram') && !`${contact.name || ''}`.includes('تليجرام')) : []);
                 }
             } catch (err) {
                 console.error('Error fetching support contacts for modal:', err);
@@ -75,30 +74,21 @@ export default function SupportContactModal({ isOpen, onClose }) {
     const defaultContacts = [
         {
             id: 'owner',
-            name: isEn ? 'Diaa Ashraf' : 'ضياء أشرف',
-            role_badge: isEn ? 'Platform Owner' : 'صاحب المنصة',
+            name: isEn ? 'Platform Manager' : 'مدير المنصة',
+            role_badge: isEn ? 'Platform Manager' : 'مدير المنصة',
             badge_color: '#F59E0B',
             channel: 'whatsapp',
-            phone: '01012286661',
-            value: '01012286661',
+            phone: '00972523281869',
+            value: '00972523281869',
         },
         {
             id: 'support-1',
-            name: isEn ? 'Yasmine' : 'ياسمين',
+            name: isEn ? 'Customer Service' : 'خدمة العملاء',
             role_badge: isEn ? 'Customer Support' : 'خدمة العملاء',
             badge_color: '#38BDF8',
             channel: 'whatsapp',
-            phone: '01201111390',
-            value: '01201111390',
-        },
-        {
-            id: 'support-2',
-            name: isEn ? 'Support Team' : 'فريق الدعم',
-            role_badge: isEn ? 'Customer Support' : 'خدمة العملاء',
-            badge_color: '#34D399',
-            channel: 'whatsapp',
-            phone: '01013669339',
-            value: '01013669339',
+            phone: '01002575638',
+            value: '01002575638',
         },
     ];
 
@@ -108,14 +98,11 @@ export default function SupportContactModal({ isOpen, onClose }) {
 
         if (ch.includes('whatsapp') || val.startsWith('+') || /^[0-9]+$/.test(val.replace(/[\s+-]/g, ''))) {
             const clean = val.replace(/[^0-9]/g, '');
-            const phone = clean.startsWith('01') ? `20${clean.substring(1)}` : clean;
+            const phone = clean.startsWith('00') ? clean.substring(2) : (clean.startsWith('01') ? `20${clean.substring(1)}` : clean);
             const msg = isEn
                 ? encodeURIComponent('Hello, I need assistance regarding my account.')
                 : encodeURIComponent('السلام عليكم ورحمة الله وبركاته، محتاج مساعدة بخصوص حسابي في منصة سند ومهره كارد.');
             return `https://wa.me/${phone}?text=${msg}`;
-        }
-        if (ch.includes('telegram') || val.includes('t.me')) {
-            return val.startsWith('http') ? val : `https://t.me/${val.replace('@', '')}`;
         }
         if (ch.includes('email') || val.includes('@')) {
             return `mailto:${val}`;

@@ -18,24 +18,22 @@ class SupportContactSeeder extends Seeder
 
         // 2. Clean Platform Support Contacts
         SupportContact::updateOrCreate(
-            ['channel' => 'whatsapp'],
+            ['channel' => 'whatsapp', 'sort_order' => 1],
             [
-                'name' => 'خدمة العملاء والشحن السريع (واتساب)',
-                'value' => '+201000000000',
-                'description' => 'متاح على مدار الساعة للإيداع والاستفسارات السريعة',
+                'name' => 'خدمة العملاء (واتساب)',
+                'value' => '+201002575638',
+                'description' => 'متاح على مدار الساعة لخدمة العملاء والاستفسارات',
                 'is_active' => true,
-                'sort_order' => 1,
             ]
         );
 
         SupportContact::updateOrCreate(
-            ['channel' => 'telegram'],
+            ['channel' => 'whatsapp', 'sort_order' => 2],
             [
-                'name' => 'قناة الدعم الفني الرسمية (تيليجرام)',
-                'value' => '@MohraSandSupport',
-                'description' => 'تحديثات الأسعار والعروض والدعم الفني المباشر',
+                'name' => 'مدير المنصة (واتساب)',
+                'value' => '+972523281869',
+                'description' => 'للتواصل المباشر مع مدير المنصة',
                 'is_active' => true,
-                'sort_order' => 2,
             ]
         );
 

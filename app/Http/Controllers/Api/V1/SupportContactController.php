@@ -13,7 +13,7 @@ class SupportContactController extends Controller
     use ApiResponse;
 
     /**
-     * Get active support contact channels (WhatsApp, Telegram, Phone, etc.).
+     * Get active support contact channels (WhatsApp, Phone, Email, etc.).
      */
     public function index(): JsonResponse
     {

@@ -455,8 +455,8 @@ Error Codes:
                                 <div>
                                     <a
                                         href={isEn
-                                            ? "https://wa.me/201025515743?text=Hello,%20I%20would%20like%20to%20activate%20B2B%20API%20integration%20for%20my%20account"
-                                            : "https://wa.me/201025515743?text=مرحبا،%20أرغب%20في%20تفعيل%20الربط%20البرمجي%20B2B%20API%20لحسابي"}
+                                            ? "https://wa.me/972523281869?text=Hello,%20I%20would%20like%20to%20activate%20B2B%20API%20integration%20for%20my%20account"
+                                            : "https://wa.me/972523281869?text=مرحبا،%20أرغب%20في%20تفعيل%20الربط%20البرمجي%20B2B%20API%20لحسابي"}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         style={{
@@ -635,8 +635,8 @@ Error Codes:
 
                                         <a
                                             href={isEn
-                                                ? "https://wa.me/201025515743?text=Hello,%20I%20would%20like%20to%20activate%20B2B%20API%20integration%20for%20my%20account"
-                                                : "https://wa.me/201025515743?text=مرحبا،%20أرغب%20في%20تفعيل%20الربط%20البرمجي%20B2B%20API%20لحسابي"}
+                                                ? "https://wa.me/972523281869?text=Hello,%20I%20would%20like%20to%20activate%20B2B%20API%20integration%20for%20my%20account"
+                                                : "https://wa.me/972523281869?text=مرحبا،%20أرغب%20في%20تفعيل%20الربط%20البرمجي%20B2B%20API%20لحسابي"}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{

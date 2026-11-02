@@ -79,7 +79,7 @@ export default function DepositPage() {
             currency: 'EGP',
             min_amount: 50,
             account_number: '01025515743',
-            note: 'برجاء كتابة رقم العملية لضمان التنفيذ 0 ثانيه',
+            note: 'أدخل رقم المحفظة المحول منها، ويمكن إضافة رقم العملية والإيصال لتسريع المراجعة.',
             instruction: 'أقل تحويل 50 ج، يتم مراجعة الإيصال وإيداع الرصيد في محفظتك فوراً.',
             tag: 'تحويل مصر',
         },
@@ -280,8 +280,8 @@ export default function DepositPage() {
             return;
         }
 
-        if (!senderWallet.trim() && !transactionRef.trim()) {
-            toastError(language === 'en' ? 'Please enter sender wallet number or transaction ID' : 'يرجى إدخال رقم المحفظة المحول منها أو رقم العملية');
+        if (!senderWallet.trim()) {
+            toastError(language === 'en' ? 'Please enter the sender wallet number' : 'يرجى إدخال رقم المحفظة المحول منها');
             return;
         }
 
@@ -898,11 +898,11 @@ export default function DepositPage() {
                                     </div>
                                 </div>
 
-                                {/* Left Box: رقم العملية */}
+                                {/* Left Box: رقم العملية (اختياري) */}
                                 <div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                                         <span style={{ fontSize: '13.5px', fontWeight: '800', color: isLight ? '#0F172A' : '#FFFFFF' }}>
-                                            رقم العملية
+                                            رقم العملية (اختياري)
                                         </span>
                                         <span style={{
                                             fontSize: '10.5px',
@@ -913,7 +913,7 @@ export default function DepositPage() {
                                             padding: '2px 8px',
                                             borderRadius: '6px',
                                         }}>
-                                            مطلوب
+                                            اختياري
                                         </span>
                                     </div>
 
@@ -927,10 +927,9 @@ export default function DepositPage() {
                                     }}>
                                         <input
                                             type="text"
-                                            required
                                             value={transactionRef}
                                             onChange={(e) => setTransactionRef(e.target.value)}
-                                            placeholder="أدخل رقم العملية"
+                                            placeholder="أدخل رقم العملية إن وجد"
                                             style={{
                                                 flex: 1,
                                                 background: 'transparent',

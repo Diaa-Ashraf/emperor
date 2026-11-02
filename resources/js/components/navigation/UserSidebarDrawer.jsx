@@ -202,13 +202,6 @@ export default function UserSidebarDrawer({ isOpen, onClose, walletBalance }) {
             iconBadgeColor: '#38BDF8',
         },
         {
-            path: '/admin/whatsapp',
-            label: 'تكامل الواتساب',
-            icon: MessageSquare,
-            iconBadgeBg: 'rgba(34, 197, 94, 0.16)',
-            iconBadgeColor: '#22C55E',
-        },
-        {
             path: '/admin/currencies',
             label: 'العملات',
             icon: DollarSign,

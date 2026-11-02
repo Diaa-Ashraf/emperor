@@ -1,0 +1,78 @@
+.admin-user-details-modal {
+    width: min(520px, 100%);
+    max-height: calc(100dvh - 16px);
+}
+
+.admin-user-setting-row > select,
+.admin-user-setting-row > input {
+    min-width: 0;
+    flex: 1 1 180px;
+}
+
+.admin-user-setting-row > button {
+    flex: 0 0 auto;
+}
+
+.admin-targets-container {
+    min-width: 0;
+}
+
+.admin-targets-header {
+    gap: 12px;
+    min-width: 0;
+}
+
+.admin-targets-header > :first-child {
+    min-width: 0;
+}
+
+.admin-targets-stats {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)) !important;
+}
+
+.admin-target-order-card {
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.admin-target-order-card > :first-child {
+    flex: 1 1 220px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.admin-target-order-card > :last-child {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.admin-target-app-fields {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)) !important;
+}
+
+@media (max-width: 480px) {
+    .admin-targets-container {
+        padding: 10px !important;
+    }
+
+    .admin-targets-header {
+        align-items: center !important;
+    }
+
+    .admin-target-order-card {
+        align-items: stretch !important;
+    }
+
+    .admin-target-order-card > :last-child {
+        width: 100%;
+    }
+
+    .admin-target-order-card > :last-child > button {
+        flex: 1 1 100px;
+    }
+
+    .admin-user-setting-row > button {
+        flex: 1 0 100%;
+    }
+}
