@@ -301,7 +301,8 @@ export default function AdminProductsPage() {
         setFormProdSortOrder((products.length + 1).toString());
         setFormProdImage('');
         setFulfillmentMode('auto');
-        setSelectedProvider('Brand one Card');
+        const defaultProv = providers.find(p => p.driver === 'embrator_reseller_api' || p.name?.includes('إمبراطور')) || providers[0];
+        setSelectedProvider(defaultProv ? defaultProv.id : '');
         setSelectedProviderProduct(null);
         setAutoFulfillmentEnabled(true);
         setSyncPricingEnabled(true);

@@ -41,6 +41,7 @@ class AdminCategoryController extends Controller
         $validated = $request->validate([
             'name' => ['nullable', 'string', 'max:100'],
             'name_en' => ['nullable', 'string', 'max:100'],
+            'type' => ['nullable', 'string'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'parent_id' => ['nullable', 'integer'],
             'image' => ['nullable', 'image', 'max:4096'],
@@ -56,6 +57,14 @@ class AdminCategoryController extends Controller
             $slug .= '-' . Str::lower(Str::random(4));
         }
 
+        // Auto-detect type if not passed or passed as voice_apps / apps
+        $categoryType = CategoryType::GAMES;
+        if (!empty($validated['type'])) {
+            $categoryType = CategoryType::tryFrom($validated['type']) ?? CategoryType::GAMES;
+        } elseif (str_contains($name, 'تطبيق') || str_contains($name, 'شات') || str_contains(strtolower($slugBase), 'app')) {
+            $categoryType = CategoryType::VOICE_APPS;
+        }
+
         $iconPath = 'gamepad-2';
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('categories', 'public');
@@ -65,11 +74,13 @@ class AdminCategoryController extends Controller
         $category = Category::create([
             'name' => $name,
             'slug' => $slug,
-            'type' => CategoryType::GAMES,
+            'type' => $categoryType,
             'icon' => $iconPath,
             'sort_order' => $validated['sort_order'] ?? (Category::max('sort_order') + 1),
             'is_active' => true,
         ]);
+
+        \Illuminate\Support\Facades\Cache::flush();
 
         return $this->successResponse($category, 'تمت إضافة القسم بنجاح', Response::HTTP_CREATED);
     }
@@ -94,6 +105,11 @@ class AdminCategoryController extends Controller
         }
 
         $category->name = $validated['name'];
+        if (!empty($validated['type'])) {
+            $category->type = CategoryType::tryFrom($validated['type']) ?? $category->type;
+        } elseif (str_contains($validated['name'], 'تطبيق') || str_contains($validated['name'], 'شات')) {
+            $category->type = CategoryType::VOICE_APPS;
+        }
         if (isset($validated['sort_order'])) {
             $category->sort_order = $validated['sort_order'];
         }
@@ -101,6 +117,8 @@ class AdminCategoryController extends Controller
             $category->is_active = $validated['is_active'];
         }
         $category->save();
+
+        \Illuminate\Support\Facades\Cache::flush();
 
         return $this->successResponse($category, 'تم تحديث بيانات القسم بنجاح');
     }
