@@ -47,6 +47,17 @@ class ProductResource extends JsonResource
         $usdPrice = $firstTier ? $pricingService->getPriceInCurrency($firstTier, 'USD', $user) : null;
         $egpPrice = $firstTier ? $pricingService->getPriceInCurrency($firstTier, 'EGP', $user) : null;
         $providerFields = $firstTier?->metadata['provider_product_fields'] ?? [];
+        $categoryType = $this->effectiveCategoryType();
+        $effectiveType = match ($categoryType) {
+            \App\Enums\CategoryType::VOICE_APPS => \App\Enums\ProductType::DIRECT_TOPUP,
+            \App\Enums\CategoryType::CARDS => \App\Enums\ProductType::VOUCHER,
+            \App\Enums\CategoryType::TARGET => \App\Enums\ProductType::TARGET,
+            \App\Enums\CategoryType::TELECOM => \App\Enums\ProductType::DIRECT_TOPUP,
+            default => $this->type,
+        };
+        $requiresPlayerId = array_key_exists('requires_player_id', $firstTier?->metadata ?? [])
+            ? (bool) $firstTier->metadata['requires_player_id']
+            : $effectiveType !== \App\Enums\ProductType::VOUCHER;
 
         return [
             'id' => $this->id,
@@ -55,8 +66,9 @@ class ProductResource extends JsonResource
             'category_name' => $this->category?->name,
             'name' => $this->name,
             'slug' => $this->slug,
-            'type' => $this->type?->value,
-            'type_label' => $this->type?->label(),
+            'type' => $effectiveType?->value,
+            'type_label' => $effectiveType?->label(),
+            'requires_player_id' => $requiresPlayerId,
             'description' => $this->description,
             'image_url' => $resolveUrl($this->image ?: $this->parent?->image),
             'image' => $resolveUrl($this->image ?: $this->parent?->image),
@@ -83,5 +95,27 @@ class ProductResource extends JsonResource
             'active_tiers' => $tierResources,
             'sort_order' => (int) $this->sort_order,
         ];
+    }
+
+    private function effectiveCategoryType(): ?\App\Enums\CategoryType
+    {
+        $category = $this->category;
+        $type = $category?->type;
+        if ($type !== null && $type !== \App\Enums\CategoryType::GAMES) {
+            return $type;
+        }
+
+        $name = mb_strtolower(($category?->name ?? '') . ' ' . ($category?->slug ?? ''));
+        if (str_contains($name, 'تطبيق') || str_contains($name, 'شات') || str_contains($name, 'app')) {
+            return \App\Enums\CategoryType::VOICE_APPS;
+        }
+        if (str_contains($name, 'بطاق') || str_contains($name, 'كارت') || str_contains($name, 'كروت') || str_contains($name, 'card') || str_contains($name, 'voucher')) {
+            return \App\Enums\CategoryType::CARDS;
+        }
+        if (str_contains($name, 'اتصالات') || str_contains($name, 'شبكات') || str_contains($name, 'telecom')) {
+            return \App\Enums\CategoryType::TELECOM;
+        }
+
+        return $type;
     }
 }

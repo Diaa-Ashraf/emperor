@@ -26,7 +26,7 @@ class AdminProductController extends Controller
     public function categories(): JsonResponse
     {
         $categories = Category::query()
-            ->select(['id', 'name', 'slug', 'icon', 'is_active', 'sort_order'])
+            ->select(['id', 'name', 'slug', 'type', 'icon', 'is_active', 'sort_order'])
             ->withCount('products')
             ->orderBy('sort_order')
             ->get();
@@ -59,7 +59,7 @@ class AdminProductController extends Controller
                 'created_at',
             ])
             ->with([
-                'category:id,name,sort_order',
+                'category:id,name,type,sort_order',
                 'tiers',
             ]);
 
@@ -85,6 +85,17 @@ class AdminProductController extends Controller
         $products->getCollection()->transform(function ($p) {
             $firstTier = $p->tiers->first();
             $meta = $firstTier?->metadata ?? [];
+            $categoryType = $this->effectiveCategoryType($p->category);
+            $effectiveType = match ($categoryType) {
+                CategoryType::VOICE_APPS => ProductType::DIRECT_TOPUP,
+                CategoryType::CARDS => ProductType::VOUCHER,
+                CategoryType::TARGET => ProductType::TARGET,
+                CategoryType::TELECOM => ProductType::DIRECT_TOPUP,
+                default => $p->type ?? ProductType::PLAYER_ID,
+            };
+            $requiresPlayerId = array_key_exists('requires_player_id', $meta)
+                ? (bool) $meta['requires_player_id']
+                : $effectiveType !== ProductType::VOUCHER;
             $providerName = $meta['provider_name'] ?? 'منصة إمبراطور (Embrator Store)';
             $providerProductId = $meta['provider_product_id'] ?? $p->external_product_id ?? null;
             $providerProductName = $meta['provider_product_name'] ?? $p->name;
@@ -99,7 +110,8 @@ class AdminProductController extends Controller
                 'slug' => $p->slug,
                 'description' => $p->description,
                 'image' => $p->image_url ?: $p->image,
-                'type' => $p->type?->value ?? 'player_id',
+                'type' => $effectiveType->value,
+                'requires_player_id' => $requiresPlayerId,
                 'category_id' => $p->category_id,
                 'category_name' => $p->category ? $p->category->name : 'قسم شحن التطبيقات',
                 'provider_id' => $meta['provider_id'] ?? null,
@@ -180,6 +192,7 @@ class AdminProductController extends Controller
             'final_price' => ['nullable', 'numeric', 'min:0'],
             // Step 3: Fields
             'player_id_label' => ['nullable', 'string', 'max:255'],
+            'requires_player_id' => ['nullable', 'boolean'],
         ], [
             'name.required' => 'اسم المنتج مطلوب.',
             'category_id.required' => 'القسم التابع له المنتج مطلوب.',
@@ -229,7 +242,7 @@ class AdminProductController extends Controller
                     $product->image = $validated['image'];
                 }
             }
-            $categoryType = $product->category?->type;
+            $categoryType = $this->effectiveCategoryType(Category::findOrFail($validated['category_id']));
             $product->type = match ($categoryType) {
                 CategoryType::VOICE_APPS => ProductType::DIRECT_TOPUP,
                 CategoryType::CARDS => ProductType::VOUCHER,
@@ -279,6 +292,7 @@ class AdminProductController extends Controller
                 'provider_product_id' => $providerProductId,
                 'provider_product_name' => $providerProductName,
                 'provider_product_fields' => $request->input('provider_product_fields', []),
+                'requires_player_id' => (bool) ($validated['requires_player_id'] ?? true),
                 'provider_product_currency' => $request->input('provider_product_currency', 'USD'),
                 'auto_fulfill' => $validated['auto_fulfill'] ?? true,
                 'sync_pricing' => $validated['sync_pricing'] ?? true,
@@ -498,5 +512,26 @@ class AdminProductController extends Controller
         } catch (\Throwable $e) {
             return $this->errorResponse('فشل تحديث الأسعار: ' . $e->getMessage());
         }
+    }
+
+    private function effectiveCategoryType(?Category $category): ?CategoryType
+    {
+        $type = $category?->type;
+        if ($type !== null && $type !== CategoryType::GAMES) {
+            return $type;
+        }
+
+        $name = mb_strtolower(($category?->name ?? '') . ' ' . ($category?->slug ?? ''));
+        if (str_contains($name, 'تطبيق') || str_contains($name, 'شات') || str_contains($name, 'app')) {
+            return CategoryType::VOICE_APPS;
+        }
+        if (str_contains($name, 'بطاق') || str_contains($name, 'كارت') || str_contains($name, 'كروت') || str_contains($name, 'card') || str_contains($name, 'voucher')) {
+            return CategoryType::CARDS;
+        }
+        if (str_contains($name, 'اتصالات') || str_contains($name, 'شبكات') || str_contains($name, 'telecom')) {
+            return CategoryType::TELECOM;
+        }
+
+        return $type;
     }
 }

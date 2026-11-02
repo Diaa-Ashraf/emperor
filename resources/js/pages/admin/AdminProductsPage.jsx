@@ -85,6 +85,13 @@ export default function AdminProductsPage() {
     // Step 3: Fields
     const [playerIdLabel, setPlayerIdLabel] = useState('آيدي الحساب (User ID)');
     const [showPlayerIdToUser, setShowPlayerIdToUser] = useState(true);
+    const categoryRequiresPlayerId = (categoryId) => {
+        const category = categories.find(item => String(item.id) === String(categoryId));
+        const name = `${category?.name || ''} ${category?.slug || ''}`.toLowerCase();
+        const isCards = category?.type === 'cards'
+            || /بطاق|كارت|كروت|card|voucher/.test(name);
+        return !isCards;
+    };
 
     // ═══ Fetch APIs ═══
     const fetchCategories = async () => {
@@ -323,6 +330,7 @@ export default function AdminProductsPage() {
         setFinalPrice('0.00174232');
         setBasePrice('0.00174232');
         setPlayerIdLabel('آيدي الحساب (User ID)');
+        setShowPlayerIdToUser(categoryRequiresPlayerId(categories[0]?.id));
         setIsProductModalOpen(true);
     };
 
@@ -352,6 +360,7 @@ export default function AdminProductsPage() {
         setFinalPrice((prod.final_price || 0).toString());
         setBasePrice((prod.base_price || 0).toString());
         setPlayerIdLabel(prod.player_id_label || 'آيدي الحساب (User ID)');
+        setShowPlayerIdToUser(prod.requires_player_id ?? prod.type !== 'voucher');
         setIsProductModalOpen(true);
     };
 
@@ -416,6 +425,7 @@ export default function AdminProductsPage() {
                 base_price: parseFloat(basePrice) || 0,
                 final_price: parseFloat(finalPrice) || 0,
                 player_id_label: playerIdLabel.trim() || 'آيدي الحساب (User ID)',
+                requires_player_id: showPlayerIdToUser,
             };
 
             await adminApi.saveProduct(payload, editingProduct?.id);
@@ -1401,7 +1411,10 @@ export default function AdminProductsPage() {
                                         </label>
                                         <select
                                             value={formProdCategory}
-                                            onChange={(e) => setFormProdCategory(e.target.value)}
+                                            onChange={(e) => {
+                                                setFormProdCategory(e.target.value);
+                                                setShowPlayerIdToUser(categoryRequiresPlayerId(e.target.value));
+                                            }}
                                             required
                                             style={{
                                                 width: '100%',

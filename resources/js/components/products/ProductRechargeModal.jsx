@@ -52,6 +52,7 @@ export default function ProductRechargeModal({
     }, [product]);
 
     const [selectedTier, setSelectedTier] = useState(tiers.length > 0 ? tiers[0] : null);
+    const requiresPlayerId = product.requires_player_id ?? product.type !== 'voucher';
 
     const minAllowed = useMemo(() => {
         const firstTier = (product.tiers || product.active_tiers || [])[0];
@@ -65,8 +66,9 @@ export default function ProductRechargeModal({
         return val ? Number(val) : (isCustomQuantity ? 50000000 : 9999);
     }, [selectedTier, product, isCustomQuantity]);
 
-    const [quantity, setQuantity] = useState(0);
-    const [quantityInput, setQuantityInput] = useState('0');
+    const initialQuantity = isCustomQuantity ? minAllowed : 1;
+    const [quantity, setQuantity] = useState(initialQuantity);
+    const [quantityInput, setQuantityInput] = useState(initialQuantity.toLocaleString('en-US'));
     const [playerId, setPlayerId] = useState('');
     const [serverId, setServerId] = useState('');
     const [accountRegion, setAccountRegion] = useState('');
@@ -88,8 +90,11 @@ export default function ProductRechargeModal({
             setSelectedTier(null);
         }
 
-        setQuantity(0);
-        setQuantityInput('0');
+        const firstTier = availableTiers[0];
+        const minQty = Number(firstTier?.min_qty || product.min_qty || (isCustomQuantity ? 1000 : 1));
+        const startingQuantity = isCustomQuantity && Number.isFinite(minQty) && minQty > 0 ? minQty : 1;
+        setQuantity(startingQuantity);
+        setQuantityInput(startingQuantity.toLocaleString('en-US'));
 
         setPlayerId('');
         setServerId('');
@@ -192,15 +197,17 @@ export default function ProductRechargeModal({
     const handleQuantityInputBlur = () => {
         if (quantityInput === '' || parseInt(quantityInput.replace(/[^0-9]/g, ''), 10) <= 0) {
             if (isCustomQuantity) {
-                setQuantity(0);
-                setQuantityInput('0');
+                setQuantity(minAllowed);
+                setQuantityInput(minAllowed.toLocaleString('en-US'));
             } else {
                 setQuantity(1);
                 setQuantityInput('1');
             }
         } else {
             const parsed = parseInt(quantityInput.replace(/[^0-9]/g, ''), 10);
-            const clamped = isCustomQuantity ? Math.min(maxAllowed, parsed) : Math.min(9999, parsed);
+            const clamped = isCustomQuantity
+                ? Math.max(minAllowed, Math.min(maxAllowed, parsed))
+                : Math.max(1, Math.min(9999, parsed));
             setQuantity(clamped);
             setQuantityInput(clamped.toLocaleString('en-US'));
         }
@@ -234,7 +241,7 @@ export default function ProductRechargeModal({
             if (validQty <= 0) return 0;
             return validQty * coinRate;
         }
-        return unitPrice * (quantity || 1);
+        return quantity > 0 ? unitPrice * quantity : 0;
     }, [isCustomQuantity, validQty, coinRate, unitPrice, quantity]);
 
     // Formatted totals
@@ -295,7 +302,7 @@ export default function ProductRechargeModal({
             }
         }
 
-        if (!playerId.trim()) {
+        if (requiresPlayerId && !playerId.trim()) {
             const errText = t('enterPlayerId', 'يرجى إدخال معرف المستخدم').replace('{label}', product.player_id_label || t('playerOrUserId', 'معرف المستخدم'));
             newErrors.playerId = errText;
             toastError(errText);
@@ -783,13 +790,14 @@ export default function ProductRechargeModal({
                         </div>
 
                         {/* Player ID / معرف المستخدم Input Card */}
-                        <div style={{
+                        {(requiresPlayerId || product.has_server_id || product.requires_account_region || (product.provider_fields || []).length > 0) && <div style={{
                             background: isLight ? '#F8FAFC' : 'rgba(18, 17, 14, 0.95)',
                             border: isLight ? '1px solid #E2E8F0' : '1px solid rgba(212, 165, 55, 0.25)',
                             borderRadius: '16px',
                             padding: '12px 14px',
                             marginBottom: '16px'
                         }}>
+                            {requiresPlayerId && <>
                             <label style={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -852,6 +860,7 @@ export default function ProductRechargeModal({
                                     {errors.playerId}
                                 </span>
                             )}
+                            </>}
 
                             {/* Server ID if applicable */}
                             {product.has_server_id && (
@@ -938,7 +947,7 @@ export default function ProductRechargeModal({
                                     )}
                                 </div>
                             )}
-                        </div>
+                        </div>}
 
                         {/* Actions Row: إلغاء on Left, شراء 🔒 on Right (Matching KA-CARD Screenshot 2) */}
                         <div style={{
