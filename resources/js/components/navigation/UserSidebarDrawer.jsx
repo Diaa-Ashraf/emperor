@@ -45,7 +45,9 @@ import {
     Eye,
     EyeOff,
     RefreshCw,
-    Terminal
+    Terminal,
+    Heart,
+    Phone
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -53,16 +55,55 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useToast } from '../../contexts/ToastContext';
 import { getSiteLogo, getSiteName } from '../../utils/settingsHelper';
 import { getCurrencyLabel } from '../../utils/currencyHelper';
+import { profileApi } from '../../api/endpoints';
+import { useFavorites } from '../../contexts/FavoritesContext';
 
 export default function UserSidebarDrawer({ isOpen, onClose, walletBalance }) {
-    const { user, isAuthenticated, logout, isAdmin, isStaff, canAccessAdmin, hasApiAccess } = useAuth();
+    const { user, setUser, isAuthenticated, logout, isAdmin, isStaff, canAccessAdmin, hasApiAccess } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { language, switchLanguage, t, isRtl } = useLanguage();
-    const { success } = useToast();
+    const { success, error: toastError } = useToast();
+    const { favoriteIds } = useFavorites();
     const location = useLocation();
     const navigate = useNavigate();
 
     const [copiedId, setCopiedId] = useState(false);
+    const [currencyOpen, setCurrencyOpen] = useState(false);
+    const [currencySaving, setCurrencySaving] = useState(false);
+
+    const currencyOptions = [
+        { code: 'USD', name: 'دولار أمريكي', flag: '🇺🇸' },
+        { code: 'SAR', name: 'ريال سعودي', flag: '🇸🇦' },
+        { code: 'AED', name: 'درهم إماراتي', flag: '🇦🇪' },
+        { code: 'YER', name: 'ريال يمني', flag: '🇾🇪' },
+        { code: 'DZD', name: 'دينار جزائري', flag: '🇩🇿' },
+        { code: 'JOD', name: 'دينار أردني', flag: '🇯🇴' },
+        { code: 'SYP', name: 'ليرة سورية', flag: '🇸🇾' },
+        { code: 'EGP', name: 'جنيه مصري', flag: '🇪🇬' },
+    ];
+
+    const selectCurrency = async (currency) => {
+        if (currencySaving || currency === user?.currency) {
+            setCurrencyOpen(false);
+            return;
+        }
+        setCurrencySaving(true);
+        try {
+            const response = await profileApi.updateCurrency(currency);
+            const updatedUser = response?.data?.user;
+            if (updatedUser) {
+                setUser(updatedUser);
+                localStorage.setItem('emperor_user', JSON.stringify(updatedUser));
+            }
+            window.dispatchEvent(new CustomEvent('emperor:refresh-wallet'));
+            success('تم تحديث العملة');
+            setCurrencyOpen(false);
+        } catch (err) {
+            toastError(err.message || 'تعذر تحديث العملة');
+        } finally {
+            setCurrencySaving(false);
+        }
+    };
 
     const hasDeveloperAccess = Boolean(
         hasApiAccess ||
@@ -224,14 +265,6 @@ export default function UserSidebarDrawer({ isOpen, onClose, walletBalance }) {
             icon: Home,
             iconBadgeBg: 'rgba(212, 165, 55, 0.15)',
             iconBadgeColor: 'var(--gold-400, #D4A537)'
-        },
-        {
-            path: '/profile',
-            label: t('myAccount', 'حسابي'),
-            icon: User,
-            iconBadgeBg: 'rgba(56, 189, 248, 0.14)',
-            iconBadgeColor: '#38BDF8',
-            authRequired: true
         },
         {
             path: '/wallet',
@@ -718,6 +751,61 @@ export default function UserSidebarDrawer({ isOpen, onClose, walletBalance }) {
                     </div>
                 </div>
 
+                {/* Currency selector and quick account shortcuts */}
+                <div style={{ padding: '0 14px 12px' }}>
+                    {isAuthenticated && <>
+                    <button
+                        type="button"
+                        onClick={() => setCurrencyOpen((open) => !open)}
+                        aria-expanded={currencyOpen}
+                        style={{
+                            width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8,
+                            padding: '9px 12px', borderRadius: 24, cursor: 'pointer',
+                            color: isLight ? '#075E54' : '#F5D061', fontWeight: 900, fontSize: 12,
+                            background: isLight ? '#FFF7B2' : 'rgba(212,165,55,.12)',
+                            border: '1px solid rgba(212,165,55,.55)',
+                        }}
+                    >
+                        {getCurrencyLabel(user?.currency || 'EGP', language)} · {user?.currency || 'EGP'}
+                        <ChevronDown size={14} />
+                    </button>
+                    {currencyOpen && (
+                        <div style={{ marginTop: 8, padding: 8, borderRadius: 16, background: isLight ? '#F4F8FF' : '#0c1422', border: '1px solid rgba(56,189,248,.22)', display: 'grid', gap: 5 }}>
+                            {currencyOptions.map((currency) => {
+                                const selected = (user?.currency || 'EGP') === currency.code;
+                                return (
+                                    <button key={currency.code} type="button" disabled={currencySaving} onClick={() => selectCurrency(currency.code)} style={{
+                                        border: selected ? '1px solid rgba(16,185,129,.35)' : '1px solid transparent',
+                                        borderRadius: 18, padding: '8px 10px', cursor: 'pointer', textAlign: 'center',
+                                        background: selected ? 'rgba(16,185,129,.12)' : 'transparent',
+                                        color: isLight ? '#075E54' : '#D7E5F7', fontWeight: 800, fontSize: 12,
+                                    }}>
+                                        {currency.flag}　{currency.name} - {currency.code}{selected ? ' ✓' : ''}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+                    </>}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginTop: 10 }}>
+                        <Link to="/favorites" onClick={onClose} aria-label="المفضلة" title="المفضلة" style={{ display: 'grid', placeItems: 'center', position: 'relative', height: 38, borderRadius: 12, color: '#ef3340', textDecoration: 'none', background: isLight ? '#fff' : 'rgba(255,255,255,.04)' }}>
+                            <Heart size={19} fill={favoriteIds.length ? 'currentColor' : 'none'} />
+                            {favoriteIds.length > 0 && <span style={{ position: 'absolute', top: -5, right: -3, minWidth: 17, height: 17, borderRadius: 10, padding: '0 3px', display: 'grid', placeItems: 'center', color: '#fff', background: '#ef3340', fontSize: 10, fontWeight: 900 }}>{favoriteIds.length}</span>}
+                        </Link>
+                        {isAuthenticated ? (
+                            <Link to="/profile" onClick={onClose} aria-label="حسابي" title="حسابي" style={{ display: 'grid', placeItems: 'center', height: 38, borderRadius: 12, color: isLight ? '#334155' : '#e2e8f0', textDecoration: 'none', background: isLight ? '#fff' : 'rgba(255,255,255,.04)' }}><User size={19} /></Link>
+                        ) : (
+                            <Link to="/login" onClick={onClose} aria-label="تسجيل الدخول" title="تسجيل الدخول" style={{ display: 'grid', placeItems: 'center', height: 38, borderRadius: 12, color: isLight ? '#334155' : '#e2e8f0', textDecoration: 'none', background: isLight ? '#fff' : 'rgba(255,255,255,.04)' }}><LogIn size={19} /></Link>
+                        )}
+                        {isAuthenticated ? (
+                            <button type="button" onClick={handleLogout} aria-label="تسجيل الخروج" title="تسجيل الخروج" style={{ display: 'grid', placeItems: 'center', height: 38, border: 0, borderRadius: 12, cursor: 'pointer', color: isLight ? '#334155' : '#e2e8f0', background: isLight ? '#fff' : 'rgba(255,255,255,.04)' }}><LogOut size={19} /></button>
+                        ) : (
+                            <Link to="/register" onClick={onClose} aria-label="إنشاء حساب" title="إنشاء حساب" style={{ display: 'grid', placeItems: 'center', height: 38, borderRadius: 12, color: isLight ? '#334155' : '#e2e8f0', textDecoration: 'none', background: isLight ? '#fff' : 'rgba(255,255,255,.04)' }}><UserPlus size={19} /></Link>
+                        )}
+                    </div>
+                </div>
+
                 {/* ── 5. Navigation Section Header: الحساب ⌄ ── */}
                 <div style={{
                     padding: '2px 18px 6px',
@@ -952,78 +1040,13 @@ export default function UserSidebarDrawer({ isOpen, onClose, walletBalance }) {
                         </>
                     )}
 
-                    {/* ── 7. Logout / Login Action Button ── */}
-                    {isAuthenticated ? (
-                        <button
-                            onClick={handleLogout}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '8px',
-                                width: '100%',
-                                padding: '11px 14px',
-                                marginTop: '10px',
-                                borderRadius: '14px',
-                                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.6)' : '1px solid rgba(212, 165, 55, 0.4)',
-                                background: isLight ? '#FFFDF8' : 'rgba(18, 18, 24, 0.95)',
-                                color: isLight ? '#9a7210' : '#F5D061',
-                                fontWeight: '900',
-                                fontSize: '13.5px',
-                                cursor: 'pointer',
-                                boxShadow: isLight ? '0 3px 12px rgba(212, 165, 55, 0.15)' : '0 5px 18px rgba(0, 0, 0, 0.4), 0 0 12px rgba(212, 165, 55, 0.1)',
-                                transition: 'all 0.2s ease',
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = '#F5D061';
-                                e.currentTarget.style.transform = 'translateY(-1.5px)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.6)' : 'rgba(212, 165, 55, 0.4)';
-                                e.currentTarget.style.transform = 'translateY(0)';
-                            }}
-                        >
-                            <LogOut size={16} />
-                            <span>{t('logout', 'تسجيل الخروج')}</span>
-                        </button>
-                    ) : (
-                        <button
-                            onClick={() => {
-                                onClose();
-                                navigate('/login');
-                            }}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '8px',
-                                width: '100%',
-                                padding: '11px 14px',
-                                marginTop: '10px',
-                                borderRadius: '14px',
-                                border: isLight ? '1.5px solid rgba(212, 165, 55, 0.6)' : '1px solid rgba(212, 165, 55, 0.4)',
-                                background: isLight ? '#FFFDF8' : 'rgba(18, 18, 24, 0.95)',
-                                color: isLight ? '#9a7210' : '#F5D061',
-                                fontWeight: '900',
-                                fontSize: '13.5px',
-                                cursor: 'pointer',
-                                boxShadow: isLight ? '0 3px 12px rgba(212, 165, 55, 0.15)' : '0 5px 18px rgba(0, 0, 0, 0.4), 0 0 12px rgba(212, 165, 55, 0.1)',
-                                transition: 'all 0.2s ease',
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = '#F5D061';
-                                e.currentTarget.style.transform = 'translateY(-1.5px)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = isLight ? 'rgba(212, 165, 55, 0.6)' : 'rgba(212, 165, 55, 0.4)';
-                                e.currentTarget.style.transform = 'translateY(0)';
-                            }}
-                        >
-                            <LogIn size={16} />
-                            <span>{t('login', 'تسجيل الدخول')}</span>
-                        </button>
-                    )}
                 </nav>
+                <div style={{ padding: '0 12px 20px', borderTop: '1px solid rgba(148,163,184,.16)', textAlign: 'center' }}>
+                    <img src="/images/stacy_way_badge.jpg" alt="Stacy Way" loading="lazy" style={{ display: 'block', width: 112, height: 112, objectFit: 'contain', margin: '18px auto 10px', borderRadius: '50%' }} />
+                    <a href="https://wa.me/201202325201" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 7, color: '#fff', background: '#20c66b', borderRadius: 22, padding: '9px 14px', textDecoration: 'none', fontSize: 12, fontWeight: 900 }}>
+                        <Phone size={15} /> تواصل معنا عبر واتساب
+                    </a>
+                </div>
             </aside>
         </>
     );

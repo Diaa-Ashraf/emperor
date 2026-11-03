@@ -9,7 +9,8 @@
 
     <!-- Favicon -->
     @php
-        $adminFavicon = \App\Models\Setting::get('site_favicon') ? asset(\App\Models\Setting::get('site_favicon')) : asset('images/logo.png');
+        $configuredFavicon = \App\Models\Setting::get('site_favicon');
+        $adminFavicon = asset(!$configuredFavicon || in_array($configuredFavicon, ['/images/mohra_sand_logo.png', '/images/logo.png', '/images/emperor_logo.png'], true) ? 'images/mahra_sanad_logo.jpg' : $configuredFavicon);
     @endphp
     <link rel="shortcut icon" href="{{ $adminFavicon }}" type="image/png">
     <link rel="icon" href="{{ $adminFavicon }}" type="image/png">

@@ -103,6 +103,22 @@ class ProfileController extends Controller
         );
     }
 
+    public function updateCurrency(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'currency' => ['required', 'string', 'in:USD,SAR,AED,YER,DZD,JOD,SYP,EGP'],
+        ]);
+
+        $user = $request->user();
+        $user->update(['currency' => $validated['currency']]);
+        $wallet = $this->walletService->getOrCreateWallet($user, $validated['currency']);
+
+        return $this->successResponse([
+            'user' => new UserResource($user->fresh()->load('wallet')),
+            'wallet' => $wallet,
+        ], 'تم تحديث العملة بنجاح');
+    }
+
     /**
      * Update user password.
      */

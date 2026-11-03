@@ -1,26 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Search,
-    Crown,
-    ShieldCheck,
-    Coins,
-    Headphones,
-    Globe,
     X
 } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { getSiteName, getSiteDescription } from '../../utils/settingsHelper';
 import { formatImageUrl } from '../../utils/imageHelper';
+
+// Static home banners are intentionally managed in source control, not through the admin panel.
+const HOME_BANNERS = [
+    {
+        src: '/images/banners/home_vodafone_deposit.jpg',
+        alt: 'إيداع فودافون كاش أوتوماتيكيًا',
+    },
+    {
+        src: '/images/banners/home_referral.jpg',
+        alt: 'رابط الإحالة واربح من دعوة الأصدقاء',
+    },
+    {
+        src: '/images/banners/home_vodafone_instant.jpg',
+        alt: 'إيداع فودافون كاش خلال ثوانٍ',
+    },
+    {
+        src: '/images/banners/home_whatsapp_channel.jpg',
+        alt: 'انضم إلى مجتمعنا على واتساب',
+        href: 'https://whatsapp.com/channel/0029VbDuIu76mYPJomZfr72N',
+    },
+];
 
 export default function HeroSection({ products = [] }) {
     const navigate = useNavigate();
     const { t, isRtl } = useLanguage();
     const [searchQuery, setSearchQuery] = useState('');
     const [searchFocused, setSearchFocused] = useState(false);
+    const [activeBanner, setActiveBanner] = useState(0);
 
-    const siteName = getSiteName() || 'سند ومهره كارد';
-    const siteDesc = getSiteDescription() || 'خدماتك الرقمية والمالية في مكان واحد';
+    useEffect(() => {
+        if (HOME_BANNERS.length < 2) return undefined;
+        const timer = window.setInterval(() => {
+            setActiveBanner((current) => (current + 1) % HOME_BANNERS.length);
+        }, 5000);
+        return () => window.clearInterval(timer);
+    }, []);
 
     const filteredItems = (searchQuery.trim()
         ? products.filter(p => (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()))
@@ -35,41 +56,46 @@ export default function HeroSection({ products = [] }) {
     };
 
     return (
-        <section className="emperor-hero-container">
-            {/* Ambient Background Glowing Orbs */}
-            <div className="emperor-hero-glow-orb" />
-            <div className="emperor-hero-glow-orb-right" />
-
-            {/* ── Left Visual: 3D Phone with Card & Floating Coins Artwork ── */}
-            <div className="emperor-hero-phone-wrapper">
-                <img
-                    src="/images/artwork/hero_phone_art.png"
-                    alt="Digital Payment & Cards"
-                    className="emperor-hero-phone-img"
-                    onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                    }}
-                />
+        <section className="emperor-hero-container emperor-home-hero">
+            <div className="emperor-home-banner" aria-roledescription="carousel" aria-label={t('homeBanners', 'البانرات الرئيسية')}>
+                {HOME_BANNERS.map((banner, index) => (
+                    <div
+                        key={banner.src}
+                        className={`emperor-home-banner-slide ${index === activeBanner ? 'is-active' : ''}`}
+                        aria-hidden={index !== activeBanner}
+                    >
+                        {banner.href ? (
+                            <a
+                                className="emperor-home-banner-link"
+                                href={banner.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={banner.alt}
+                                tabIndex={index === activeBanner ? 0 : -1}
+                            >
+                                <img src={banner.src} alt="" fetchPriority={index === 0 ? 'high' : 'auto'} />
+                            </a>
+                        ) : (
+                            <img src={banner.src} alt={banner.alt} fetchPriority={index === 0 ? 'high' : 'auto'} />
+                        )}
+                    </div>
+                ))}
+                <div className="emperor-home-banner-dots" role="group" aria-label={t('chooseBanner', 'اختيار البانر')}>
+                    {HOME_BANNERS.map((banner, index) => (
+                        <button
+                            key={banner.src}
+                            type="button"
+                            className={`emperor-home-banner-dot ${index === activeBanner ? 'is-active' : ''}`}
+                            aria-label={`${t('banner', 'بانر')} ${index + 1}`}
+                            aria-pressed={index === activeBanner}
+                            onClick={() => setActiveBanner(index)}
+                        />
+                    ))}
+                </div>
             </div>
 
-            {/* ── Center Content: Crown + Brand Title + Subtitle + Search Bar ── */}
-            <div className="emperor-hero-center-content">
-                {/* Golden Crown Icon */}
-                <div className="emperor-hero-crown">
-                    <Crown size={32} color="#F5D061" fill="#F5D061" />
-                </div>
-
-                {/* Brand Title */}
-                <h1 className="emperor-hero-title">
-                    {siteName}
-                </h1>
-
-                {/* Subtitle */}
-                <p className="emperor-hero-subtitle">
-                    {siteDesc}
-                </p>
-
-                {/* Infinite Scrolling Quranic Verse Marquee (Matching Screenshot media_1793379902984_b44b16a3.jpg) */}
+            <div className="emperor-home-hero-content">
+                {/* Quranic verse remains directly beneath the banner. */}
                 <div className="emperor-hero-quran-marquee-wrapper" title="آية الرزق المباركة">
                     <div className="emperor-hero-quran-marquee-track">
                         <div className="emperor-hero-quran-marquee-item">
@@ -87,7 +113,6 @@ export default function HeroSection({ products = [] }) {
                     </div>
                 </div>
 
-                {/* Search Bar */}
                 <div className="emperor-hero-search-wrapper">
                     <form
                         onSubmit={handleSearchSubmit}
@@ -183,49 +208,6 @@ export default function HeroSection({ products = [] }) {
                             )}
                         </div>
                     )}
-                </div>
-            </div>
-
-            {/* ── Right Group: Digital Globe Artwork + 4 Vertical Trust Pills ── */}
-            <div className="emperor-hero-right-group">
-                {/* 3D Glowing Digital Globe Graphic */}
-                <div className="emperor-hero-globe-wrapper">
-                    <img
-                        src="/images/artwork/hero_globe_art.png"
-                        alt="Global Digital Network"
-                        className="emperor-hero-globe-img"
-                        onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                        }}
-                    />
-                </div>
-
-                {/* 4 Trust Feature Items (Matching Official Visual Identity) */}
-                <div className="emperor-hero-trust-stack">
-                    <div className="emperor-hero-trust-item emperor-trust-secure">
-                        <div className="emperor-hero-trust-icon-circle">
-                            <ShieldCheck size={16} />
-                        </div>
-                        <span className="emperor-hero-trust-text">{t('heroTrustSafe', 'سريع وآمن')}</span>
-                    </div>
-                    <div className="emperor-hero-trust-item emperor-trust-prices">
-                        <div className="emperor-hero-trust-icon-circle">
-                            <Coins size={16} />
-                        </div>
-                        <span className="emperor-hero-trust-text">{t('heroTrustPrices', 'أسعار مناسبة')}</span>
-                    </div>
-                    <div className="emperor-hero-trust-item emperor-trust-support">
-                        <div className="emperor-hero-trust-icon-circle">
-                            <Headphones size={16} />
-                        </div>
-                        <span className="emperor-hero-trust-text">{t('heroTrustSupport', 'دعم فني 24/7')}</span>
-                    </div>
-                    <div className="emperor-hero-trust-item emperor-trust-global">
-                        <div className="emperor-hero-trust-icon-circle">
-                            <Globe size={16} />
-                        </div>
-                        <span className="emperor-hero-trust-text">{t('heroTrustGlobal', 'خدمات متعددة الدول')}</span>
-                    </div>
                 </div>
             </div>
         </section>

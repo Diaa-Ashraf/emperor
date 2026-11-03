@@ -8,14 +8,17 @@
     <title>{{ config('app.name', 'سند ومهره كارد') }} - تسجيل الدخول</title>
 
     @php
-        $siteFavicon = \App\Models\Setting::get('site_favicon') ? asset(\App\Models\Setting::get('site_favicon')) : asset('images/mohra_sand_logo.png');
-        $siteLogo = \App\Models\Setting::get('site_logo') ? asset(\App\Models\Setting::get('site_logo')) : asset('images/mohra_sand_logo.png');
+        $legacyLogos = ['/images/mohra_sand_logo.png', '/images/logo.png', '/images/emperor_logo.png'];
+        $configuredLogo = \App\Models\Setting::get('site_logo');
+        $siteLogo = asset(!$configuredLogo || in_array($configuredLogo, $legacyLogos, true) ? 'images/mahra_sanad_logo.jpg' : $configuredLogo);
+        $configuredFavicon = \App\Models\Setting::get('site_favicon') ?: $configuredLogo;
+        $siteFavicon = asset(!$configuredFavicon || in_array($configuredFavicon, $legacyLogos, true) ? 'images/mahra_sanad_logo.jpg' : $configuredFavicon);
         $siteName = \App\Models\Setting::get('site_name', 'سند ومهره كارد');
     @endphp
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ $siteFavicon }}" type="image/png">
-    <link rel="icon" href="{{ $siteFavicon }}" type="image/png">
+    <link rel="shortcut icon" href="{{ $siteFavicon }}" type="image/jpeg">
+    <link rel="icon" href="{{ $siteFavicon }}" type="image/jpeg">
 
     <!-- Styles & Scripts via Vite -->
     @vite(['resources/scss/admin.scss', 'resources/js/admin.js'])

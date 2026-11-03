@@ -15,6 +15,13 @@
 @endsection
 
 @section('content')
+    @php
+        $legacyBrandLogos = ['/images/mohra_sand_logo.png', '/images/logo.png', '/images/emperor_logo.png'];
+        $configuredBrandLogo = \App\Models\Setting::get('site_logo');
+        $configuredBrandFavicon = \App\Models\Setting::get('site_favicon') ?: $configuredBrandLogo;
+        $brandLogoPreview = !$configuredBrandLogo || in_array($configuredBrandLogo, $legacyBrandLogos, true) ? asset('images/mahra_sanad_logo.jpg') : asset($configuredBrandLogo);
+        $brandFaviconPreview = !$configuredBrandFavicon || in_array($configuredBrandFavicon, $legacyBrandLogos, true) ? asset('images/mahra_sanad_logo.jpg') : asset($configuredBrandFavicon);
+    @endphp
     <div class="settings-page-content">
         <form method="POST" action="{{ route('admin.settings.update-general') }}" enctype="multipart/form-data">
             @csrf
@@ -35,7 +42,7 @@
                                 <div class="col-12 col-md-6">
                                     <label class="form-label text-white fw-semibold fs-7 mb-1">لوجو الموقع الرئيسي (Site Logo)</label>
                                     <div class="d-flex align-items-center gap-3 mb-2 p-2 rounded bg-dark border border-secondary">
-                                        <img id="site_logo_preview" src="{{ !empty($settings['site_logo']) ? asset($settings['site_logo']) : asset('images/logo.png') }}" alt="Logo" style="width: 48px; height: 48px; object-fit: contain; background: #000; border-radius: 8px; padding: 4px;">
+                                        <img id="site_logo_preview" src="{{ $brandLogoPreview }}" alt="Logo" style="width: 48px; height: 48px; object-fit: contain; background: #000; border-radius: 8px; padding: 4px;">
                                         <div class="fs-8 text-muted">يظهر في الهيدر، الفوتر، والشاشات الرئيسية.</div>
                                     </div>
                                     <input type="file" name="site_logo" id="site_logo_input" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this, 'site_logo_preview')">
@@ -45,7 +52,7 @@
                                 <div class="col-12 col-md-6">
                                     <label class="form-label text-white fw-semibold fs-7 mb-1">أيقونة التاب في المتصفح (Tab Favicon)</label>
                                     <div class="d-flex align-items-center gap-3 mb-2 p-2 rounded bg-dark border border-secondary">
-                                        <img id="site_favicon_preview" src="{{ !empty($settings['site_favicon']) ? asset($settings['site_favicon']) : (!empty($settings['site_logo']) ? asset($settings['site_logo']) : asset('images/logo.png')) }}" alt="Favicon" style="width: 32px; height: 32px; object-fit: contain; background: #000; border-radius: 6px; padding: 2px;">
+                                        <img id="site_favicon_preview" src="{{ $brandFaviconPreview }}" alt="Favicon" style="width: 32px; height: 32px; object-fit: contain; background: #000; border-radius: 6px; padding: 2px;">
                                         <div class="fs-8 text-muted">تظهر بجانب اسم الموقع في علامة تبويب المتصفح.</div>
                                     </div>
                                     <input type="file" name="site_favicon" id="site_favicon_input" class="form-control form-control-sm" accept="image/*" onchange="previewImage(this, 'site_favicon_preview')">

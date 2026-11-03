@@ -40,6 +40,7 @@ const TargetOrderDetailPage = lazyRetry(() => import('./pages/TargetOrderDetailP
 const ReferralsPage = lazyRetry(() => import('./pages/ReferralsPage'));
 const NotificationsPage = lazyRetry(() => import('./pages/NotificationsPage'));
 const ProfilePage = lazyRetry(() => import('./pages/ProfilePage'));
+const FavoritesPage = lazyRetry(() => import('./pages/FavoritesPage'));
 const AccountSecurityPage = lazyRetry(() => import('./pages/AccountSecurityPage'));
 const SettingsPage = lazyRetry(() => import('./pages/SettingsPage'));
 const SupportPage = lazyRetry(() => import('./pages/SupportPage'));
@@ -246,6 +247,7 @@ export function AppRoutes() {
                 <Route path="/referrals" element={<ProtectedRoute><ReferralsPage /></ProtectedRoute>} />
                 <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                <Route path="/favorites" element={<FavoritesPage />} />
                 <Route path="/security" element={<ProtectedRoute><AccountSecurityPage /></ProtectedRoute>} />
                 <Route path="/account-security" element={<ProtectedRoute><AccountSecurityPage /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />

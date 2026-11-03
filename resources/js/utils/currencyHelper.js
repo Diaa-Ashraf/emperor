@@ -11,6 +11,7 @@ export const CURRENCY_SYMBOLS = {
     USDT: { ar: 'USDT', en: 'USDT', symbol: 'USDT' },
     EUR: { ar: '€', en: 'EUR', symbol: '€' },
     YER: { ar: 'ر.ي', en: 'YER', symbol: 'YER' },
+    SYP: { ar: 'ل.س', en: 'SYP', symbol: 'SYP' },
     JOD: { ar: 'د.أ', en: 'JOD', symbol: 'JOD' },
     KWD: { ar: 'د.ك', en: 'KWD', symbol: 'KWD' },
     QAR: { ar: 'ر.ق', en: 'QAR', symbol: 'QAR' },

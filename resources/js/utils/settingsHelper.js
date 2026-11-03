@@ -16,11 +16,17 @@ export function getSiteDescription() {
 }
 
 export function getSiteLogo() {
-    return window.__APP_SETTINGS__?.site_logo || '/images/mohra_sand_logo.png';
+    const configured = window.__APP_SETTINGS__?.site_logo;
+    return !configured || ['/images/mohra_sand_logo.png', '/images/logo.png', '/images/emperor_logo.png'].includes(configured)
+        ? '/images/mahra_sanad_logo.jpg'
+        : configured;
 }
 
 export function getSiteFavicon() {
-    return window.__APP_SETTINGS__?.site_favicon || window.__APP_SETTINGS__?.site_logo || '/images/mohra_sand_logo.png';
+    const configured = window.__APP_SETTINGS__?.site_favicon || window.__APP_SETTINGS__?.site_logo;
+    return !configured || ['/images/mohra_sand_logo.png', '/images/logo.png', '/images/emperor_logo.png'].includes(configured)
+        ? '/images/mahra_sanad_logo.jpg'
+        : configured;
 }
 
 export function getFooterSlogan() {

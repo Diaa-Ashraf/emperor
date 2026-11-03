@@ -1,145 +1,69 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Gamepad2, Landmark, Smartphone, Coins, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { Gamepad2, Landmark, Smartphone, Coins, Sparkles } from 'lucide-react';
 import { formatImageUrl } from '../../utils/imageHelper';
 
-export default function CategoryShowcase({ categories = [], products = [] }) {
-    const { isRtl, language, t } = useLanguage();
-
-    // Map categories with their associated products and custom icon/descriptions
+export default function CategoryShowcase({ categories = [] }) {
     const getCategoryMeta = (cat) => {
         const name = (cat.name || '').toLowerCase();
         const slug = (cat.slug || '').toLowerCase();
 
         if (name.includes('مالي') || name.includes('تحويل') || slug.includes('finance') || name.includes('كاش')) {
-            return {
-                icon: Landmark,
-                desc: 'إرسال واستقبال الأموال وبطاقات الدفع بسهولة وأمان',
-                cta: 'تصفح التحويلات المالية',
-                link: `/category/${cat.slug || cat.id}`
-            };
+            return { icon: Landmark, link: `/category/${cat.slug || cat.id}` };
         }
         if (name.includes('لعب') || name.includes('ألعاب') || slug.includes('game') || name.includes('game')) {
-            return {
-                icon: Gamepad2,
-                desc: 'اشحن حساباتك فوراً بأفضل الأسعار وأسرع تنفيذ',
-                cta: 'تصفح الألعاب',
-                link: `/category/${cat.slug || cat.id}`
-            };
+            return { icon: Gamepad2, link: `/category/${cat.slug || cat.id}` };
         }
         if (name.includes('تطبيق') || slug.includes('app') || name.includes('شات') || name.includes('voice')) {
-            return {
-                icon: Smartphone,
-                desc: 'شحن كوينز وبرامج البث المباشر فوراً',
-                cta: 'تصفح التطبيقات',
-                link: `/category/${cat.slug || cat.id}`
-            };
+            return { icon: Smartphone, link: `/category/${cat.slug || cat.id}` };
         }
         if (name.includes('تارجت') || slug.includes('target')) {
-            return {
-                icon: Coins,
-                desc: 'سحب واستبدال كوينز التارجت إلى كاش فوري',
-                cta: 'سحب التارجت الآن',
-                link: '/target/apps'
-            };
+            return { icon: Coins, link: '/target/apps' };
         }
 
-        return {
-            icon: Sparkles,
-            desc: 'خدمات وباقات فورية متميزة',
-            cta: 'تصفح القسم',
-            link: `/category/${cat.slug || cat.id}`
-        };
+        return { icon: Sparkles, link: `/category/${cat.slug || cat.id}` };
     };
 
-    if (!categories || categories.length === 0) {
-        return null;
-    }
+    if (!categories.length) return null;
 
     return (
-        <section className="emperor-showcase-grid">
-            {categories.map((cat) => {
-                const meta = getCategoryMeta(cat);
-                const Icon = meta.icon;
-                
-                // Get sample products for this category
-                const catProducts = products
-                    .filter(p => p.category_id === cat.id || (p.category && p.category.id === cat.id))
-                    .slice(0, 6);
-
-                const catImage = formatImageUrl(cat.icon_url || cat.icon || cat.banner_url || cat.banner);
+        <section className="emperor-showcase-grid" aria-label="أقسام المتجر">
+            {categories.map((category) => {
+                const { icon: Icon, link } = getCategoryMeta(category);
+                const image = formatImageUrl(category.icon_url || category.icon || category.banner_url || category.banner);
 
                 return (
-                    <div key={cat.id} className="emperor-showcase-card">
-                        <div className="emperor-showcase-card-inner">
-                            {/* Header Details */}
-                            <div className="emperor-showcase-header">
-                                <div className="emperor-showcase-title-group">
-                                    <h3 className="emperor-showcase-title">
-                                        <Icon size={24} color="#F5D061" />
-                                        <span>{cat.name}</span>
-                                    </h3>
-                                    <p className="emperor-showcase-desc">{cat.description || meta.desc}</p>
+                    <Link
+                        key={category.id}
+                        to={link}
+                        className="emperor-showcase-card"
+                        aria-label={`تصفح قسم ${category.name}`}
+                    >
+                        <div className="emperor-showcase-card-inner emperor-showcase-category-tile">
+                            <div className="emperor-showcase-image-badge" title={category.name}>
+                                {image ? (
+                                    <img
+                                        src={image}
+                                        alt={category.name}
+                                        className="emperor-showcase-cat-img"
+                                        loading="lazy"
+                                        decoding="async"
+                                        onError={(event) => {
+                                            event.currentTarget.style.display = 'none';
+                                            const fallback = event.currentTarget.parentElement?.querySelector('.emperor-showcase-fallback-icon');
+                                            if (fallback) fallback.style.display = 'flex';
+                                        }}
+                                    />
+                                ) : null}
+                                <div className="emperor-showcase-fallback-icon" style={{ display: image ? 'none' : 'flex' }}>
+                                    <Icon size={32} color="#F5D061" />
                                 </div>
-                                {catImage ? (
-                                    <div className="emperor-showcase-image-badge" title={cat.name}>
-                                        <img
-                                            src={catImage}
-                                            alt={cat.name}
-                                            className="emperor-showcase-cat-img"
-                                            onError={(e) => {
-                                                e.currentTarget.style.display = 'none';
-                                                const fallback = e.currentTarget.parentElement?.querySelector('.emperor-showcase-fallback-icon');
-                                                if (fallback) fallback.style.display = 'flex';
-                                            }}
-                                        />
-                                        <div className="emperor-showcase-fallback-icon" style={{ display: 'none' }}>
-                                            <Icon size={28} color="#F5D061" />
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="emperor-showcase-icon-badge">
-                                        <Icon size={24} />
-                                    </div>
-                                )}
                             </div>
-
-                            {/* Visual sample products / logos row */}
-                            {catProducts.length > 0 && (
-                                <div className="emperor-showcase-items-row">
-                                    {catProducts.map((p) => {
-                                        const img = formatImageUrl(p.image_url || p.image);
-                                        return (
-                                            <div key={p.id} className="emperor-showcase-mini-item" title={p.name}>
-                                                {img ? (
-                                                    <img
-                                                        src={img}
-                                                        alt={p.name}
-                                                        onError={(e) => {
-                                                            e.currentTarget.onerror = null;
-                                                            e.currentTarget.src = '/images/mohra_sand_logo.png';
-                                                        }}
-                                                    />
-                                                ) : (
-                                                    <Icon size={20} color="#F5D061" />
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-
-                            {/* Call to action button */}
-                            <Link to={meta.link} className="emperor-showcase-cta">
-                                <span>{meta.cta}</span>
-                                {isRtl ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
-                            </Link>
+                            <h3 className="emperor-showcase-title">{category.name}</h3>
                         </div>
-                    </div>
+                    </Link>
                 );
             })}
         </section>
     );
 }
-

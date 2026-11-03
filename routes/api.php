@@ -77,6 +77,7 @@ Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
         // Profile (1.6)
         Route::get('/profile', [ProfileController::class, 'show']);
         Route::post('/profile', [ProfileController::class, 'update']);
+        Route::post('/profile/currency', [ProfileController::class, 'updateCurrency']);
         Route::post('/profile/password', [ProfileController::class, 'updatePassword']);
         Route::put('/profile/complete', [ProfileController::class, 'completeProfile']);
         Route::post('/profile/2fa/enable', [ProfileController::class, 'enable2FA']);

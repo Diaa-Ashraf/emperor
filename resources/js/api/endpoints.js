@@ -21,6 +21,7 @@ export const profileApi = {
             },
         });
     },
+    updateCurrency: (currency) => api.post('/profile/currency', { currency }),
     updatePassword: (data) => api.post('/profile/password', data),
     completeProfile: (data) => api.put('/profile/complete', data),
     enable2FA: () => api.post('/profile/2fa/enable'),

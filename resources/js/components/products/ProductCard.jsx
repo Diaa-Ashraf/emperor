@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Crown } from 'lucide-react';
+import { Crown, Heart } from 'lucide-react';
 import { TargetAppIconRenderer } from '../target/TargetAppIcons';
 import { formatImageUrl } from '../../utils/imageHelper';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useFavorites } from '../../contexts/FavoritesContext';
 import '../../../css/visualCategory.css';
 
 export default function ProductCard({ product, onClick }) {
@@ -12,6 +13,7 @@ export default function ProductCard({ product, onClick }) {
 
     const { theme } = useTheme();
     const { isRtl } = useLanguage();
+    const { isFavorite, toggleFavorite } = useFavorites();
     const isLight = theme === 'light';
 
     const imageSrc = formatImageUrl(product.image_url || product.image || product.banner_url || product.banner || product.icon_url || product.icon);
@@ -21,6 +23,7 @@ export default function ProductCard({ product, onClick }) {
 
     const isStockPhoto = typeof imageSrc === 'string' && (imageSrc.includes('unsplash') || imageSrc.includes('pexels') || imageSrc.includes('random'));
     const hasCustomImage = imageSrc && !imgError && !isStockPhoto;
+    const favorite = isFavorite(product.id);
 
     // Clean title for KA-CARD style single-line clarity (e.g. "بولا (Pola Live)" -> "بولا")
     const cleanTitle = (() => {
@@ -77,6 +80,25 @@ export default function ProductCard({ product, onClick }) {
                     boxSizing: 'border-box',
                 }}
             >
+                <button
+                    type="button"
+                    aria-label={favorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+                    title={favorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+                    onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        toggleFavorite(product.id);
+                    }}
+                    style={{
+                        position: 'absolute', top: '8px', left: isRtl ? '8px' : 'auto', right: isRtl ? 'auto' : '8px',
+                        zIndex: 12, width: '32px', height: '32px', borderRadius: '50%',
+                        display: 'grid', placeItems: 'center', cursor: 'pointer',
+                        border: '1px solid rgba(255,255,255,.25)', background: 'rgba(5,10,20,.72)',
+                        color: favorite ? '#ef3340' : '#fff', backdropFilter: 'blur(8px)',
+                    }}
+                >
+                    <Heart size={17} fill={favorite ? 'currentColor' : 'none'} />
+                </button>
                 {/* ── Top-Corner Platform Brand Badge ── */}
                 <div
                     className="emperor-card-corner-badge"

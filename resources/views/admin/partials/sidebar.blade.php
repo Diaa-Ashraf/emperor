@@ -1,6 +1,7 @@
 <aside class="sidebar" id="sidebar">
     @php
-        $sidebarLogo = \App\Models\Setting::get('site_logo') ? asset(\App\Models\Setting::get('site_logo')) : asset('images/logo.png');
+        $configuredLogo = \App\Models\Setting::get('site_logo');
+        $sidebarLogo = asset(!$configuredLogo || in_array($configuredLogo, ['/images/mohra_sand_logo.png', '/images/logo.png', '/images/emperor_logo.png'], true) ? 'images/mahra_sanad_logo.jpg' : $configuredLogo);
         $rawSiteName = \App\Models\Setting::get('site_name', 'EMPEROR');
         // Extract clean short brand name for sidebar to prevent multi-line overflow
         $sidebarSiteName = trim(explode('|', $rawSiteName)[0] ?? 'EMPEROR');

@@ -30,6 +30,11 @@ class ProductController extends Controller
         $perPage = (int) ($request->input('limit') ?: $request->input('per_page') ?: 24);
         $perPage = max(1, min($perPage, 100));
         $page = (int) ($request->input('page') ?: 1);
+        $requestedIds = $request->input('ids');
+        if (!is_array($requestedIds)) {
+            $requestedIds = is_string($requestedIds) ? explode(',', $requestedIds) : [];
+        }
+        $requestedIds = array_values(array_filter(array_map('intval', $requestedIds), fn ($id) => $id > 0));
 
         $hasParentId = \Illuminate\Support\Facades\Schema::hasColumn('products', 'parent_id');
 
@@ -73,6 +78,10 @@ class ProductController extends Controller
             } else {
                 $query->whereNull('parent_id');
             }
+        }
+
+        if ($requestedIds) {
+            $query->whereIn('id', $requestedIds);
         }
 
         if ($catId) {
@@ -136,7 +145,7 @@ class ProductController extends Controller
         }
 
         // Cache default requests without search for 2 minutes
-        if ($search === '') {
+        if ($search === '' && !$requestedIds) {
             $cacheKey = "api_products_list_v5_c{$catId}_cs{$catSlug}_p{$parentId}_t{$type}_pg{$page}_l{$perPage}";
             $products = Cache::remember($cacheKey, 120, function () use ($query, $perPage) {
                 return $query->orderBy('sort_order', 'asc')->paginate($perPage);

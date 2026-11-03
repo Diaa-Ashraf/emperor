@@ -55,7 +55,7 @@ class SettingSeeder extends Seeder
         $settings = [
             ['key' => 'site_name', 'value' => 'سند ومهره كارد', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'site_description', 'value' => 'خدماتك الرقمية والمالية في مكان واحد', 'group' => 'general', 'type' => 'string', 'is_public' => true],
-            ['key' => 'site_logo', 'value' => '/images/mohra_sand_logo.png', 'group' => 'general', 'type' => 'string', 'is_public' => true],
+            ['key' => 'site_logo', 'value' => '/images/mahra_sanad_logo.jpg', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'site_favicon', 'value' => '/images/mohra_sand_logo.png', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'footer_slogan', 'value' => 'سند ومهره كارد — خدماتك الرقمية والمالية في مكان واحد', 'group' => 'general', 'type' => 'string', 'is_public' => true],
             ['key' => 'whatsapp_support', 'value' => '+201002575638', 'group' => 'general', 'type' => 'string', 'is_public' => true],

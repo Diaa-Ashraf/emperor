@@ -23,6 +23,7 @@ class SettingController extends Controller
             'push_notifications' => true,
             'email_notifications' => true,
             'sms_notifications' => false,
+            'favorite_product_ids' => [],
         ];
 
         $preferences = array_merge($defaults, $user->preferences ?? []);
@@ -49,6 +50,8 @@ class SettingController extends Controller
             'push_notifications' => ['nullable', 'boolean'],
             'email_notifications' => ['nullable', 'boolean'],
             'sms_notifications' => ['nullable', 'boolean'],
+            'favorite_product_ids' => ['sometimes', 'array', 'max:500'],
+            'favorite_product_ids.*' => ['integer', 'distinct'],
         ], [
             'theme.in' => 'المظهر المختار غير صالح.',
             'locale.in' => 'اللغة المختارة غير مدعومة.',

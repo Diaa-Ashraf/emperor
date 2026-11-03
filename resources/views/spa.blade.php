@@ -1,6 +1,9 @@
 @php
-    $siteLogo = \App\Models\Setting::get('site_logo') ?: '/images/mohra_sand_logo.png';
-    $siteFavicon = \App\Models\Setting::get('site_favicon') ?: ($siteLogo ?: '/images/mohra_sand_logo.png');
+    $legacyLogos = ['/images/mohra_sand_logo.png', '/images/logo.png', '/images/emperor_logo.png'];
+    $configuredLogo = \App\Models\Setting::get('site_logo');
+    $siteLogo = !$configuredLogo || in_array($configuredLogo, $legacyLogos, true) ? '/images/mahra_sanad_logo.jpg' : $configuredLogo;
+    $configuredFavicon = \App\Models\Setting::get('site_favicon') ?: $configuredLogo;
+    $siteFavicon = !$configuredFavicon || in_array($configuredFavicon, $legacyLogos, true) ? '/images/mahra_sanad_logo.jpg' : $configuredFavicon;
     $siteName = \App\Models\Setting::get('site_name', 'سند ومهره كارد');
     $siteDesc = \App\Models\Setting::get('site_description', 'خدماتك الرقمية والمالية في مكان واحد');
 @endphp
@@ -13,8 +16,8 @@
     <title>{{ $siteName }} — {{ $siteDesc }}</title>
 
     <!-- App Favicon & Mobile Icons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ $siteFavicon }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ $siteFavicon }}">
+    <link rel="icon" type="image/jpeg" sizes="32x32" href="{{ $siteFavicon }}">
+    <link rel="icon" type="image/jpeg" sizes="16x16" href="{{ $siteFavicon }}">
     <link rel="shortcut icon" href="{{ $siteFavicon }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ $siteFavicon }}">
     <script>

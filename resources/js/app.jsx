@@ -8,6 +8,7 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import AppRoutes from './router';
 import ScrollToTop from './components/utils/ScrollToTop';
 import ErrorBoundary from './components/ui/ErrorBoundary';
+import { FavoritesProvider } from './contexts/FavoritesContext';
 
 function App() {
     return (
@@ -16,10 +17,12 @@ function App() {
                 <LanguageProvider>
                     <AuthProvider>
                         <ToastProvider>
-                            <BrowserRouter>
-                                <ScrollToTop />
-                                <AppRoutes />
-                            </BrowserRouter>
+                            <FavoritesProvider>
+                                <BrowserRouter>
+                                    <ScrollToTop />
+                                    <AppRoutes />
+                                </BrowserRouter>
+                            </FavoritesProvider>
                         </ToastProvider>
                     </AuthProvider>
                 </LanguageProvider>

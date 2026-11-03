@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from '../layouts/MainLayout';
 import HeroSection from '../components/home/HeroSection';
 import CategoryShowcase from '../components/home/CategoryShowcase';
-import TrustFeaturesBar from '../components/home/TrustFeaturesBar';
 import SupportedCountries from '../components/home/SupportedCountries';
 import { catalogApi, depositsApi } from '../api/endpoints';
 import '../../css/homePage.css';
@@ -41,10 +40,7 @@ export default function HomePage() {
                 {/* 2. Visual Dual Category Showcase Tiles (e.g. Games, Transfers, Apps) */}
                 <CategoryShowcase categories={categories} products={products} />
 
-                {/* 3. Luxury 4 Trust Features Bar (Safe, Fast, 24/7 Support, Competitive Prices) */}
-                <TrustFeaturesBar />
-
-                {/* 4. Dynamic Supported Countries Indicator Bar */}
+                {/* 3. Dynamic Supported Countries Indicator Bar */}
                 <SupportedCountries countries={countries} loading={loading} />
             </div>
         </MainLayout>
