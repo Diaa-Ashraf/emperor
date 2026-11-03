@@ -90,7 +90,7 @@ class ProviderController extends Controller
     public function checkBalance(int $id): JsonResponse
     {
         $provider = Provider::findOrFail($id);
-        $adapter = $this->providerManager->resolveAdapter($provider->driver, $provider->config ?? []);
+        $adapter = $this->providerManager->adapterFor($provider);
         $balanceInfo = method_exists($adapter, 'getBalance') ? $adapter->getBalance() : (method_exists($adapter, 'checkBalance') ? $adapter->checkBalance() : ['balance' => $provider->balance, 'currency' => $provider->balance_currency]);
 
         if (isset($balanceInfo['balance'])) {

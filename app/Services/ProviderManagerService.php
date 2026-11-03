@@ -31,6 +31,28 @@ class ProviderManagerService
         return new \App\Adapters\Providers\EmbratorProviderAdapter($config);
     }
 
+    /** Build the adapter using credentials and endpoint saved on this provider. */
+    public function adapterFor(Provider $provider): ProviderAdapter
+    {
+        $config = $provider->config ?? [];
+
+        if (filled($provider->base_url)) {
+            $config['base_url'] = $provider->base_url;
+        }
+
+        if (filled($provider->api_key)) {
+            $config['api_key'] = $provider->api_key;
+            $config['api_token'] = $provider->api_key;
+        } elseif (blank($config['api_key'] ?? null) && filled($config['api_token'] ?? null)) {
+            // The admin provider form stores API credentials under api_token.
+            $config['api_key'] = $config['api_token'];
+        }
+
+        $config['_provider_id'] = $provider->id;
+
+        return $this->resolveAdapter($provider->driver, $config);
+    }
+
     /**
      * Execute fulfillment for an order by priority routing.
      */
@@ -63,8 +85,7 @@ class ProviderManagerService
             }
 
             try {
-                $providerConfig = array_merge($provider->config ?? [], ['_provider_id' => $provider->id]);
-                $adapter = $this->resolveAdapter($provider->driver, $providerConfig);
+                $adapter = $this->adapterFor($provider);
                 $dto = new OrderRequestDTO(
                     userId: $order->user_id,
                     productId: $order->product_id,
@@ -129,7 +150,7 @@ class ProviderManagerService
         if (!$order->provider || !$order->provider_order_id) {
             return new ProviderOrderResultDTO(false, 'pending', errorMessage: 'لا يوجد طلب مسجل لدى المورد.');
         }
-        $adapter = $this->resolveAdapter($order->provider->driver, array_merge($order->provider->config ?? [], ['base_url' => $order->provider->base_url]));
+        $adapter = $this->adapterFor($order->provider);
         $lookupId = $order->provider_response['order_uuid'] ?? $order->provider_order_id;
         return $adapter->checkOrderStatus((string) $lookupId);
     }

@@ -127,7 +127,7 @@ class AdminProviderController extends Controller
         $provider = Provider::findOrFail($id);
 
         try {
-            $adapter = $this->providerService->resolveAdapter($provider->driver, $provider->config ?? []);
+            $adapter = $this->providerService->adapterFor($provider);
             $balance = (float) $provider->balance;
             $currency = $provider->balance_currency ?: 'USD';
 
@@ -165,7 +165,7 @@ class AdminProviderController extends Controller
             if (!in_array($provider->driver, ['ad_card', 'ad-card', 'adcard'], true)) {
                 return $this->errorResponse('جلب الكتالوج المباشر متاح حاليًا لمورد AD Card من شاشة ربط المنتجات.', Response::HTTP_NOT_IMPLEMENTED);
             }
-            $adapter = $this->providerService->resolveAdapter($provider->driver, array_merge($provider->config ?? [], ['base_url' => $provider->base_url]));
+            $adapter = $this->providerService->adapterFor($provider);
             return $this->successResponse($adapter->getProducts(), 'تم الاتصال بمورد AD Card بنجاح');
         } catch (\Throwable $e) {
             return $this->errorResponse('فشل الاتصال بمورد AD Card: ' . $e->getMessage(), Response::HTTP_BAD_GATEWAY);

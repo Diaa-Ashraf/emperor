@@ -16,8 +16,10 @@ class AdCardProviderAdapter implements ProviderAdapter
 
     public function __construct(private array $config = [])
     {
-        $baseUrl = rtrim((string) config('services.ad_card.base_url', $config['base_url'] ?? 'https://ad-card.com/client/api'), '/');
-        $token = (string) (config('services.ad_card.api_token') ?: ($config['api_token'] ?? $config['api_key'] ?? ''));
+        // Prefer this provider's saved endpoint and token so separate supplier
+        // accounts do not accidentally share the global AD Card credentials.
+        $baseUrl = rtrim((string) ($config['base_url'] ?? config('services.ad_card.base_url', 'https://ad-card.com/client/api')), '/');
+        $token = (string) ($config['api_token'] ?? $config['api_key'] ?? config('services.ad_card.api_token', ''));
         if ($token === '') {
             throw new RuntimeException('مفتاح API Token الخاص بمورد AD Card غير مضبوط.');
         }
