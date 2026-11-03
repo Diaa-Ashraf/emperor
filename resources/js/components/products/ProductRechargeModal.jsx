@@ -696,7 +696,6 @@ export default function ProductRechargeModal({
                                     <input
                                         type="text"
                                         inputMode="numeric"
-                                        pattern="[0-9]*"
                                         value={quantityInput}
                                         onChange={handleQuantityInputChange}
                                         onFocus={handleQuantityFocus}
