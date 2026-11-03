@@ -90,7 +90,7 @@ export default function UserSidebarDrawer({ isOpen, onClose, walletBalance }) {
         setCurrencySaving(true);
         try {
             const response = await profileApi.updateCurrency(currency);
-            const updatedUser = response?.data?.user;
+            const updatedUser = response?.data?.data?.user || response?.data?.user || response?.user;
             if (updatedUser) {
                 setUser(updatedUser);
                 localStorage.setItem('emperor_user', JSON.stringify(updatedUser));

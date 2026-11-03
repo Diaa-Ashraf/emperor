@@ -43,9 +43,6 @@ class WalletController extends Controller
                 $usdBalance += $walletAmount;
                 continue;
             }
-            if ($walletCurrency === 'EGP') {
-                $walletCurrency = 'EGY';
-            }
             try {
                 $usdBalance += (float) $this->exchangeRateService->calculateConversion($walletCurrency, 'USD', max($walletAmount, 0.000001))['final_amount'];
             } catch (\Throwable $e) {
@@ -63,9 +60,7 @@ class WalletController extends Controller
             $walletAmount = (float) ($walletSummary['available_balance'] ?? 0);
             if ($walletAmount <= 0) continue;
             try {
-                $source = $walletCurrency === 'EGP' ? 'EGY' : $walletCurrency;
-                $target = $preferredCurrency === 'EGP' ? 'EGY' : $preferredCurrency;
-                $preferredBalance += (float) $this->exchangeRateService->calculateConversion($source, $target, $walletAmount)['final_amount'];
+                $preferredBalance += (float) $this->exchangeRateService->calculateConversion($walletCurrency, $preferredCurrency, $walletAmount)['final_amount'];
             } catch (\Throwable $e) {
                 // Skip currencies without a configured rate.
             }
