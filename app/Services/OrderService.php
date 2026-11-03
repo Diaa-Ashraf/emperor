@@ -6,6 +6,8 @@ use App\DTOs\OrderRequestDTO;
 use App\Enums\OrderStatus;
 use App\Enums\ProductType;
 use App\Enums\WalletTxType;
+use App\Jobs\CheckOrderStatusJob;
+use App\Jobs\ExecuteOrderJob;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductTier;
@@ -13,6 +15,7 @@ use App\Models\User;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use RuntimeException;
 
 class OrderService
 {
@@ -77,7 +80,7 @@ class OrderService
 
             $totalAmount = round($coinRate * $dto->quantity, 2);
             $costAmount = round($coinCost * $dto->quantity, 2);
-            $unitPrice = round($coinRate, 6);
+            $unitPrice = round($coinRate, 8);
         } else {
             $unitPrice = $tierUserPrice;
             $totalAmount = round($unitPrice * $dto->quantity, 2);
@@ -187,5 +190,90 @@ class OrderService
         });
 
         event(new \App\Events\OrderFailed($order, $reason));
+    }
+
+    public function transitionStatus(Order $order, OrderStatus $newStatus, string $reason = '', array $metadata = []): void
+    {
+        $order->refresh();
+
+        if ($order->status === $newStatus) {
+            return;
+        }
+
+        if (in_array($order->status, [OrderStatus::COMPLETED, OrderStatus::REFUNDED], true)) {
+            throw new RuntimeException('لا يمكن تغيير حالة طلب مكتمل أو مسترد.');
+        }
+
+        if (in_array($newStatus, [OrderStatus::FAILED, OrderStatus::REFUNDED], true)) {
+            $this->refundOrder($order, $reason ?: 'تم رفض الطلب بواسطة الإدارة.');
+            return;
+        }
+
+        $order->update([
+            'status' => $newStatus,
+            'failure_reason' => null,
+        ]);
+
+        if ($newStatus === OrderStatus::COMPLETED) {
+            $order->update(['provider_status' => 'completed']);
+            event(new \App\Events\OrderCompleted($order));
+            return;
+        }
+
+        if ($newStatus === OrderStatus::PROCESSING) {
+            if ($order->provider_id && $order->provider_order_id) {
+                CheckOrderStatusJob::dispatch($order->id, 1)->delay(now()->addSeconds(5));
+                return;
+            }
+
+            ExecuteOrderJob::dispatch($order->id);
+        }
+    }
+
+    /**
+     * Resume a queued order or refresh its supplier status without submitting a
+     * duplicate supplier purchase.
+     */
+    public function fulfillOrder(Order $order): void
+    {
+        $order->refresh();
+
+        if (!in_array($order->status, [OrderStatus::PENDING, OrderStatus::PROCESSING], true)) {
+            throw new RuntimeException('يمكن إعادة متابعة الطلبات المعلقة أو قيد التنفيذ فقط.');
+        }
+
+        if ($order->status === OrderStatus::PROCESSING && $order->provider_id && $order->provider_order_id) {
+            CheckOrderStatusJob::dispatch($order->id, 1)->delay(now()->addSeconds(5));
+            return;
+        }
+
+        ExecuteOrderJob::dispatch($order->id);
+    }
+
+    public function syncProviderOrder(Order $order): Order
+    {
+        $order->load('provider');
+        if (!$order->provider || !$order->provider_order_id) {
+            throw new RuntimeException('لم يتم تسجيل رقم طلب لدى المورد؛ لن يتم إرسال طلب جديد من زر المزامنة.');
+        }
+
+        if ($order->status !== OrderStatus::PROCESSING) {
+            throw new RuntimeException('مزامنة المورد متاحة للطلبات قيد التنفيذ فقط.');
+        }
+
+        $result = $this->providerManager->checkOrder($order);
+        $order->update([
+            'provider_status' => $result->status,
+            'provider_response' => $result->rawResponse,
+        ]);
+
+        if ($result->status === 'completed') {
+            $order->update(['status' => OrderStatus::COMPLETED]);
+            event(new \App\Events\OrderCompleted($order));
+        } elseif ($result->status === 'failed') {
+            $this->refundOrder($order, $result->errorMessage ?? 'فشل تنفيذ الطلب لدى المورد.');
+        }
+
+        return $order->fresh(['provider']);
     }
 }

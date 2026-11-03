@@ -39,8 +39,17 @@ class ExecuteOrderJob implements ShouldQueue
                     ]);
                     event(new \App\Events\OrderCompleted($order));
                     Log::info("Order {$order->public_id} fulfilled immediately.");
+                } elseif ($result->status === 'manual_review') {
+                    $order->update([
+                        'status' => OrderStatus::MANUAL_REVIEW,
+                        'provider_status' => 'manual_review',
+                        'provider_response' => $result->rawResponse,
+                    ]);
                 } else {
-                    // Pending on provider side -> dispatch status check job
+                    $order->update([
+                        'provider_status' => $result->status,
+                        'provider_response' => $result->rawResponse,
+                    ]);
                     CheckOrderStatusJob::dispatch($order->id, 1)->delay(now()->addSeconds(15));
                 }
             } else {

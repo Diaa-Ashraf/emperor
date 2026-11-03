@@ -121,9 +121,14 @@ export default function OrderDetailPage() {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
-    const unitPrice = Number(order.unit_price || 0).toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', {
+    const storedUnitPrice = Number(order.unit_price || 0);
+    const quantity = Number(order.quantity || 0);
+    const unitPriceValue = storedUnitPrice > 0
+        ? storedUnitPrice
+        : (quantity > 1 ? Number(order.total_amount || 0) / quantity : 0);
+    const unitPrice = unitPriceValue.toLocaleString(language === 'en' ? 'en-US' : 'ar-EG', {
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        maximumFractionDigits: unitPriceValue > 0 && unitPriceValue < 0.01 ? 8 : 2,
     });
 
     const currencySymbol = getCurrencyLabel(order.currency || 'EGP', language);

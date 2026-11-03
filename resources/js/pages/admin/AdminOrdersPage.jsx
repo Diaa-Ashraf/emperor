@@ -135,11 +135,14 @@ export default function AdminOrdersPage() {
         }
     };
 
-    const handleRetry = async (orderId) => {
+    const handleProviderSync = async (orderId) => {
         try {
             setSubmittingAction(true);
-            await adminApi.retryOrder(orderId);
-            success('تمت إعادة إرسال الطلب للتنفيذ الآلي بنجاح');
+            const result = await adminApi.syncOrderProvider(orderId);
+            const syncData = result?.data?.data || result?.data || result;
+            success(syncData?.provider_status === 'completed'
+                ? 'أكد المورد اكتمال الشحن وتم تحديث الحالة تلقائياً'
+                : 'تم فحص حالة الطلب لدى المورد');
             fetchOrders();
             if (selectedOrder) {
                 const refreshed = await adminApi.getOrder(orderId);
@@ -148,7 +151,7 @@ export default function AdminOrdersPage() {
                 }
             }
         } catch (err) {
-            toastError(err.response?.data?.message || 'فشل إعادة محاولة التنفيذ');
+            toastError(err.response?.data?.message || err.message || 'فشلت مزامنة حالة الطلب مع المورد');
         } finally {
             setSubmittingAction(false);
         }
@@ -1219,7 +1222,7 @@ export default function AdminOrdersPage() {
                                     justifyContent: 'space-between',
                                 }}>
                                     <div style={{ fontSize: '14px', fontWeight: '900', color: isLight ? '#0F172A' : '#FFFFFF' }}>
-                                        {selectedOrderDetails?.provider_order_id || '454902'}
+                                        {selectedOrderDetails?.provider_order_id || 'لم يتم تسجيله'}
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#94A3B8', fontWeight: '700' }}>
                                         <span>رقم طلب المورد</span>
@@ -1244,7 +1247,7 @@ export default function AdminOrdersPage() {
                             </h4>
                             <button
                                 type="button"
-                                onClick={() => handleRetry(selectedOrder.id)}
+                                onClick={() => handleProviderSync(selectedOrder.id)}
                                 disabled={submittingAction}
                                 style={{
                                     width: '100%',

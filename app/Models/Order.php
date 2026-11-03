@@ -47,7 +47,7 @@ class Order extends Model
     {
         return [
             'quantity' => 'integer',
-            'unit_price' => 'decimal:2',
+            'unit_price' => 'decimal:8',
             'total_amount' => 'decimal:2',
             'cost_amount' => 'decimal:4',
             'profit_amount' => 'decimal:4',

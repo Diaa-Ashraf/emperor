@@ -204,7 +204,7 @@ Route::prefix('v1')->middleware(['locale', 'throttle:api'])->group(function () {
             Route::get('/orders/{id}', [\App\Http\Controllers\Api\V1\Admin\AdminOrderController::class, 'show']);
             Route::post('/orders/{id}/status', [\App\Http\Controllers\Api\V1\Admin\AdminOrderController::class, 'updateStatus']);
             Route::post('/orders/{id}/retry', [\App\Http\Controllers\Api\V1\Admin\AdminOrderController::class, 'retry']);
-            Route::post('/orders/{id}/sync', [\App\Http\Controllers\Api\V1\Admin\AdminOrderController::class, 'retry']);
+            Route::post('/orders/{id}/sync', [\App\Http\Controllers\Api\V1\Admin\AdminOrderController::class, 'syncProvider']);
 
             // Customer Groups / Pricing Tiers (Matching Screenshots 1 & 2)
             Route::get('/pricing-tiers', [\App\Http\Controllers\Api\V1\Admin\AdminPricingTierController::class, 'index']);

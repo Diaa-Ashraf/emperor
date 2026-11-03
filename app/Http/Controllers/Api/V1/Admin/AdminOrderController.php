@@ -194,5 +194,23 @@ class AdminOrderController extends Controller
             return $this->errorResponse('فشل تنفيذ الطلب: ' . $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function syncProvider(int $id): JsonResponse
+    {
+        $order = Order::findOrFail($id);
+
+        try {
+            $syncedOrder = $this->orderService->syncProviderOrder($order);
+
+            return $this->successResponse([
+                'id' => $syncedOrder->id,
+                'status' => $syncedOrder->status?->value,
+                'provider_status' => $syncedOrder->provider_status,
+                'provider_order_id' => $syncedOrder->provider_order_id,
+            ], 'تمت مزامنة حالة الطلب مع المورد.');
+        } catch (\Throwable $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+    }
 }
 

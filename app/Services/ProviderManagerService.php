@@ -48,12 +48,10 @@ class ProviderManagerService
             ->get();
 
         if ($productProviders->isEmpty()) {
-            // Manual provider fallback
             return new ProviderOrderResultDTO(
-                success: true,
-                status: 'pending',
-                errorMessage: null,
-                rawResponse: ['mode' => 'manual_review']
+                success: false,
+                status: 'failed',
+                errorMessage: 'المنتج غير مربوط بمورد نشط. لم يتم إرسال الطلب لأي مورد.'
             );
         }
 
