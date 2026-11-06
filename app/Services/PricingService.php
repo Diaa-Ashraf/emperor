@@ -80,6 +80,7 @@ class PricingService
         $targetCurrency = strtoupper($targetCurrency ?: 'EGP');
 
         $metadata = $tier->metadata ?? [];
+        $groupMargin = $this->getCustomerGroupMargin($user);
         $sourceCost = (float) $tier->source_cost;
         $configuredMargin = (float) $tier->margin_percent;
         $expectedSyncedPrice = $sourceCost > 0
@@ -96,7 +97,7 @@ class PricingService
         // Admin-entered final prices are denominated in USD and must be
         // converted to the customer's selected account currency.
         if ($isManualPrice && (float) $tier->final_price > 0) {
-            $manualPrice = (float) $tier->final_price;
+            $manualPrice = (float) $tier->final_price * (1 + ($groupMargin / 100));
             $manualPriceCurrency = strtoupper((string) ($metadata['manual_price_currency'] ?? 'USD'));
             if ($manualPriceCurrency === $targetCurrency) {
                 return $manualPrice;
@@ -107,15 +108,21 @@ class PricingService
         }
 
         $provider = !empty($tier->metadata['provider_id']) ? \App\Models\Provider::find($tier->metadata['provider_id']) : null;
-        if (in_array($provider?->driver, ['ad_card', 'ad-card', 'adcard'], true)) {
+        if (in_array($provider?->driver, ['ad_card', 'ad-card', 'adcard', 'jasser_card', 'jasser-card', 'jassercard'], true)) {
             $cost = (float) ($tier->source_cost ?: $tier->final_price);
             $costCurrency = strtoupper((string) ($tier->cost_currency ?: ($tier->metadata['provider_product_currency'] ?? 'USD')));
             if ($costCurrency === $targetCurrency) {
-                return $cost * (1 + ((float) $tier->margin_percent / 100));
+                return $cost * (1 + ($groupMargin / 100));
             }
             $conversion = app(ExchangeRateService::class);
             $convertedCost = (float) $conversion->calculateConversion($costCurrency, $targetCurrency, $cost)['final_amount'];
-            return $convertedCost * (1 + ((float) $tier->margin_percent / 100));
+            return $convertedCost * (1 + ($groupMargin / 100));
+        }
+
+        if ($provider && $cost > 0 && $costCurrency !== $targetCurrency) {
+            $cost = (float) app(ExchangeRateService::class)
+                ->calculateConversion($costCurrency, $targetCurrency, $cost)['final_amount'];
+            $costCurrency = $targetCurrency;
         }
 
         // Resolve cost dynamically from Embrator provider API map ONLY IF not manual fulfillment
@@ -173,31 +180,6 @@ class PricingService
         $priceInCostCurrency = 0.0;
 
         // Check if user has an assigned Customer Group (VIP Shariha)
-        $groupMargin = null;
-        if ($user) {
-            $userGroupStr = $user->preferences['vip_group'] ?? null;
-            if ($userGroupStr) {
-                $cg = CustomerGroup::where('name', $userGroupStr)->where('is_active', true)->first();
-                if (!$cg) {
-                    $cleanName = trim(preg_replace('/\s*\(.*?\)/', '', $userGroupStr));
-                    $cg = CustomerGroup::where('name', $cleanName)->where('is_active', true)->first();
-                }
-                if ($cg) {
-                    $groupMargin = (float) $cg->discount_percentage;
-                } elseif (preg_match('/(\d+(?:\.\d+)?)\s*%/', $userGroupStr, $matches)) {
-                    $groupMargin = (float) $matches[1];
-                }
-            }
-        }
-
-        // If no specific group assigned to user (or guest user), automatically assign highest active tier margin
-        if ($groupMargin === null) {
-            $highestTierMargin = CustomerGroup::where('is_active', true)
-                ->where('discount_percentage', '>', 0)
-                ->max('discount_percentage');
-            $groupMargin = $highestTierMargin !== null ? (float) $highestTierMargin : 4.0;
-        }
-
         if ($cost > 0) {
             // Apply assigned or default highest tier margin
             $appliedMargin = $groupMargin;
@@ -238,5 +220,22 @@ class PricingService
 
         return (float) app(ExchangeRateService::class)
             ->calculateConversion($costCurrency, $targetCurrency, $priceInCostCurrency)['final_amount'];
+    }
+
+    private function getCustomerGroupMargin(?User $user): float
+    {
+        $userGroup = $user?->preferences['vip_group'] ?? null;
+        if ($userGroup) {
+            $group = CustomerGroup::where('name', $userGroup)->where('is_active', true)->first();
+            if (!$group) {
+                $cleanName = trim(preg_replace('/\s*\(.*?\)/', '', $userGroup));
+                $group = CustomerGroup::where('name', $cleanName)->where('is_active', true)->first();
+            }
+            if ($group) return (float) $group->discount_percentage;
+            if (preg_match('/(\d+(?:\.\d+)?)\s*%/', $userGroup, $matches)) return (float) $matches[1];
+        }
+
+        $highest = CustomerGroup::where('is_active', true)->where('discount_percentage', '>', 0)->max('discount_percentage');
+        return $highest !== null ? (float) $highest : 4.0;
     }
 }

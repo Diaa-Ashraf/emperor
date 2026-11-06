@@ -33,6 +33,7 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
 
     // Dynamic Edit States
     const [userGroup, setUserGroup] = useState('VIP8 (1%)');
+    const [customerGroups, setCustomerGroups] = useState([]);
     const [userCurrency, setUserCurrency] = useState(user.currency || 'EGP');
     const [userDebtLimit, setUserDebtLimit] = useState(0);
     const [savingSettings, setSavingSettings] = useState(false);
@@ -72,6 +73,14 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
     useEffect(() => {
         fetchDetails();
     }, [user.id]);
+
+    useEffect(() => {
+        adminApi.getPricingTiers().then((res) => {
+            const payload = res?.data?.data || res?.data || {};
+            const groups = Array.isArray(payload.groups) ? payload.groups : [];
+            setCustomerGroups(groups.filter((group) => group.is_active !== false));
+        }).catch(() => setCustomerGroups([]));
+    }, []);
 
     const handleSaveSettings = async (field) => {
         try {
@@ -653,11 +662,14 @@ export default function AdminUserDetailsModal({ user, onClose, onUserUpdated, is
                                             outline: 'none',
                                         }}
                                     >
-                                        <option value="VIP8 (1%)">VIP8 (1%)</option>
-                                        <option value="VIP5 (2%)">VIP5 (2%)</option>
-                                        <option value="VIP3 (3%)">VIP3 (3%)</option>
-                                        <option value="VIP1 (5%)">VIP1 (5%)</option>
-                                        <option value="عضو متجر عادي">عضو متجر عادي</option>
+                                        {userGroup && !customerGroups.some((group) => group.name === userGroup) && (
+                                            <option value={userGroup}>{userGroup} (مجموعة قديمة)</option>
+                                        )}
+                                        {customerGroups.map((group) => (
+                                            <option key={group.id} value={group.name}>
+                                                {group.name} ({Number(group.discount_percentage || 0)}%)
+                                            </option>
+                                        ))}
                                     </select>
                                     <button
                                         type="button"

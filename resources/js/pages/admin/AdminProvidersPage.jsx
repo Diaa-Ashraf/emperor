@@ -101,7 +101,8 @@ export default function AdminProvidersPage() {
         try {
             setSelectedProviderProducts(provider);
             const isAdCard = ['ad_card', 'ad-card', 'adcard'].includes(provider.driver);
-            const res = isAdCard
+            const isJasserCard = ['jasser_card', 'jasser-card', 'jassercard'].includes(provider.driver);
+            const res = isAdCard || isJasserCard
                 ? await adminApi.getProviderProducts(provider.id)
                 : await adminApi.getProviderCatalog({ provider_id: provider.id });
             if (res && res.data) {
@@ -136,8 +137,8 @@ export default function AdminProvidersPage() {
         try {
             const payload = {
                 ...providerForm,
-                driver: providerForm.api_type === 'AD Card API' ? 'ad_card' : providerForm.driver,
-                base_url: providerForm.base_url || (providerForm.api_type === 'AD Card API' ? 'https://ad-card.com/client/api' : ''),
+                driver: providerForm.api_type === 'AD Card API' ? 'ad_card' : (providerForm.api_type === 'Jasser Card API' ? 'jasser_card' : providerForm.driver),
+                base_url: providerForm.base_url || (providerForm.api_type === 'AD Card API' ? 'https://ad-card.com/client/api' : (providerForm.api_type === 'Jasser Card API' ? 'https://jasser-card.net/api' : '')),
             };
             await adminApi.createProvider(payload);
             success('تم حفظ المورد بنجاح');
@@ -816,6 +817,7 @@ export default function AdminProvidersPage() {
                                 >
                                     <option value="Embrator Reseller API">Embrator Reseller API (منصة إمبراطور)</option>
                                     <option value="AD Card API">AD Card API (منصة AD Card)</option>
+                                    <option value="Jasser Card API">Jasser Card API (منصة Jasser Card)</option>
                                     <option value="API (واجهة برمجة)">API (واجهة برمجة)</option>
                                     <option value="Custom Webhook">Custom Webhook</option>
                                 </select>

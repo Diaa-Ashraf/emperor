@@ -72,4 +72,10 @@ return [
         'timeout' => env('AD_CARD_API_TIMEOUT', 25),
     ],
 
+    'jasser_card' => [
+        'base_url' => env('JASSER_CARD_API_BASE_URL', 'https://jasser-card.net/api'),
+        'api_token' => env('JASSER_CARD_API_TOKEN'),
+        'timeout' => env('JASSER_CARD_API_TIMEOUT', 25),
+    ],
+
 ];

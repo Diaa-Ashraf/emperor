@@ -254,7 +254,7 @@ class AdminProductController extends Controller
         $providerProductId = trim((string) ($validated['provider_product_id'] ?? ''));
         if (!$isParent && !empty($validated['provider_id']) && $providerProductId === '') {
             $selectedProvider = Provider::find((int) $validated['provider_id']);
-            if (in_array($selectedProvider?->driver, ['ad_card', 'ad-card', 'adcard'], true)) {
+            if (in_array($selectedProvider?->driver, ['ad_card', 'ad-card', 'adcard', 'jasser_card', 'jasser-card', 'jassercard'], true)) {
                 return $this->errorResponse('اختر المنتج المطلوب من كتالوج المورد قبل الحفظ.', Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         }
@@ -481,7 +481,7 @@ class AdminProductController extends Controller
         }
         // Fetch live products from the selected supplier.
         try {
-            if ($provider && in_array($provider->driver, ['ad_card', 'ad-card', 'adcard'], true)) {
+            if ($provider && in_array($provider->driver, ['ad_card', 'ad-card', 'adcard', 'jasser_card', 'jasser-card', 'jassercard'], true)) {
                 $adapter = app(\App\Services\ProviderManagerService::class)->resolveAdapter($provider->driver, array_merge($provider->config ?? [], ['base_url' => $provider->base_url]));
                 $liveProducts = $adapter->getProducts();
             } elseif ($provider && $provider->driver !== 'embrator_reseller_api') {

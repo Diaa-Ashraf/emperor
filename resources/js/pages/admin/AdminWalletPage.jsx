@@ -73,6 +73,7 @@ export default function AdminWalletPage() {
     // Admin Settings Form State
     const [selectedCurrency, setSelectedCurrency] = useState('EGP');
     const [selectedGroup, setSelectedGroup] = useState('VIP8 (1%)');
+    const [customerGroups, setCustomerGroups] = useState([]);
     const [savingSettings, setSavingSettings] = useState(false);
 
     // Date range helper for query params
@@ -158,6 +159,13 @@ export default function AdminWalletPage() {
     useEffect(() => {
         fetchData();
     }, [dateRange, page, targetUserId]);
+
+    useEffect(() => {
+        adminApi.getPricingTiers().then((res) => {
+            const payload = res?.data?.data || res?.data || {};
+            setCustomerGroups(Array.isArray(payload.groups) ? payload.groups.filter((group) => group.is_active !== false) : []);
+        }).catch(() => setCustomerGroups([]));
+    }, []);
 
     const handleSearchSubmit = (e) => {
         e.preventDefault();
@@ -1037,11 +1045,14 @@ export default function AdminWalletPage() {
                                             fontFamily: 'Cairo, sans-serif',
                                         }}
                                     >
-                                        <option value="VIP8 (1%)">VIP8 (1%)</option>
-                                        <option value="VIP5 (2%)">VIP5 (2%)</option>
-                                        <option value="VIP3 (3%)">VIP3 (3%)</option>
-                                        <option value="VIP1 (5%)">VIP1 (5%)</option>
-                                        <option value="Standard">Standard (0%)</option>
+                                        {selectedGroup && !customerGroups.some((group) => group.name === selectedGroup) && (
+                                            <option value={selectedGroup}>{selectedGroup} (مجموعة قديمة)</option>
+                                        )}
+                                        {customerGroups.map((group) => (
+                                            <option key={group.id} value={group.name}>
+                                                {group.name} ({Number(group.discount_percentage || 0)}%)
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
 

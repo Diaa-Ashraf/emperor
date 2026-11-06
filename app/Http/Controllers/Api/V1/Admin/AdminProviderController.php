@@ -65,12 +65,14 @@ class AdminProviderController extends Controller
             'auto_fulfill' => 'boolean',
         ]);
 
-        $isAdCard = $request->input('api_type') === 'AD Card API' || strtolower((string) $request->input('driver')) === 'ad_card';
-        $driver = $isAdCard ? 'ad_card' : ($validated['driver'] ?? 'embrator');
+        $requestedDriver = strtolower((string) ($validated['driver'] ?? ''));
+        $isJasserCard = $request->input('api_type') === 'Jasser Card API' || in_array($requestedDriver, ['jasser_card', 'jasser-card', 'jassercard'], true);
+        $isAdCard = $request->input('api_type') === 'AD Card API' || $requestedDriver === 'ad_card';
+        $driver = $isJasserCard ? 'jasser_card' : ($isAdCard ? 'ad_card' : ($validated['driver'] ?? 'embrator'));
         $provider = Provider::create([
             'name' => $validated['name'],
             'driver' => $driver,
-            'base_url' => $validated['base_url'] ?? ($isAdCard ? 'https://ad-card.com/client/api' : null),
+            'base_url' => $validated['base_url'] ?? ($isJasserCard ? 'https://jasser-card.net/api' : ($isAdCard ? 'https://ad-card.com/client/api' : null)),
             'balance' => 0.00,
             'balance_currency' => 'USD',
             'is_active' => $request->boolean('is_active', true),
@@ -162,11 +164,11 @@ class AdminProviderController extends Controller
     {
         $provider = Provider::findOrFail($id);
         try {
-            if (!in_array($provider->driver, ['ad_card', 'ad-card', 'adcard'], true)) {
-                return $this->errorResponse('جلب الكتالوج المباشر متاح حاليًا لمورد AD Card من شاشة ربط المنتجات.', Response::HTTP_NOT_IMPLEMENTED);
+            if (!in_array($provider->driver, ['ad_card', 'ad-card', 'adcard', 'jasser_card', 'jasser-card', 'jassercard'], true)) {
+                return $this->errorResponse('جلب الكتالوج المباشر متاح لموردي البطاقات المدعومين من شاشة ربط المنتجات.', Response::HTTP_NOT_IMPLEMENTED);
             }
             $adapter = $this->providerService->adapterFor($provider);
-            return $this->successResponse($adapter->getProducts(), 'تم الاتصال بمورد AD Card بنجاح');
+            return $this->successResponse($adapter->getProducts(), 'تم الاتصال بمورد البطاقات بنجاح');
         } catch (\Throwable $e) {
             return $this->errorResponse('فشل الاتصال بمورد AD Card: ' . $e->getMessage(), Response::HTTP_BAD_GATEWAY);
         }

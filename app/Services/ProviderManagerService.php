@@ -21,6 +21,7 @@ class ProviderManagerService
         $className = match ($driver) {
             'manual', 'manual_review' => \App\Adapters\Providers\ManualProviderAdapter::class,
             'ad_card', 'ad-card', 'adcard' => \App\Adapters\Providers\AdCardProviderAdapter::class,
+            'jasser_card', 'jasser-card', 'jassercard' => \App\Adapters\Providers\JasserCardProviderAdapter::class,
             default => \App\Adapters\Providers\EmbratorProviderAdapter::class,
         };
 
