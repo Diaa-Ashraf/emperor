@@ -27,8 +27,8 @@ class ProductController extends Controller
         $parentId = $request->input('parent_id');
         $type = $request->input('type');
         $search = trim((string) $request->input('search'));
-        $perPage = (int) ($request->input('limit') ?: $request->input('per_page') ?: 24);
-        $perPage = max(1, min($perPage, 100));
+        $perPage = (int) ($request->input('limit') ?: $request->input('per_page') ?: 100);
+        $perPage = max(1, min($perPage, 500));
         $page = (int) ($request->input('page') ?: 1);
         $requestedIds = $request->input('ids');
         if (!is_array($requestedIds)) {

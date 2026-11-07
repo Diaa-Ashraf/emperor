@@ -129,7 +129,10 @@ export default function CategoryPage() {
     // Fetch products
     useEffect(() => {
         setLoading(true);
-        const queryParams = {};
+        const queryParams = {
+            limit: 100,
+            per_page: 100,
+        };
 
         if (selectedCategory?.id) {
             queryParams.category_id = selectedCategory.id;
@@ -228,7 +231,15 @@ export default function CategoryPage() {
                     <input
                         type="text"
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            if (selectedParentApp) {
+                                setSelectedParentApp(null);
+                                const newParams = new URLSearchParams(searchParams);
+                                newParams.delete('app');
+                                setSearchParams(newParams);
+                            }
+                        }}
                         placeholder={t('searchProductPrompt', 'ابحث عن منتج أو تطبيق...')}
                         style={{
                             width: '100%',
