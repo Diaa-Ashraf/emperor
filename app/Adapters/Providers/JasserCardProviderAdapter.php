@@ -102,13 +102,26 @@ class JasserCardProviderAdapter implements ProviderAdapter
                 ?? $product['currencyCode']
                 ?? ($usdPrice !== null ? 'USD' : 'USD');
 
+            $rawPrice = (float) $price;
+            $productType = (string) ($product['product_type'] ?? '');
+            $minQty = (int) ($product['min_qty'] ?? $product['minQty'] ?? $product['min'] ?? ($product['qty_values']['min'] ?? 1));
+            $maxQty = (int) ($product['max_qty'] ?? $product['maxQty'] ?? $product['max'] ?? ($product['qty_values']['max'] ?? 10000000));
+
+            // If it's a range product and the price returned represents the batch price for min_qty:
+            // Jasser Card returns price for min_qty (e.g. min 50,000 price 0.73$), normalize to unit price per 1 coin.
+            if ($productType === 'range' && $minQty > 1 && $rawPrice > 0.01) {
+                $unitPrice = $rawPrice / $minQty;
+            } else {
+                $unitPrice = $rawPrice;
+            }
+
             return array_merge($product, [
                 'id' => (string) ($product['id'] ?? $product['product_id'] ?? $product['productId'] ?? $product['products_id'] ?? $product['productsId'] ?? $product['sku'] ?? ''),
                 'name' => (string) ($product['name'] ?? $product['title'] ?? $product['product_name'] ?? $product['productName'] ?? ''),
-                'price' => (float) $price,
+                'price' => (float) $unitPrice,
                 'currency' => strtoupper((string) $currency),
-                'min_qty' => (int) ($product['min_qty'] ?? $product['minQty'] ?? $product['min'] ?? 1),
-                'max_qty' => (int) ($product['max_qty'] ?? $product['maxQty'] ?? $product['max'] ?? 10000000),
+                'min_qty' => $minQty,
+                'max_qty' => $maxQty,
             ]);
         }, $products));
     }
