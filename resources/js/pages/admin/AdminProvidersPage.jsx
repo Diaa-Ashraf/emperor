@@ -117,10 +117,11 @@ export default function AdminProvidersPage() {
     const handleSync = async (provider) => {
         try {
             setCheckingId(provider.id);
-            await adminApi.checkProviderBalance(provider.id);
-            success(`تمت مزامنة بيانات ${provider.name} بنجاح`);
+            const res = await adminApi.checkProviderBalance(provider.id);
+            success(res.data?.message || `تمت مزامنة بيانات ${provider.name} بنجاح`);
+            fetchProviders();
         } catch (err) {
-            toastError('فشل مزامنة المورد');
+            toastError(err.response?.data?.message || 'فشل مزامنة المورد');
         } finally {
             setCheckingId(null);
         }
@@ -135,10 +136,19 @@ export default function AdminProvidersPage() {
 
         setSubmittingAdd(true);
         try {
+            const isAdCard = providerForm.api_type === 'AD Card API';
+            const isJasserCard = providerForm.api_type === 'Jasser Card API';
+            const driver = isAdCard ? 'ad_card' : (isJasserCard ? 'jasser_card' : providerForm.driver);
+            const defaultBaseUrl = isAdCard ? 'https://ad-card.com/client/api' : (isJasserCard ? 'https://jasser-card.net/client/api' : '');
+            let baseUrl = providerForm.base_url || defaultBaseUrl;
+            if (isJasserCard && (baseUrl === 'https://jasser-card.net/api' || baseUrl === 'https://jasser-card.net')) {
+                baseUrl = 'https://jasser-card.net/client/api';
+            }
+
             const payload = {
                 ...providerForm,
-                driver: providerForm.api_type === 'AD Card API' ? 'ad_card' : (providerForm.api_type === 'Jasser Card API' ? 'jasser_card' : providerForm.driver),
-                base_url: providerForm.base_url || (providerForm.api_type === 'AD Card API' ? 'https://ad-card.com/client/api' : (providerForm.api_type === 'Jasser Card API' ? 'https://jasser-card.net/api' : '')),
+                driver,
+                base_url: baseUrl,
             };
             await adminApi.createProvider(payload);
             success('تم حفظ المورد بنجاح');
@@ -479,7 +489,17 @@ export default function AdminProvidersPage() {
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                setEditingProvider({ ...prov, base_url: prov.base_url || (prov.driver === 'ad_card' ? 'https://ad-card.com/client/api' : ''), api_token: '', has_api_token: prov.has_api_token || prov.driver === 'ad_card' });
+                                                const defaultBaseUrl = prov.driver === 'ad_card' ? 'https://ad-card.com/client/api' : (['jasser_card', 'jasser-card', 'jassercard'].includes(prov.driver) ? 'https://jasser-card.net/client/api' : '');
+                                                let baseUrl = prov.base_url || defaultBaseUrl;
+                                                if (['jasser_card', 'jasser-card', 'jassercard'].includes(prov.driver) && (baseUrl === 'https://jasser-card.net/api' || baseUrl === 'https://jasser-card.net')) {
+                                                    baseUrl = 'https://jasser-card.net/client/api';
+                                                }
+                                                setEditingProvider({
+                                                    ...prov,
+                                                    base_url: baseUrl,
+                                                    api_token: '',
+                                                    has_api_token: prov.has_api_token || prov.driver === 'ad_card' || ['jasser_card', 'jasser-card', 'jassercard'].includes(prov.driver)
+                                                });
                                                 setEditBalance(prov.balance?.toString() || '0');
                                             }}
                                             style={{

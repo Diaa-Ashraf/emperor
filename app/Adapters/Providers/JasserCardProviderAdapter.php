@@ -17,7 +17,12 @@ class JasserCardProviderAdapter implements ProviderAdapter
 
     public function __construct(private array $config = [])
     {
-        $baseUrl = rtrim((string) ($config['base_url'] ?? config('services.jasser_card.base_url')), '/');
+        $rawBaseUrl = (string) ($config['base_url'] ?? config('services.jasser_card.base_url', 'https://jasser-card.net/client/api'));
+        $baseUrl = rtrim($rawBaseUrl, '/');
+        // Jasser Card endpoints are under /client/api (e.g. /client/api/profile, /client/api/products)
+        if ($baseUrl === 'https://jasser-card.net/api' || $baseUrl === 'https://jasser-card.net' || $baseUrl === 'http://jasser-card.net/api' || $baseUrl === 'http://jasser-card.net') {
+            $baseUrl = 'https://jasser-card.net/client/api';
+        }
         $token = (string) ($config['api_token'] ?? $config['api_key'] ?? config('services.jasser_card.api_token', ''));
         if ($token === '') {
             throw new RuntimeException('مفتاح API Token الخاص بمورد Jasser Card غير مضبوط.');

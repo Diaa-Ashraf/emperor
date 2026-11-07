@@ -69,10 +69,20 @@ class AdminProviderController extends Controller
         $isJasserCard = $request->input('api_type') === 'Jasser Card API' || in_array($requestedDriver, ['jasser_card', 'jasser-card', 'jassercard'], true);
         $isAdCard = $request->input('api_type') === 'AD Card API' || $requestedDriver === 'ad_card';
         $driver = $isJasserCard ? 'jasser_card' : ($isAdCard ? 'ad_card' : ($validated['driver'] ?? 'embrator'));
+        $defaultBaseUrl = match (true) {
+            $isJasserCard => 'https://jasser-card.net/client/api',
+            $isAdCard => 'https://ad-card.com/client/api',
+            default => null,
+        };
+        $baseUrl = $validated['base_url'] ?? $defaultBaseUrl;
+        if ($isJasserCard && ($baseUrl === 'https://jasser-card.net/api' || $baseUrl === 'https://jasser-card.net')) {
+            $baseUrl = 'https://jasser-card.net/client/api';
+        }
+
         $provider = Provider::create([
             'name' => $validated['name'],
             'driver' => $driver,
-            'base_url' => $validated['base_url'] ?? ($isJasserCard ? 'https://jasser-card.net/api' : ($isAdCard ? 'https://ad-card.com/client/api' : null)),
+            'base_url' => $baseUrl,
             'balance' => 0.00,
             'balance_currency' => 'USD',
             'is_active' => $request->boolean('is_active', true),
