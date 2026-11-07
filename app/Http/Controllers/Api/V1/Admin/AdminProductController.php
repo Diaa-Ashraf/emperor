@@ -479,13 +479,14 @@ class AdminProductController extends Controller
         if (!$provider && $request->filled('provider_id')) {
             $provider = Provider::where('name', $request->input('provider_id'))->first();
         }
-        // Fetch live products from the selected supplier.
+        // Fetch live products from the selected supplier with caching for performance.
         try {
             if ($provider && in_array($provider->driver, ['ad_card', 'ad-card', 'adcard', 'jasser_card', 'jasser-card', 'jassercard'], true)) {
-                // Use the same provider credential/URL resolution path as live
-                // balance checks and order fulfillment.
-                $adapter = app(\App\Services\ProviderManagerService::class)->adapterFor($provider);
-                $liveProducts = $adapter->getProducts();
+                $cacheKey = "provider_live_catalog_{$provider->id}";
+                $liveProducts = \Illuminate\Support\Facades\Cache::remember($cacheKey, 60, function () use ($provider) {
+                    $adapter = app(\App\Services\ProviderManagerService::class)->adapterFor($provider);
+                    return $adapter->getProducts();
+                });
             } elseif ($provider && $provider->driver !== 'embrator_reseller_api') {
                 $liveProducts = [];
             } else {

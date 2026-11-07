@@ -131,27 +131,34 @@ class JasserCardProviderAdapter implements ProviderAdapter
             return new ProviderOrderResultDTO(false, 'failed', errorMessage: 'معرف منتج Jasser Card غير مربوط.');
         }
 
-        $params = $orderDto->extraFields;
-        foreach (['player_id' => $orderDto->playerId, 'server_id' => $orderDto->serverId, 'region' => $orderDto->accountRegion] as $key => $value) {
-            if ($value && !isset($params[$key])) $params[$key] = $value;
+        $params = $orderDto->extraFields ?: [];
+        $playerId = $orderDto->playerId ?: ($params['playerId'] ?? $params['player_id'] ?? $params['userId'] ?? $params['user_id'] ?? $params['id'] ?? null);
+        if ($playerId) {
+            $params['playerId'] = $playerId;
         }
 
+        $orderUuid = $orderDto->idempotencyKey ?: (string) Str::uuid();
+        $queryParams = array_merge($params, [
+            'qty' => max(1, $orderDto->quantity),
+            'order_uuid' => $orderUuid,
+        ]);
+
         try {
-            $data = $this->request('POST', 'orders', ['json' => [
-                'product_id' => is_numeric($productId) ? (int) $productId : $productId,
-                'qty' => max(1, $orderDto->quantity),
-                'order_uuid' => $orderDto->idempotencyKey ?: (string) Str::uuid(),
-                'params' => (object) $params,
-            ]]);
-            $payload = (array) ($data['data'] ?? $data);
-            $status = $this->normalizeStatus((string) ($payload['status'] ?? 'wait'));
+            // According to Jasser Card API documentation:
+            // GET /client/api/newOrder/{product_id}/params?qty=1&playerId=...&order_uuid=...
+            $data = $this->request('GET', 'newOrder/' . rawurlencode((string) $productId) . '/params', [
+                'query' => $queryParams,
+            ]);
+
+            $orderData = (array) ($data['order'] ?? $data['data'] ?? $data);
+            $status = $this->normalizeStatus((string) ($orderData['status'] ?? $data['status'] ?? 'wait'));
 
             return new ProviderOrderResultDTO(
-                success: true,
+                success: $status !== 'failed',
                 status: $status,
-                providerOrderId: (string) ($payload['order_id'] ?? $payload['order_uuid'] ?? ''),
-                rawResponse: array_merge($data, ['order_uuid' => $payload['order_uuid'] ?? ($orderDto->idempotencyKey ?: null)]),
-                costAmount: (float) ($payload['price'] ?? 0)
+                providerOrderId: (string) ($orderData['id'] ?? $orderData['order_id'] ?? $orderData['order_uuid'] ?? $orderUuid),
+                rawResponse: array_merge($data, ['order_uuid' => $orderUuid]),
+                costAmount: (float) ($orderData['price'] ?? 0)
             );
         } catch (\Throwable $e) {
             return new ProviderOrderResultDTO(false, 'failed', errorMessage: $e->getMessage());
@@ -161,14 +168,25 @@ class JasserCardProviderAdapter implements ProviderAdapter
     public function checkOrderStatus(string $providerOrderId): ProviderOrderResultDTO
     {
         try {
-            $query = str_starts_with($providerOrderId, 'ID_') ? ['orders' => $providerOrderId] : ['uuids' => $providerOrderId];
+            // According to documentation:
+            // GET /client/api/check?orders=[ID_a37aaa06] or /client/api/check?orders=[UUID]&uuid=1
+            $isUuid = !str_starts_with($providerOrderId, 'ID_');
+            $query = [
+                'orders' => '[' . $providerOrderId . ']',
+            ];
+            if ($isUuid) {
+                $query['uuid'] = 1;
+            }
+
             $data = $this->request('GET', 'check', ['query' => $query]);
-            $orders = $data['data'] ?? [];
+            $orders = $data['orders'] ?? $data['data'] ?? [];
             $order = is_array($orders) ? (array) (array_is_list($orders) ? ($orders[0] ?? []) : $orders) : [];
             $status = $this->normalizeStatus((string) ($order['status'] ?? 'wait'));
+
             return new ProviderOrderResultDTO(
-                success: $status !== 'failed', status: $status,
-                providerOrderId: (string) ($order['order_id'] ?? $providerOrderId),
+                success: $status !== 'failed',
+                status: $status,
+                providerOrderId: (string) ($order['id'] ?? $order['order_id'] ?? $providerOrderId),
                 errorMessage: $status === 'failed' ? 'رفض المورد الطلب.' : null,
                 rawResponse: $order,
                 costAmount: (float) ($order['price'] ?? 0)

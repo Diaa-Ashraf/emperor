@@ -199,11 +199,7 @@ export default function AdminProductsPage() {
         setProviderCatalogLoading(true);
         try {
             const provider = providers.find(p => p.id == providerId || p.name === providerId);
-            const isAdCard = ['ad_card', 'ad-card', 'adcard'].includes(provider?.driver);
-            const isJasserCard = ['jasser_card', 'jasser-card', 'jassercard'].includes(provider?.driver);
-            const res = isAdCard || isJasserCard
-                ? await adminApi.getProviderProducts(provider.id)
-                : await adminApi.getProviderCatalog({
+            const res = await adminApi.getProviderCatalog({
                 provider_id: provider?.id,
                 search: searchStr.trim() || undefined,
                 page,
