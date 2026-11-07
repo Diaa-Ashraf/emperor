@@ -85,10 +85,32 @@ class JasserCardProviderAdapter implements ProviderAdapter
         // Some APIs return one product object directly; do not mistake its
         // fields for a list of separate products.
         if (!array_is_list($products) && (isset($products['id']) || isset($products['product_id']) || isset($products['products_id']))) {
-            return [$products];
+            $products = [$products];
         }
 
-        return array_values($products);
+        return array_values(array_map(function ($product) {
+            if (!is_array($product)) {
+                return [];
+            }
+
+            $usdPrice = $product['priceUsd'] ?? $product['price_usd'] ?? $product['usd_price'] ?? null;
+            $price = $usdPrice ?? $product['price'] ?? $product['cost'] ?? $product['amount'] ?? 0;
+            $currency = $product['currency']
+                ?? $product['price_currency']
+                ?? $product['priceCurrency']
+                ?? $product['currency_code']
+                ?? $product['currencyCode']
+                ?? ($usdPrice !== null ? 'USD' : 'USD');
+
+            return array_merge($product, [
+                'id' => (string) ($product['id'] ?? $product['product_id'] ?? $product['productId'] ?? $product['products_id'] ?? $product['productsId'] ?? $product['sku'] ?? ''),
+                'name' => (string) ($product['name'] ?? $product['title'] ?? $product['product_name'] ?? $product['productName'] ?? ''),
+                'price' => (float) $price,
+                'currency' => strtoupper((string) $currency),
+                'min_qty' => (int) ($product['min_qty'] ?? $product['minQty'] ?? $product['min'] ?? 1),
+                'max_qty' => (int) ($product['max_qty'] ?? $product['maxQty'] ?? $product['max'] ?? 10000000),
+            ]);
+        }, $products));
     }
 
     public function getContent(int|string $categoryId = 0): array

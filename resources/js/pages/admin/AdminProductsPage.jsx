@@ -218,9 +218,9 @@ export default function AdminProductsPage() {
                         ...item,
                         id: id == null ? '' : String(id),
                         name: item.name ?? item.title ?? item.product_name ?? item.productName ?? `Product ${id ?? ''}`,
-                        price: item.price ?? item.priceUsd ?? item.price_usd ?? 0,
-                        currency: item.currency ?? 'USD',
-                        currency_label: item.currency_label ?? 'دولار',
+                        price: item.priceUsd ?? item.price_usd ?? item.usd_price ?? item.price ?? item.cost ?? item.amount ?? 0,
+                        currency: item.currency ?? item.price_currency ?? item.priceCurrency ?? item.currency_code ?? item.currencyCode ?? 'USD',
+                        currency_label: item.currency_label ?? item.currency ?? item.price_currency ?? item.priceCurrency ?? item.currency_code ?? item.currencyCode ?? 'USD',
                     };
                 }).filter((item) => item.id !== '');
                 if (requestId === providerCatalogRequestRef.current) {
@@ -2003,7 +2003,7 @@ export default function AdminProductsPage() {
                                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                             <Package size={14} color="#38BDF8" />
                                                                             <span style={{ fontSize: '11px', color: '#94A3B8' }}>
-                                                                                {item.price} دولار {item.price_egp ? `(~${item.price_egp} ج.م)` : ''}
+                                                                                {item.price} {item.currency_label || item.currency || 'USD'} {item.price_egp ? `(~${item.price_egp} ج.م)` : ''}
                                                                             </span>
                                                                         </div>
                                                                         <span style={{
