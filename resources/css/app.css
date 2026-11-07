@@ -158,6 +158,17 @@ html.light body {
     border-color: #cbd5e1 !important;
 }
 
+/* Native option popups otherwise inherit a white menu with light text in dark mode. */
+select option {
+    background-color: #0f172a;
+    color: #f8fafc;
+}
+
+.light select option {
+    background-color: #ffffff;
+    color: #0f172a;
+}
+
 .light input::placeholder,
 .light textarea::placeholder {
     color: #64748b !important;

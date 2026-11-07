@@ -80,6 +80,7 @@ export default function AdminProductsPage() {
     const [providerCatalogTotal, setProviderCatalogTotal] = useState(0);
     const [providerCatalogPage, setProviderCatalogPage] = useState(1);
     const [providerCatalogLoading, setProviderCatalogLoading] = useState(false);
+    const [providerCatalogError, setProviderCatalogError] = useState('');
     const providerCatalogRequestRef = useRef(0);
     const [selectedProviderProduct, setSelectedProviderProduct] = useState(null);
     const [providerCatalogSearch, setProviderCatalogSearch] = useState('');
@@ -193,6 +194,7 @@ export default function AdminProductsPage() {
             setProviderCatalogItems([]);
             setProviderCatalogTotal(0);
             setProviderCatalogPage(1);
+            setProviderCatalogError('');
         }
         setProviderCatalogLoading(true);
         try {
@@ -211,11 +213,11 @@ export default function AdminProductsPage() {
                 const data = res.data.data || res.data;
                 const items = Array.isArray(data) ? data : Array.isArray(data.items) ? data.items : [];
                 const normalizedItems = items.map((item) => {
-                    const id = item.id ?? item.product_id ?? item.products_id ?? item.sku;
+                    const id = item.id ?? item.product_id ?? item.productId ?? item.products_id ?? item.productsId ?? item.sku_id ?? item.sku;
                     return {
                         ...item,
                         id: id == null ? '' : String(id),
-                        name: item.name ?? item.title ?? item.product_name ?? `Product ${id ?? ''}`,
+                        name: item.name ?? item.title ?? item.product_name ?? item.productName ?? `Product ${id ?? ''}`,
                         price: item.price ?? item.priceUsd ?? item.price_usd ?? 0,
                         currency: item.currency ?? 'USD',
                         currency_label: item.currency_label ?? 'دولار',
@@ -229,10 +231,12 @@ export default function AdminProductsPage() {
             }
         } catch (err) {
             console.error('Failed fetching provider catalog:', err);
+            const message = err.response?.data?.message || err.message || 'تعذر تحميل كتالوج المورد.';
             if (requestId === providerCatalogRequestRef.current && !append) {
                 setProviderCatalogItems([]);
                 setProviderCatalogTotal(0);
                 setProviderCatalogPage(1);
+                setProviderCatalogError(message);
             }
         } finally {
             if (requestId === providerCatalogRequestRef.current) setProviderCatalogLoading(false);
@@ -1951,6 +1955,20 @@ export default function AdminProductsPage() {
                                                     <div style={{ fontSize: '11.5px', color: '#94A3B8', marginBottom: '10px' }}>
                                                         {providerCatalogSearch.trim() ? 'نتائج مطابقة' : 'منتجات في كتالوج المورد'}: {providerCatalogTotal}، يتم عرض {filteredProviderItems.length}
                                                     </div>
+
+                                                    {providerCatalogError && (
+                                                        <div role="alert" style={{
+                                                            border: '1px solid rgba(248, 113, 113, 0.4)',
+                                                            borderRadius: '10px',
+                                                            padding: '10px 12px',
+                                                            marginBottom: '10px',
+                                                            color: '#FCA5A5',
+                                                            backgroundColor: 'rgba(127, 29, 29, 0.18)',
+                                                            fontSize: '12px',
+                                                        }}>
+                                                            {providerCatalogError}
+                                                        </div>
+                                                    )}
 
                                                     {/* Products Cards List matching Screenshot 5 */}
                                                     <div style={{

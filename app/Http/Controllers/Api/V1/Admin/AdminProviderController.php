@@ -170,7 +170,7 @@ class AdminProviderController extends Controller
             $adapter = $this->providerService->adapterFor($provider);
             return $this->successResponse($adapter->getProducts(), 'تم الاتصال بمورد البطاقات بنجاح');
         } catch (\Throwable $e) {
-            return $this->errorResponse('فشل الاتصال بمورد AD Card: ' . $e->getMessage(), Response::HTTP_BAD_GATEWAY);
+            return $this->errorResponse('فشل الاتصال بمورد ' . $provider->name . ': ' . $e->getMessage(), Response::HTTP_BAD_GATEWAY);
         }
     }
 

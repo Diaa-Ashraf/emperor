@@ -52,8 +52,38 @@ class JasserCardProviderAdapter implements ProviderAdapter
     public function getProducts(array $query = []): array
     {
         $data = $this->request('GET', 'products', $query ? ['query' => $query] : []);
-        $products = $data['data'] ?? $data['products'] ?? [];
-        return is_array($products) ? (array_is_list($products) ? $products : array_values($products)) : [];
+
+        // Jasser deployments have returned the catalog both as a top-level
+        // list and wrapped under data/products/items/result. Unwrap known
+        // envelopes before normalizing keyed collections into a list.
+        $products = $data;
+        for ($depth = 0; $depth < 4 && is_array($products) && !array_is_list($products); $depth++) {
+            $next = null;
+            foreach (['products', 'items', 'result', 'data'] as $key) {
+                if (isset($products[$key]) && is_array($products[$key])) {
+                    $next = $products[$key];
+                    break;
+                }
+            }
+
+            if ($next === null) {
+                break;
+            }
+
+            $products = $next;
+        }
+
+        if (!is_array($products)) {
+            throw new RuntimeException('صيغة كتالوج Jasser Card غير مفهومة.');
+        }
+
+        // Some APIs return one product object directly; do not mistake its
+        // fields for a list of separate products.
+        if (!array_is_list($products) && (isset($products['id']) || isset($products['product_id']) || isset($products['products_id']))) {
+            return [$products];
+        }
+
+        return array_values($products);
     }
 
     public function getContent(int|string $categoryId = 0): array
