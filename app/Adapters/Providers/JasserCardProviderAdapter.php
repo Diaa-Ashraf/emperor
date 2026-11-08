@@ -93,8 +93,10 @@ class JasserCardProviderAdapter implements ProviderAdapter
                 return [];
             }
 
-            $usdPrice = $product['priceUsd'] ?? $product['price_usd'] ?? $product['usd_price'] ?? null;
-            $price = $usdPrice ?? $product['price'] ?? $product['cost'] ?? $product['amount'] ?? 0;
+            $usdPrice = $product['unit_price_usd'] ?? $product['unitPriceUsd']
+                ?? $product['priceUsd'] ?? $product['price_usd'] ?? $product['usd_price'] ?? null;
+            $price = $usdPrice ?? $product['unit_price'] ?? $product['unitPrice']
+                ?? $product['price'] ?? $product['cost'] ?? $product['amount'] ?? 0;
             $currency = $product['currency']
                 ?? $product['price_currency']
                 ?? $product['priceCurrency']
@@ -103,16 +105,51 @@ class JasserCardProviderAdapter implements ProviderAdapter
                 ?? ($usdPrice !== null ? 'USD' : 'USD');
 
             $rawPrice = (float) $price;
-            $productType = (string) ($product['product_type'] ?? '');
-            $minQty = (int) ($product['min_qty'] ?? $product['minQty'] ?? $product['min'] ?? ($product['qty_values']['min'] ?? 1));
-            $maxQty = (int) ($product['max_qty'] ?? $product['maxQty'] ?? $product['max'] ?? ($product['qty_values']['max'] ?? 10000000));
+            $qtyValues = is_array($product['qty_values'] ?? null) ? $product['qty_values'] : [];
+            $limits = is_array($product['limits'] ?? null) ? $product['limits'] : [];
+            $quantityRange = is_array($product['quantity_range'] ?? null) ? $product['quantity_range']
+                : (is_array($product['quantityRange'] ?? null) ? $product['quantityRange']
+                    : (is_array($product['qty_range'] ?? null) ? $product['qty_range']
+                        : (is_array($product['range'] ?? null) ? $product['range'] : [])));
+            if (array_is_list($qtyValues) && count($qtyValues) > 1) {
+                $explicitQtyValues = array_values(array_filter($qtyValues, 'is_numeric'));
+                if ($explicitQtyValues) {
+                    $qtyValues = ['min' => min($explicitQtyValues), 'max' => max($explicitQtyValues)];
+                }
+            }
+            $minQty = $this->firstPositiveInteger([
+                $product['min_qty'] ?? null, $product['minQty'] ?? null, $product['min_quantity'] ?? null,
+                $product['minQuantity'] ?? null, $product['minimum_quantity'] ?? null, $product['min_order'] ?? null,
+                $product['minOrder'] ?? null, $product['min_order_qty'] ?? null, $product['minOrderQty'] ?? null,
+                $product['min'] ?? null, $product['minimum'] ?? null, $product['min_amount'] ?? null, $product['minAmount'] ?? null,
+                $qtyValues['min'] ?? null, $qtyValues['minimum'] ?? null, $limits['min'] ?? null, $quantityRange['min'] ?? null,
+            ], 1);
+            $maxQty = $this->firstPositiveInteger([
+                $product['max_qty'] ?? null, $product['maxQty'] ?? null, $product['max_quantity'] ?? null,
+                $product['maxQuantity'] ?? null, $product['maximum_quantity'] ?? null, $product['max_order'] ?? null,
+                $product['maxOrder'] ?? null, $product['max_order_qty'] ?? null, $product['maxOrderQty'] ?? null,
+                $product['max'] ?? null, $product['maximum'] ?? null, $product['max_amount'] ?? null, $product['maxAmount'] ?? null,
+                $qtyValues['max'] ?? null, $qtyValues['maximum'] ?? null, $limits['max'] ?? null, $quantityRange['max'] ?? null,
+            ], 1);
 
-            // If it's a range product and the price returned represents the batch price for min_qty:
-            // Jasser Card returns price for min_qty (e.g. min 50,000 price 0.73$), normalize to unit price per 1 coin.
-            if ($productType === 'range' && $minQty > 1 && $rawPrice > 0.01) {
+            $priceQuantity = $this->firstPositiveInteger([
+                $product['price_quantity'] ?? null, $product['priceQuantity'] ?? null,
+                $product['price_for_qty'] ?? null, $product['priceForQty'] ?? null,
+                $product['price_for_quantity'] ?? null, $product['priceForQuantity'] ?? null,
+                $product['price_qty'] ?? null, $product['priceQty'] ?? null,
+                $product['pricing_quantity'] ?? null, $product['pricingQuantity'] ?? null,
+                $product['price_base_qty'] ?? null, $product['priceBaseQty'] ?? null,
+                $product['price_basis'] ?? null, $product['priceBasis'] ?? null,
+                $product['base_qty'] ?? null, $product['baseQty'] ?? null,
+            ], 1);
+            $priceIsAlreadyPerUnit = isset($product['unit_price']) || isset($product['unitPrice'])
+                || isset($product['unit_price_usd']) || isset($product['unitPriceUsd']);
+            $unitPrice = $rawPrice;
+            if (!$priceIsAlreadyPerUnit && $rawPrice > 0 && $priceQuantity > 1) {
+                $unitPrice = $rawPrice / $priceQuantity;
+            } elseif (!$priceIsAlreadyPerUnit && $rawPrice > 0 && $minQty > 1 && $rawPrice > 0.01) {
+                // Jasser Card may publish the cost for its minimum order quantity.
                 $unitPrice = $rawPrice / $minQty;
-            } else {
-                $unitPrice = $rawPrice;
             }
 
             return array_merge($product, [
@@ -121,9 +158,22 @@ class JasserCardProviderAdapter implements ProviderAdapter
                 'price' => (float) $unitPrice,
                 'currency' => strtoupper((string) $currency),
                 'min_qty' => $minQty,
-                'max_qty' => $maxQty,
+                // Do not invent a 10-million quantity range when Jasser omits it:
+                // the storefront would multiply a fixed package price by an arbitrary user quantity.
+                'max_qty' => max($minQty, $maxQty),
             ]);
         }, $products));
+    }
+
+    private function firstPositiveInteger(array $values, int $default): int
+    {
+        foreach ($values as $value) {
+            if (is_numeric($value) && (int) $value > 0) {
+                return (int) $value;
+            }
+        }
+
+        return $default;
     }
 
     public function getContent(int|string $categoryId = 0): array
